@@ -1312,7 +1312,7 @@ function CLINDUMMY_f() {
         return new BasicBlock(this.x);
     }
     CLINDUMMY_f.prototype.details = function CLINDUMMY_f() {
-        return this.x;h
+        return this.x;
     }
 }
 function CLKFROM() {
