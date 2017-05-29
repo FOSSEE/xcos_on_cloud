@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XcosDiagram background="-1" title="Untitled - 4:12:04 PM">
+    <!--Xcos - 1.0 - scilab-5.5.2 - 20150331 1152-->
+    <mxGraphModel as="model">
+        <root>
+            <mxCell id="-50510869:1557c914f41:-7fcc" />
+            <mxCell id="-50510869:1557c914f41:-7fcd" parent="-50510869:1557c914f41:-7fcc" />
+            <BasicBlock blockType="d" id="-50510869:1557c914f41:-7fc6" interfaceFunctionName="CLKFROM" parent="-50510869:1557c914f41:-7fcd" simulationFunctionName="clkfrom" simulationFunctionType="DEFAULT" style="CLKFROM">
+                <ScilabString as="exprs" height="1" width="1">
+                    <data column="0" line="0" value="A" />
+                </ScilabString>
+                <ScilabDouble as="realParameters" height="0" width="0" />
+                <ScilabDouble as="integerParameters" height="0" width="0" />
+                <Array as="objectsParameters" scilabClass="ScilabList">
+                    <ScilabString height="1" width="1">
+                        <data column="0" line="0" value="A" />
+                    </ScilabString>
+                </Array>
+                <ScilabDouble as="nbZerosCrossing" height="1" width="1">
+                    <data column="0" line="0" realPart="0.0" />
+                </ScilabDouble>
+                <ScilabDouble as="nmode" height="1" width="1">
+                    <data column="0" line="0" realPart="0.0" />
+                </ScilabDouble>
+                <Array as="oDState" scilabClass="ScilabList" />
+                <Array as="equations" scilabClass="ScilabList" />
+                <mxGeometry as="geometry" height="20.0" width="40.0" x="150.0" y="110.0" />
+            </BasicBlock>
+            <CommandPort dataType="UNKNOW_TYPE" id="-50510869:1557c914f41:-7fc5" ordering="1" parent="-50510869:1557c914f41:-7fc6" style="CommandPort;align=center;verticalAlign=bottom;spacing=10.0;rotation=90">
+                <mxGeometry as="geometry" height="8.0" width="8.0" x="16.0" y="20.0" />
+            </CommandPort>
+        </root>
+    </mxGraphModel>
+    <mxCell as="defaultParent" id="-50510869:1557c914f41:-7fcd" parent="-50510869:1557c914f41:-7fcc" />
+</XcosDiagram>
