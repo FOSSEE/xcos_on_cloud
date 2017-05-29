@@ -9,6 +9,7 @@ from gevent import monkey
 from gevent.pywsgi import WSGIServer
 from flask import Flask, request, Response, render_template, send_from_directory
 from werkzeug import secure_filename
+import webbrowser #modifiedm@shivendra for displaying image saved
 
 monkey.patch_all(aggressive=False)
 
@@ -173,6 +174,7 @@ def event_stream(xcos_file_id):
 			yield "event: log\ndata: "+line.get_line()+"\n\n"
 		# Reset line, so server won't send same line twice
 		line = line_and_state(None, NOLINE)
+        webbrowser.open_new_tab("/home/shivendra/a/xcos-on-web/images/img_test.png")#modified@shivendra this displays saved image in a new window
 	# Finished Sending Log
 	kill_scilab()
 	# Notify Client
