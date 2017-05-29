@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XcosDiagram background="-1" title="Untitled - 4:20:26 PM">
+    <!--Xcos - 1.0 - scilab-5.5.2 - 20150331 1152-->
+    <mxGraphModel as="model">
+        <root>
+            <mxCell id="-50510869:1557c914f41:-7fbd" />
+            <mxCell id="-50510869:1557c914f41:-7fbe" parent="-50510869:1557c914f41:-7fbd" />
+            <BasicBlock blockType="d" id="-50510869:1557c914f41:-7fb7" interfaceFunctionName="CLKGOTO" parent="-50510869:1557c914f41:-7fbe" simulationFunctionName="clkgoto" simulationFunctionType="DEFAULT" style="CLKGOTO">
+                <ScilabString as="exprs" height="2" width="1">
+                    <data column="0" line="0" value="A" />
+                    <data column="0" line="1" value="1" />
+                </ScilabString>
+                <ScilabDouble as="realParameters" height="0" width="0" />
+                <ScilabDouble as="integerParameters" height="1" width="1">
+                    <data column="0" line="0" realPart="1.0" />
+                </ScilabDouble>
+                <Array as="objectsParameters" scilabClass="ScilabList">
+                    <ScilabString height="1" width="1">
+                        <data column="0" line="0" value="A" />
+                    </ScilabString>
+                </Array>
+                <ScilabDouble as="nbZerosCrossing" height="1" width="1">
+                    <data column="0" line="0" realPart="0.0" />
+                </ScilabDouble>
+                <ScilabDouble as="nmode" height="1" width="1">
+                    <data column="0" line="0" realPart="0.0" />
+                </ScilabDouble>
+                <Array as="oDState" scilabClass="ScilabList" />
+                <Array as="equations" scilabClass="ScilabList" />
+                <mxGeometry as="geometry" height="20.0" width="40.0" x="140.0" y="200.0" />
+            </BasicBlock>
+            <ControlPort dataType="UNKNOW_TYPE" id="-50510869:1557c914f41:-7fb6" ordering="1" parent="-50510869:1557c914f41:-7fb7" style="ControlPort;align=center;verticalAlign=top;spacing=10.0;rotation=90">
+                <mxGeometry as="geometry" height="8.0" width="8.0" x="16.0" y="-8.0" />
+            </ControlPort>
+        </root>
+    </mxGraphModel>
+    <mxCell as="defaultParent" id="-50510869:1557c914f41:-7fbe" parent="-50510869:1557c914f41:-7fbd" />
+</XcosDiagram>
