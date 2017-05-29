@@ -34,7 +34,7 @@ NOLINE = -1
 # Scilab dir, can't run absolute paths
 #SCI = "../scilab/"
 #SCI="../scilab-master/scilab/"
-SCI="../../scilab-master_5.5.2/"
+SCI="../scilab-master/"
 # List to store figure IDs
 figure_list = []
 # List to store filenames of files
