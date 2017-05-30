@@ -35,7 +35,8 @@ NOLINE = -1
 # Scilab dir, can't run absolute paths
 #SCI = "../scilab/"
 #SCI="../scilab-master/scilab/"
-SCI="../scilab-master/"
+#SCI="../scilab-master/"
+SCI="../../scilab-master_5.5.2/"
 # List to store figure IDs
 figure_list = []
 # List to store filenames of files
@@ -174,7 +175,7 @@ def event_stream(xcos_file_id):
 			yield "event: log\ndata: "+line.get_line()+"\n\n"
 		# Reset line, so server won't send same line twice
 		line = line_and_state(None, NOLINE)
-        webbrowser.open_new_tab("/home/shivendra/a/xcos-on-web/images/img_test.png")#modified@shivendra this displays saved image in a new window
+        #webbrowser.open_new_tab("images/img_test.png")#modified@shivendra this displays saved image in a new window
 	# Finished Sending Log
 	kill_scilab()
 	# Notify Client
