@@ -79,9 +79,32 @@ function chart_init(wnd){
 		isDone = true;
 	}, false);
 	// Stop listening
+
+/* modified_shank :start
+function OpenNewWindow(bigurl)
+{
+    var newWindow = window.open("", "pictureViewer", 
+        "location=no, directories=no, fullscreen=no, " + 
+        "menubar=no, status=no, toolbar=no, width=640, height=540, scrollbars=no");
+
+    newWindow.document.writeln("<html>");
+    newWindow.document.writeln("<body style='margin: 0 0 0 0;'>");
+    newWindow.document.writeln("<img src='" + bigurl + 
+       "' id='bigImage' style= ' width: auto; height: auto; '/>");
+    newWindow.document.writeln("</a>");
+    newWindow.document.writeln("</body></html>");
+    
+}
+*/// modified_shank :end
+
 	eventSource.addEventListener("DONE", function(event){
 		eventSource.close(); 	// Close connection
-		console.log("Done");
+
+                //window.open('test3.html'); //modified_shank : added
+		
+                console.log("Done");
+
+                 setTimeout(function(){window.open("imgshow.html","ResultDisplay","location=no, menubar=no, toolbar=no, width=640, height=540, scrollbars=no"); }, 1000); // modified_shank : made imgshow.html file
 		isDone = true;
 	}, false);
 	

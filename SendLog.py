@@ -9,7 +9,8 @@ from gevent import monkey
 from gevent.pywsgi import WSGIServer
 from flask import Flask, request, Response, render_template, send_from_directory
 from werkzeug import secure_filename
-import webbrowser #modifiedm@shivendra for displaying image saved
+#import webbrowser #modifiedm@shivendra for displaying image saved
+#from random import randint # modified_shank : to generate random image names
 
 monkey.patch_all(aggressive=False)
 
@@ -116,7 +117,8 @@ def event_stream(xcos_file_id):
 	(out, err) = proc.communicate()
 	_l = len(out)
 	# Run xcos file
-	command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2png(gcf(),'images/img_test.png'),mode(2);quit()"]   # modified_shank : xs2png()
+        pid=0  # modified_shank (to initialise) : earlier : blank
+	command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);quit()"]   # modified_shank : xs2png()
 	scilab_proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=False);
 	# Wait till xcos is launched
 	while len(out) == _l:
