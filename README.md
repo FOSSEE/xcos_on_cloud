@@ -24,6 +24,7 @@ An online demo can be found over here:
 
 ## Developers and Testers
 
+* Jayaprakash A, Indian Institute of Technology, Palakkad
 * Shashank Bhalotia, Shri Ramdeobaba College of Engineering and Management, Nagpur
 * Ritveeka Vashistha, IIT Guwahati, Guwahati
 * Dattatreya Sarma GVS, Lendi Institute of Engineering and Technology,JNTUK, Vizianagaram 
