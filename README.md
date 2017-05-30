@@ -6,10 +6,8 @@ The main aim of this project will be to port core functionalities of Xcos to a b
 ## Installation
 
 	 git clone https://github.com/FOSSEE/xcos-on-web
-
-	 git clone https://github.com/Hrily/scilab
 	
-	 cd scilab && chmod +x configure && ./configure && make
+	 Follow the steps given in the doc- "StepstocompileScilab-5.5.2.pdf"
 	
 	 cd ../xcos-on-web && python SendLog.py
 
@@ -26,6 +24,10 @@ An online demo can be found over here:
 
 ## Developers and Testers
 
+* Shashank Bhalotia, Shri Ramdeobaba College of Engineering and Management, Nagpur
+* Ritveeka Vashistha, IIT Guwahati, Guwahati
+* Dattatreya Sarma GVS, Lendi Institute of Engineering and Technology,JNTUK, Vizianagaram 
+* Shivendra Pratap Singh, Indian institute of Information Tecnology, Kalyani
 * Amit Kumar Yadav, Motilal Nehru National Institute of Technology, Allahabad
 * Chhavi Agarwal, National Institute of Technology, Kurukshetra
 * Hrishikesh Hiraskar, National Institute of Technology Karnataka, Surathkal
