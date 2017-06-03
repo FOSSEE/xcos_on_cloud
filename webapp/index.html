@@ -1566,10 +1566,10 @@
                     var w = document.body.clientWidth;
                     var h = (document.body.clientHeight || document.documentElement.clientHeight);
                     wnd = new mxWindow('Simulation', content, (w-600)/2, (h-400)/2, 600, 400, true, true);
-                    wnd.setMaximizable(false);
-                    wnd.setMinimizable(false);
-                    wnd.setScrollable(false);
-                    wnd.setResizable(false);
+                    wnd.setMaximizable(true);              // modified_shank : some were false
+                    wnd.setMinimizable(true);
+                    wnd.setScrollable(true);
+                    wnd.setResizable(true);
                     wnd.setClosable(true);
                     wnd.setVisible(true);
                     wnd.addListener(mxEvent.CLOSE, function(e){

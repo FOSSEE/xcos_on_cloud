@@ -8,9 +8,11 @@ var clientID;
 var interval;
 var isDone = false;
 
-var create_new_chart = function(id){
+var create_new_chart = function(id, no_of_graph){
 	// Function to create a new chart
-	$('#charts').append("<div id='chart-"+id.toString()+"'></div>");
+	$('#charts').append("<div id='chart-"+id.toString()+"' style = 'height:200px'></div>");
+        var height=(400/no_of_graph).toString()+ 'px';          // modified_shank : for calc. height 
+        $('#chart-'+id.toString()).css('height',height);    // modified_shank 
 	$('#chart-'+id.toString()).highcharts({
 		chart: {
 			type: 'line',
@@ -58,13 +60,13 @@ function chart_init(wnd){
 	eventSource = new EventSource("/SendLog?id="+clientID);
 	eventSource.addEventListener("log", function(event){
 		var data = event.data.split(' ');
-		var figure_id = parseInt(data[2]),
+		var figure_id = parseInt(data[4]),
 			line_id = parseInt(data[6]),
 			x  = parseFloat(data[8]),
 			y  = parseFloat(data[9]),
 			z  = parseFloat(data[10]);
 		if(chart_id_list.indexOf(figure_id)<0)
-			create_new_chart(figure_id);
+			create_new_chart(figure_id,data[11]);
 		var index = chart_id_list.indexOf(figure_id);
 		points_list[index].enqueue([line_id,x,y]);
 	}, false);
@@ -96,6 +98,7 @@ function chart_init(wnd){
 			// Get id and points queue
 			var figure_id = chart_id_list[i],
 				points = points_list[i];
+                       
 			// Get chart container	
 			var chart = $('#chart-'+figure_id.toString()).highcharts();
 			// Add points
