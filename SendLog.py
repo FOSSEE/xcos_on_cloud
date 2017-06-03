@@ -136,17 +136,19 @@ def event_stream(xcos_file_id):
 	# Define function to kill scilab(if still running) and remove files
 	def kill_scilab():
 		# Kill scilab by it's pid
-		subprocess.Popen(["kill","-9",pid])
+		subprocess.Popen(["kill","-9",pid])   
 		# Remove log file
-		subprocess.Popen(["rm",log_dir+log_name])
+		#subprocess.Popen(["rm",log_dir+log_name])      # modified_shank
 		# Remove xcos file
-		subprocess.Popen(["rm",xcos_file_dir+xcos_file_name])
+		#subprocess.Popen(["rm",xcos_file_dir+xcos_file_name])     # modified_shank
 	# Log file directory
 	# As the scilab process is spawned by this script
 	#    the log directory is same as that of this script
 	log_dir = "" 
-	# Log file name	
-	log_name = "scilab-log-"+pid+".txt"
+	# Log file name
+        log_name = "scilab-log-"+pid+".txt"
+	#log_name = "scilab-log-"+str(18726)+".txt"       # modified_shank : to test a particular log file
+        #log_file = open(log_dir + log_name, "r")
 	# Open the log file
 	log_file = open(log_dir + log_name, "w+")
 	# Kill scilab-adv-cli, if running and get it's output
@@ -163,8 +165,8 @@ def event_stream(xcos_file_id):
 		kill_scilab();
 		return
 	# Some other error
-	elif str(scilab_err) !="None":   # modified : earlier: len(scilab_out)>0 :was used
-		yield "event: ERROR\ndata: " + scilab_err + "\n\n"   # modified : earlier:  scilab_out
+	elif str(scilab_err) !="None":   # modified_shank : earlier: len(scilab_out)>0 :was used
+		yield "event: ERROR\ndata: " + scilab_err + "\n\n"   # modified_shank : earlier:  scilab_out
 		kill_scilab();
 		return
 	# Start sending log
