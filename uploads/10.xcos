@@ -4,7 +4,67 @@
         <root>
             <mxCell id="0"/>
             <mxCell id="1" parent="0"/>
-            <BasicBlock blockType="h" id="2" interfaceFunctionName="CLOCK_c" parent="1" simulationFunctionName="csuper" simulationFunctionType="DEFAULT" style="CLOCK_c">
+            <BasicBlock blockType="c" dependsOnU="1" id="37" interfaceFunctionName="CSCOPE" parent="1" simulationFunctionName="cscope" simulationFunctionType="C_OR_FORTRAN" style="CSCOPE">
+                <ScilabString as="exprs" height="10" width="1">
+                    <data column="0" line="0" value="1 3 5 7 9 11 13 15"/>
+                    <data column="0" line="1" value="-1"/>
+                    <data column="0" line="2" value="[]"/>
+                    <data column="0" line="3" value="[600;400]"/>
+                    <data column="0" line="4" value="-15"/>
+                    <data column="0" line="5" value="15"/>
+                    <data column="0" line="6" value="30"/>
+                    <data column="0" line="7" value="20"/>
+                    <data column="0" line="8" value="0"/>
+                    <data column="0" line="9" value=""/>
+                </ScilabString>
+                <ScilabDouble as="realParameters" height="4" width="1">
+                    <data column="0" line="0" realPart="0.0"/>
+                    <data column="0" line="1" realPart="-15.0"/>
+                    <data column="0" line="2" realPart="15.0"/>
+                    <data column="0" line="3" realPart="30.0"/>
+                </ScilabDouble>
+                <ScilabDouble as="integerParameters" height="15" width="1">
+                    <data column="0" line="0" realPart="-1.0"/>
+                    <data column="0" line="1" realPart="1.0"/>
+                    <data column="0" line="2" realPart="20.0"/>
+                    <data column="0" line="3" realPart="1.0"/>
+                    <data column="0" line="4" realPart="3.0"/>
+                    <data column="0" line="5" realPart="5.0"/>
+                    <data column="0" line="6" realPart="7.0"/>
+                    <data column="0" line="7" realPart="9.0"/>
+                    <data column="0" line="8" realPart="11.0"/>
+                    <data column="0" line="9" realPart="13.0"/>
+                    <data column="0" line="10" realPart="15.0"/>
+                    <data column="0" line="11" realPart="-1.0"/>
+                    <data column="0" line="12" realPart="-1.0"/>
+                    <data column="0" line="13" realPart="600.0"/>
+                    <data column="0" line="14" realPart="400.0"/>
+                </ScilabDouble>
+                <Array as="objectsParameters" scilabClass="ScilabList"/>
+                <ScilabDouble as="nbZerosCrossing" height="1" width="1">
+                    <data column="0" line="0" realPart="0.0"/>
+                </ScilabDouble>
+                <ScilabDouble as="nmode" height="1" width="1">
+                    <data column="0" line="0" realPart="0.0"/>
+                </ScilabDouble>
+                <Array as="oDState" scilabClass="ScilabList"/>
+                <Array as="equations" scilabClass="ScilabList"/>
+        
+                  <mxGeometry as="geometry" height="80" width="80" x="380" y="230"/>
+          
+        
+            </BasicBlock>
+            <ExplicitInputPort dataType="REAL_MATRIX" id="40" ordering="1" parent="37" style="ExplicitInputPort">
+                <mxGeometry as="geometry" height="10" relative="1" width="10" y="0.5000">
+                    <mxPoint as="offset" x="-10" y="-6"/>
+                </mxGeometry>
+            </ExplicitInputPort>
+            <ControlPort dataType="UNKNOW_TYPE" id="41" ordering="1" parent="37" style="ControlPort">
+                <mxGeometry as="geometry" height="10" relative="1" width="10" x="0.5000">
+                    <mxPoint as="offset" x="-6" y="-10"/>
+                </mxGeometry>
+            </ControlPort>
+            <BasicBlock blockType="h" id="38" interfaceFunctionName="CLOCK_c" parent="1" simulationFunctionName="csuper" simulationFunctionType="DEFAULT" style="CLOCK_c">
                 <ScilabDouble as="exprs" height="0" width="0"/>
                 <Array as="realParameters" scilabClass="ScilabMList">
                     <ScilabString height="1" width="5">
@@ -242,7 +302,7 @@
                                 </ScilabDouble>
                                 <Array scilabClass="ScilabList"/>
                                 <ScilabString height="1" width="1">
-                                    <data column="0" line="0" value="2"/>
+                                    <data column="0" line="0" value="11"/>
                                 </ScilabString>
                             </Array>
                             <ScilabString height="1" width="1">
@@ -250,7 +310,7 @@
                             </ScilabString>
                             <Array scilabClass="ScilabList">
                                 <ScilabString height="1" width="1">
-                                    <data column="0" line="0" value="2"/>
+                                    <data column="0" line="0" value="11"/>
                                 </ScilabString>
                             </Array>
                         </Array>
@@ -408,7 +468,7 @@
                                 </ScilabDouble>
                                 <Array scilabClass="ScilabList"/>
                                 <ScilabString height="1" width="1">
-                                    <data column="0" line="0" value="1"/>
+                                    <data column="0" line="0" value="10"/>
                                 </ScilabString>
                             </Array>
                             <ScilabString height="1" width="1">
@@ -416,7 +476,7 @@
                             </ScilabString>
                             <Array scilabClass="ScilabList">
                                 <ScilabString height="1" width="1">
-                                    <data column="0" line="0" value="1"/>
+                                    <data column="0" line="0" value="10"/>
                                 </ScilabString>
                             </Array>
                         </Array>
@@ -566,7 +626,7 @@
                                 </ScilabDouble>
                                 <Array scilabClass="ScilabList"/>
                                 <ScilabString height="1" width="1">
-                                    <data column="0" line="0" value="3"/>
+                                    <data column="0" line="0" value="12"/>
                                 </ScilabString>
                             </Array>
                             <ScilabString height="1" width="1">
@@ -574,7 +634,7 @@
                             </ScilabString>
                             <Array scilabClass="ScilabList">
                                 <ScilabString height="1" width="1">
-                                    <data column="0" line="0" value="3"/>
+                                    <data column="0" line="0" value="12"/>
                                 </ScilabString>
                             </Array>
                         </Array>
@@ -728,12 +788,12 @@
           
         
             </BasicBlock>
-            <CommandPort dataType="UNKNOW_TYPE" id="6" ordering="1" parent="2" style="CommandPort">
+            <CommandPort dataType="UNKNOW_TYPE" id="42" ordering="1" parent="38" style="CommandPort">
                 <mxGeometry as="geometry" height="10" relative="1" width="10" x="0.5000" y="1">
                     <mxPoint as="offset" x="-6"/>
                 </mxGeometry>
             </CommandPort>
-            <BasicBlock blockType="c" dependsOnT="1" id="3" interfaceFunctionName="GENSIN_f" parent="1" simulationFunctionName="gensin" simulationFunctionType="DEFAULT" style="GENSIN_f">
+            <BasicBlock blockType="c" dependsOnT="1" id="39" interfaceFunctionName="GENSIN_f" parent="1" simulationFunctionName="gensin" simulationFunctionType="DEFAULT" style="GENSIN_f">
                 <ScilabString as="exprs" height="3" width="1">
                     <data column="0" line="0" value="1"/>
                     <data column="0" line="1" value="1"/>
@@ -759,116 +819,45 @@
           
         
             </BasicBlock>
-            <ExplicitOutputPort dataType="REAL_MATRIX" id="7" ordering="1" parent="3" style="ExplicitOutputPort">
+            <ExplicitOutputPort dataType="REAL_MATRIX" id="43" ordering="1" parent="39" style="ExplicitOutputPort">
                 <mxGeometry as="geometry" height="10" relative="1" width="10" x="1" y="0.5000">
                     <mxPoint as="offset" y="-6"/>
                 </mxGeometry>
             </ExplicitOutputPort>
-            <BasicBlock blockType="c" dependsOnU="1" id="4" interfaceFunctionName="CMSCOPE" parent="1" simulationFunctionName="cmscope" simulationFunctionType="C_OR_FORTRAN" style="CMSCOPE">
-                <ScilabString as="exprs" height="11" width="1">
-                    <data column="0" line="0" value="1 1"/>
-                    <data column="0" line="1" value="1 3 5 7 9 11 13 15"/>
-                    <data column="0" line="2" value="-1"/>
-                    <data column="0" line="3" value="[]"/>
-                    <data column="0" line="4" value="[]"/>
-                    <data column="0" line="5" value="-1 -5"/>
-                    <data column="0" line="6" value="1 5"/>
-                    <data column="0" line="7" value="30 30"/>
-                    <data column="0" line="8" value="20"/>
-                    <data column="0" line="9" value="0"/>
-                    <data column="0" line="10" value=""/>
-                </ScilabString>
-                <ScilabDouble as="realParameters" height="7" width="1">
-                    <data column="0" line="0" realPart="0.0"/>
-                    <data column="0" line="1" realPart="30.0"/>
-                    <data column="0" line="2" realPart="30.0"/>
-                    <data column="0" line="3" realPart="-1.0"/>
-                    <data column="0" line="4" realPart="1.0"/>
-                    <data column="0" line="5" realPart="-5.0"/>
-                    <data column="0" line="6" realPart="5.0"/>
-                </ScilabDouble>
-                <ScilabDouble as="integerParameters" height="11" width="1">
-                    <data column="0" line="0" realPart="-1.0"/>
-                    <data column="0" line="1" realPart="2.0"/>
-                    <data column="0" line="2" realPart="20.0"/>
-                    <data column="0" line="3" realPart="-1.0"/>
-                    <data column="0" line="4" realPart="-1.0"/>
-                    <data column="0" line="5" realPart="-1.0"/>
-                    <data column="0" line="6" realPart="-1.0"/>
-                    <data column="0" line="7" realPart="1.0"/>
-                    <data column="0" line="8" realPart="1.0"/>
-                    <data column="0" line="9" realPart="1.0"/>
-                    <data column="0" line="10" realPart="3.0"/>
-                </ScilabDouble>
-                <Array as="objectsParameters" scilabClass="ScilabList"/>
-                <ScilabDouble as="nbZerosCrossing" height="1" width="1">
-                    <data column="0" line="0" realPart="0.0"/>
-                </ScilabDouble>
-                <ScilabDouble as="nmode" height="1" width="1">
-                    <data column="0" line="0" realPart="0.0"/>
-                </ScilabDouble>
-                <Array as="oDState" scilabClass="ScilabList"/>
-                <Array as="equations" scilabClass="ScilabList"/>
-        
-                  <mxGeometry as="geometry" height="80" width="80" x="310" y="190"/>
-          
-        
-            </BasicBlock>
-            <ExplicitInputPort dataType="REAL_MATRIX" id="8" ordering="1" parent="4" style="ExplicitInputPort">
-                <mxGeometry as="geometry" height="10" relative="1" width="10" y="0.3333">
-                    <mxPoint as="offset" x="-10" y="-6"/>
+            <ExplicitLink id="55" parent="1" source="43" target="40">
+                <mxGeometry as="geometry" relative="1">
+                    <Array>
+                        <mxPoint x="195" y="219"/>
+                        <mxPoint x="195" y="220.5"/>
+                        <mxPoint x="375" y="220.5"/>
+                        <mxPoint x="375" y="269"/>
+                    </Array>
                 </mxGeometry>
-            </ExplicitInputPort>
-            <ExplicitInputPort dataType="REAL_MATRIX" id="9" ordering="2" parent="4" style="ExplicitInputPort">
-                <mxGeometry as="geometry" height="10" relative="1" width="10" y="0.6667">
-                    <mxPoint as="offset" x="-10" y="-6"/>
+                <Array>
+                    <mxPoint x="195" y="219"/>
+                    <mxPoint x="195" y="220.5"/>
+                    <mxPoint x="375" y="220.5"/>
+                    <mxPoint x="375" y="269"/>
+                </Array>
+            </ExplicitLink>
+            <CommandControlLink id="62" parent="1" source="42" target="41">
+                <mxGeometry as="geometry" relative="1">
+                    <Array>
+                        <mxPoint x="349" y="145"/>
+                        <mxPoint x="419" y="145"/>
+                        <mxPoint x="419" y="160"/>
+                        <mxPoint x="419" y="160"/>
+                        <mxPoint x="419" y="225"/>
+                    </Array>
                 </mxGeometry>
-            </ExplicitInputPort>
-            <ControlPort dataType="UNKNOW_TYPE" id="10" ordering="1" parent="4" style="ControlPort">
-                <mxGeometry as="geometry" height="10" relative="1" width="10" x="0.5000">
-                    <mxPoint as="offset" x="-6" y="-10"/>
-                </mxGeometry>
-            </ControlPort>
-            <BasicBlock blockType="c" dependsOnT="1" id="5" interfaceFunctionName="GENSIN_f" parent="1" simulationFunctionName="gensin" simulationFunctionType="DEFAULT" style="GENSIN_f">
-                <ScilabString as="exprs" height="3" width="1">
-                    <data column="0" line="0" value="1"/>
-                    <data column="0" line="1" value="1"/>
-                    <data column="0" line="2" value="0"/>
-                </ScilabString>
-                <ScilabDouble as="realParameters" height="3" width="1">
-                    <data column="0" line="0" realPart="1.0"/>
-                    <data column="0" line="1" realPart="1.0"/>
-                    <data column="0" line="2" realPart="0.0"/>
-                </ScilabDouble>
-                <ScilabDouble as="integerParameters" height="0" width="0"/>
-                <Array as="objectsParameters" scilabClass="ScilabList"/>
-                <ScilabDouble as="nbZerosCrossing" height="1" width="1">
-                    <data column="0" line="0" realPart="0.0"/>
-                </ScilabDouble>
-                <ScilabDouble as="nmode" height="1" width="1">
-                    <data column="0" line="0" realPart="0.0"/>
-                </ScilabDouble>
-                <Array as="oDState" scilabClass="ScilabList"/>
-                <Array as="equations" scilabClass="ScilabList"/>
-        
-                  <mxGeometry as="geometry" height="80" width="80" x="160" y="230"/>
-          
-        
-            </BasicBlock>
-            <ExplicitOutputPort dataType="REAL_MATRIX" id="11" ordering="1" parent="5" style="ExplicitOutputPort">
-                <mxGeometry as="geometry" height="10" relative="1" width="10" x="1" y="0.5000">
-                    <mxPoint as="offset" y="-6"/>
-                </mxGeometry>
-            </ExplicitOutputPort>
-            <CommandControlLink id="12" parent="1" source="6" target="10">
-                <mxGeometry as="geometry" relative="1"/>
+                <Array>
+                    <mxPoint x="349" y="145"/>
+                    <mxPoint x="419" y="145"/>
+                    <mxPoint x="419" y="160"/>
+                    <mxPoint x="419" y="160"/>
+                    <mxPoint x="419" y="225"/>
+                </Array>
             </CommandControlLink>
-            <ExplicitLink id="13" parent="1" source="7" target="8">
-                <mxGeometry as="geometry" relative="1"/>
-            </ExplicitLink>
-            <ExplicitLink id="14" parent="1" source="11" target="9">
-                <mxGeometry as="geometry" relative="1"/>
-            </ExplicitLink>
         </root>
     </mxGraphModel>
   <mxCell id="1" parent="0" as="defaultParent"/>
