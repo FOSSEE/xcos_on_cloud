@@ -263,15 +263,17 @@ function ScilabBoolean() {
     }
 }
 
+//updated 8/6/17 --ritveeka
+//scilabdouble is an array as i found in many .xcos files of scilab-xcos, hence updating this function
 function ScilabDouble() {
     var i = 0,
         j = 0;
     if (arguments.length) {
         var array = arguments;
-        this.height = array.length;
-        this.width = array[0].length;
-        for (i = 0; i < this.height; i++) {
-            for (j = 0; j < this.width; j++) {
+        this.height = array[0].length;
+        this.width = array.length;
+        for (i = 0; i < this.width; i++) {
+            for (j = 0; j < this.height; j++) {
                 this["data" + i + j] = new data();
                 if(array[i][j] % 1 == 0) {
                     this["data" + i + j].realPart = parseFloat(array[i][j]).toFixed(1);
@@ -279,8 +281,8 @@ function ScilabDouble() {
                 else {
                     this["data" + i + j].realPart = array[i][j];
                 }
-                this["data" + i + j].line = i;
-                this["data" + i + j].column = j;
+                this["data" + i + j].column = i;
+                this["data" + i + j].line = j;
             }
         }
     }
