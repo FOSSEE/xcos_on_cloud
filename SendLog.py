@@ -33,11 +33,12 @@ INITIALIZATION = 0
 ENDING = 1
 DATA = 2
 NOLINE = -1
+BLOCK_IDENTIFICATION=-2
 # Scilab dir, can't run absolute paths
-#SCI = "../scilab/"
+SCI = "../scilab_for_xcos/"
 #SCI="../scilab-master/scilab/"
 #SCI="../scilab-master/"
-SCI="../scilab-master_5.5.2/"
+#SCI="../scilab-master_5.5.2/"
 # List to store figure IDs
 figure_list = []
 # List to store filenames of files
@@ -66,6 +67,10 @@ def parse_line(line):
 	#         ENDING if current fig end
 	#         DATA otherwise
 	line_words = line.split(' ')
+        #The below condition determines the block ID #modified@shivendra
+        if line_words[2] == "Block":
+                block_id=int(line_words[-1])
+                return (block_id, BLOCK_IDENTIFICATION)
 	if line_words[2] == "Initialization":
 		# New figure created
 		# Get fig id
@@ -96,6 +101,8 @@ def get_line_and_state(file):
 		# Add figure ID to list
 		figure_list.append(figure_id)
 		return (None, INITIALIZATION)
+        elif state == BLOCK_IDENTIFICATION:#check for block identification modified@shivendra
+                return (str(figure_id),BLOCK_IDENTIFICATION)
 	elif state == ENDING:
 		# End of figure
 		# Remove figure ID from list
@@ -141,6 +148,11 @@ def event_stream(xcos_file_id):
 		#subprocess.Popen(["rm",log_dir+log_name])      # modified_shank
 		# Remove xcos file
 		#subprocess.Popen(["rm",xcos_file_dir+xcos_file_name])     # modified_shank
+        #Sink Identification file  #modified@shivendra3
+        #File created to idenify the block
+        identify_block_name="identify_block_"+pid+".txt"
+        identify_block= open(identify_block_name, "w+")
+        
 	# Log file directory
 	# As the scilab process is spawned by this script
 	#    the log directory is same as that of this script
@@ -158,7 +170,11 @@ def event_stream(xcos_file_id):
 
         #print "error="+str(scilab_out)
         #print scilab_err;
-      
+        #identify block using file
+        identify_block= open(identify_block_name, "r")
+        block_value=identify_block.readline()
+        identify_block.close()
+        #yield "event: block\ndata: " + block_value + "\n\n"
 	# Check for empty diagram
 	if "Empty diagram" in scilab_out:
 		yield "event: ERROR\ndata: Empty diagram\n\n"
@@ -173,8 +189,11 @@ def event_stream(xcos_file_id):
 	line = line_and_state(None, NOLINE)
 	while (line.set(get_line_and_state(log_file)) or line.get_state() != ENDING or len(figure_list) > 0):
 		# Get the line and loop until the state is ENDING and figure_list empty
-		if line.get_state() != DATA:
-			gevent.sleep(LOOK_DELAY)
+                #Determine if we get block id and give it to chart.js #modified@shivendra
+		if line.get_state()== BLOCK_IDENTIFICATION:
+                        yield "event: block\ndata: "+line.get_line()+"\n\n"
+                elif line.get_state() != DATA:
+			gevent.sleep(LOOK_DELAY)      
 		else:
 			yield "event: log\ndata: "+line.get_line()+"\n\n"
 		# Reset line, so server won't send same line twice
