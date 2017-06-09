@@ -2,20 +2,21 @@ var chart_id_list = [];
 var points_list = [];
 var series_list = [];
 var INTERVAL = 10;
-var RANGE = 30;
+//var RANGE = 30;
+var RANGE = [];
 var eventSource;
 var clientID;
 var interval;
 var isDone = false;
 
-var create_new_chart = function(id, no_of_graph){
+var create_new_chart = function(id, no_of_graph,ymin,ymax){
 	// Function to create a new chart
 	$('#charts').append("<div id='chart-"+id.toString()+"' style = 'height:200px'></div>");
         var height=(400/no_of_graph).toString()+ 'px';          // modified_shank : for calc. height 
         $('#chart-'+id.toString()).css('height',height);    // modified_shank 
 	$('#chart-'+id.toString()).highcharts({
 		chart: {
-			type: 'line',
+			type: 'scatter',//'line' : modified_shank
 			animation: false
 		},
 		title : {
@@ -31,6 +32,8 @@ var create_new_chart = function(id, no_of_graph){
 			  title: {
 				 text: 'y'
 			  },
+                          min : ymin,
+                          max : ymax,
 			  plotLines: [{
 				 width: 1,
 				 color: '#808080'
@@ -38,8 +41,19 @@ var create_new_chart = function(id, no_of_graph){
 		   },
 		   plotOptions : {
 				marker: {
-					enabled: false,
-				}
+					enabled: false
+				},
+                                scatter: {
+            marker: {
+                radius: 1,
+                states: {
+                    hover: {
+                        enabled: true,
+                        lineColor: 'rgb(100,100,100)'
+                    }
+                }
+            }
+          }
 		   },
 		   legend : {
 			  enabled: false
@@ -73,8 +87,11 @@ function chart_init(wnd){
 			y  = parseFloat(data[9]),
 			z  = parseFloat(data[10]);
 		if(chart_id_list.indexOf(figure_id)<0)
-			create_new_chart(figure_id,data[11]);
-		var index = chart_id_list.indexOf(figure_id);
+		{
+                  create_new_chart(figure_id,data[11],data[12],data[13]); // modified_shank : added parameters for ymin, ymax : earlier : figure_id only
+                  RANGE[chart_id_list.indexOf(figure_id)]=data[14];
+		}
+                var index = chart_id_list.indexOf(figure_id);
 		points_list[index].enqueue([line_id,x,y]);
                }
 	}, false);
@@ -106,7 +123,7 @@ function chart_init(wnd){
 			// Get id and points queue
 			var figure_id = chart_id_list[i],
 				points = points_list[i];
-                       
+                       var index= chart_id_list.indexOf(figure_id)  // modified_shank 
 			// Get chart container	
 			var chart = $('#chart-'+figure_id.toString()).highcharts();
 			// Add points
@@ -129,12 +146,12 @@ function chart_init(wnd){
 				var series = chart.get(line_id.toString());
 				// If there are more points
 				// Remove old points
-				if(x>1.5*RANGE)
+				if(x>1.5*RANGE[index])
 					series.removePoint(0, false);
 				series.addPoint([x,y], false);
 			}
 			// Shift chart axis to display new values
-			if(x>RANGE) chart.xAxis[0].setExtremes(Math.floor(x-RANGE),Math.floor(x));
+			if(x>RANGE[index]) chart.xAxis[0].setExtremes(Math.floor(x-RANGE[index]),Math.floor(x));
 			// Draw the chart
 			chart.redraw();
 		}
