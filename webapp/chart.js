@@ -57,8 +57,15 @@ var create_new_chart = function(id, no_of_graph){
 function chart_init(wnd){
 	// Start listening to server
 	chart_reset();
+        var block;
 	eventSource = new EventSource("/SendLog?id="+clientID);
+        eventSource.addEventListener("block", function(event){
+        block=parseInt(event.data);
+        console.log(block);
+        },false); 
 	eventSource.addEventListener("log", function(event){
+                if(block<10)
+                {
 		var data = event.data.split(' ');
 		var figure_id = parseInt(data[4]),
 			line_id = parseInt(data[6]),
@@ -69,6 +76,7 @@ function chart_init(wnd){
 			create_new_chart(figure_id,data[11]);
 		var index = chart_id_list.indexOf(figure_id);
 		points_list[index].enqueue([line_id,x,y]);
+               }
 	}, false);
 	// Error	
 	eventSource.addEventListener("ERROR", function(event){
