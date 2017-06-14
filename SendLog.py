@@ -35,10 +35,10 @@ DATA = 2
 NOLINE = -1
 BLOCK_IDENTIFICATION=-2
 # Scilab dir, can't run absolute paths
-SCI = "../scilab_for_xcos/"
+#SCI = "../scilab_for_xcos/"
 #SCI="../scilab-master/scilab/"
 #SCI="../scilab-master/"
-#SCI="../scilab-master_5.5.2/"
+SCI="../scilab-master_5.5.2/"
 # List to store figure IDs
 figure_list = []
 # List to store filenames of files
@@ -83,7 +83,7 @@ def parse_line(line):
 		return (figure_id, ENDING)
 	else:
 		# Current figure coordinates
-		figure_id = int(line_words[2])
+		figure_id = int(line_words[3])
 		return (figure_id, DATA)
 		
 def get_line_and_state(file):
@@ -119,7 +119,7 @@ def event_stream(xcos_file_id):
 	xcos_file_dir = os.getcwd() + '/uploads/'
 	xcos_file_name = xcos_file_list[xcos_file_id]
 	# Get previously running scilab process IDs
-	proc = subprocess.Popen("pgrep scilab", stdout=subprocess.PIPE, shell=True)
+	proc = subprocess.Popen("pgrep scilab", stdout=subprocess.PIPE, shell=True)  # modified_shank : earlier : pgrep scilab
 	# out will contain output of command, the list of process IDs of scilab
 	(out, err) = proc.communicate()
 	_l = len(out)
@@ -134,24 +134,27 @@ def event_stream(xcos_file_id):
 		# Wait
 		gevent.sleep(LOOK_DELAY)
 		# Get process IDs of scilab instances
-		proc = subprocess.Popen("pgrep scilab", stdout=subprocess.PIPE, shell=True)
+		proc = subprocess.Popen("pgrep scilab", stdout=subprocess.PIPE, shell=True)  # modified_shank
 		# out will contain output of command, the list of process IDs of scilab
 		(out, err) = proc.communicate()	
 	# out will contain output of command, the list of process IDs of scilab
 	# Get the latest process ID of scilab
 	pid = out.split()[-1]
+        print out;
 	# Define function to kill scilab(if still running) and remove files
 	def kill_scilab():
 		# Kill scilab by it's pid
 		subprocess.Popen(["kill","-9",pid])   
 		# Remove log file
-		#subprocess.Popen(["rm",log_dir+log_name])      # modified_shank
+		subprocess.Popen(["rm",log_dir+log_name])      # modified_shank
 		# Remove xcos file
-		#subprocess.Popen(["rm",xcos_file_dir+xcos_file_name])     # modified_shank
+		subprocess.Popen(["rm",xcos_file_dir+xcos_file_name])     # modified_shank
+                # Remove identification_block file
+		#subprocess.Popen(["rm",log_dir+identify_block_name])      # modified_shank
         #Sink Identification file  #modified@shivendra3
         #File created to idenify the block
-        identify_block_name="identify_block_"+pid+".txt"
-        identify_block= open(identify_block_name, "w+")
+        #identify_block_name="identify_block_"+pid+".txt"
+        #identify_block= open(identify_block_name, "r")
         
 	# Log file directory
 	# As the scilab process is spawned by this script
@@ -159,21 +162,22 @@ def event_stream(xcos_file_id):
 	log_dir = "" 
 	# Log file name
         log_name = "scilab-log-"+pid+".txt"
-	#log_name = "scilab-log-"+str(18726)+".txt"       # modified_shank : to test a particular log file
+	#log_name = "scilab-log-"+str(7014)+".txt"       # modified_shank : to test a particular log file
         #log_file = open(log_dir + log_name, "r")
 	# Open the log file
-	log_file = open(log_dir + log_name, "w+")
+	#log_file = open(log_dir + log_name, "r")
 	# Kill scilab-adv-cli, if running and get it's output
 	# If the simulation is error free, no output is generated
 	scilab_proc.kill()
 	(scilab_out, scilab_err) = scilab_proc.communicate();
+        log_file = open(log_dir + log_name, "r")
 
         #print "error="+str(scilab_out)
         #print scilab_err;
         #identify block using file
-        identify_block= open(identify_block_name, "r")
-        block_value=identify_block.readline()
-        identify_block.close()
+        #identify_block= open(identify_block_name, "r")
+        #block_value=identify_block.readline()
+        #identify_block.close()
         #yield "event: block\ndata: " + block_value + "\n\n"
 	# Check for empty diagram
 	if "Empty diagram" in scilab_out:
