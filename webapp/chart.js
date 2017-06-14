@@ -9,24 +9,39 @@ var clientID;
 var interval;
 var isDone = false;
 
-var create_new_chart = function(id, no_of_graph,ymin,ymax){
+
+
+var create_new_chart = function(id, no_of_graph,ymin,ymax,xmin,xmax,type_chart,title_text){
 	// Function to create a new chart
+	xmin = parseFloat(xmin);
+	xmax = parseFloat(xmax);
+	ymin = parseFloat(ymin);
+	ymax = parseFloat(ymax);
+	
 	$('#charts').append("<div id='chart-"+id.toString()+"' style = 'height:200px'></div>");
-        var height=(400/no_of_graph).toString()+ 'px';          // modified_shank : for calc. height 
-        $('#chart-'+id.toString()).css('height',height);    // modified_shank 
+
+        if(no_of_graph == 1)
+        $('#chart-'+id.toString()).css('height','300px');    // modified_shank 
+
 	$('#chart-'+id.toString()).highcharts({
 		chart: {
-			type: 'scatter',//'line' : modified_shank
+			type: type_chart,// modified_shank
 			animation: false
 		},
 		title : {
-			  text: 'Figure '+id.toString()
+			  text: title_text
 		   },
 		   xAxis : {
 			   title: {
 				 text: 'x'
 			   },
-			   tickInterval: 2
+			   tickInterval: 2,
+			   startOnTick: true,
+        	   endOnTick: true,
+        	   showLastLabel: true,
+     		   min:xmin,
+     		   max:xmax
+
 		   },
 		   yAxis : {
 			  title: {
@@ -68,32 +83,149 @@ var create_new_chart = function(id, no_of_graph,ymin,ymax){
 	series_list.push([]);
 }
     
+// modified_shank
+var create_new_chart_3d = function(id, no_of_graph,ymin,ymax,xmin,xmax,zmin,zmax,type_chart,title_text){
+	// Function to create a new chart
+	xmin = parseFloat(xmin);
+	xmax = parseFloat(xmax);
+	ymin = parseFloat(ymin);
+	ymax = parseFloat(ymax);
+	zmin = parseFloat(zmin);
+	zmax = parseFloat(zmax);
+	
+	$('#charts').append("<div id='chart-"+id.toString()+"' style = 'height:200px'></div>");
+
+        if(no_of_graph == 1)
+        $('#chart-'+id.toString()).css('height','300px');    // modified_shank 
+
+	$('#chart-'+id.toString()).highcharts({
+		chart: {
+			type: type_chart,// modified_shank
+			animation: false,
+			options3d: {
+            enabled: true,
+            alpha: 10,
+            beta: 30,
+            depth: 250,
+            viewDistance: 5,
+            fitToPlot: false,
+            frame: {
+                bottom: { size: 1, color: 'rgba(0,0,0,0.02)' },
+                back: { size: 1, color: 'rgba(0,0,0,0.04)' },
+                side: { size: 1, color: 'rgba(0,0,0,0.06)' }
+            }
+        }
+		},
+		title : {
+			  text: title_text
+		   },
+		   xAxis : {
+			   title: {
+				 text: 'x'
+			   },
+			   tickInterval: 2,
+			   startOnTick: true,
+        	   endOnTick: true,
+        	   showLastLabel: true,
+     		   min:xmin,
+     		   max:xmax
+
+		   },
+		   yAxis : {
+			  title: {
+				 text: 'y'
+			  },
+                          min : ymin,
+                          max : ymax,
+			  plotLines: [{
+				 width: 1,
+				 color: '#808080'
+			  }]
+		   },
+		    zAxis: {
+             min: zmin,
+     	     max: zmax,
+     	     showFirstLabel: false
+           },
+		   plotOptions : {
+				scatter: {
+            width: 10,
+            height: 10,
+            depth: 10
+       		 }
+		   },
+		   legend : {
+			  enabled: false
+		   },
+		   exporting : {
+			  enabled: false
+		   },
+		   series : []
+	});
+	chart_id_list.push(id);
+	points_list.push(new Queue());
+	series_list.push([]);
+}
+//
+
+
 function chart_init(wnd){
 	// Start listening to server
 	chart_reset();
-        var block;
+    var block;
 	eventSource = new EventSource("/SendLog?id="+clientID);
-        eventSource.addEventListener("block", function(event){
+    eventSource.addEventListener("block", function(event){
         block=parseInt(event.data);
         console.log(block);
         },false); 
 	eventSource.addEventListener("log", function(event){
-                if(block<10)
-                {
-		var data = event.data.split(' ');
-		var figure_id = parseInt(data[4]),
-			line_id = parseInt(data[6]),
-			x  = parseFloat(data[8]),
-			y  = parseFloat(data[9]),
-			z  = parseFloat(data[10]);
+
+       var data = event.data.split(' ');
+       block = parseInt(data[0]);
+       if(block<5)
+       {
+		
+		var figure_id = parseInt(data[5]),
+			line_id = parseInt(data[7]),
+			x  = parseFloat(data[9]),
+			y  = parseFloat(data[10]),
+			z  = parseFloat(data[11]);
 		if(chart_id_list.indexOf(figure_id)<0)
 		{
-                  create_new_chart(figure_id,data[11],data[12],data[13]); // modified_shank : added parameters for ymin, ymax : earlier : figure_id only
-                  RANGE[chart_id_list.indexOf(figure_id)]=data[14];
-		}
+			var c_type = 'line';
+
+             if(block == 4)
+             {
+             		c_type = 'scatter';// modified_shank
+             		create_new_chart(figure_id,data[12],data[15],data[16],data[13],data[14],c_type,data[17]+'-'+data[3]);
+             }
+			 else{
+			 	    
+			        create_new_chart(figure_id,data[12],data[13],data[14],0,data[15],c_type,data[16]+'-'+data[3]); // modified_shank : added parameters : earlier : figure_id only
+			 }
+			 
+            RANGE[chart_id_list.indexOf(figure_id)]=parseFloat(data[15]);
+		}       
                 var index = chart_id_list.indexOf(figure_id);
-		points_list[index].enqueue([line_id,x,y]);
+				points_list[index].enqueue([line_id,x,y]);
+
                }
+
+
+               else if(block == 5){
+
+
+
+
+               }
+
+// modified_shank
+
+
+
+//
+
+
 	}, false);
 	// Error	
 	eventSource.addEventListener("ERROR", function(event){
@@ -113,12 +245,14 @@ function chart_init(wnd){
 
                 console.log("Done");
 
-                 setTimeout(function(){window.open("imgshow.html","ResultDisplay","location=no, menubar=no, toolbar=no, width=640, height=540, scrollbars=no"); }, 1000); // modified_shank : made imgshow.html file
+                 //setTimeout(function(){window.open("imgshow.html","ResultDisplay","location=no, menubar=no, toolbar=no, width=640, height=540, scrollbars=no"); }, 1000); // modified_shank : made imgshow.html file
 		isDone = true;
 	}, false);
 	
 	interval = setInterval(function(){
-		for(var i=0;i<chart_id_list.length;i++){
+		if(block < 5)
+		{
+		 for(var i=0;i<chart_id_list.length;i++){
 			// For each chart
 			// Get id and points queue
 			var figure_id = chart_id_list[i],
@@ -151,10 +285,14 @@ function chart_init(wnd){
 				series.addPoint([x,y], false);
 			}
 			// Shift chart axis to display new values
-			if(x>RANGE[index]) chart.xAxis[0].setExtremes(Math.floor(x-RANGE[index]),Math.floor(x));
+			if(block < 4)
+			{
+			 if(x>(RANGE[index]-1.0)) chart.xAxis[0].setExtremes(Math.floor(x-(RANGE[index]-1.0)),Math.floor(x+1.0)); // modified_shank : for proper x-axis in chart
+			}
 			// Draw the chart
 			chart.redraw();
 		}
+	}
 	}, INTERVAL);
 }
 
