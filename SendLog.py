@@ -7,7 +7,7 @@ import os
 import threading
 from gevent import monkey
 from gevent.pywsgi import WSGIServer
-from flask import Flask, request, Response, render_template, send_from_directory
+from flask import Flask, request, Response, render_template, send_from_directory ,send_file#modeified@shivendra send_file added to ease download
 from werkzeug import secure_filename
 #import webbrowser #modifiedm@shivendra for displaying image saved
 #from random import randint # modified_shank : to generate random image names
