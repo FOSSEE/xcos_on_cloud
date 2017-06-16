@@ -180,7 +180,7 @@ function chart_init(wnd){
          {
             console.log(data[2]);
             var form = new FormData()
-            form.append('path',data[4]);
+            form.append('path',data[5]);
             var xhr = new XMLHttpRequest();
             xhr.responseType = 'blob';
             xhr.open("POST", "/downloadfile", true);
