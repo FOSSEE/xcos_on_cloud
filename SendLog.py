@@ -208,6 +208,12 @@ def event_stream(xcos_file_id):
 	# Notify Client
 	yield "event: DONE\ndata: None\n\n"
 
+#added a route for download of file ex binary #modified@shivendra
+@app.route('/downloadfile',methods=['POST'])
+def DownloadFile ():
+        filename =os.getcwd()+'/'+request.form['path']
+        return send_file(filename, as_attachment=True,mimetype='application/octet-stream')
+
 # Route that will process the file upload
 @app.route('/upload', methods=['POST'])
 def upload():
