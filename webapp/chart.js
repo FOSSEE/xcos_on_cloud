@@ -175,6 +175,27 @@ function chart_init(wnd){
 
        var data = event.data.split(' ');
        block = parseInt(data[0]);
+       //modified@shivendra for handling writec_f and writeau_f
+        if(block==21||block==22)
+         {
+            console.log(data[2]);
+            var form = new FormData()
+            form.append('path',data[4]);
+            var xhr = new XMLHttpRequest();
+            xhr.responseType = 'blob';
+            xhr.open("POST", "/downloadfile", true);
+            xhr.onload = function() {
+            if(this.status==200)
+            {
+              var blob=this.response;
+              console.log("check");
+              var url  = window.URL.createObjectURL(blob);
+              window.location.assign(url)
+             }
+             };
+             xhr.send(form);
+               
+          }
        if(block<5)
        {
 		
