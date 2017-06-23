@@ -206,7 +206,7 @@ def event_stream(xcos_file_id):
 @app.route('/downloadfile',methods=['POST'])
 def DownloadFile ():
         filename =os.getcwd()+'/'+request.form['path']
-return send_file(filename, as_attachment=True,mimetype='application/octet-stream')
+	return send_file(filename, as_attachment=True,mimetype='application/octet-stream')
 
 # Route that will process the file upload
 @app.route('/upload', methods=['POST'])
