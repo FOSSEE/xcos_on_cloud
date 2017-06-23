@@ -38,6 +38,15 @@ function setup() {
         };
         return defaultProperties;
     } else if (arguments[0] == "set") {
+        
+        for(var prop in arguments[1]){
+            // Eliminate null values
+            if(arguments[1][prop] == null || arguments[1][prop].length == 0)
+                arguments[1][prop]=0.1; 
+            // Convert parameters from String to float                          
+            arguments[1][prop]=parseFloat(arguments[1][prop]);    
+        }
+        
         var properties = arguments[1];
         for (key in properties) {
             window[key] = properties[key];
@@ -52,6 +61,15 @@ function handleContext() {
     if (arguments[0] == "get") {
         return expressionArray;
     } else if (arguments[0] == "set") {
+        
+        for(var prop in arguments[1]){
+            // Eliminate null values
+            if(arguments[1][prop] == null || arguments[1][prop].length == 0)
+                arguments[1][prop]=0.1; 
+            // Convert parameters from String to float                          
+            arguments[1][prop]=parseFloat(arguments[1][prop]);    
+        }
+        
         expressionArray = arguments[1];
     }
 }

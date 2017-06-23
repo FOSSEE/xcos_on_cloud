@@ -10,7 +10,6 @@ from gevent.pywsgi import WSGIServer
 from flask import Flask, request, Response, render_template, send_from_directory ,send_file#modeified@shivendra send_file added to ease download
 from werkzeug import secure_filename
 #import webbrowser #modifiedm@shivendra for displaying image saved
-#from random import randint # modified_shank : to generate random image names
 
 monkey.patch_all(aggressive=False)
 
@@ -112,6 +111,7 @@ def get_line_and_state(file):
 
 def event_stream(xcos_file_id):
 	global figure_list
+        global kill_scilab
 	# If no id is sent, return
 	if(len(xcos_file_id)==0):
 		return
@@ -119,14 +119,16 @@ def event_stream(xcos_file_id):
 	xcos_file_dir = os.getcwd() + '/uploads/'
 	xcos_file_name = xcos_file_list[xcos_file_id]
 	# Get previously running scilab process IDs
-	proc = subprocess.Popen("pgrep scilab", stdout=subprocess.PIPE, shell=True)  # modified_shank : earlier : pgrep scilab
+	proc = subprocess.Popen("pgrep scilab", stdout=subprocess.PIPE, shell=True)
 	# out will contain output of command, the list of process IDs of scilab
 	(out, err) = proc.communicate()
 	_l = len(out)
+	#initialise pid
+	pid = 0
 	# Run xcos file
-        pid=0  # modified_shank (to initialise) : earlier : blank
-	command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);quit()"]   # modified_shank : xs2png()
+	command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);quit()"]
 	scilab_proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=False);
+
 	# Wait till xcos is launched
 	while len(out) == _l:
 		# If length of out equals _l, 
@@ -134,23 +136,25 @@ def event_stream(xcos_file_id):
 		# Wait
 		gevent.sleep(LOOK_DELAY)
 		# Get process IDs of scilab instances
-		proc = subprocess.Popen("pgrep scilab", stdout=subprocess.PIPE, shell=True)  # modified_shank
+		proc = subprocess.Popen("pgrep scilab", stdout=subprocess.PIPE, shell=True)
 		# out will contain output of command, the list of process IDs of scilab
 		(out, err) = proc.communicate()	
+
 	# out will contain output of command, the list of process IDs of scilab
 	# Get the latest process ID of scilab
 	pid = out.split()[-1]
-        print out;
+        #print pid;
+
 	# Define function to kill scilab(if still running) and remove files
 	def kill_scilab():
 		# Kill scilab by it's pid
-		subprocess.Popen(["kill","-9",pid])   
+		subprocess.Popen(["kill", "-9", pid])   
 		# Remove log file
-		subprocess.Popen(["rm",log_dir+log_name])      # modified_shank
+		subprocess.Popen(["rm", "-f", log_dir+log_name], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
 		# Remove xcos file
-		subprocess.Popen(["rm",xcos_file_dir+xcos_file_name])     # modified_shank
-                # Remove identification_block file
-		#subprocess.Popen(["rm",log_dir+identify_block_name])      # modified_shank
+		subprocess.Popen(["rm", "-f", xcos_file_dir+xcos_file_name], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False) 
+		scilab_proc.kill()
+                
         #Sink Identification file  #modified@shivendra3
         #File created to idenify the block
         #identify_block_name="identify_block_"+pid+".txt"
@@ -162,33 +166,23 @@ def event_stream(xcos_file_id):
 	log_dir = "" 
 	# Log file name
         log_name = "scilab-log-"+pid+".txt"
-	#log_name = "scilab-log-"+str(7275)+".txt"       # modified_shank : to test a particular log file
-        #log_file = open(log_dir + log_name, "r")
+
+	#log_name = "scilab-log-"+str(7275)+".txt"       # to test a particular log file
+
+	# wait for a specified time for scilab to start properly 
+	time.sleep(10)
+	#print "sleep over"
+
 	# Open the log file
-	#log_file = open(log_dir + log_name, "r")
-	# Kill scilab-adv-cli, if running and get it's output
-	# If the simulation is error free, no output is generated
-	scilab_proc.kill()
-	(scilab_out, scilab_err) = scilab_proc.communicate();
         log_file = open(log_dir + log_name, "r")
 
-        #print "error="+str(scilab_out)
-        #print scilab_err;
         #identify block using file
         #identify_block= open(identify_block_name, "r")
         #block_value=identify_block.readline()
         #identify_block.close()
         #yield "event: block\ndata: " + block_value + "\n\n"
 	# Check for empty diagram
-	if "Empty diagram" in scilab_out:
-		yield "event: ERROR\ndata: Empty diagram\n\n"
-		kill_scilab();
-		return
-	# Some other error
-	elif str(scilab_err) !="None":   # modified_shank : earlier: len(scilab_out)>0 :was used
-		yield "event: ERROR\ndata: " + scilab_err + "\n\n"   # modified_shank : earlier:  scilab_out
-		kill_scilab();
-		return
+	
 	# Start sending log
 	line = line_and_state(None, NOLINE)
 	while (line.set(get_line_and_state(log_file)) or line.get_state() != ENDING or len(figure_list) > 0):
@@ -212,7 +206,7 @@ def event_stream(xcos_file_id):
 @app.route('/downloadfile',methods=['POST'])
 def DownloadFile ():
         filename =os.getcwd()+'/'+request.form['path']
-        return send_file(filename, as_attachment=True,mimetype='application/octet-stream')
+return send_file(filename, as_attachment=True,mimetype='application/octet-stream')
 
 # Route that will process the file upload
 @app.route('/upload', methods=['POST'])
@@ -244,6 +238,13 @@ def static_file(path):
 @app.route('/')
 def page():
 	return app.send_static_file('index.html')
+
+# route to kill scilab on closing of chart
+@app.route('/stop')
+def stop():
+	kill_scilab()
+	return "done"
+
 
 if __name__ == '__main__':
 	# Set server address 127.0.0.1:8001/
