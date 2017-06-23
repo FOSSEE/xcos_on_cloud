@@ -234,7 +234,7 @@ function chart_init(wnd){
 				// if sink block is CSCOPXY 
 				if(block == 4)
 				{
-             		c_type = 'scatter';
+             		chart_type = 'scatter';
              		create_new_chart(figure_id,data[12],data[15],data[16],data[13],data[14],chart_type,data[17]+'-'+data[3]);
              		RANGE[chart_id_list.indexOf(figure_id)]=parseFloat(data[14]);
              	}
@@ -362,8 +362,8 @@ function chart_init(wnd){
 					series_list[i].push(line_id);
 
 					// for CSCOPXY-3D chart, add line to the scatter points
-					if(block == 5)
-					{
+					if(block == 5){
+
 						chart.addSeries({
 							id : line_id.toString(),
 							lineWidth: 2,
