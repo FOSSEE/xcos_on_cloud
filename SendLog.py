@@ -165,9 +165,9 @@ def event_stream(xcos_file_id):
 	#    the log directory is same as that of this script
 	log_dir = "" 
 	# Log file name
-        log_name = "scilab-log-"+pid+".txt"
+        #log_name = "scilab-log-"+pid+".txt"
 
-	#log_name = "scilab-log-"+str(7275)+".txt"       # to test a particular log file
+	log_name = "scilab-log-"+str(7275)+".txt"       # to test a particular log file
 
 	# wait for a specified time for scilab to start properly 
 	time.sleep(10)
