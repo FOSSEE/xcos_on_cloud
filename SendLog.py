@@ -294,5 +294,5 @@ def stop():
 
 if __name__ == '__main__':
 	# Set server address 127.0.0.1:8001/
-	http_server = WSGIServer(('127.0.0.1', 8002), app)
+	http_server = WSGIServer(('127.0.0.1', 8001), app)
 	http_server.serve_forever()
