@@ -1,6 +1,3 @@
-## Hrishi Hiraskar
-## 23 October 2016
-
 import gevent
 import time
 import os
@@ -13,7 +10,7 @@ from werkzeug import secure_filename
 
 monkey.patch_all(aggressive=False)
 
-import subprocess
+import subprocess32 as subprocess
 
 app = Flask(__name__, static_folder='webapp/')
 
@@ -127,7 +124,7 @@ def event_stream(xcos_file_id):
 	pid = 0
 	# Run xcos file
 	command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);quit()"]
-	scilab_proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=False);
+	scilab_proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False);
 
 	# Wait till xcos is launched
 	while len(out) == _l:
@@ -169,39 +166,88 @@ def event_stream(xcos_file_id):
 
 	#log_name = "scilab-log-"+str(7275)+".txt"       # to test a particular log file
 
-	# wait for a specified time for scilab to start properly 
-	time.sleep(10)
-	#print "sleep over"
+	# Initialise output and error variables for subprocess
+	scilab_out = ""
+	scilab_err = ""
+	try:
+		# For process taking less than 10 seconds
+		scilab_out, scilab_err = scilab_proc.communicate(timeout=10)
+		# Check for errors in Scilab  modified_shank
+		if "Empty diagram" in scilab_out:
+			yield "event: ERROR\ndata: Empty diagram\n\n"
+			kill_scilab()
+			return
+		# Open the log file
+		log_file = open(log_dir + log_name, "r")
 
-	# Open the log file
-        log_file = open(log_dir + log_name, "r")
-
-        #identify block using file
-        #identify_block= open(identify_block_name, "r")
-        #block_value=identify_block.readline()
-        #identify_block.close()
-        #yield "event: block\ndata: " + block_value + "\n\n"
-	# Check for empty diagram
+		#identify block using file
+		#identify_block= open(identify_block_name, "r")
+		#block_value=identify_block.readline()
+		#identify_block.close()
+		#yield "event: block\ndata: " + block_value + "\n\n"
+		# Check for empty diagram
 	
-	# Start sending log
-	line = line_and_state(None, NOLINE)
-	while (line.set(get_line_and_state(log_file)) or line.get_state() != ENDING or len(figure_list) > 0):
-		# Get the line and loop until the state is ENDING and figure_list empty
-                #Determine if we get block id and give it to chart.js #modified@shivendra
-		if line.get_state()== BLOCK_IDENTIFICATION:
-                        yield "event: block\ndata: "+line.get_line()+"\n\n"
-                elif line.get_state() != DATA:
-			gevent.sleep(LOOK_DELAY)      
-		else:
-			yield "event: log\ndata: "+line.get_line()+"\n\n"
-		# Reset line, so server won't send same line twice
+		# Start sending log
 		line = line_and_state(None, NOLINE)
-        #webbrowser.open_new_tab("images/img_test.png")#modified@shivendra this displays saved image in a new window
-	# Finished Sending Log
-	kill_scilab()
-	# Notify Client
-	yield "event: DONE\ndata: None\n\n"
+		while (line.set(get_line_and_state(log_file)) or line.get_state() != ENDING or len(figure_list) > 0):
+			# Get the line and loop until the state is ENDING and figure_list empty
+		        #Determine if we get block id and give it to chart.js #modified@shivendra
+			if line.get_state()== BLOCK_IDENTIFICATION:
+		                yield "event: block\ndata: "+line.get_line()+"\n\n"
+		        elif line.get_state() != DATA:
+				gevent.sleep(LOOK_DELAY)      
+			else:
+				yield "event: log\ndata: "+line.get_line()+"\n\n"
+			# Reset line, so server won't send same line twice
+			line = line_and_state(None, NOLINE)
+		#webbrowser.open_new_tab("images/img_test.png")#modified@shivendra this displays saved image in a new window
+		# Finished Sending Log
+		kill_scilab()
+		# Notify Client
+		yield "event: DONE\ndata: None\n\n"
 
+	# For processes taking more than 10 seconds
+	except subprocess.TimeoutExpired:
+	    	# Check for errors in Scilab  modified_shank
+		if "Empty diagram" in scilab_out:
+			yield "event: ERROR\ndata: Empty diagram\n\n"
+			kill_scilab()
+			return
+ 
+
+		# Open the log file
+		log_file = open(log_dir + log_name, "r")
+
+		#identify block using file
+		#identify_block= open(identify_block_name, "r")
+		#block_value=identify_block.readline()
+		#identify_block.close()
+		#yield "event: block\ndata: " + block_value + "\n\n"
+		# Check for empty diagram
+	
+		# Start sending log
+		line = line_and_state(None, NOLINE)
+		while (line.set(get_line_and_state(log_file)) or line.get_state() != ENDING or len(figure_list) > 0):
+			# Get the line and loop until the state is ENDING and figure_list empty
+		        #Determine if we get block id and give it to chart.js #modified@shivendra
+			if line.get_state()== BLOCK_IDENTIFICATION:
+		                yield "event: block\ndata: "+line.get_line()+"\n\n"
+		        elif line.get_state() != DATA:
+				gevent.sleep(LOOK_DELAY)      
+			else:
+				yield "event: log\ndata: "+line.get_line()+"\n\n"
+			# Reset line, so server won't send same line twice
+			line = line_and_state(None, NOLINE)
+		#webbrowser.open_new_tab("images/img_test.png")#modified@shivendra this displays saved image in a new window
+		# Finished Sending Log
+		kill_scilab()
+		# Notify Client
+		yield "event: DONE\ndata: None\n\n"
+
+
+
+
+	
 #added a route for download of file ex binary #modified@shivendra
 @app.route('/downloadfile',methods=['POST'])
 def DownloadFile ():
@@ -248,5 +294,5 @@ def stop():
 
 if __name__ == '__main__':
 	# Set server address 127.0.0.1:8001/
-	http_server = WSGIServer(('127.0.0.1', 8001), app)
+	http_server = WSGIServer(('127.0.0.1', 8002), app)
 	http_server.serve_forever()
