@@ -11,6 +11,9 @@ from werkzeug import secure_filename
 monkey.patch_all(aggressive=False)
 
 import subprocess32 as subprocess
+# subprocess32 is a backport of the Python 3 subprocess module for use on Python 2
+# It provides the timeout facility in subprocesses, not available in the subprocess module of Python 2 
+
 
 app = Flask(__name__, static_folder='webapp/')
 
@@ -169,8 +172,9 @@ def event_stream(xcos_file_id):
 	# Initialise output and error variables for subprocess
 	scilab_out = ""
 	scilab_err = ""
+
 	try:
-		# For process taking less than 10 seconds
+		# For processes taking less than 10 seconds
 		scilab_out, scilab_err = scilab_proc.communicate(timeout=10)
 		# Check for errors in Scilab  modified_shank
 		if "Empty diagram" in scilab_out:
