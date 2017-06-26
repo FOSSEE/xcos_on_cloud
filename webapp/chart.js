@@ -260,7 +260,7 @@ function chart_init(wnd){
 			var figure_id = parseInt(data[5]),
 			line_id = parseInt(data[7]),
 			x  = parseFloat(data[9]),
-			z  = parseFloat(data[10]), // y-z interchanged for 3d
+			z  = parseFloat(data[10]), // y-z interchanged for view
 			y  = parseFloat(data[11]);
 			if(chart_id_list.indexOf(figure_id)<0)
 			{
