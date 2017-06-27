@@ -12,8 +12,10 @@ import threading
 from gevent import monkey
 import fileinput
 from gevent.pywsgi import WSGIServer
-from flask import Flask, request, Response, render_template, send_from_directory
+from flask import Flask, request, Response, render_template, send_from_directory ,send_file#modeified@shivendra send_file added to ease download
 from werkzeug import secure_filename
+import uuid #to get identifier for each session #modified@shivendra
+from os.path import exists #to check if a file exists #modified@shivendra
 #import webbrowser #modifiedm@shivendra for displaying image saved
 #from random import randint # modified_shank : to generate random image names
 
@@ -140,7 +142,12 @@ def event_stream(xcos_file_id):
     _l = len(out)
     # Run xcos file
     pid=0  # modified_shank (to initialise) : earlier : blank
-    command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);quit()"]   # modified_shank : xs2png()
+    #id to identify each session for saving workspace #modified@shivendra
+    session=Details.uid
+    workspace="workspace"+session+".dat"
+    command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "load('"+workspace+"');loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);save('"+workspace+"');quit()"] #modified@shivendra:"load('"+workspace+"'),save('"+workspace+"')
+    if(not exists(workspace)):
+        command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);save('"+workspace+"');quit()"]   # modified_shank : xs2png()
     scilab_proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=False);
     # Wait till xcos is launched
     while len(out) == _l:
