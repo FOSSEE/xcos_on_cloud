@@ -1,0 +1,129 @@
+<!DOCTYPE html> 
+<html>
+<head>
+  <meta charset="UTF-8">
+ 
+  <link rel="stylesheet" href=css/normalize.min.css'>
+
+<link rel='stylesheet prefetch' href='css/rangeslider.css'>
+
+      <link rel="stylesheet" href="css/style.css">
+
+  
+</head>
+
+<body>
+  
+<div id="ranger" class="rangeslider--horizontal"</div>
+  <script src='js/jquery.min.js'></script>
+<script src='js/rangeslider.min.js'></script>
+
+<p id="curVal"></p>
+
+<script>
+
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+var minimum= getParameterByName('min');
+var maximum=getParameterByName('max');
+var num =getParameterByName('num');
+var tag =getParameterByName('tag');
+var $ruler = $('<div class="rangeslider__ruler" />');
+var valueBubble = '<output class="rangeslider__value-bubble" />';
+document.title = "TKSCALE-"+num;
+$('#ranger').append("<input class='range-slider__range' type='range' step='0.001' min= " + minimum + " max=" + maximum + ">"+'<span class="range-slider__value"></span>');
+var $element = $('input[type="range"]');
+
+function updateValueBubble(pos, value, context) {
+  pos = pos || context.position;
+  value = value || context.value;
+  var $valueBubble = $('.rangeslider__value-bubble', context.$range);
+  var tempPosition = pos + context.grabPos;
+  var position = (tempPosition <= context.handleDimension) ? context.handleDimension : (tempPosition >= context.maxHandlePos) ? context.maxHandlePos : tempPosition;
+  document.getElementById('curVal').value=value;
+  GetSliderValue();	
+  //console.log(curVal.value);
+  if ($valueBubble.length) {
+    $valueBubble[0].style.left = Math.ceil(position) + 'px';
+    $valueBubble[0].innerHTML = value;
+  }
+}
+
+
+
+$element
+  .rangeslider({
+    polyfill: false,
+    onInit: function() {
+          $ruler[0].innerHTML = getRulerRange(this.min, this.max, this.step);
+    this.$range.append($ruler);
+	this.$range.append($(valueBubble));
+    updateValueBubble(null, null, this);
+   //   $handle = $('.rangeslider__handle', this.$range);
+      //updateHandle($handle[0], this.value);
+    },
+	onSlide: function(pos, value) {
+	
+	//console.log(curVal.value);
+    updateValueBubble(pos, value, this);
+  }
+  });
+ 
+  /*.on('input', function(e) {
+    //updateHandle($handle[0], this.value);
+
+  });*/
+
+function updateHandle(el, val) {
+  el.textContent = val;
+  //console.log(val);
+}
+function getRulerRange(min, max, step) {
+  var range = '';
+  var i = min;
+  var w=((max-min)/4);
+  while (i <= max) {
+    range += i + ' ';
+    i = i + w;
+  }
+  return range;
+}
+	
+function GetSliderValue()
+{
+	
+	var n = document.getElementById("curVal").value;
+	var check=1,exp=0;
+    	if(n<0)
+    	{
+    		n=n*-1;
+        	check=-1;
+    	}
+    	while(!(0<=n && n<1))
+    	{
+    
+    		n=n/10; exp++;
+    	}
+    	n=n*check;
+    	n = n.toFixed(3);
+    	var format = ("0" + exp).slice(-2);
+    	n=n+"E"+"+"+format;
+	
+	var val1 = window.opener.document.getElementById(tag);
+        val1.innerHTML = n;
+	//console.log(n);
+
+	var val2 = window.opener.document.getElementById('tkchange');
+	val2.innerHTML=-10000;
+}
+ 
+</script>
+</body>
+</html>
