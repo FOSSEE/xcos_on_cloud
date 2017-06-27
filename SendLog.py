@@ -6,6 +6,8 @@ from gevent import monkey
 from gevent.pywsgi import WSGIServer
 from flask import Flask, request, Response, render_template, send_from_directory ,send_file#modeified@shivendra send_file added to ease download
 from werkzeug import secure_filename
+import uuid #to get identifier for each session #modified@shivendra
+from os.path import exists #to check if a file exists #modified@shivendra
 #import webbrowser #modifiedm@shivendra for displaying image saved
 
 monkey.patch_all(aggressive=False)
@@ -247,10 +249,14 @@ def event_stream(xcos_file_id):
 		kill_scilab()
 		# Notify Client
 		yield "event: DONE\ndata: None\n\n"
-
-
-
-
+# class used to get the user_id and the boolean value is to make run a thread
+class Details:
+    import uuid
+    my_id = uuid.uuid1()    
+    uid = str(my_id)
+    tkbool = True
+    print("user_id:"+uid)
+    count = 0
 	
 #added a route for download of file ex binary #modified@shivendra
 @app.route('/downloadfile',methods=['POST'])
