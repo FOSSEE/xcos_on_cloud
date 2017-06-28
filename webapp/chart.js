@@ -42,8 +42,12 @@ var create_new_chart = function(id, no_of_graph,ymin,ymax,xmin,xmax,type_chart,t
 		// disable line by putting thickness as 0
 		thickness = 0
 	}
+        else if(title_text.substring(0,7)=="CANIMXY"){
+                 //disable line by putting thickness as 0
+                 console.log("check");
+                 thickness= 0
 
-
+        }
 	
 	$('#charts').append("<div id='chart-"+id.toString()+"' style = 'height:200px;width:100%'></div>");
 
@@ -226,7 +230,8 @@ function chart_init(wnd){
 	var block;
 	// define buffer for CANIMXY3D
 	var buffer;
-
+        // buffer for CANIMXY
+        var buffer_canimxy;
 	// Initialise variable for entry condition of creating chart for BARXY and AFFICH_m
 	var block_entry_BARXY = 1, block_entry_AFFICH = 1;
 
@@ -311,7 +316,7 @@ function chart_init(wnd){
 		}
 
 
-		if(block < 5){
+		if(block < 5 ||block ==9){
 			// process data for 2D-SCOPE blocks
 
 			var figure_id = parseInt(data[5]),
@@ -324,15 +329,18 @@ function chart_init(wnd){
 				// set default chart type
 				var chart_type = 'line';
 
-				// if sink block is CSCOPXY 
-				if(block == 4)
+				// if sink block is CSCOPXY or CANIMXY
+				if(block == 4||block== 9)
 				{
              		chart_type = 'scatter';
              		create_new_chart(figure_id,data[12],data[15],data[16],data[13],data[14],chart_type,data[17]+'-'+data[3]);
+                        // Set buffer size for CANIMXY
+		         if(block == 9)
+			     buffer_canimxy = data[18];
              		RANGE[chart_id_list.indexOf(figure_id)]=parseFloat(data[14]);
-             	}
+             	       }
              	// sink block is not CSCOPXY
-             	else{
+             	  else{
 
 			        create_new_chart(figure_id,data[12],data[13],data[14],0,data[15],chart_type,data[16]+'-'+data[3]);
 			        RANGE[chart_id_list.indexOf(figure_id)]=parseFloat(data[15]);
@@ -360,7 +368,7 @@ function chart_init(wnd){
 
 				c_type = 'scatter';
 				create_new_chart_3d(figure_id,data[12],data[13],data[14],data[15],data[16],data[17],data[18], chart_type, data[19]+'-'+data[3], data[20], data[21]);	
-				// Set buffer size for CANIMXY
+				// Set buffer size for CANIMXY3D
 				if(block == 10)
 					buffer = data[22];	 
 
@@ -443,7 +451,7 @@ function chart_init(wnd){
             var index= chart_id_list.indexOf(figure_id);
             var block=block_list[index];
 			
-			if(block != 10){
+			if(block != 10 && block!=9){
 
 				// Get chart container	
 				var chart = $('#chart-'+figure_id.toString()).highcharts();
@@ -511,7 +519,7 @@ function chart_init(wnd){
 				 	chart.redraw();
 
 
-			}else{
+			}else if(block==10){
 				// Process CANIMXY3D
 
 				// Get chart container	
@@ -523,10 +531,8 @@ function chart_init(wnd){
 					x = point[1];
 					y = point[2];
 					z = point[3];
-
 					if(series_list[i].indexOf(line_id)<0){
 						series_list[i].push(line_id);
-						l_id_canim = line_id;
 						chart.addSeries({
 							id : line_id.toString(),
 							data: []
@@ -536,6 +542,36 @@ function chart_init(wnd){
 					var series = chart.get(line_id.toString());
 					series.addPoint([x,y,z], false);
 					if(series.xData.length>buffer)
+						series.removePoint(0, false);
+
+					chart.redraw();
+
+				}
+
+                           }
+                           else if(block==9){
+				// Process CANIMXY
+
+				// Get chart container	
+				var chart = $('#chart-'+figure_id.toString()).highcharts();
+
+				if(!points.isEmpty()){
+					var point = points.dequeue();
+					var line_id = point[0];
+					x = point[1];
+					y = point[2];
+
+					if(series_list[i].indexOf(line_id)<0){
+						series_list[i].push(line_id);
+						chart.addSeries({
+							id : line_id.toString(),
+							data: []
+						});
+					}
+					// Get chart data
+					var series = chart.get(line_id.toString());
+					series.addPoint([x,y], false);
+					if(series.xData.length>buffer_canimxy)
 						series.removePoint(0, false);
 
 					chart.redraw();
