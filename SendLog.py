@@ -1,5 +1,3 @@
-
-
 from __future__ import print_function
 from xml.dom import minidom
 import gevent
@@ -12,16 +10,14 @@ import threading
 from gevent import monkey
 import fileinput
 from gevent.pywsgi import WSGIServer
-from flask import Flask, request, Response, render_template, send_from_directory ,send_file#modeified@shivendra send_file added to ease download
+from flask import Flask, request, Response, render_template, send_from_directory
 from werkzeug import secure_filename
-import uuid #to get identifier for each session #modified@shivendra
-from os.path import exists #to check if a file exists #modified@shivendra
 #import webbrowser #modifiedm@shivendra for displaying image saved
 #from random import randint # modified_shank : to generate random image names
 
 monkey.patch_all(aggressive=False)
 
-import subprocess
+import subprocess32 as subprocess
 
 app = Flask(__name__, static_folder='webapp/')
 
@@ -46,7 +42,7 @@ NOLINE = -1
 BLOCK_IDENTIFICATION =- 2
 
 # Scilab dir, can't run absolute paths
-SCI = "../scilab_for_xcos/"
+SCI = "../../scilab_for_xcos/"
 
 # List to store figure IDs
 figure_list = []
@@ -126,133 +122,243 @@ def get_line_and_state(file, count):
         return (None, ENDING)
     return (line[count], DATA)
 
-
 def event_stream(xcos_file_id):
-    global figure_list
-    # If no id is sent, return
-    if(len(xcos_file_id)==0):
-        return
-    xcos_file_id = int(xcos_file_id)
-    xcos_file_dir = os.getcwd() + '/uploads/'
-    xcos_file_name = xcos_file_list[xcos_file_id]
-    # Get previously running scilab process IDs
-    proc = subprocess.Popen("pgrep scilab", stdout=subprocess.PIPE, shell=True)
-    # out will contain output of command, the list of process IDs of scilab
-    (out, err) = proc.communicate()
-    _l = len(out)
-    # Run xcos file
-    pid=0  # modified_shank (to initialise) : earlier : blank
-    #id to identify each session for saving workspace #modified@shivendra
-    session=Details.uid
-    workspace="workspace"+session+".dat"
-    command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "load('"+workspace+"');loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);save('"+workspace+"');quit()"] #modified@shivendra:"load('"+workspace+"'),save('"+workspace+"')
-    if(not exists(workspace)):
-        command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);save('"+workspace+"');quit()"]   # modified_shank : xs2png()
-    scilab_proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=False);
-    # Wait till xcos is launched
-    while len(out) == _l:
-        # If length of out equals _l, 
-        #    it means scilab hasn't launched yet
-        # Wait
-        gevent.sleep(LOOK_DELAY)
-        # Get process IDs of scilab instances
-        proc = subprocess.Popen("pgrep scilab", stdout=subprocess.PIPE, shell=True)
-        # out will contain output of command, the list of process IDs of scilab
-        (out, err) = proc.communicate() 
-    # out will contain output of command, the list of process IDs of scilab
-    # Get the latest process ID of scilab
-    pid = out.split()[-1]
-    # pid_str_value = str(pid, "utf-8")
-    log_name = "scilab-log-"+ pid + ".txt"
-    # Define function to kill scilab(if still running) and remove files
-    def kill_scilab():
-        # Kill scilab by it's pid
-        subprocess.Popen(["kill","-9",pid])   
-        # Remove log file
-        subprocess.Popen(["rm",log_dir+log_name])     
-        # Remove xcos file
-        subprocess.Popen(["rm",xcos_file_dir+xcos_file_name])    
+	global figure_list
+        global kill_scilab
+	# If no id is sent, return
+	if(len(xcos_file_id)==0):
+		return
+	xcos_file_id = int(xcos_file_id)
+	xcos_file_dir = os.getcwd() + '/uploads/'
+	xcos_file_name = xcos_file_list[xcos_file_id]
+	# Get previously running scilab process IDs
+	proc = subprocess.Popen("pgrep scilab", stdout=subprocess.PIPE, shell=True)
+	# out will contain output of command, the list of process IDs of scilab
+	(out, err) = proc.communicate()
+	_l = len(out)
+	#initialise pid
+	pid = 0
+	# Run xcos file
+	command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);quit()"]
+	scilab_proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False);
 
+	# Wait till xcos is launched
+	while len(out) == _l:
+		# If length of out equals _l, 
+		#    it means scilab hasn't launched yet
+		# Wait
+		gevent.sleep(LOOK_DELAY)
+		# Get process IDs of scilab instances
+		proc = subprocess.Popen("pgrep scilab", stdout=subprocess.PIPE, shell=True)
+		# out will contain output of command, the list of process IDs of scilab
+		(out, err) = proc.communicate()	
 
-    # Log file directory
-    # As the scilab process is spawned by this script
-    #    the log directory is same as that of this script
-    log_dir = "" 
+	# out will contain output of command, the list of process IDs of scilab
+	# Get the latest process ID of scilab
+	pid = out.split()[-1]
+        #print pid;
 
-    # ----------------> Jayaprakash A <-------------------
-    # Check if the file is created, if not wait till it gets created
-    gevent.sleep(10)
-    line_count = 0
-    line = line_and_state(None, NOLINE)
-    while not (os.path.isfile(log_name)): # Checks if such a file exists
-        pass
-    gevent.sleep(1)
-    # This variable is for running the sleep command
+	# Define function to kill scilab(if still running) and remove files
+	def kill_scilab():
+		# Kill scilab by it's pid
+		subprocess.Popen(["kill", "-9", pid])   
+		# Remove log file
+		subprocess.Popen(["rm", "-f", log_dir+log_name], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
+		# Remove xcos file
+		subprocess.Popen(["rm", "-f", xcos_file_dir+xcos_file_name], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False) 
+		scilab_proc.kill()
+                
+        #Sink Identification file  #modified@shivendra3
+        #File created to idenify the block
+        #identify_block_name="identify_block_"+pid+".txt"
+        #identify_block= open(identify_block_name, "r")
+        
+	# Log file directory
+	# As the scilab process is spawned by this script
+	#    the log directory is same as that of this script
+	log_dir = "" 
+	# Log file name
+        log_name = "scilab-log-"+pid+".txt"
 
-    # Start sending log
-    put_delay = False
-    line_id = -1
-    delay_length = -1
-    while (1):
-        # -----------------> Jayaprakash A <--------------------
-        # The chart must be updated for all the various lines it has in 0.1 seconds.
-        # Hence dividing the sleep time 0.1 by the number of lines the chart contains
+	#log_name = "scilab-log-"+str(7275)+".txt"       # to test a particular log file
 
-        if put_delay:
-            gevent.sleep(0.1 / delay_length)
-
-        log_file = open(log_dir + log_name, "r+")
-
-        if not ( line.set(get_line_and_state(log_file,line_count)) or line.get_state() != ENDING or len(figure_list) > 0 ):
-            break
-
-        # ---------------> Jayaprakash A <--------------------
-        if line.get_state()== BLOCK_IDENTIFICATION:
-            # Split the line obtained from log file and the 8th element is line ID
-            logLine = line.get_line()
-	    print(logLine)
-            line_contents = logLine.split(' ')
-            # Checking if the current line ID is same as first line ID and is the first occurence of matching
-            if(line_id == line_contents[7] and not put_delay):
-                delay_length = line_count - 1 # The count of total number of lines in the chart
-                put_delay = True
-            # The first line ID 
-            if(line_count == 1):
-                line_id = line_contents[7]
-            yield "event: block\ndata: "+logLine+"\n\n"
-
-
-        elif line.get_state() != DATA:
-            gevent.sleep(LOOK_DELAY)    
-
-
-        # -------------------> Jayaprakash A <------------------- 
-        else:
-            # Split the line obtained from log file and the 8th element is line ID
-            logLine = line.get_line()
-            print(logLine)
-            line_contents = logLine.split(' ')
-            # Checking if the current line ID is same as first line ID and is the first occurence of matching
-            if(line_id == line_contents[7] and not put_delay):
-                delay_length = line_count - 1 # The count of total number of lines in the chart
-                put_delay = True
-
-            # The first line ID 
-            if(line_count == 1):
-                line_id = line_contents[7]
-            yield "event: log\ndata: "+logLine+ "\n\n"
-
-
-        # Reset line, so server won't send same line twice
+	# Initialise output and error variables for subprocess
+	scilab_out = ""
+	scilab_err = ""
+	gevent.sleep(10)
+        line_count = 0
         line = line_and_state(None, NOLINE)
-        line_count = line_count + 1
-        log_file.close()
+        while not (os.path.isfile(log_name)): # Checks if such a file exists
+                pass
+        gevent.sleep(1)
+        # This variable is for running the sleep command
+
+        # Start sending log
+        put_delay = False
+        line_id = -1
+        delay_length = -1
+	try:
+		# For processes taking less than 10 seconds
+		scilab_out, scilab_err = scilab_proc.communicate(timeout=10)
+		# Check for errors in Scilab  modified_shank
+		if "Empty diagram" in scilab_out:
+			yield "event: ERROR\ndata: Empty diagram\n\n"
+			kill_scilab()
+			return
+		# Open the log file
+		log_file = open(log_dir + log_name, "r")
+
+		#identify block using file
+		#identify_block= open(identify_block_name, "r")
+		#block_value=identify_block.readline()
+		#identify_block.close()
+		#yield "event: block\ndata: " + block_value + "\n\n"
+		# Check for empty diagram
+	
+		# Start sending log
+		line = line_and_state(None, NOLINE)
+		while (1):
+		# -----------------> Jayaprakash A <--------------------
+		# The chart must be updated for all the various lines it has in 0.1 seconds.
+		# Hence dividing the sleep time 0.1 by the number of lines the chart contains
+
+			if put_delay:
+			    gevent.sleep(0.1 / delay_length)
 
 
+			log_file = open(log_dir + log_name, "r+")
 
-    kill_scilab()
-    # Notify Client
-    yield "event: DONE\ndata: None\n\n"
+			if not ( line.set(get_line_and_state(log_file,line_count)) or line.get_state() != ENDING or len(figure_list) > 0 ):
+			    break
+
+			# ---------------> Jayaprakash A <--------------------
+			if line.get_state()== BLOCK_IDENTIFICATION:
+			    # Split the line obtained from log file and the 8th element is line ID
+			    logLine = line.get_line()
+
+			    line_contents = logLine.split(' ')
+			    # Checking if the current line ID is same as first line ID and is the first occurence of matching
+			    if(line_id == line_contents[7] and not put_delay):
+				delay_length = line_count - 1 # The count of total number of lines in the chart
+				put_delay = True
+			    # The first line ID 
+			    if(line_count == 1):
+				line_id = line_contents[7]
+			    yield "event: block\ndata: "+logLine+"\n\n"
+
+
+			elif line.get_state() != DATA:
+			    gevent.sleep(LOOK_DELAY)    
+
+
+			# -------------------> Jayaprakash A <------------------- 
+			else:
+			    # Split the line obtained from log file and the 8th element is line ID
+			    logLine = line.get_line()
+
+			    line_contents = logLine.split(' ')
+			    # Checking if the current line ID is same as first line ID and is the first occurence of matching
+			    if(line_id == line_contents[7] and not put_delay):
+				delay_length = line_count - 1 # The count of total number of lines in the chart
+				put_delay = True
+
+			    # The first line ID 
+			    if(line_count == 1):
+				line_id = line_contents[7]
+			    yield "event: log\ndata: "+logLine+ "\n\n"
+
+
+			# Reset line, so server won't send same line twice
+			line = line_and_state(None, NOLINE)
+			line_count = line_count + 1
+			log_file.close()
+		#webbrowser.open_new_tab("images/img_test.png")#modified@shivendra this displays saved image in a new window
+		# Finished Sending Log
+		kill_scilab()
+		# Notify Client
+		yield "event: DONE\ndata: None\n\n"
+
+	# For processes taking more than 10 seconds
+	except subprocess.TimeoutExpired:
+	    	# Check for errors in Scilab  modified_shank
+		if "Empty diagram" in scilab_out:
+			yield "event: ERROR\ndata: Empty diagram\n\n"
+			kill_scilab()
+			return
+ 
+
+		# Open the log file
+		log_file = open(log_dir + log_name, "r")
+
+		#identify block using file
+		#identify_block= open(identify_block_name, "r")
+		#block_value=identify_block.readline()
+		#identify_block.close()
+		#yield "event: block\ndata: " + block_value + "\n\n"
+		# Check for empty diagram
+	
+		# Start sending log
+		line = line_and_state(None, NOLINE)
+		while (1):
+			# -----------------> Jayaprakash A <--------------------
+			# The chart must be updated for all the various lines it has in 0.1 seconds.
+			# Hence dividing the sleep time 0.1 by the number of lines the chart contains
+
+			if put_delay:
+			    gevent.sleep(0.1 / delay_length)
+
+
+			log_file = open(log_dir + log_name, "r+")
+
+			if not ( line.set(get_line_and_state(log_file,line_count)) or line.get_state() != ENDING or len(figure_list) > 0 ):
+			    break
+
+			# ---------------> Jayaprakash A <--------------------
+			if line.get_state()== BLOCK_IDENTIFICATION:
+			    # Split the line obtained from log file and the 8th element is line ID
+			    logLine = line.get_line()
+
+			    line_contents = logLine.split(' ')
+			    # Checking if the current line ID is same as first line ID and is the first occurence of matching
+			    if(line_id == line_contents[7] and not put_delay):
+				delay_length = line_count - 1 # The count of total number of lines in the chart
+				put_delay = True
+			    # The first line ID 
+			    if(line_count == 1):
+				line_id = line_contents[7]
+			    yield "event: block\ndata: "+logLine+"\n\n"
+
+
+			elif line.get_state() != DATA:
+			    gevent.sleep(LOOK_DELAY)    
+
+
+			# -------------------> Jayaprakash A <------------------- 
+			else:
+			    # Split the line obtained from log file and the 8th element is line ID
+			    logLine = line.get_line()
+
+			    line_contents = logLine.split(' ')
+			    # Checking if the current line ID is same as first line ID and is the first occurence of matching
+			    if(line_id == line_contents[7] and not put_delay):
+				delay_length = line_count - 1 # The count of total number of lines in the chart
+				put_delay = True
+
+			    # The first line ID 
+			    if(line_count == 1):
+				line_id = line_contents[7]
+			    yield "event: log\ndata: "+logLine+ "\n\n"
+
+
+			# Reset line, so server won't send same line twice
+			line = line_and_state(None, NOLINE)
+			line_count = line_count + 1
+			log_file.close()
+		#webbrowser.open_new_tab("images/img_test.png")#modified@shivendra this displays saved image in a new window
+		# Finished Sending Log
+		kill_scilab()
+		# Notify Client
+		yield "event: DONE\ndata: None\n\n"
 
 # class used to get the user_id and the boolean value is to make run a thread    # '=> Dattatreya <=' 
 class Details:
@@ -261,6 +367,7 @@ class Details:
      uid = str(my_id) # user_id
      tkbool = True  # boolean value to run the thread acc. to it
      print("user_id:"+uid)
+     names = {}
 
 
 
@@ -268,6 +375,8 @@ class Details:
 def findFile():     
 	r = open("values/"+Details.uid+"_val.txt","r") 
 	line = r.readline() # at first the val.txt contains "Start" indicating the starting of the process
+	r.close()
+	
 	if line == "Start": 
 	     Details.tkbool = True
 	     w = open("values/"+Details.uid+"_tktime.txt","w") # tktime.txt is the file where we will update the time basing on the parameter ("Period" of CLOCK_c) for each tkscale
@@ -330,13 +439,15 @@ def getDetails():
 	line=r.readline()
 	tklist=line.split(',')
 	
-	for i in range(10):
+	for i in range(len(tklist)):
+		
 		tl = tklist[i].split('  ')
+		
 		if  len(tklist)==1 or len(tl)==1:
 			break
 		else:
 			fname="values/"+Details.uid+"_tk"+str(i+1)+".txt"
-			print(tklist[i])
+
 			AppendtoTKfile(fname,tklist[i],i)
 	r.close()
 # function which makes the initialisation of thread    # '=> Dattatreya <=' 
@@ -477,26 +588,28 @@ def UpdateTKfile():		# '=> Dattatreya <='  function which makes the initialazati
 		return ""
 	else:
 		return "error"
-
 @app.route('/importXcos')   # '=> Dattatreya <=' function to take the request data when user click the url link (view example)
 def importXcos():
 
-	eid=request.args.get('eid')	# get the eid from the url
 	
-	with open("webapp/xcos/"+str(eid)+".xcos") as inf:
-		xcosContents = inf.read()	# read the xcos file contents
+	Details.names[Details.uid+"eid"] = request.args.get('eid')	# get the eid from the url
+	
+	with open("webapp/xcos/"+str(Details.names[Details.uid+"eid"])+".xcos") as inf:
+		Details.names[Details.uid+"xcosContents"] = inf.read()	# read the xcos file contents
 	import bs4
 	with open("webapp/index.html") as inf:
     		txt = inf.read()
-    		soup = bs4.BeautifulSoup(txt,'html.parser')	# load soup to edit the html file
+    		Details.names[Details.uid+"soup"] = bs4.BeautifulSoup(txt,'html.parser')	# load soup to edit the html file
 	
-	soup.find(text="XcosNull").replaceWith(xcosContents)	# replace the innerHTML with file (xcos) contents
+	Details.names[Details.uid+"pidlist"] = Details.names[Details.uid+"soup"].findAll("p")
+	Details.names[Details.uid+"innerhtml_1"] = Details.names[Details.uid+"pidlist"][11].text
+	temp = Details.names[Details.uid+"soup"].find(text=Details.names[Details.uid+"innerhtml_1"]).replaceWith(Details.names[Details.uid+"xcosContents"])	
 
 	with open("webapp/index.html", "w") as file:
-    		file.write(str(soup))				# edit and save the changes in html file
+    		file.write(str(Details.names[Details.uid+"soup"]))				# edit and save the changes in html file
 
 	import webbrowser
-	url = "http://127.0.1:8001"				# open browser to load the imported experiment
+	url = "http://127.0.1:8001?eid="+str(Details.names[Details.uid+"eid"])				# open browser to load the imported experiment
 	webbrowser.open(url,2)
 
 	return "0"
@@ -504,22 +617,20 @@ def importXcos():
 @app.route('/ChangeIndexFile',	methods=['POST'])
 def ChangeIndexFile():
 
-	xcosContents = request.data
-	print("contents")
-	print(xcosContents)
 	import bs4
-
 	with open("webapp/index.html") as inf:
-        	txt = inf.read()
-        	soup = bs4.BeautifulSoup(txt,'html.parser')
+    		txt = inf.read()
+    		Details.names[Details.uid+"soup"] = bs4.BeautifulSoup(txt,'html.parser')	# load soup to edit the html file
 
-	soup.find(text=xcosContents).replaceWith('XcosNull')
+	Details.names[Details.uid+"pidlist"] = Details.names[Details.uid+"soup"].findAll("p")
+	Details.names[Details.uid+"innerhtml_2"] = Details.names[Details.uid+"pidlist"][11].text
 
-	with open("webapp/index.html", "w") as file:
-        	file.write(str(soup))
+	if Details.names[Details.uid+"innerhtml_2"] == Details.names[Details.uid+"xcosContents"] :
+		temp = Details.names[Details.uid+"soup"].find(text=Details.names[Details.uid+"innerhtml_2"]).replaceWith("XcosNull")
+		with open("webapp/index.html", "w") as file:
+     		   	file.write(str(Details.names[Details.uid+"soup"]))
 	return "0"
-
-		
+			
 		
 @app.route('/SendLog')
 def sse_request():
