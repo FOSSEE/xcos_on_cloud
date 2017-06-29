@@ -644,3 +644,126 @@ function colon_operator() {
     return port;
 }*/
 
+/*
+date - 16 june 2017
+name - Ritveeka Vashistha
+*/
+function linspace(){
+    var a = parseFloat(arguments[0]);
+    var b = parseFloat(arguments[1]);
+    var n = parseFloat(arguments[2]);
+    var d = (b-a)/(n-1);
+    var result = new Array(n);
+    result[0] = a;
+    result[24] = b;
+    for (var i = 1; i < n-1; i++) {
+        result[i] = result[i-1] + d;
+    }
+    return result;
+}
+/*
+date - 16 june 2017
+name - Ritveeka Vashistha
+*/
+function interpolation(){
+    var x = arguments[0];
+    var color = arguments[1];
+    var y = new Array(x.length);
+    for( i=0;i<x.length;i++){
+        if(x[i] >= 0.000 && x[i] <= 0.125){
+            switch(color){
+                case 'r':
+                    y[i] = 0.000;
+                    break;
+                case 'g':
+                    y[i] = 0.000;
+                    break;
+                case 'b':
+                    y[i] = 4.000*x[i];
+                    break;
+
+            }
+        }
+        else if(x[i] <= 0.375){
+            switch(color){
+                case 'r':
+                    y[i] = 0.000;
+                    break;
+                case 'g':
+                    y[i] = (x[i]-0.125)*4.000;
+                    break;
+                case 'b':
+                    y[i] = 1.000;
+                    break;
+
+            }
+        }
+        else if(x[i] <= 0.625){
+            switch(color){
+                case 'r':
+                    y[i] = (x[i]-0.375)*4.000;
+                    break;
+                case 'g':
+                    y[i] = 1.000;
+                    break;
+                case 'b':
+                    y[i] = 4.000*(0.625-x[i]);
+                    break;
+
+            }
+        }
+        else if(x[i] <= 0.875){
+            switch(color){
+                case 'r':
+                    y[i] = 1.000;
+                    break;
+                case 'g':
+                    y[i] = 4.000(0.875-x[i]);
+                    break;
+                case 'b':
+                    y[i] = 0.000;
+                    break;
+
+            }
+        }
+        else{
+            switch(color){
+                case 'r':
+                    y[i] = 0.400*(1.000-x[i])+0.500;
+                    break;
+                case 'g':
+                    y[i] = 0.000;
+                    break;
+                case 'b':
+                    y[i] = 0.000;
+                    break;
+
+            }
+        }
+    }
+    return y;
+}
+/*
+date - 16 june 2017
+name - Ritveeka Vashistha
+*/
+function jetcolormap(){
+    if(arguments.length != 1)
+        alert('enter one integer argument');
+    else{
+        if(arguments.length == 0)
+            var n = parseInt(arguments[0]);
+            if(n==0){
+                return new Array(0);
+            }
+            else{
+                var d = 0.5/Math.max(n,1);
+                var x = linspace(d,1.000-d,n);
+                var y = new Array(3);
+                y[0] = interpolation(x,'r');
+                y[1] = interpolation(x,'g');
+                y[2] = interpolation(x,'b');
+            }
+    }
+    return y;
+}

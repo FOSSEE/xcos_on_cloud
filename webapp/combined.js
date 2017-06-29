@@ -1706,41 +1706,93 @@ function CLR() {
         return this.x;
     }
 }
-function CLSS() {
+function CLSS () {
 
-    CLSS.prototype.define = function CLSS() {
-        this.x0 = 0;
-        this.A = -1;
-        this.B = 1;
-        this.C = 1;
-        this.D = 0;
-        this.in1 = 1;
-        this.out = 1;
-
-        var model = scicos_model();
-        model.sim = list(new ScilabString(["csslti4"]), new ScilabDouble([4]));
-        model.in = new ScilabDouble([this.in1]);
-        model.out = new ScilabDouble([this.out]);
-        model.state = new ScilabDouble([this.x0]);
-        model.rpar = new ScilabDouble([this.A], [this.B], [this.C], [this.D]);
-        model.blocktype = new ScilabString(["c"]);
-        model.dep_ut = new ScilabBoolean([false, true]);
-
-        var exprs = new ScilabString([this.A], [this.B], [this.C], [this.D], [this.x0]);
-        var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"CLSS\",sz(1),sz(2));"]);
-        this.x = new standard_define(new ScilabDouble([4, 2]), model, exprs, gr_i);
-        return new BasicBlock(this.x);
+CLSS.prototype.define = function CLSS() {
+    this.x0 = 0;
+    this.A = -1;
+    this.B = 1;
+    this.C = 1;
+    this.D = 0;
+    this.in = 1;
+    this.out = 1;
+    var model = scicos_model()
+    model.sim = list(new ScilabString(["csslti4"]), new ScilabDouble([4]))
+    model.in = new ScilabDouble([this.in]);
+    model.out = new ScilabDouble([this.out]);
+    model.state = new ScilabDouble([this.x0]);
+    model.rpar = new ScilaDouble([this.A], [this.B], [this.C], [this.D])
+    model.blocktype = new ScilabDouble(["c"]);
+    model.dep_ut = new ScilabBoolean(false, true)
+    var exprs = new ScilabString([this.A.toString().replace(/,/g, " ")], [this.B.toString().replace(/,/g, " ")], [this.C.toString().replace(/,/g, " ")], [this.D.toString().replace(/,/g, " ")], [this.x0.toString().replace(/,/g, " ")])
+    var gr_i = list(new ScilabString(["xstringb(orig(1),orig(2),"CLSS",sz(1),sz(2));"]), new ScilabDouble([8]));
+    this.x = new standard_define(new ScilabDouble([80, 80]),model,exprs,gr_i)
+    return new BasicBlock(this.x);
     }
-
-    CLSS.prototype.details = function CLSS() {
-        return this.x;
+CLSS.prototype.get = function CLSS() {
+        var options={
+            A:["A matrix",this.A.toString().replace(/,/g," ")],
+            B:["B matrix",this.B],
+            C:["C matrix",this.C],
+            D:["D matrix",this.D],
+            x0:["Initial state",this.x0],
+        }
+        return options
+    }
+CLSS.prototype.set = function CLSS() {
+    this.A = inverse(arguments[0]["A"])
+    this.B = inverse((arguments[0]["B"]))
+    this.C = inverse((arguments[0]["C"]))
+    this.D = inverse((arguments[0]["D"]))
+    this.x0 = inverse((arguments[0]["x0"]))
+    var rpar = new ScilabDouble(...this.A,...this.B,...this.C,...this.D)
+    this.x.model.dep_ut = new ScilabBoolean(false,true)
+    this.x.model.rpar = rpar
+    this.x.model.state = colon_operator(this.x0)
+    var exprs = new ScilabString([this.A.toString().replace(/,/g, " "),[this.B.toString().replace(/,/g, " ")],[this.C.toString().replace(/,/g, " ")],[this.D.toString().replace(/,/g, " ")])
+    this.x.graphics.exprs=exprs
+    return new BasicBlock(this.x)
+    }
+CLSS.prototype.details = function CLSS() {
+    return this.x
     }
 }
+
+// function CLSS() {
+
+//     CLSS.prototype.define = function CLSS() {
+//         this.x0 = 0;
+//         this.A = -1;
+//         this.B = 1;
+//         this.C = 1;
+//         this.D = 0;
+//         this.in1 = 1;
+//         this.out = 1;
+
+//         var model = scicos_model();
+//         model.sim = list(new ScilabString(["csslti4"]), new ScilabDouble([4]));
+//         model.in = new ScilabDouble([this.in1]);
+//         model.out = new ScilabDouble([this.out]);
+//         model.state = new ScilabDouble([this.x0]);
+//         model.rpar = new ScilabDouble([this.A], [this.B], [this.C], [this.D]);
+//         model.blocktype = new ScilabString(["c"]);
+//         model.dep_ut = new ScilabBoolean([false, true]);
+
+//         var exprs = new ScilabString([this.A], [this.B], [this.C], [this.D], [this.x0]);
+//         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"CLSS\",sz(1),sz(2));"]);
+//         this.x = new standard_define(new ScilabDouble([4, 2]), model, exprs, gr_i);
+//         return new BasicBlock(this.x);
+//     }
+
+//     CLSS.prototype.details = function CLSS() {
+//         return this.x;
+//     }
+// }
 function CMSCOPE() {
     CMSCOPE.prototype.get = function CMSCOPE() {
 
         var options = {
-            in1: ["Input ports sizes", this.in1.toString().replace(/,/g, " ")],
+            in: ["Input ports sizes", this.in.toString().replace(/,/g, " ")],
             clrs: ["Drawing colors (>0) or mark (<0)", this.clrs.toString().replace(/,/g, " ")],
             win: ["Output window number (-1 for automatic)", this.win],
             wpos: ["Output window position", sci2exp([])],
@@ -1755,7 +1807,7 @@ function CMSCOPE() {
         return options;
     }
     CMSCOPE.prototype.set = function CMSCOPE() {
-        this.in1 = inverse(arguments[0]["in1"]);
+        this.in = inverse(arguments[0]["in"]);
         this.clrs = inverse(arguments[0]["clrs"]);
         this.win = parseInt((arguments[0]["win"]));
         this.ymin = inverse(arguments[0]["ymin"]);
@@ -1766,17 +1818,17 @@ function CMSCOPE() {
         this.nom = arguments[0]["nom"];
         this.yy = [...transpose(this.ymin), ...transpose(this.ymax)];
         this.period = transpose(this.per);
-        this.x.model.ipar = new ScilabDouble([this.win], [this.in1.length], [this.N], ...this.wpos, ...this.wdim, ...this.in1, this.clrs[0], this.clrs[1],[this.heritance]);
+        this.x.model.ipar = new ScilabDouble([this.win], [this.in.length], [this.N], ...this.wpos, ...this.wdim, ...this.in, this.clrs[0], this.clrs[1],[this.heritance]);
         this.x.model.label = new ScilabString([this.nom]);
         this.x.model.evtin = new ScilabDouble(...ones(1-this.heritance,1));
         this.x.graphics.id = new ScilabString([this.nom]);
         this.x.model.rpar = new ScilabDouble([0], ...colon_operator(this.period), ...colon_operator(this.yy));
-        this.x.graphics.exprs = new ScilabString([this.in1.toString().replace(/,/g, " ")], [this.clrs.toString().replace(/,/g, " ")], [this.win], [sci2exp([])], [sci2exp([])], [this.ymin.toString().replace(/,/g, " ")], [this.ymax.toString().replace(/,/g, " ")], [this.per.toString().replace(/,/g, " ")], [this.N], [0], [""]);
+        this.x.graphics.exprs = new ScilabString([this.in.toString().replace(/,/g, " ")], [this.clrs.toString().replace(/,/g, " ")], [this.win], [sci2exp([])], [sci2exp([])], [this.ymin.toString().replace(/,/g, " ")], [this.ymax.toString().replace(/,/g, " ")], [this.per.toString().replace(/,/g, " ")], [this.N], [0], [""]);
         return new BasicBlock(this.x);
     }
     CMSCOPE.prototype.define = function CMSCOPE() {
         this.win = -1;
-        this.in1 = [[1],[1]];
+        this.in = [[1],[1]];
         this.wdim = [[-1],[-1]];
         this.wpos = [[-1],[-1]];
         this.clrs = [[1],[3],[5],[7],[9],[11],[13],[15]];
@@ -1790,16 +1842,16 @@ function CMSCOPE() {
 
         var model = scicos_model();
         model.sim = list(new ScilabString(["cmscope"]), new ScilabDouble([4]));
-        model.in = new ScilabDouble(...this.in1);
+        model.in = new ScilabDouble(...this.in);
         model.in2 = new ScilabDouble([1], [1]);
         model.intyp = new ScilabDouble([1], [1]);
         model.evtin = new ScilabDouble([1]);
         model.rpar = new ScilabDouble([0], ...colon_operator(this.period), ...colon_operator(this.yy));
-        model.ipar = new ScilabDouble([this.win], [this.in1.length], [this.N], ...this.wpos, ...this.wdim, ...this.in1, this.clrs[0], this.clrs[1]);
+        model.ipar = new ScilabDouble([this.win], [this.in.length], [this.N], ...this.wpos, ...this.wdim, ...this.in, this.clrs[0], this.clrs[1]);
 
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
-        var exprs = new ScilabString([this.in1.toString().replace(/,/g, " ")], [this.clrs.toString().replace(/,/g, " ")], [this.win], [sci2exp([])], [sci2exp([])], [this.ymin.toString().replace(/,/g, " ")], [this.ymax.toString().replace(/,/g, " ")], [this.per.toString().replace(/,/g, " ")], [this.N], [0], [""]);
+        var exprs = new ScilabString([this.in.toString().replace(/,/g, " ")], [this.clrs.toString().replace(/,/g, " ")], [this.win], [sci2exp([])], [sci2exp([])], [this.ymin.toString().replace(/,/g, " ")], [this.ymax.toString().replace(/,/g, " ")], [this.per.toString().replace(/,/g, " ")], [this.N], [0], [""]);
         var gr_i = list(new ScilabString(["xstringb(orig(1),orig(2),\"CMSCOPE\",sz(1),sz(2));"]), new ScilabDouble([8]));
         this.x = new standard_define(new ScilabDouble([80, 80]), model, exprs, gr_i); // 2 -> 80
         this.x.graphics.style = new ScilabString(["CMSCOPE"]);
@@ -2966,6 +3018,63 @@ function DERIV() {
         return this.x;
     }
 }
+
+//date - 16 june 2017
+//name - Ritveeka Vashistha
+function CMATVIEW () {
+
+    CMATVIEW.prototype.define = function CMATVIEW() {
+        this.cmin = 0;
+        this.cmax = 100;
+        this.size_c = 25;
+        this.colormap = jetcolormap(this.size_c)
+        this.alpha_c = 0.24;
+        this.beta_c = 1;
+        var model = scicos_model()
+        model.sim = list(new ScilabString(["cmatview"]), new ScilabDouble([4]))
+        model.in = new ScilabDouble([-1]);
+        model.in2 = new ScilabDouble([-2]);
+        model.intyp = new ScilabDouble([1]);
+        model.evtin = new ScilabDouble([1]);
+        model.ipar = new ScilaDouble([this.cmin], [this.cmax], [this.size_c])
+        model.rpar = new ScilaDouble([this.alpha_c], [this.beta_c], colormap(:))
+        model.blocktype = new ScilabString(["c"]);
+        model.dep_ut = new ScilabBoolean(true, false)
+        var exprs = new ScilabString([this.size_c],[this.cmin],[this.cmax]);
+        var gr_i = list(new ScilabString(["xstringb(orig(1),orig(2),"CMATVIEW",sz(1),sz(2));"]), new ScilabDouble([8]));
+        this.x = new standard_define(new ScilabDouble([80, 80]),model,exprs,gr_i)
+        this.x.graphics.style = new ScilabString(["CMATVIEW"]);
+        return new BasicBlock(this.x);
+    }
+
+    CMATVIEW.prototype.get = function CMATVIEW() {
+        var options={
+            colormap:["size of ColorMap",[this.size_c]],
+            cmin:["Minimum level range",this.cmin],
+            cmax:["Maximum level range",this.cmax]
+        }
+        return options
+    }
+
+    CMATVIEW.prototype.set = function CMATVIEW() {
+        this.colormap = jetcolormap(parseInt(arguments[0]["colormap"]));
+        this.cmin= parseInt(arguments[0]["cmin"]);
+        this.cmax= parseInt(arguments[0]["cmax"]);
+        this.alpha_c = 0.24;
+        this.beta_c = 1;
+        var ipar = new ScilabDouble([this.cmax],[this.cmin],[this.size_c])
+        var rpar = new ScilabDouble([this.alpha_c],[this.beta_c],...colon_operator(this.colormap))
+        this.x.model.ipar = ipar
+        this.x.model.rpar = rpar
+        var exprs = new ScilabString([this.size_c],[this.cmin],[this.cmax]);
+        this.x.graphics.exprs=exprs
+        return new BasicBlock(this.x)
+    }
+    CMSCOPE.prototype.details = function CMATVIEW() {
+        return this.x;
+    }   
+}
+
 function DFLIPFLOP() {
 
     DFLIPFLOP.prototype.define = function DFLIPFLOP() {
