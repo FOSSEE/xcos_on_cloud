@@ -14,9 +14,6 @@ var isDone = false;
 // fig_id, l_id - figure_id and line_id of blocks,   
 // pnts - Points list of the blocks
 var fig_id, l_id, pnts = [];
-// define l_id for CANIMXY3D
-var l_id_canim;
-
 
 // Function to create a new chart
 var create_new_chart = function(id, no_of_graph,ymin,ymax,xmin,xmax,type_chart,title_text){
@@ -238,7 +235,7 @@ function chart_init(wnd){
 	// Start listening to server
 	chart_reset();
 	eventSource = new EventSource("/SendLog?id="+clientID);
-
+        
 	eventSource.addEventListener("block", function(event){
 		var data = event.data.split(' ');
 		block = parseInt(data[4]);
@@ -293,22 +290,25 @@ function chart_init(wnd){
 		// store block info. from the data line
 		block = parseInt(data[0]);
 
-		//modified@shivendra for handling writec_f and writeau_f
+		// handle writec_f and writeau_f
 		if(block==21||block==22){
 
-			console.log(data[2]);
+			console.log(data[5]);
+                        //create a form and add the filename to it
 			var form = new FormData()
 			form.append('path',data[5]);
 			var xhr = new XMLHttpRequest();
 			xhr.responseType = 'blob';
+                        //sending form to get file for download
 			xhr.open("POST", "/downloadfile", true);
 			xhr.onload = function() {
 				if(this.status==200){
-
+                                        //blob data type to receive the file
 					var blob=this.response;
 					console.log("check");
 					var url  = window.URL.createObjectURL(blob);
-					window.location.assign(url)
+                                        //popup for download option of the file
+					window.open(url);
 				}
 			};
 			xhr.send(form);
