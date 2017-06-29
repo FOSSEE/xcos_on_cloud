@@ -37,7 +37,7 @@ BLOCK_IDENTIFICATION=-2
 #SCI = "../scilab_for_xcos/"
 #SCI="../scilab-master/scilab/"
 #SCI="../scilab-master/"
-SCI="../scilab-master_5.5.2/"
+SCI="../scilab-source/scilab"
 # List to store figure IDs
 figure_list = []
 # List to store filenames of files
