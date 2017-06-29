@@ -1316,12 +1316,17 @@ function ones() {
 
 function size() {
 
+
     if (arguments.length == 1){
         var res = math.size(arguments[0]);
+        if(arguments[0].length == undefined)
+            res.push(1)
         return res;
     }
     else {
         var res = math.size(arguments[0]);
+        if(arguments[0].length == undefined)
+            res = [1]
 
         if (res.length == 1)
             res.push(1);
@@ -1341,12 +1346,7 @@ function size() {
     }
 }
 
-// function size(){
-//     var array = arguments[0];
-//     int row = array.length;
-//     int col = array[0].length;
-//     return row*col;
-// }
+ 
 
 function Min(){
     var array = arguments[0];
@@ -1414,8 +1414,12 @@ function compare(){//will return an array of boolean values "compares if array1>
 function inverse() {
     var str = "[["
     var arg = arguments[0];
-    arg = arg.replace(/ /g, "],[");
-    str += arg + "]]";
+    if(arg != "[]"){
+        arg = arg.replace(/ /g, "],[");
+        str += arg + "]]";
+    }else{
+        str = "[]"
+    }
     var array = JSON.parse(str);
     return array;
 }
