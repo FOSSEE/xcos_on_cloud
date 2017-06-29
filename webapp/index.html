@@ -1,34 +1,128 @@
 <html>
-
 <head>
-    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
-    <meta content="utf-8" http-equiv="encoding">
-    <title>Xcos</title>
-
-    <!-- Loads and initializes the library -->
-    <script type="text/javascript" src="jquery/jquery-1.8.2.js"></script>
-    <script type="text/javascript" src="mxClient.min.js"></script>
-    <script type="text/javascript" src="jquery/farbtastic.js"></script>
-
-    <link rel="stylesheet" href="jquery/farbtastic.css" type="text/css" />
-    <link rel="stylesheet" href="jquery/jquery-ui.css">
-
-    <script type="text/javascript" src="details.js"></script>
-    <script type="text/javascript" src="setup.js"></script>
-    <script type="text/javascript" src="combined.js"></script>
-    <script type="text/javascript" src="orientation.js"></script>
-
-    <script type="text/javascript" src="highcharts/highcharts.js"></script>
-    <script type="text/javascript" src="highcharts/highcharts-3d.js"></script> <!-- Used for producing 3d-highcharts in output if required --> 
-    <script type="text/javascript" src="highcharts/exporting.js"></script> <!-- Used for exporting highcharts -->
-    <script type="text/javascript" src="Queue.js"></script>
-    <script type="text/javascript" src="chart.js"></script>
-
-    <script type="text/javascript">
-        // Stores edgeState for every recently created edge in updateFixedTerminalPoint() function
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type"/>
+<meta content="utf-8" http-equiv="encoding"/>
+<title>
+     Xcos
+    </title>
+<!-- Loads and initializes the library -->
+<script src="jquery/jquery-1.8.2.js" type="text/javascript">
+</script>
+<script src="mxClient.min.js" type="text/javascript">
+</script>
+<script src="jquery/farbtastic.js" type="text/javascript">
+</script>
+<link href="jquery/farbtastic.css" rel="stylesheet" type="text/css"/>
+<link href="jquery/jquery-ui.css" rel="stylesheet"/>
+<script src="details.js" type="text/javascript">
+</script>
+<script src="setup.js" type="text/javascript">
+</script>
+<script src="combined.js" type="text/javascript">
+</script>
+<script src="orientation.js" type="text/javascript">
+</script>
+<script src="highcharts/highcharts.js" type="text/javascript">
+</script>
+<script src="Queue.js" type="text/javascript">
+</script>
+<script src="chart.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+ var editor ;
+	 	window.onbeforeunload = function (e) {
+	    
+            		return "Please click 'Stay on this Page' if you did this unintentionally";
+        	};
+      // Stores edgeState for every recently created edge in updateFixedTerminalPoint() function  '=> Dattatreya <='
         var edgeState = {};
+	var xmlCode;  			// we store the xml code obtained after pressing simulate button
+	var valueArr = new Array();	// stores the updated values of each tk block
+	var tkclk = new Array();	// stores the clock (Period) parameter value of individual tkscale 
 
+	for(var i=0;i<10;i++)    	// initialising to zero
+		tkclk[i]=0;
+
+	//  function which makes the Ajax 'post' request with data sent in arguments   '=> Dattatreya <='
+	function myAjaxreq(k,functionName)
+	{
+		var mbl = new Blob([k], { type: 'text/plain' });  // store the data in blob				
+		var formd = new FormData();   
+                formd.append("file",mbl); // using formdata
+   
+                var xhrq = new XMLHttpRequest(); 
+                xhrq.open("POST",functionName, true);
+                xhrq.onload = function()
+		{
+                        
+                    if(this.responseText!='error')
+		    {
+                           var response = this.responseText; // response can be used further if needed
+			   
+                    }
+		    else
+		    {
+                          alert("Error");
+                    }
+                };
+              
+                xhrq.send(formd); // data to be requested	
+
+	} 
+
+	var importxcos; // variable used at anonymous function in importXcos event    '=> Dattatreya <='
+	var xeditor,xcell;
+
+	function CheckViewExample()         	 // one line function which calls import xcos function for 'view example' '=> Dattatreya <='		
+	{ 
+		if(ViewExampleXcos.innerHTML != 'XcosNull')
+		{
+			importxcos(xeditor,xcell); 
+		} 
+	}   
+
+	function GetcurVal()  // function which updates the slider values and send ajax req with the updated data    '=> Dattatreya <='
+	{
+			
+			valueArr[0]=tkclk[0]+tk1.innerHTML;			
+			valueArr[1]=tkclk[1]+tk2.innerHTML;
+			valueArr[2]=tkclk[2]+tk3.innerHTML;
+			valueArr[3]=tkclk[3]+tk4.innerHTML;
+			valueArr[4]=tkclk[4]+tk5.innerHTML;
+			valueArr[5]=tkclk[5]+tk6.innerHTML;
+			valueArr[6]=tkclk[6]+tk7.innerHTML;
+			valueArr[7]=tkclk[7]+tk8.innerHTML;
+			valueArr[8]=tkclk[8]+tk9.innerHTML;
+			valueArr[9]=tkclk[9]+tk10.innerHTML;
+
+			myAjaxreq(valueArr, "/UpdateTKfile"); 		// send the request
+
+	}
         function main(container, outline, toolbar, sidebar, status) {
+
+
+    	// the following lines makes the GetcurVal() call if <p id is changed (when tk value updates)  '=> Dattatreya <='
+	var target = document.querySelector("p");
+        var observer = new MutationObserver(function(mutations) {
+
+          mutations.forEach(function(mutation) {
+
+             GetcurVal();
+
+          });
+        });
+
+    var config = {
+      childList: true,
+      subtree: true,
+      characterData: true
+    };
+
+    observer.observe(target, config);
+  
+
+
+		
             // Checks if the browser is supported
             if (!mxClient.isBrowserSupported()) {
                 // Displays an error message if the browser is not supported.
@@ -74,10 +168,10 @@
                 // The editor is used to create certain functionality for the
                 // graph, such as the rubberband selection, but most parts
                 // of the UI are custom in this example.
-                var editor = new mxEditor();
+		editor = new mxEditor();
                 var graph = editor.graph;
                 var model = graph.getModel();
-
+		
                 /*
                     Maverick
                     The following variable 'diagRoot' serves as the root element for the entire
@@ -91,8 +185,7 @@
                 graph.foldingEnabled = false;
 
                 // Disable highlight of cells when dragging from toolbar
-                graph.setDropEnabled(false);
-
+                graph.setDropEnabled(true);
                 // Centers the port icon on the target port
                 graph.connectionHandler.targetConnectImage = true;
 
@@ -115,7 +208,7 @@
                 */
 
                 graph.model.getStyle = function(cell) {
-                    var style = null;
+                    var style = null; 
                     if (cell != null) {
                         // Get style for the recently created mxCell.
                         style = mxGraphModel.prototype.getStyle.apply(this, arguments);
@@ -192,7 +285,8 @@
                                 editor.execute('copy');
                             });
                             menu.addItem('Delete', 'images/delete2.png', function() {
-                                editor.execute('delete');
+                               
+				editor.execute('delete');
                             });
 
                             menu.addItem('Selection to superblock', 'images/superblock.png', function() {
@@ -1089,11 +1183,16 @@
 
                     textarea.value = str;
 
+		    xmlCode = str; // taking the xmlCode  '=> Dattatreya <='
+	 	    
+
                     if (arguments[2] == null) {
-                        showModalWindow(graph, 'XML', textarea, 410, 440);
+			                       
+			showModalWindow(graph, 'XML', textarea, 410, 440);  
                     } else {
 
-                        return mxUtils.getPrettyXml(node);
+			                      
+			return mxUtils.getPrettyXml(node);
                     }
                 }
 
@@ -1123,21 +1222,100 @@
                 }
 
                 // Defines a new export action
-                editor.addAction('exportXML', function(editor, cell) {
-                    //Only two parameters passed here.
-                    displayXMLorXcos(editor, cell);
-                });
+
+		function EXPORTxml(editor,cell)
+		{
+			displayXMLorXcos(editor, cell);
+		}
+                
+		editor.addAction('exportXML', function(editor,cell){EXPORTxml(editor, cell)});
+                  
 
                 /* Maverick
                  Reference: http://www.w3schools.com/xsl/xsl_client.asp
                  */
 
                 editor.addAction('exportXcos', function(editor, cell) {
-                    var textarea = document.createElement('textarea');
-                    textarea.style.width = '400px';
-                    textarea.style.height = '400px';
-                    textarea.value = getXcosDiagram(editor, cell);
-                    showModalWindow(graph, 'Xcos', textarea, 410, 440);
+
+		     if (graph.getChildVertices(graph.getDefaultParent()).length == 0) {
+                        alert("Empty canvas! Nothing to export!");
+                        return false;
+                    }
+                    var div = document.createElement('div');
+                    div.style.margin = "auto";
+
+                    var fileInputField = document.createElement("input");
+                    fileInputField.type = "text";
+                    fileInputField.placeholder = "Filename";
+                    fileInputField.style = "margin:30px 3px 20px 55px;";
+                    fileInputField.id = "ExportFilenameInput";
+                    fileInputField.maxlength = "128";
+                    fileInputField.autofocus = true;
+                    fileInputField.onkeydown = function () {
+                        if (event.which == 13) {
+                            document.getElementById("downloadLinkForExportXcos").click();  //This simulates click on download link if enter key is pressed while entering filename
+                        }
+                    };
+
+                    var textNodeXcos = document.createElement("span");
+                    textNodeXcos.innerHTML = ".xcos";
+                    textNodeXcos.style = "margin:30px 0px 40px 0px;";
+
+                    var downloadLink = document.createElement('a');
+
+                    downloadLink.id = "downloadLinkForExportXcos";
+                    downloadLink.href = "data:application/x-scilab-xcos;charset=ascii," + encodeURIComponent(getXcosDiagram(editor, cell));
+                    downloadLink.innerHTML = "Save as Xcos File";
+                    downloadLink.style = "text-decoration: none;padding: 2px 6px 2px 6px;border-top: 4px solid rgb(212, 209, 209);border-right: 4px solid #656464;border-bottom: 4px solid #656464;border-left: 4px solid rgb(212, 209, 209);box-sizing:border-box;border-radius:2px;margin:0px 80px 30px 80px;";
+                    downloadLink.onclick = function () {
+                        if (document.getElementById("ExportFilenameInput").value === "") {
+                            alert("Enter filename!");
+                            return false;
+                        }
+                        else {
+                            //var checkpat = new RegExp(/^[0-9a-zA-Z ... ]+$/);  //This RegExp is for a valid filename
+                            var checkpat = new RegExp("^[^<>:\"/\|\\?*]+$");  //This RegExp is for a valid filename
+
+                            if (checkpat.test(document.getElementById("ExportFilenameInput").value)) {
+                                //This branch will execute if filename is valid
+                                downloadLink.download = document.getElementById("ExportFilenameInput").value + ".xcos";
+                                wind.destroy();
+                                return true;
+                            }
+                            else {
+                                //This branch will execute if filename is invalid
+                                alert("Insert valid filename! < > : \" / \| \\ ? * not allowed in filename!");
+                                return false;
+                            }
+
+                        }
+
+                    };
+
+
+                    var breakNode1 = document.createElement('br');
+                    var breakNode2 = document.createElement('br');
+                    var breakNode3 = document.createElement('br');
+                    var breakNode4 = document.createElement('br');
+                    var breakNode5 = document.createElement('br');
+                    var breakNode6 = document.createElement('br');
+
+                    div.appendChild(breakNode1);
+                    div.appendChild(fileInputField);
+                    div.appendChild(textNodeXcos);
+                    div.appendChild(breakNode2);
+                    div.appendChild(breakNode3);
+                    div.appendChild(downloadLink);
+                    div.appendChild(breakNode4);
+                    div.appendChild(breakNode5);
+                    div.appendChild(breakNode6);
+
+
+                    var wind = showModalWindow(graph, 'Export Xcos', div, 264, 150);
+
+              
+
+                    
                 });
 
                 /*
@@ -1155,60 +1333,73 @@
                     to the graph mxGraph assigns new ids to them. 
                     Careful mapping needs to be done between these two ids.
                 */
-                editor.addAction('importXcos', function(editor, cell) {
+
+	        // function which makes importing the xcos file
+                function IMPORTxcos(editor,cell){
+		   
                     var xmlDocument = '';
                     var div = document.createElement('div');
                     var node = document.createElement('form');
                     div.setAttribute("id", "tempdiv");
-                    div.setAttribute("style", "height:200;width:200");
+                    div.setAttribute("style", "height:100;width:100");
 
-                    /*
-                        Maverick
-                        Implementing a file picker to choose the Xcos diagram.
-                    */
-                    var fileNode = document.createElement('input');
+                    
+		    var fileNode = document.createElement('input');
                     fileNode.type = 'file';
+                    fileNode.style = "margin:30px 30px 40px 30px;";
                     if (!(window.File && window.FileReader && window.Blob && window.FileList)) {
                         alert('This browser doesn\'t support this feature.');
                         return;
                     }
-
                     node.id = "tempform";
                     node.appendChild(fileNode);
-                    var textArea = document.createElement('textarea');
-                    textArea.setAttribute("rows", "15");
-                    textArea.setAttribute("cols", "60");
-                    textArea.setAttribute("name", "tarea");
-                    node.appendChild(textArea);
                     var button = document.createElement('button');
                     button.innerHTML = 'Submit';
                     button.type = "button";
                     button.name = "submit";
-                    node.appendChild(button);
+                    button.style = "margin:0px 113px 30px 113px;";
 
-                    /*
-                        Maverick
-                        Reference: www.htmlgoodies.com
-                    */
+                    var breakNode1 = document.createElement('br');
+                    var breakNode2 = document.createElement('br');
+
+                    node.appendChild(button);
+                    node.appendChild(breakNode1);
+                    node.appendChild(breakNode2);
+
+		    
                     fileNode.addEventListener('change', function(evt) {
 
                         var f = evt.target.files[0];
+			
+			if (!f.name.endsWith(".xcos") /*&& !f.name.endsWith(".zcos")*/) {     //Checks if file extension is "xcos" or not
+                            alert("Choose proper file! Only xcos files can be uploaded!");
+                            this.value = null;          //This will reset the file type input
+                            return false;               //This will prevent any further actions if can occur
+                        }			
+
                         var r = new FileReader();
+			
                         r.onload = function(e) {
+			 
+			    
                             var contents = e.target.result;
+			    
                             /*
                                 Maverick
                                 The following regular expressions are used to format the imported Xcos XML
                                 according to the format that is recognized by the mxCodec decoder.
                             */
                             xmlDocument = contents;
+			    
                             //RegEx to replace all the newline characters.
                             xmlDocument = xmlDocument.replace(/\n*/, '');
                             //RegEx to replace all the space characters between any a closing and the next opening tag.
                             xmlDocument = xmlDocument.replace(/>\s*</g, '><');
+				
                             //RegEx to replace all the XML comments.
                             xmlDocument = xmlDocument.replace(/<!--[\s\S]*?-->/g, '');
-                            textArea.value = xmlDocument;
+
+                           // textArea.value = xmlDocument;
 
                         }
 
@@ -1221,17 +1412,36 @@
                         See explanation at the beginning of the function!!!
                     */
                     var nodeDataObject = {};
+		    
+                    button.onclick = function (){ xcosToDiagram(xmlDocument); }
+		    
+			function xcosToDiagram(xmlDocument){   // function which takes the xml code and changes it to the diagram  '=> Dattatreya <='
+		    	
+			if (graph.getChildVertices(graph.getDefaultParent()).length != 0) {
+                            //This branch will execute if there are no elements present in the canvas
+                            graph.model.beginUpdate();
+                            try {
+                                var confirmValue = confirm("Importing this file will remove the existing diagram. Are you sure you want to continue?");
+                                if (!confirmValue) {
+                                    return false;
+                                }
+                                graph.removeCells(graph.getChildVertices(graph.getDefaultParent()));
+                            }
+                            finally {
+                                graph.model.endUpdate();
+                            }
 
-                    button.onclick = function() {
+                        }                        
 
-                        wind.destroy();
-
+			wind.destroy();
+			
                         graph.model.beginUpdate();
                         try {
                             var parent = graph.getDefaultParent();
                             var doc = mxUtils.parseXml(xmlDocument);
                             var codec = new mxCodec(doc);
                             var rootNode = doc.documentElement;
+			    console.log(rootNode);
                             /*
                                 Maverick
                                 Extracting 'Setup Window' values from Xcos diagram and setting the same 
@@ -1253,10 +1463,10 @@
 
                             setup("set", propertiesObject);
 
-
+				
 
                             while (rootNode.nodeName != 'root') {
-
+					console.log("rootnode.nodeName = "+rootNode.nodeName);
                                 /*
                                     Maverick
                                     Extracting 'Set Context' values from Xcos diagram and setting the same 
@@ -1280,6 +1490,7 @@
                                 } else {
 
                                     rootNode = rootNode.firstChild;
+					console.log("rootnode.nodeName = "+rootNode.nodeName);
                                 }
 
                             }
@@ -1543,23 +1754,46 @@
 
                     node.style.visibility = "visible";
                     var wind = showModalWindow(graph, 'Set Context', div, 410, 440);
-                });
-
+		    if(ViewExampleXcos.innerHTML != 'XcosNull')
+ 							 
+	     	    {			
+			var xcosDoc = ViewExampleXcos.innerHTML;
+			myAjaxreq(0,'/ChangeIndexFile');
+			xcosDoc = xcosDoc.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+	
+			//RegEx to replace all the newline characters.
+                        xcosDoc = xcosDoc.replace(/\n*/, '');
+                            //RegEx to replace all the space characters between any a closing and the next opening tag.
+                        xcosDoc = xcosDoc.replace(/>\s*</g, '><');
+				
+                            //RegEx to replace all the XML comments.
+                        xcosDoc = xcosDoc.replace(/<!--[\s\S]*?-->/g, '');
+			
+		        xcosToDiagram(xcosDoc);
+		    }
+                }
+		editor.addAction('importXcos', importxcos = function(editor, cell) {xeditor = editor; xcell = cell;IMPORTxcos(xeditor,xcell) } );
 
                 addToolbarButton(editor, toolbar, 'importXcos', 'Import Xcos', 'images/export1.png');
                 addToolbarButton(editor, toolbar, 'exportXML', 'Export XML', 'images/export1.png');
                 addToolbarButton(editor, toolbar, 'exportXcos', 'Export Xcos', 'images/export1.png');
-
                 toolbar.appendChild(spacer.cloneNode(true));
 
                 addToolbarButton(editor, toolbar, 'simulate', 'Simulate', 'images/ScilabExecute.png');
 
                 editor.addAction('simulate', function(editor, cell) {
-                    var diagram = getXcosDiagram(editor, cell);
+                    
+
+
+		window.onunload = function (e) {	// when user leaves the page...the process will be stopped '=> Dattatreya <='
+    			StopTK();
+		}
+		var diagram = getXcosDiagram(editor, cell);
                     var blob = new Blob([diagram], {
                         type: 'text/plain'
                     });
-
+         
+		    
                     // Create mxWindow for charts
                     var win = '<div id="charts" style="text-align: center;"><img id="loader" style="position: absolute; top:50%; transform: translate(-50%, -50%);" src="images/loading.gif"/></div>';
                     var content = document.createElement('div');
@@ -1568,28 +1802,387 @@
                     // Center the mxWindow  
                     var w = document.body.clientWidth;
                     var h = (document.body.clientHeight || document.documentElement.clientHeight);
+
+		    
+		    
+		    
                     wnd = new mxWindow('Simulation', content, (w-600)/2, (h-400)/2, 600, 400, true, true);
-                    wnd.setMaximizable(true);              
-                    wnd.setMinimizable(true);
-                    wnd.setScrollable(true);
-                    wnd.setResizable(true);
+                    wnd.setMaximizable(false);
+                    wnd.setMinimizable(false);
+                    wnd.setScrollable(false); 
+                    wnd.setResizable(false);
                     wnd.setClosable(true);
                     wnd.setVisible(true);
                     wnd.addListener(mxEvent.CLOSE, function(e){
                         chart_reset();
+			StopTK();  // call this function '=> Dattatreya <='
+			
                     });
-                   
+		    
+		
+		
 
+		// Added by '=> Dattatreya <=' : starting 
+		
+		
+	
+		   var parser,xmlDoc;
+		   parser = new DOMParser();
+		   xmlDoc=parser.parseFromString(xmlCode,"text/xml");   // coverts string to xmlcode ( in xmlDoc ) 
+
+		   var valArr = new Array();  // stores 'tkscale' parameters in an array
+		   var tkarr = new Array();
+		   var sliderArr = new Array();
+		   
+		  
+		   
+		   var row=0,min,max,norm,num=1,cscount=0; // variables to store the values
+		   	var winArr = new Array();
+		   	var Bblock_tag=xmlDoc.getElementsByTagName("BasicBlock"); 	// get all 'BasicBlock' tags from xml code
+			var mx_tag = xmlDoc.getElementsByTagName("mxCell"); 	// get all 'mxCell' tags from xml code
+			var tkid  = new Array(); 				// array which stores the main id of each tkblock
+			var clkid = new Array(); 				// array which stores every CLOCK_c ids
+			var clkdetails = new Array();				// array which stores the parameters of clock ('Period', 'initialisation time')
+			var tkarr = new Array(); 				// array which stores the port ids of every tk block ('control port', 'explicit port')
+			var sparr = new Array(); 				// array which stores the 'child' id's of each split
+			var j=1,k=0,l=0,m=0,n=0,o=0,p=0,y=0,count=1; 		// some variables to use as array indices
+
+						
+			// loop which iterates every 'BasicBlock' tag and take the required details
+			if(Bblock_tag.length == 0)		// if threre is no any single BasicBlock
+			{
+				alert("Empty Canvas");		//  it implies Empty Canvas
+				wnd.destroy();			// destroy the simulation window
+			}
+			for (var i=0;i<Bblock_tag.length;i++) 
+			{
+				if(Bblock_tag[i].attributes.blockElementName.value == "TKSCALE")		// if block is TKSCALE
+				{
+					tkid[m++] = parseInt(Bblock_tag[i].attributes.id.value); 		// a.store tk ids
+			
+					var Sdouble_tag=Bblock_tag[i].getElementsByTagName("ScilabDouble");     // b. under scilab double tag in real parameters attributes take the min,max,norm values
+					var Realpart_tag=Sdouble_tag[0].getElementsByTagName("data");   
+					
+					if(row>10)
+					{
+						alert("maximum \"10\" TKSCALE blocks are allowed"); 		// limit - only (maximum) 10 TKSCALE should use in an experiment
+						wnd.destroy(); 
+						break;
+					}				
+					valArr[row]=new Array();
+					valArr[row][0]=parseInt(Realpart_tag[0].attributes.realPart.value);	// min value
+					valArr[row][1]=parseFloat(Realpart_tag[1].attributes.realPart.value);	// max value
+					valArr[row][2]=parseFloat(Realpart_tag[2].attributes.realPart.value);  	// norm value
+					row++;	
+				}
+				if(Bblock_tag[i].attributes.blockElementName.value == "CSCOPE") 		// finding total cscopes used
+					cscount++;
+
+				if(Bblock_tag[i].attributes.blockElementName.value == "CLOCK_c")		
+				{
+					clkid[n++]= parseInt(Bblock_tag[i].attributes.id.value);
+					
+					var Sstr = Bblock_tag[i].getElementsByTagName("ScilabString");    	// in clock_c tag under 'scilab string' with 'exprs' attribute store its parameters
+					for(var x=0;x<Sstr.length;x++)
+					{
+						if(Sstr[x].getAttribute('as')!=null)
+						{						
+							if(Sstr[x].attributes.as.value == "exprs")
+							{
+															
+								var data_tag = Sstr[x].getElementsByTagName("data"); 
+								
+								if(data_tag.length == 2) // finding there are exactly two parameters
+								{
+									
+									if(count%2)  // parameters stored in array only 'once'
+									{
+										clkdetails[y] = new Array();
+										clkdetails[y][0] = data_tag[0].attributes.value.value;		// 'Period' parameter
+										clkdetails[y][1] = data_tag[1].attributes.value.value; y++;	// 'Initialisation time' parameter
+									}
+									count++;
+								}
+							}
+						}
+					}
+				}
+			}
+			
+			 // finding splits from every link, TKSCALE parameter values
+			
+			if(row<=10){		
+			while(j<mx_tag.length)
+			{
+				
+				if(parseInt(mx_tag[j].attributes.parent.value) == tkid[o])
+				{
+					tkarr[l]=new Array();
+					tkarr[l][0]=parseInt(mx_tag[j].attributes.id.value); j++;
+					tkarr[l][1]=parseInt(mx_tag[j].attributes.id.value); j++;
+				
+					l=l+1;
+					o++;
+					
+				}				
+
+				if(parseInt(mx_tag[j].attributes.parent.value) == clkid[p])
+				{
+					
+					clkid[p]=parseInt(mx_tag[j].attributes.id.value);p++; 		// clock parameter 'command port'
+				}
+				if(mx_tag[j].getAttribute('style') !=null)
+				{				
+					if(mx_tag[j].attributes.style.value == "Split")   // store the split details
+					{
+						j=j+1;
+						sparr[k]= new Array();
+						sparr[k][0]=parseInt(mx_tag[j].attributes.id.value); // 2-D array, 1st column split id value, 2nd column indicates to which group split belongs to
+						sparr[k][1]=-1; // -1 indicates split does not grouped with any other group
+						k=k+1;
+					}
+				}
+				j++;
+			}
+			
+			j=1;
+
+			
+			var sind,tind;		   // index of present source,target in split array sparr
+			var grouparr= new Array(); // get the details of different  groups
+			var clkgrp = new Array();  // get the details like clock stored in particular group
+			var tkgrp = new Array();   // get the details like tk stored in particular group
+			var groupind=0;		   // index used for group
+			
+			for(var i=0;i<clkid.length;i++)
+				clkgrp[i]=-1;       // initialising clkarr to -1
+
+			for(var i=0;i<tkarr.length;i++)
+				tkgrp[i]=-1;	    // initialising tkgrp to -1
+
+		        // using the splits and their connections we will find the connection between tkscale and clock 
+			while(j<mx_tag.length)
+			{
+				sind=-1;
+				tind=-1;
+				if(mx_tag[j].getAttribute("source")!=null)
+				{
+					var s = parseInt(mx_tag[j].attributes.source.value); // present source
+					var t = parseInt(mx_tag[j].attributes.target.value); // present target
+
+					for(var i=0;i<k;i++)  // note that split has 3 childs with consecutive ids (ex: 80,81,82)... we stored the first index (80 in ex.) in the array 
+					{			
+						if((sparr[i][0]<=s)&&(s<=sparr[i][0]+2))     // find source (index value of split) if it belongs to one of the splits childs (80<=s<=82 ex.)
+							sind=i;
+						if((sparr[i][0]<=t)&&(t<=sparr[i][0]+2))    // find targets (index value of split) if it belongs to one of the splits childs (80<=t<=82 ex.)
+							tind=i;
+							
+					}
+					if(sind!=-1 && tind!=-1) // if both source and target belongs to splits...
+					{
+
+						if(sparr[sind][1]==-1 && sparr[tind][1]==-1) // if both are not grouped to any other split
+						{
+							grouparr[groupind] = new Array();							
+							grouparr[groupind].push(sind,tind);  // create a new group in grouparr and push the two indices (of sparr)
+							sparr[sind][1]=groupind;             // indicating that this source split belongs to grouparr i.e., it is grouped at groupind (grouparr index value) 
+							sparr[tind][1]=groupind;	     // indicating that this target split belongs to grouparr i.e., it is grouped at groupind (grouparr index value) 
+
+							groupind++; 
+						}
+						else if((sparr[sind][1]==-1 && sparr[tind][1]!=-1)) // if source is not grouped and target is grouped to another split
+						{	
+
+							grouparr[sparr[tind][1]].push(sind); // add source split to the grouparr (group where target belongs to)
+							sparr[sind][1]=sparr[tind][1];       // change the group value of the split
+						}
+						else if((sparr[sind][1]!=-1 && sparr[tind][1]==-1)) // if target is not grouped and source is grouped to another split
+						{
+
+							grouparr[sparr[sind][1]].push(tind);  // add target split to the grouparr (group where source belongs to)
+							sparr[tind][1]=sparr[sind][1];	      // change the group value of the split				
+						}
+						else  // if source,target both are grouped with some other splits
+						{
+							// here we will find the minimum group index value and merge the maximum group into minimum.
+							// ex: group indices- 2,4.. then take all splits in 4(max) index and add them to the 2(min) index
+ 			
+							var min=(sparr[sind][1]>sparr[tind][1])?sparr[tind][1]:sparr[sind][1]; // find the minimum index of source_grouped index,target_grouped index
+							var max=(sparr[sind][1]>sparr[tind][1])?sparr[sind][1]:sparr[tind][1]; // find the maximum index of source_grouped index,target_grouped index	
+
+							for(var x=0;x<grouparr[max].length;x++) // iterating to every split in maximum group
+							{
+								var val = grouparr[max][0];   // getting the split id 
+								sparr[val][1] = min;         // making their group id with minimum index value.
+							}							
+							grouparr[min] = grouparr[min].concat(grouparr[max]); // concatenate all splits in max to min.
+							sparr[tind][1] = min;    // changing the group id
+							sparr[sind][1] = min;    // changing the group id
+							
+						}
+					}
+					if(sind==-1 && tind!=-1) // if source  does not belongs to splits then it belongs to one of the clock id's
+					{ 
+
+						for(var i=0;i<p;i++)
+							if(s==clkid[i])
+								break;
+						if(i!=p)
+							sind = i; 
+						if(sind!=-1)
+						{
+							clkgrp[i]=t; // adding the target in the clkgroup
+							if( sparr[sind][1]==-1)
+							{
+								grouparr[groupind] = new Array();							
+								grouparr[groupind].push(sind);
+								sparr[sind][1]=groupind;
+								groupind++;
+							}
+							
+							
+
+						}
+						
+					}
+					if(tind==-1 && sind!=-1)   // if target  does not belongs to splits then it belongs to one of the tkscale id's
+					{
+
+						for(var i=0;i<l;i++)
+							if(t==tkarr[i][0])
+								break;
+						if(i!=l)
+							tind = i;
+						if(tind!=-1)
+						{
+							tkgrp[i] = s; 
+						
+							if( sparr[tind][1]==-1)
+							{
+								grouparr[groupind] = new Array();							
+								grouparr[groupind].push(tind);
+								sparr[tind][1]=groupind;
+								groupind++;
+							}
+							
+
+						}
+
+					}
+				}
+				j=j+1;
+			}
+
+		
+			
+
+			// below loop changes the clkgrp details
+			// at first it contains the target of the clock id (clock id always be a source)
+			// when the below loop ends, the clkgrp contains the 'group index' of 'which split belongs to ith clock'
+
+			for(var i=0;i<n;i++)
+			{
+				
+				for(var j=0;j<k ;j++)
+				{
+
+					if((sparr[j][0]<=clkgrp[i])&&(clkgrp[i]<=sparr[j][0]+2))
+					{
+						clkgrp[i]=sparr[j][1]; break;
+					}
+				}
+			}
+
+
+			
+
+			// this loop iterate all the tkscales and finally gives details of 'which tkscale belongs to which clock'
+			for(var i=0;i<tkgrp.length;i++)
+			{
+				for(var j=0;j<clkgrp.length;j++) // iterate from every clkgrp
+				{
+					var gind = clkgrp[j];  
+				
+					var temp=-1;
+					if(gind!=-1) {
+					for(var x=0;x<grouparr[gind].length;x++)
+					{
+						
+						if((sparr[grouparr[gind][x]][0]<=tkgrp[i]) && (tkgrp[i]<=(sparr[grouparr[gind][x]][0]+2)))
+						{
+							tkgrp[i] = j; temp=0;
+							break;
+						}
+					}
+					if(temp==0)
+						break;
+					}
+				}
+			}
+	
+		    for(var i=0;i<row;i++)
+			if(tkgrp[i]!=-1){
+			tkclk[i]=(clkdetails[tkgrp[i]][0]).toString()+"  "; } // adding the clock parameter(Period) to the tkclk in string format ( 0.1  )
+		
+		
+		   
+		    }
+		   
+          	   /* function which creates a slider for the tkscale data */
+                  
+
+		    function CreateSlider()
+		    {
+			tkchange.innerHTML=0;
+
+			for ( var i=0;i<row;i++)
+			{
+				
+				min=valArr[i][0];
+				max=valArr[i][1];
+				norm=valArr[i][2];
+				if(!((min<=norm && norm<=max) || (min>max)))
+				{
+					norm=(min+max)/2;
+				}					
+				num=i+1;
+				tag='tk'+(i+1);
+				winArr[i] = window.open('http://127.0.0.1:8001/slider.html?min='+min+"&max="+max+"&num="+num+"&tag="+tag+"&norm="+norm,"TK-"+i,width="20",height="100"); 
+				// creating a new window using 'slider.html' and some css 
+			}
+		    }
+		   
+		   function StopTK() // functoion which deletes the sliders and related files which are created
+		    {
+			
+			myAjaxreq("Stop", "/UpdateTKfile");
+			for(var i=0;i<winArr.length;i++)
+				winArr[i].close();
+		    }
+
+
+		//  Ending  :  '=> Dattatreya <='
+
+
+		   
                     // Send xcos file to server
-                    var form = new FormData()
+                    var form = new FormData()  
                     form.append("file",blob);
+		    
                     var xhr = new XMLHttpRequest();
                     xhr.open("POST", "/upload", true);
                     xhr.onload = function() {
-                        console.log(this.responseText);
+                        
                         if(this.responseText!='error'){
                             // If no error in uploading, initialize chart
                             clientID = this.responseText;
+
+			     if(row<=10)
+			     {
+				myAjaxreq("Start", "/UpdateTKfile");
+				CreateSlider();  // if tkblocks are <=10 then create slider else not    '=> Dattatreya <='
+			     }
+			    
                             chart_init(wnd);
                         }else{
                             alert("Error");
@@ -1604,9 +2197,16 @@
                     xhr.send(form);
                 });
 
+		
+		
+					
+			
+		
                 // Adds toolbar buttons into the status bar at the bottom
                 // of the window.
 
+		
+		
                 addToolbarButton(editor, status, 'zoomIn', '', 'images/zoom_in.png', true);
                 addToolbarButton(editor, status, 'zoomOut', '', 'images/zoom_out.png', true);
                 addToolbarButton(editor, status, 'actualSize', '', 'images/view_1_1.png', true);
@@ -1968,6 +2568,15 @@
 
             // Executes when button 'btn' is clicked
             btn.onclick = function() {
+	
+
+                var parent = graph.getDefaultParent();
+                var model = graph.getModel();
+                var v1 = null;
+                var doc = mxUtils.createXmlDocument();
+                model.beginUpdate();
+                try {
+
                 var propertiesObject = {
                     id: cell.id
                 };
@@ -1977,19 +2586,130 @@
                         propertiesObject[key] = document.getElementById(key.toString()).value;
                     }
                 }
-                var details = cell.blockInstance.instance.set(propertiesObject); //window[name]("set",cell.value,propertiesObject);
-                var enc = new mxCodec();
-                var node = enc.encode(details);
-                cell.value = node;
-                /*
-                    Maverick
-                    We have changed the value of the cell, but the change won't be reflected
-                    unless the graph is refreshed.
-                */
+	var geometry = cell.getGeometry();
+	var x=geometry.x;
+	var y=geometry.y;
+
+                    var details_instance = new window[name]();
+                    var details = cell.blockInstance.instance.set(propertiesObject); //window[name]("set",cell.value,propertiesObject);
+		
+	    editor.execute('deleteBlock',(editor, cell));
+                    var enc = new mxCodec(mxUtils.createXmlDocument());
+                    var node = enc.encode(details);
+                    var temp = enc.encode(parent);
+
+                    // Get the stylesheet for the graph
+                    var stylesheet = graph.getStylesheet();
+                    // From the stylesheet, get the style of the particular block
+                    var style = stylesheet.styles[name];
+
+                    /*
+                     * When a particular block is loaded for the first time,
+                     * the image in the style of the block will be a path to the image.
+                     * Set the label in the style property of the block has a html image,
+                     * and set the image in the style property as null
+                     *
+                     * NOTE: Since the image of any block need not be changed for
+                     *       for every movement of that block, the image must be
+                     *       set only once.
+                     */
+	    
+                    if (style != null && style['image'] != null) {
+	
+                        // Make label as a image html element
+                        var label = '<img src="' + style['image'] + '" height="80" width="80">';
+                        // Set label
+                        style['label'] = label;
+
+                        style['imagePath'] = style['image'];
+
+                        // Set image as null
+                        style['image'] = null;
+
+                        // Add the label as a part of node
+                        node.setAttribute('label', label);
+                    }
+
+                    /*
+                     * If a particular block with image tag in it's style property
+                     * has been invoked already, the image tag would be null for any
+                     * successive instances of the same block. Hence, set the label
+                     * from the label tag in style which was set when that blockModel
+                     * was invoked on the first time.
+                     */
+                    if (style != null && style['label'] != null) {
+
+                        // Set label from the label field in the style property
+                        node.setAttribute('label', style['label']);
+                    }
+
+                    node.setAttribute('parent', temp.getAttribute('id'));
+                    var i, arr = [];
+	
+			  var details_instance=cell.blockInstance.instance;
+		
+                    var blockModel = details_instance.x.model;
+                    var graphics = details_instance.x.graphics;
+
+                    /* To determine number and type of Port*/
+                    var inputPorts = [],
+                        outputPorts = [],
+                        controlPorts = [],
+                        commandPorts = [];
+                    if (blockModel.in.height != null) {
+                        arr = getData(graphics.in_implicit);
+                        if (arr.length != 0) {
+                            inputPorts = arr;
+                        } else {
+                            for (i = 0; i < blockModel.in.height; i++) {
+                                inputPorts.push("E");
+                            }
+                        }
+                    }
+                    if (blockModel.out.height != null) {
+                        arr = getData(graphics.out_implicit);
+                        if (arr.length != 0) {
+                            outputPorts = arr;
+                        } else {
+                            for (i = 0; i < blockModel.out.height; i++) {
+                                outputPorts.push("E");
+                            }
+                        }
+                    }
+                    if (blockModel.evtin.height != null) {
+                        for (i = 0; i < blockModel.evtin.height; i++) {
+                            controlPorts.push("CONTROL");
+                        }
+                    }
+                    if (blockModel.evtout.height != null) {
+                        for (i = 0; i < blockModel.evtout.height; i++) {
+                            commandPorts.push("COMMAND");
+                        }
+                    }
+                    v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, name);
+
+                    // @Chhavi: Additional attribute to store the block's instance
+                    v1.blockInstance = createInstanceTag(details_instance);
+                    v1.currentAngle = 0;
+                    v1.flipX = 1;
+                    v1.flipY = 1;
+                    createPorts(graph, v1, inputPorts, controlPorts, outputPorts, commandPorts);
+                    v1.setConnectable(false);
+                } finally {
+                    model.endUpdate();
+                }
+                graph.setSelectionCell(v1);
+	
+
+
                 graph.refresh();
                 wind.destroy();
+
+
+
             };
             myform.appendChild(btn);
+
 
             // Button - Reset
             var btn = document.createElement("button");
@@ -2935,12 +3655,12 @@
             var dec = new mxCodec(root.ownerDocument);
             dec.decode(root, graph.stylesheet);
         };
-    </script>
-    <!--
+     </script>
+<!--
         Updates connection points before the routing is called.
     -->
-    <script type="text/javascript">
-        // Computes the position of edge to edge connection points.
+<script type="text/javascript">
+      // Computes the position of edge to edge connection points.
         mxGraphView.prototype.updateFixedTerminalPoint = function(edge, terminal, source, constraint) {
 
             // Store the edge state for every newly created edge in edgeState variable
@@ -3004,13 +3724,12 @@
 
             edge.setAbsoluteTerminalPoint(pt, source);
         };
-    </script>
-
-    <!--
+     </script>
+<!--
       Overrides methods to preview and create new edges.
     -->
-    <script type="text/javascript">
-        // Sets source terminal point for edge-to-edge connections.
+<script type="text/javascript">
+      // Sets source terminal point for edge-to-edge connections.
         mxConnectionHandler.prototype.createEdgeState = function(me) {
             var edge = this.graph.createEdge();
 
@@ -3111,12 +3830,12 @@
 
             return result;
         };
-    </script>
-    <!--
+     </script>
+<!--
         Adds in-place highlighting for complete cell area (no hotspot).
     -->
-    <script type="text/javascript">
-        mxConnectionHandlerCreateMarker = mxConnectionHandler.prototype.createMarker;
+<script type="text/javascript">
+      mxConnectionHandlerCreateMarker = mxConnectionHandler.prototype.createMarker;
         mxConnectionHandler.prototype.createMarker = function() {
             var marker = mxConnectionHandlerCreateMarker.apply(this, arguments);
 
@@ -3137,12 +3856,12 @@
 
             return marker;
         }
-    </script>
-    <!--
+     </script>
+<!--
        Implements a perpendicular wires connection edge style
     -->
-    <script type="text/javascript">
-        mxEdgeStyle.WireConnector = function(state, source, target, hints, result) {
+<script type="text/javascript">
+      mxEdgeStyle.WireConnector = function(state, source, target, hints, result) {
             state.cell.waypoints = state.cell.geometry.points;
             // Creates array of all way- and terminalpoints
             var pts = state.absolutePoints;
@@ -3257,57 +3976,76 @@
 
             return mxGraphCreateHandler.apply(this, arguments);
         };
-    </script>
-
+     </script>
 </head>
-
+<!-- Creating p'id for each tkblock -->
+<!-- tkchange will call GetcurVal() if any one of the slider value is updated -->
+<!-- ViewExampleXcos will get the xcos file imported from the file with 'eid' obtained from 'view example' link -->
+<p hidden="" id="tkchange">
+</p>
+<p hidden="" id="tk1">
+</p>
+<p hidden="" id="tk2">
+</p>
+<p hidden="" id="tk3">
+</p>
+<p hidden="" id="tk4">
+</p>
+<p hidden="" id="tk5">
+</p>
+<p hidden="" id="tk6">
+</p>
+<p hidden="" id="tk7">
+</p>
+<p hidden="" id="tk8">
+</p>
+<p hidden="" id="tk9">
+</p>
+<p hidden="" id="tk10">
+</p>
+<p hidden="" id="ViewExampleXcos">XcosNull</p>
 <!-- Page passes the container for the graph to the program -->
-
 <body onload="main(document.getElementById('graphContainer'),
             document.getElementById('outlineContainer'),
             document.getElementById('toolbarContainer'),
             document.getElementById('sidebarContainer'),
-            document.getElementById('statusContainer'));" style="margin:0px;">
-
-    <!-- Creates a container for the splash screen -->
-    <div id="splash" style="position:absolute;top:0px;left:0px;width:100%;height:100%;background:white;z-index:1;">
-        <center id="splash" style="padding-top:230px;">
-            <img src="images/loading.gif">
-        </center>
-    </div>
-
-    <!-- Creates a container for the sidebar -->
-    <div id="toolbarContainer" style="position:absolute;white-space:nowrap;overflow:hidden;top:0px;left:0px;max-height:24px;height:36px;right:0px;padding:6px;background-image:url('images/toolbar_bg.gif');">
-    </div>
-
-    <!-- Creates a container for the toolbox -->
-    <div id="sidebarContainer" class="ui-accordion ui-widget ui-helper-reset" style="position:absolute;overflow:scroll;top:36px;left:0px;bottom:36px;max-width:266px;width:270px;padding-top:10px;padding-left:4px;">
-    </div>
-
-    <!-- Creates a container for the graph -->
-    <div id="graphContainer" style="position:absolute;overflow:hidden;top:36px;left:270px;bottom:36px;right:0px;background-image:url('images/grid.gif');cursor:default;">
-    </div>
-
-    <!-- Creates a container for the outline -->
-    <div id="outlineContainer" style="position:absolute;overflow:hidden;top:36px;right:0px;width:200px;height:140px;background:transparent;border-style:solid;border-color:black;">
-    </div>
-
-    <!-- Creates a container for the sidebar -->
-    <div id="statusContainer" style="text-align:right;position:absolute;overflow:hidden;bottom:0px;left:0px;max-height:24px;height:36px;right:0px;color:white;padding:6px;background-image:url('images/toolbar_bg.gif');">
-        <div style="font-size:10pt;float:left;">
-            <a href="http://fossee.in/" target="_tab">FOSSEE</a>
-        </div>
-    </div>
-
-    <!-- Secret -->
-    <p class="accordion-expand-holder" style="display:none">
-        <a id='toggleBlocks' class="accordion-expand-all">Expand All</a>
-    </p>
-
+            document.getElementById('statusContainer')); CheckViewExample()" style="margin:0px;">
+<!-- Creates a container for the splash screen -->
+<div id="splash" style="position:absolute;top:0px;left:0px;width:100%;height:100%;background:white;z-index:1;">
+<center id="splash" style="padding-top:230px;">
+<img src="images/loading.gif"/>
+</center>
+</div>
+<!-- Creates a container for the sidebar -->
+<div id="toolbarContainer" style="position:absolute;white-space:nowrap;overflow:hidden;top:0px;left:0px;max-height:24px;height:36px;right:0px;padding:6px;background-image:url('images/toolbar_bg.gif');">
+</div>
+<!-- Creates a container for the toolbox -->
+<div class="ui-accordion ui-widget ui-helper-reset" id="sidebarContainer" style="position:absolute;overflow:scroll;top:36px;left:0px;bottom:36px;max-width:266px;width:270px;padding-top:10px;padding-left:4px;">
+</div>
+<!-- Creates a container for the graph -->
+<div id="graphContainer" style="position:absolute;overflow:hidden;top:36px;left:270px;bottom:36px;right:0px;background-image:url('images/grid.gif');cursor:default;">
+</div>
+<!-- Creates a container for the outline -->
+<div id="outlineContainer" style="position:absolute;overflow:hidden;top:36px;right:0px;width:200px;height:140px;background:transparent;border-style:solid;border-color:black;">
+</div>
+<!-- Creates a container for the sidebar -->
+<div id="statusContainer" style="text-align:right;position:absolute;overflow:hidden;bottom:0px;left:0px;max-height:24px;height:36px;right:0px;color:white;padding:6px;background-image:url('images/toolbar_bg.gif');">
+<div style="font-size:10pt;float:left;">
+<a href="http://fossee.in/" target="_tab">
+     FOSSEE
+    </a>
+</div>
+</div>
+<!-- Secret -->
+<p class="accordion-expand-holder" style="display:none">
+<a class="accordion-expand-all" id="toggleBlocks">
+    Expand All
+   </a>
+</p>
 </body>
 <!-- It's good if this part happens after the entire page has loaded-->
 <script type="text/javascript">
-    // Preload all images
+  // Preload all images
     var directory = ["/blocks/", "/images/", "/palettes/"];
     for (folder in directory) {
         $.ajax({
@@ -3390,6 +4128,5 @@
             }
         });
     });
-</script>
-
+ </script>
 </html>
