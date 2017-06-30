@@ -1800,11 +1800,11 @@
          	    
                             wnd = new mxWindow('Simulation', content, (w-600)/2, (h-400)/2, 600, 400, true, true);
                             wnd.setMaximizable(true);              
-		            wnd.setMinimizable(true);
-		            wnd.setScrollable(true);
-		            wnd.setResizable(true);
-		            wnd.setClosable(true);
-		            wnd.setVisible(true);
+              wnd.setMinimizable(true);
+              wnd.setScrollable(true);
+              wnd.setResizable(true);
+              wnd.setClosable(true);
+              wnd.setVisible(true);
                             wnd.addListener(mxEvent.CLOSE, function(e){
                                 chart_reset();
          		StopTK();  // call this function '=> Dattatreya <='
@@ -1903,7 +1903,7 @@
          		
          		 // finding splits from every link, TKSCALE parameter values
          		
-         		if(row<=10){		
+         		if(row<=10 && row >= 1){		
          		while(j<mx_tag.length)
          		{
          			
@@ -2169,7 +2169,7 @@
                                     // If no error in uploading, initialize chart
                                     clientID = this.responseText;
          
-         		     if(row<=10)
+         		     if(row<=10 && row >= 1)
          		     {
          			myAjaxreq("Start", "/UpdateTKfile");
          			CreateSlider();  // if tkblocks are <=10 then create slider else not    '=> Dattatreya <='
