@@ -10,8 +10,9 @@ import threading
 from gevent import monkey
 import fileinput
 from gevent.pywsgi import WSGIServer
-from flask import Flask, request, Response, render_template, send_from_directory
+from flask import Flask, request, Response, render_template, send_from_directory ,send_file# send_file added to ease download
 from werkzeug import secure_filename
+from os.path import exists
 #import webbrowser #modifiedm@shivendra for displaying image saved
 #from random import randint # modified_shank : to generate random image names
 
@@ -42,15 +43,8 @@ NOLINE = -1
 BLOCK_IDENTIFICATION =- 2
 
 # Scilab dir, can't run absolute paths
-<<<<<<< HEAD
-#SCI = "../scilab_for_xcos/"
-#SCI="../scilab-master/scilab/"
-#SCI="../scilab-master/"
-SCI="../scilab-source/scilab"
-=======
-SCI = "../../scilab_for_xcos/"
+SCI = "../scilab_for_xcos/"
 
->>>>>>> 37cad94e12e748c0f3674435f3be2258001c7c4a
 # List to store figure IDs
 figure_list = []
 # List to store filenames of files
@@ -120,7 +114,7 @@ def get_line_and_state(file, count):
         # Add figure ID to list
         figure_list.append(figure_id)
         return (None, INITIALIZATION)
-    elif state == BLOCK_IDENTIFICATION:#check for block identification modified@shivendra
+    elif state == BLOCK_IDENTIFICATION:#check for block identification 
             return (str(figure_id),BLOCK_IDENTIFICATION)
     elif state == ENDING:
         # End of figure
@@ -145,8 +139,14 @@ def event_stream(xcos_file_id):
 	_l = len(out)
 	#initialise pid
 	pid = 0
-	# Run xcos file
-	command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);quit()"]
+        #id to identify each session for saving workspace #modified@shivendra
+        session=Details.uid
+        workspace="workspace"+session+".dat"
+        append=',"-append"'
+        #print workspace_command
+        command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "load('"+workspace+"');loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);deletefile('"+workspace+"');save('"+workspace+append+"') ;quit()"]
+        if(not exists(workspace)):
+                command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);save('"+workspace+"') ;quit()"]  
 	scilab_proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False);
 
 	# Wait till xcos is launched
@@ -638,6 +638,16 @@ def ChangeIndexFile():
      		   	file.write(str(Details.names[Details.uid+"soup"]))
 	return "0"
 			
+
+# route for download of binary and audio
+@app.route('/downloadfile',methods=['POST'])
+def DownloadFile ():
+        filename =request.form['path']
+        download_file =os.getcwd()+'/'+filename
+        #check if audio file or binary file
+        if "audio"  in filename:
+                return send_file(download_file, as_attachment=True,mimetype='audio/basic') 
+        return send_file(download_file, as_attachment=True,mimetype='application/octet-stream')
 		
 @app.route('/SendLog')
 def sse_request():
