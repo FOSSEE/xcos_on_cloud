@@ -151,6 +151,7 @@
         <add as="rounded" value="1"/>
         <add as="fillColor" value="white"/>
         <add as="strokeColor" value="red"/>
+	<add as="displayedLabel" value="%s"/>
     </add>
     <add as="CURV_f" extend="blockWithLabel">
         <add as="displayedLabel" value="Curve"/>
@@ -347,7 +348,9 @@
     <add as="MATMAGPHI" extend="blockWithLabel">
         <add as="displayedLabel" value="Mag &amp; Phi"/>
     </add>
-    <add as="SQRT" extend="blockWithLabel"/>
+    <add as="SQRT" extend="blockWithLabel">
+     <add as="displayedLabel" value="SQRT"/>
+    </add>
     <add as="GAINBLK_f" extend="Gain"/>
     <add as="LOGBLK_f" extend="blockWithLabel">
         <add as="displayedLabel" value="LOG"/>
@@ -458,7 +461,9 @@
     <add as="CUMSUM" extend="blockWithLabel">
         <add as="displayedLabel" value="CUMSUM"/>
     </add>
-    <add as="SUBMAT" extend="blockWithLabel"/>
+    <add as="SUBMAT" extend="blockWithLabel">
+    <add as="displayedLabel" value="SUBMAT"/>
+    </add>
     <add as="MATBKSL" extend="blockWithLabel">
         <add as="displayedLabel" value="A \ B"/>
     </add>
@@ -468,8 +473,12 @@
     <add as="MATCATV" extend="blockWithLabel">
         <add as="displayedLabel" value="Vert&lt;BR&gt;         Cat"/>
     </add>
-    <add as="MATSUM" extend="blockWithLabel"/>
-    <add as="RICC" extend="blockWithLabel"/>
+    <add as="MATSUM" extend="blockWithLabel">
+     <add as="displayedLabel" value="MATSUM"/>
+    </add>
+    <add as="RICC" extend="blockWithLabel">
+     <add as="displayedLabel" value="RICC"/>
+    </add>
     <add as="ROOTCOEF" extend="blockWithLabel">
         <add as="displayedLabel" value="ROOT&lt;BR&gt;COEF"/>
     </add>
@@ -482,7 +491,9 @@
     <add as="MATZCONJ" extend="blockWithLabel">
         <add as="displayedLabel" value="CONJ"/>
     </add>
-    <add as="EXTRACT" extend="blockWithLabel"/>
+    <add as="EXTRACT" extend="blockWithLabel">
+    <add as="displayedLabel" value="EXTRACT"/>
+    </add>
     <add as="MATEXPM" extend="blockWithLabel">
         <add as="displayedLabel" value="EXPM"/>
     </add>
@@ -495,7 +506,9 @@
     <add as="EXTTRI" extend="blockWithLabel">
         <add as="displayedLabel" value="Tri/Diag&lt;BR&gt;         Extraction"/>
     </add>
-    <add as="MATMUL" extend="blockWithLabel"/>
+    <add as="MATMUL" extend="blockWithLabel">
+    <add as="displayedLabel" value="MATMUL"/>
+    </add>
     <add as="MATTRAN" extend="blockWithLabel"/>
     <add as="MATSING" extend="blockWithLabel">
         <add as="displayedLabel" value="SVD"/>
@@ -529,12 +542,9 @@
         <add as="displayedLabel" value="To workspace&lt;BR&gt;%s [%s]"/>
     </add>
     <add as="CMAT3D" extend="blockWithLabel">
-        <add as="image" value="blocks/ASCOPE.svg"/>
-        <add as="verticalLabelPosition" value="bottom"/>
-        <add as="verticalAlign" value="top"/>
-        <add as="spacing" value="2"/>
-        <add as="displayedLabel" value="Mat. 3D"/>
+	<add as="image" value="blocks/ASCOPE.svg"/>
     </add>
+
     <add as="CSCOPXY3D" extend="Icon">
         <add as="image" value="blocks/CSCOPXY3D.svg"/>
     </add>
@@ -543,15 +553,15 @@
     </add>
     <add as="CMATVIEW" extend="blockWithLabel">
         <add as="image" value="blocks/ASCOPE.svg"/>
-        <add as="verticalLabelPosition" value="bottom"/>
-        <add as="verticalAlign" value="top"/>
-        <add as="spacing" value="2"/>
-        <add as="displayedLabel" value="Mat. View"/>
     </add>
     <add as="CMSCOPE" extend="Icon">
       <add as="image" value="blocks/ASCOPE.svg"/>
     </add>
-    <add as="AFFICH_m" extend="Affiche"/>
+
+  <add as="AFFICH_m" extend="blockWithLabel">
+	<add as="displayedLabel" value="%s"/>
+    </add>
+
     <add as="AFFICH_f" extend="Affiche"/>
     <add as="TRASH_f" extend="blockWithLabel">
         <add as="displayedLabel" value="Trash"/>
@@ -607,6 +617,7 @@
         <add as="strokeColor" value="red"/>
     </add>
     <add as="CLKOUTV_f" extend="blockWithLabel">
+	<add as="displayedLabel" value="%s"/>
         <add as="shape" value="hexagon"/>
         <add as="fillColor" value="white"/>
         <add as="strokeColor" value="red"/>
@@ -651,6 +662,9 @@
         <add as="image" value="blocks/DSCOPE.svg"/>
     </add>
     <!-- SIGNAL ROUTING -->
+   <add as="SELF_SWITCH" extend="Icon">
+        <add as="image" value="blocks/Self_Switch_off.svg"/>
+    </add>
     <add as="SELF_SWITCH_ON" extend="Icon">
         <add as="image" value="blocks/Self_Switch_on.svg"/>
     </add>
@@ -674,19 +688,21 @@
         <add as="displayedLabel" value="Extractor"/>
     </add>
     <add as="M_SWITCH" extend="Icon">
-        <add as="verticalLabelPosition" value="bottom"/>
+    <!--   <add as="verticalLabelPosition" value="bottom"/>
         <add as="verticalAlign" value="top"/>
         <add as="spacing" value="2"/>
         <add as="noLabel" value="0"/>
         <add as="displayedLabel" value="Dynamic index"/>
+  -->
         <add as="image" value="blocks/SWITCH.svg"/>
     </add>
     <add as="SWITCH_f" extend="Icon">
-        <add as="verticalLabelPosition" value="bottom"/>
+      <!--  <add as="verticalLabelPosition" value="bottom"/>
         <add as="verticalAlign" value="top"/>
         <add as="spacing" value="2"/>
         <add as="noLabel" value="0"/>
         <add as="displayedLabel" value="Static: %s"/>
+	-->
         <add as="image" value="blocks/SWITCH.svg"/>
     </add>
     <add as="SWITCH2_m" extend="Icon">
@@ -749,12 +765,14 @@
         <!-- new value for the label defined in the interface function of block -->
     </add>
     <add as="TEXT_f" extend="Label">
-        <!-- <add as="displayedLabel" value="Text"/>  -->
+        <!--<add as="displayedLabel" value="Text"/>  -->
         <add as="strokeColor" value="none"/>
         <add as="fillColor" value="none"/>
     </add>
     <!-- USER-DEFINED FUNCTIONS -->
-    <add as="PDE" extend="blockWithLabel"/>
+    <add as="PDE" extend="blockWithLabel">
+    <add as="displayedLabel" value="PDE"/> 
+    </add>
     <add as="fortran_block" extend="blockWithLabel">
         <add as="displayedLabel" value="Fortran block:&lt;BR&gt;%s"/>
     </add>
@@ -837,7 +855,7 @@
         <add as="perimeter" value="ellipsePerimeter"/>
         <add as="displayedLabel" value="%s V&lt;br/&gt;~"/>
     </add>
-    <add as="Switch" extend="Icon">
+    <add as="SWITCH2_m" extend="Icon">
         <add as="image" value="blocks/SWITCH.svg"/>
     </add>
     <add as="OpAmp" extend="blockWithLabel">
