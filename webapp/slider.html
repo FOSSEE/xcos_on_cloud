@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
  
-  <link rel="stylesheet" href=css/normalize.min.css'>
+ 
 
 <link rel='stylesheet prefetch' href='css/rangeslider.css'>
 
@@ -18,7 +18,7 @@
   <script src='js/jquery.min.js'></script>
 <script src='js/rangeslider.min.js'></script>
 
-<p id="curVal"></p>
+<p style="position:relative;top=100px" id="curVal"></p>
 
 <script>
 
@@ -35,10 +35,11 @@ var minimum= getParameterByName('min');
 var maximum=getParameterByName('max');
 var num =getParameterByName('num');
 var tag =getParameterByName('tag');
+var norm=getParameterByName('norm');
 var $ruler = $('<div class="rangeslider__ruler" />');
 var valueBubble = '<output class="rangeslider__value-bubble" />';
 document.title = "TKSCALE-"+num;
-$('#ranger').append("<input class='range-slider__range' type='range' step='0.001' min= " + minimum + " max=" + maximum + ">"+'<span class="range-slider__value"></span>');
+$('#ranger').append("<input class='range-slider__range' type='range' step='0.001' min= " + minimum + " max=" + maximum +">"+'<span class="range-slider__value"></span>');
 var $element = $('input[type="range"]');
 
 function updateValueBubble(pos, value, context) {
@@ -48,8 +49,11 @@ function updateValueBubble(pos, value, context) {
   var tempPosition = pos + context.grabPos;
   var position = (tempPosition <= context.handleDimension) ? context.handleDimension : (tempPosition >= context.maxHandlePos) ? context.maxHandlePos : tempPosition;
   document.getElementById('curVal').value=value;
+ var temp = value/norm;
+ temp = temp.toFixed(3);
+ curVal.innerHTML = temp;
+
   GetSliderValue();	
-  //console.log(curVal.value);
   if ($valueBubble.length) {
     $valueBubble[0].style.left = Math.ceil(position) + 'px';
     $valueBubble[0].innerHTML = value;
@@ -65,6 +69,7 @@ $element
           $ruler[0].innerHTML = getRulerRange(this.min, this.max, this.step);
     this.$range.append($ruler);
 	this.$range.append($(valueBubble));
+	this.value = norm;
     updateValueBubble(null, null, this);
    //   $handle = $('.rangeslider__handle', this.$range);
       //updateHandle($handle[0], this.value);
@@ -98,8 +103,7 @@ function getRulerRange(min, max, step) {
 	
 function GetSliderValue()
 {
-	
-	var n = document.getElementById("curVal").value;
+	var n = document.getElementById("curVal").innerHTML;
 	var check=1,exp=0;
     	if(n<0)
     	{
@@ -115,6 +119,7 @@ function GetSliderValue()
     	n = n.toFixed(3);
     	var format = ("0" + exp).slice(-2);
     	n=n+"E"+"+"+format;
+	
 	
 	var val1 = window.opener.document.getElementById(tag);
         val1.innerHTML = n;
