@@ -183,7 +183,6 @@ def event_stream(xcos_file_id):
 	if(len(xcos_file_id)==0):
 		return
 	xcos_file_id = int(xcos_file_id)
-        #print(workspace_list,"hello")
 	xcos_file_dir = os.getcwd() + '/uploads/'
 	xcos_file_name = xcos_file_list[xcos_file_id]
 	# Get previously running scilab process IDs
@@ -197,15 +196,14 @@ def event_stream(xcos_file_id):
         session=Details.uid
         workspace="workspace"+session+".dat"
         workspace_counter=workspace_list[xcos_file_id]
-        #workspace_counter=0
         if workspace_counter ==1:
             append=workspace_dict[xcos_file_id]
-            workspace+=","+append
             command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);deletefile('"+workspace+"');save('"+workspace+"') ;quit()"]
         elif workspace_counter ==2:
             command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "load('"+workspace+"');loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);deletefile('"+workspace+"') ;quit()"]
         else:
-             command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);quit()"]  
+             command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);quit()"] 
+        scilab_proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False); 
 	# Wait till xcos is launched
 	while len(out) == _l:
 		# If length of out equals _l, 
@@ -216,11 +214,11 @@ def event_stream(xcos_file_id):
 		proc = subprocess.Popen("pgrep scilab", stdout=subprocess.PIPE, shell=True)
 		# out will contain output of command, the list of process IDs of scilab
 		(out, err) = proc.communicate()	
-       
+                  
 	# out will contain output of command, the list of process IDs of scilab
 	# Get the latest process ID of scilab
 	pid = out.split()[-1]
-        #print pid;
+        
 
 	# Define function to kill scilab(if still running) and remove files
 	def kill_scilab():
