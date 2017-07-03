@@ -17,7 +17,12 @@
       <script src="setup.js" type="text/javascript"></script>
       <script src="combined.js" type="text/javascript"></script>
       <script src="orientation.js" type="text/javascript"></script>
-      <script src="highcharts/highcharts.js" type="text/javascript"></script>
+
+    <script type="text/javascript" src="highcharts/highcharts.js"></script> <!-- Used for producing 2d-highcharts -->
+    <script type="text/javascript" src="highcharts/highcharts-3d.js"></script> <!-- Used for producing 3d-highcharts in output if required --> 
+    <script type="text/javascript" src="highcharts/exporting.js"></script> <!-- Used for the exporting feature of highcharts -->
+
+
       <script src="Queue.js" type="text/javascript"></script>
       <script src="chart.js" type="text/javascript"></script>
       <script type="text/javascript">
@@ -26,7 +31,7 @@
              
                     		return "Please click 'Stay on this Page' if you did this unintentionally";
                 	};
-              // Stores edgeState for every recently created edge in updateFixedTerminalPoint() function  '=> Dattatreya <='
+              // Stores edgeState for every recently created edge in updateFixedTerminalPoint() function  
                 var edgeState = {};
          var xmlCode;  			// we store the xml code obtained after pressing simulate button
          var valueArr = new Array();	// stores the updated values of each tk block
@@ -35,7 +40,7 @@
          for(var i=0;i<10;i++)    	// initialising to zero
          	tkclk[i]=0;
          
-         //  function which makes the Ajax 'post' request with data sent in arguments   '=> Dattatreya <='
+         //  function which makes the Ajax 'post' request with data sent in arguments   
          function myAjaxreq(k,functionName)
          {
          	var mbl = new Blob([k], { type: 'text/plain' });  // store the data in blob				
@@ -62,10 +67,10 @@
          
          } 
          
-         var importxcos; // variable used at anonymous function in importXcos event    '=> Dattatreya <='
+         var importxcos; // variable used at anonymous function in importXcos event   
          var xeditor,xcell;
          
-         function CheckViewExample()         	 // one line function which calls import xcos function for 'view example' '=> Dattatreya <='		
+         function CheckViewExample()         	 // one line function which calls import xcos function for 'view example' 	
          { 
          	if(ViewExampleXcos.innerHTML != 'XcosNull')
          	{
@@ -73,7 +78,7 @@
          	} 
          }   
          
-         function GetcurVal()  // function which updates the slider values and send ajax req with the updated data    '=> Dattatreya <='
+         function GetcurVal()  // function which updates the slider values and send ajax req with the updated data    
          {
          		
          		valueArr[0]=tkclk[0]+tk1.innerHTML;			
@@ -93,7 +98,7 @@
                 function main(container, outline, toolbar, sidebar, status) {
          
          
-            	// the following lines makes the GetcurVal() call if <p id is changed (when tk value updates)  '=> Dattatreya <='
+            	// the following lines makes the GetcurVal() call if <p id is changed (when tk value updates) 
          var target = document.querySelector("p");
                 var observer = new MutationObserver(function(mutations) {
          
@@ -1175,8 +1180,7 @@
          
                             textarea.value = str;
          
-         	    xmlCode = str; // taking the xmlCode  '=> Dattatreya <='
-          	    
+         	    xmlCode = str; // taking the xmlCode            	    
          
                             if (arguments[2] == null) {
          		                       
@@ -1407,7 +1411,7 @@
          	    
                             button.onclick = function (){ xcosToDiagram(xmlDocument); }
          	    
-         		function xcosToDiagram(xmlDocument){   // function which takes the xml code and changes it to the diagram  '=> Dattatreya <='
+         		function xcosToDiagram(xmlDocument){   // function which takes the xml code and changes it to the diagram  
          	    	
          		if (graph.getChildVertices(graph.getDefaultParent()).length != 0) {
                                     //This branch will execute if there are no elements present in the canvas
@@ -1777,7 +1781,7 @@
                             
          
          
-         	window.onunload = function (e) {	// when user leaves the page...the process will be stopped '=> Dattatreya <='
+         	window.onunload = function (e) {	// when user leaves the page...the process will be stopped 
             			StopTK();
          	}
          	var diagram = getXcosDiagram(editor, cell);
@@ -1807,14 +1811,14 @@
               wnd.setVisible(true);
                             wnd.addListener(mxEvent.CLOSE, function(e){
                                 chart_reset();
-         		StopTK();  // call this function '=> Dattatreya <='
+         		StopTK();  // call this function 
          		
                             });
          	    
          	
          	
          
-         	// Added by '=> Dattatreya <=' : starting 
+         	//  starting 
          	
          	
          
@@ -2153,7 +2157,7 @@
          	    }
          
          
-         	//  Ending  :  '=> Dattatreya <='
+
          
          
          	   
@@ -2172,7 +2176,7 @@
          		     if(row<=10 && row >= 1)
          		     {
          			myAjaxreq("Start", "/UpdateTKfile");
-         			CreateSlider();  // if tkblocks are <=10 then create slider else not    '=> Dattatreya <='
+         			CreateSlider();  // if tkblocks are <=10 then create slider else not    
          		     }
          		    
                                     chart_init(wnd);
