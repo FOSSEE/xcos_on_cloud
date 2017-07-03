@@ -43,13 +43,16 @@ NOLINE = -1
 BLOCK_IDENTIFICATION =- 2
 
 # Scilab dir, can't run absolute paths
-SCI = "../../scilab_for_xcos/"
+SCI = "../scilab_for_xcos/"
 
 # List to store figure IDs
 figure_list = []
 # List to store filenames of files
 xcos_file_list = []
-
+#list to identify whether to save to workspace ,or load from workspce or neither
+workspace_list =[]
+#dictionary to find variable to load or save from workspace
+workspace_dict ={}
 
 
 class line_and_state:
@@ -75,9 +78,9 @@ def parse_line(line):
 	#         ENDING if current fig end
 	#         DATA otherwise
 	line_words = line.split(' ')
-        #The below condition determines the block ID #modified@shivendra
+        #The below condition determines the block ID 
         if line_words[2] == "Block":
-                block_id=int(line_words[4]) # modified_shank
+                block_id=int(line_words[4])
                 return (block_id, BLOCK_IDENTIFICATION)
 	if line_words[2] == "Initialization":
 		# New figure created
@@ -108,8 +111,8 @@ def get_line_and_state_modified(file):
 		# Add figure ID to list
 		figure_list.append(figure_id)
 		return (None, INITIALIZATION)
-        elif state == BLOCK_IDENTIFICATION:#check for block identification modified@shivendra
-                return (line,BLOCK_IDENTIFICATION) # modified_shank
+        elif state == BLOCK_IDENTIFICATION:#check for block identification 
+                return (line,BLOCK_IDENTIFICATION) 
 	elif state == ENDING:
 		# End of figure
 		# Remove figure ID from list
@@ -180,6 +183,7 @@ def event_stream(xcos_file_id):
 	if(len(xcos_file_id)==0):
 		return
 	xcos_file_id = int(xcos_file_id)
+        #print(workspace_list,"hello")
 	xcos_file_dir = os.getcwd() + '/uploads/'
 	xcos_file_name = xcos_file_list[xcos_file_id]
 	# Get previously running scilab process IDs
@@ -189,16 +193,19 @@ def event_stream(xcos_file_id):
 	_l = len(out)
 	#initialise pid
 	pid = 0
-        #id to identify each session for saving workspace #modified@shivendra
+        #id to identify each session for saving workspace 
         session=Details.uid
         workspace="workspace"+session+".dat"
-        append=',"-append"'
-        #print workspace_command
-        command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "load('"+workspace+"');loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);deletefile('"+workspace+"');save('"+workspace+append+"') ;quit()"]
-        if(not exists(workspace)):
-                command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);save('"+workspace+"') ;quit()"]  
-	scilab_proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False);
-
+        workspace_counter=workspace_list[xcos_file_id]
+        #workspace_counter=0
+        if workspace_counter ==1:
+            append=workspace_dict[xcos_file_id]
+            workspace+=","+append
+            command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);deletefile('"+workspace+"');save('"+workspace+"') ;quit()"]
+        elif workspace_counter ==2:
+            command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "load('"+workspace+"');loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);deletefile('"+workspace+"') ;quit()"]
+        else:
+             command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);quit()"]  
 	# Wait till xcos is launched
 	while len(out) == _l:
 		# If length of out equals _l, 
@@ -209,7 +216,7 @@ def event_stream(xcos_file_id):
 		proc = subprocess.Popen("pgrep scilab", stdout=subprocess.PIPE, shell=True)
 		# out will contain output of command, the list of process IDs of scilab
 		(out, err) = proc.communicate()	
-
+       
 	# out will contain output of command, the list of process IDs of scilab
 	# Get the latest process ID of scilab
 	pid = out.split()[-1]
@@ -225,7 +232,7 @@ def event_stream(xcos_file_id):
 		subprocess.Popen(["rm", "-f", xcos_file_dir+xcos_file_name], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False) 
 		scilab_proc.kill()
                 
-        #Sink Identification file  #modified@shivendra3
+        #Sink Identification file  
         #File created to idenify the block
         #identify_block_name="identify_block_"+pid+".txt"
         #identify_block= open(identify_block_name, "r")
@@ -576,7 +583,7 @@ def upload():
         file.save(os.path.join(temp_file_xml_name))
         new_xml = minidom.parse(temp_file_xml_name)
 
-
+        workspace_counter=0# to identify if we have to load or save to workspace or neither #0 if neither TOWS_c or FROWSB found
         blocks = new_xml.getElementsByTagName("BasicBlock")
 	Details.tk_is_present = False
         # List to contain all the block IDs of tkscales so that we can create read blocks with these IDs
@@ -587,7 +594,15 @@ def upload():
                 block.setAttribute('id', '-1') 
 		Details.tk_is_present = True
                 # Changed the ID of tkscales to -1 so that virtually the tkscale blocks get disconnected from diagram at the backend
-        
+            #Taking workspace_counter 1 for TOWS_c and 2 for FROMWSB
+            if block.getAttribute("interfaceFunctionName")== "TOWS_c":
+        	workspace_counter=1
+                main_attributes=block.getElementsByTagName("ScilabString")
+                data= main_attributes[0].getElementsByTagName("data")
+                workspace_variable=data[1].getAttribute("value")
+                workspace_dict[client_id]=workspace_variable
+            if block.getAttribute("interfaceFunctionName")== "FROMWSB":
+		workspace_counter=2   
 
         # Hardcoded the real time scaling to 1.0 (i.e., no scaling of time occurs) only if tkscale is present
         if(Details.tk_is_present):
@@ -657,7 +672,7 @@ def upload():
                 subprocess.Popen(["rm",file])# After moving to the required folder deleting the xcos file.
         temp_file_xml_name = base_filename + ".xcos"
         xcos_file_list.append(temp_file_xml_name)
-
+        workspace_list.append(workspace_counter)
         return str(client_id)
     else:
         return "error"
