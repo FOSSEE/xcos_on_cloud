@@ -43,7 +43,7 @@ NOLINE = -1
 BLOCK_IDENTIFICATION =- 2
 
 # Scilab dir, can't run absolute paths
-SCI = "../scilab_for_xcos/"
+SCI = "../../scilab_for_xcos/"
 
 # List to store figure IDs
 figure_list = []
@@ -69,33 +69,56 @@ class line_and_state:
         return self.state
         
 def parse_line(line):
-    # Function to parse the line
-    # Returns tuple of figure ID and state
-    # state = INITIALIZATION if new figure is created
-    #         ENDING if current fig end
-    #         DATA otherwise
-    line_words = line.split(' ')
+   	# Function to parse the line
+	# Returns tuple of figure ID and state
+	# state = INITIALIZATION if new figure is created
+	#         ENDING if current fig end
+	#         DATA otherwise
+	line_words = line.split(' ')
         #The below condition determines the block ID #modified@shivendra
-    if line_words[2] == "Block":
-        block_id=int(line_words[-1])
-        return (block_id, BLOCK_IDENTIFICATION)
-    if line_words[2] == "Initialization":
-        # New figure created
-        # Get fig id
-        figure_id = int(line_words[-1])
-        return (figure_id, INITIALIZATION)
-    elif line_words[2] == "Ending":
-        # Current figure end
-        # Get fig id
-        figure_id = int(line_words[-1])
-        return (figure_id, ENDING)
-    else:
-        # Current figure coordinates
-        figure_id = int(line_words[3])
-        return (figure_id, DATA)
-        
+        if line_words[2] == "Block":
+                block_id=int(line_words[4]) # modified_shank
+                return (block_id, BLOCK_IDENTIFICATION)
+	if line_words[2] == "Initialization":
+		# New figure created
+		# Get fig id
+		figure_id = int(line_words[-1])
+		return (figure_id, INITIALIZATION)
+	elif line_words[2] == "Ending":
+		# Current figure end
+		# Get fig id
+		figure_id = int(line_words[-1])
+		return (figure_id, ENDING)
+	else:
+		# Current figure coordinates
+		figure_id = int(line_words[3])
+		return (figure_id, DATA)
+def get_line_and_state_modified(file):
+	# Function to get a new line from file
+	# This also parses the line and appends new figures to figure List
+	global figure_list
+	line = file.readline()
+	if not line:
+		return (None, NOLINE)
+	parse_result = parse_line(line)
+	figure_id = parse_result[0]
+	state = parse_result[1]
+	if state == INITIALIZATION:
+		# New figure created
+		# Add figure ID to list
+		figure_list.append(figure_id)
+		return (None, INITIALIZATION)
+        elif state == BLOCK_IDENTIFICATION:#check for block identification modified@shivendra
+                return (line,BLOCK_IDENTIFICATION) # modified_shank
+	elif state == ENDING:
+		# End of figure
+		# Remove figure ID from list
+		figure_list.remove(figure_id)
+		return (None, ENDING)
+	return (line, DATA)
+     
 def get_line_and_state(file, count):
-    # ----------------> Jayaprakash A <--------------------
+
     #  Return the line from the log filebased on the line count 
 
     # Function to get a new line from file
@@ -122,7 +145,34 @@ def get_line_and_state(file, count):
         figure_list.remove(figure_id)
         return (None, ENDING)
     return (line[count], DATA)
+def get_line_and_state(file, count):
 
+    #  Return the line from the log filebased on the line count 
+
+    # Function to get a new line from file
+    # This also parses the line and appends new figures to figure List
+    global figure_list
+    line = file.readlines()
+
+    if not line[count]: # If required line is not present
+        return (None, NOLINE)
+
+    parse_result = parse_line(line[count])
+    figure_id = parse_result[0]
+    state = parse_result[1]
+    if state == INITIALIZATION:
+        # New figure created
+        # Add figure ID to list
+        figure_list.append(figure_id)
+        return (None, INITIALIZATION)
+    elif state == BLOCK_IDENTIFICATION:#check for block identification 
+            return (str(figure_id),BLOCK_IDENTIFICATION)
+    elif state == ENDING:
+        # End of figure
+        # Remove figure ID from list
+        figure_list.remove(figure_id)
+        return (None, ENDING)
+    return (line[count], DATA)
 def event_stream(xcos_file_id):
 	global figure_list
         global kill_scilab
@@ -204,172 +254,208 @@ def event_stream(xcos_file_id):
         put_delay = False
         line_id = -1
         delay_length = -1
-	try:
-		# For processes taking less than 10 seconds
-		scilab_out, scilab_err = scilab_proc.communicate(timeout=10)
-		# Check for errors in Scilab  modified_shank
-		if "Empty diagram" in scilab_out:
-			yield "event: ERROR\ndata: Empty diagram\n\n"
-			kill_scilab()
-			return
-		# Open the log file
-		log_file = open(log_dir + log_name, "r")
+	if(Details.tk_is_present):
+		try:
+			# For processes taking less than 10 seconds
+			scilab_out, scilab_err = scilab_proc.communicate(timeout=10)
+			# Check for errors in Scilab  modified_shank
+			if "Empty diagram" in scilab_out:
+				yield "event: ERROR\ndata: Empty diagram\n\n"
+				kill_scilab()
+				return
+			# Open the log file
+			log_file = open(log_dir + log_name, "r")
 
-		#identify block using file
-		#identify_block= open(identify_block_name, "r")
-		#block_value=identify_block.readline()
-		#identify_block.close()
-		#yield "event: block\ndata: " + block_value + "\n\n"
-		# Check for empty diagram
+			#identify block using file
+			#identify_block= open(identify_block_name, "r")
+			#block_value=identify_block.readline()
+			#identify_block.close()
+			#yield "event: block\ndata: " + block_value + "\n\n"
+			# Check for empty diagram
 	
-		# Start sending log
-		line = line_and_state(None, NOLINE)
-		while (1):
-		# -----------------> Jayaprakash A <--------------------
-		# The chart must be updated for all the various lines it has in 0.1 seconds.
-		# Hence dividing the sleep time 0.1 by the number of lines the chart contains
-
-			if put_delay:
-			    gevent.sleep(0.1 / delay_length)
-
-
-			log_file = open(log_dir + log_name, "r+")
-
-			if not ( line.set(get_line_and_state(log_file,line_count)) or line.get_state() != ENDING or len(figure_list) > 0 ):
-			    break
-
-			# ---------------> Jayaprakash A <--------------------
-			if line.get_state()== BLOCK_IDENTIFICATION:
-			    # Split the line obtained from log file and the 8th element is line ID
-			    logLine = line.get_line()
-
-			    line_contents = logLine.split(' ')
-			    # Checking if the current line ID is same as first line ID and is the first occurence of matching
-			    if(line_id == line_contents[7] and not put_delay):
-				delay_length = line_count - 1 # The count of total number of lines in the chart
-				put_delay = True
-			    # The first line ID 
-			    if(line_count == 1):
-				line_id = line_contents[7]
-			    yield "event: block\ndata: "+logLine+"\n\n"
-
-
-			elif line.get_state() != DATA:
-			    gevent.sleep(LOOK_DELAY)    
-
-
-			# -------------------> Jayaprakash A <------------------- 
-			else:
-			    # Split the line obtained from log file and the 8th element is line ID
-			    logLine = line.get_line()
-
-			    line_contents = logLine.split(' ')
-			    # Checking if the current line ID is same as first line ID and is the first occurence of matching
-			    if(line_id == line_contents[7] and not put_delay):
-				delay_length = line_count - 1 # The count of total number of lines in the chart
-				put_delay = True
-
-			    # The first line ID 
-			    if(line_count == 1):
-				line_id = line_contents[7]
-			    yield "event: log\ndata: "+logLine+ "\n\n"
-
-
-			# Reset line, so server won't send same line twice
+			# Start sending log
 			line = line_and_state(None, NOLINE)
-			line_count = line_count + 1
-			log_file.close()
-		#webbrowser.open_new_tab("images/img_test.png")#modified@shivendra this displays saved image in a new window
-		# Finished Sending Log
-		kill_scilab()
-		# Notify Client
-		yield "event: DONE\ndata: None\n\n"
+			while (1):
 
-	# For processes taking more than 10 seconds
-	except subprocess.TimeoutExpired:
-	    	# Check for errors in Scilab  modified_shank
-		if "Empty diagram" in scilab_out:
-			yield "event: ERROR\ndata: Empty diagram\n\n"
-			kill_scilab()
-			return
- 
-
-		# Open the log file
-		log_file = open(log_dir + log_name, "r")
-
-		#identify block using file
-		#identify_block= open(identify_block_name, "r")
-		#block_value=identify_block.readline()
-		#identify_block.close()
-		#yield "event: block\ndata: " + block_value + "\n\n"
-		# Check for empty diagram
-	
-		# Start sending log
-		line = line_and_state(None, NOLINE)
-		while (1):
-			# -----------------> Jayaprakash A <--------------------
 			# The chart must be updated for all the various lines it has in 0.1 seconds.
 			# Hence dividing the sleep time 0.1 by the number of lines the chart contains
 
-			if put_delay:
-			    gevent.sleep(0.1 / delay_length)
+				if put_delay:
+				    gevent.sleep(0.1 / delay_length)
 
 
-			log_file = open(log_dir + log_name, "r+")
+				log_file = open(log_dir + log_name, "r+")
 
-			if not ( line.set(get_line_and_state(log_file,line_count)) or line.get_state() != ENDING or len(figure_list) > 0 ):
-			    break
+				if not ( line.set(get_line_and_state(log_file,line_count)) or line.get_state() != ENDING or len(figure_list) > 0 ):
+				    break
 
-			# ---------------> Jayaprakash A <--------------------
+
+				if line.get_state()== BLOCK_IDENTIFICATION:
+				    # Split the line obtained from log file and the 8th element is line ID
+				    logLine = line.get_line()
+
+				    line_contents = logLine.split(' ')
+				    # Checking if the current line ID is same as first line ID and is the first occurence of matching
+				    if(line_id == line_contents[7] and not put_delay):
+					delay_length = line_count - 1 # The count of total number of lines in the chart
+					put_delay = True
+				    # The first line ID 
+				    if(line_count == 1):
+					line_id = line_contents[7]
+				    yield "event: block\ndata: "+logLine+"\n\n"
+
+
+				elif line.get_state() != DATA:
+				    gevent.sleep(LOOK_DELAY)    
+
+
+
+				else:
+				    # Split the line obtained from log file and the 8th element is line ID
+				    logLine = line.get_line()
+
+				    line_contents = logLine.split(' ')
+				    # Checking if the current line ID is same as first line ID and is the first occurence of matching
+				    if(line_id == line_contents[7] and not put_delay):
+					delay_length = line_count - 1 # The count of total number of lines in the chart
+					put_delay = True
+
+				    # The first line ID 
+				    if(line_count == 1):
+					line_id = line_contents[7]
+				    yield "event: log\ndata: "+logLine+ "\n\n"
+
+
+				# Reset line, so server won't send same line twice
+				line = line_and_state(None, NOLINE)
+				line_count = line_count + 1
+				log_file.close()
+			#webbrowser.open_new_tab("images/img_test.png")#modified@shivendra this displays saved image in a new window
+			# Finished Sending Log
+			kill_scilab()
+			# Notify Client
+			yield "event: DONE\ndata: None\n\n"
+
+		# For processes taking more than 10 seconds
+		except subprocess.TimeoutExpired:
+		    	# Check for errors in Scilab  modified_shank
+			if "Empty diagram" in scilab_out:
+				yield "event: ERROR\ndata: Empty diagram\n\n"
+				kill_scilab()
+				return
+	 
+
+			# Open the log file
+			log_file = open(log_dir + log_name, "r")
+
+			#identify block using file
+			#identify_block= open(identify_block_name, "r")
+			#block_value=identify_block.readline()
+			#identify_block.close()
+			#yield "event: block\ndata: " + block_value + "\n\n"
+			# Check for empty diagram
+	
+			# Start sending log
+			line = line_and_state(None, NOLINE)
+			while (1):
+
+				# The chart must be updated for all the various lines it has in 0.1 seconds.
+				# Hence dividing the sleep time 0.1 by the number of lines the chart contains
+
+				if put_delay:
+				    gevent.sleep(0.1 / delay_length)
+
+
+				log_file = open(log_dir + log_name, "r+")
+
+				if not ( line.set(get_line_and_state(log_file,line_count)) or line.get_state() != ENDING or len(figure_list) > 0 ):
+				    break
+
+
+				if line.get_state()== BLOCK_IDENTIFICATION:
+				    # Split the line obtained from log file and the 8th element is line ID
+				    logLine = line.get_line()
+
+				    line_contents = logLine.split(' ')
+				    # Checking if the current line ID is same as first line ID and is the first occurence of matching
+				    if(line_id == line_contents[7] and not put_delay):
+					delay_length = line_count - 1 # The count of total number of lines in the chart
+					put_delay = True
+				    # The first line ID 
+				    if(line_count == 1):
+					line_id = line_contents[7]
+				    yield "event: block\ndata: "+logLine+"\n\n"
+
+
+				elif line.get_state() != DATA:
+				    gevent.sleep(LOOK_DELAY)    
+
+
+
+				else:
+				    # Split the line obtained from log file and the 8th element is line ID
+				    logLine = line.get_line()
+
+				    line_contents = logLine.split(' ')
+				    # Checking if the current line ID is same as first line ID and is the first occurence of matching
+				    if(line_id == line_contents[7] and not put_delay):
+					delay_length = line_count - 1 # The count of total number of lines in the chart
+					put_delay = True
+
+				    # The first line ID 
+				    if(line_count == 1):
+					line_id = line_contents[7]
+				    yield "event: log\ndata: "+logLine+ "\n\n"
+
+
+				# Reset line, so server won't send same line twice
+				line = line_and_state(None, NOLINE)
+				line_count = line_count + 1
+				log_file.close()
+			#webbrowser.open_new_tab("images/img_test.png")#modified@shivendra this displays saved image in a new window
+			# Finished Sending Log
+			kill_scilab()
+			# Notify Client
+			yield "event: DONE\ndata: None\n\n"
+
+	else:
+		# Open the log file
+		log_file = open(log_dir + log_name, "r")
+
+		#identify block using file
+		#identify_block= open(identify_block_name, "r")
+		#block_value=identify_block.readline()
+		#identify_block.close()
+		#yield "event: block\ndata: " + block_value + "\n\n"
+		# Check for empty diagram
+	
+		# Start sending log
+		line = line_and_state(None, NOLINE)
+		#while (line.set(get_line_and_state(log_file)) or line.get_state() != ENDING or len(figure_list) > 0):
+		while (line.set(get_line_and_state_modified(log_file)) or len(figure_list) > 0):
+			# Get the line and loop until the state is ENDING and figure_list empty
+		        #Determine if we get block id and give it to chart.js #modified@shivendra
 			if line.get_state()== BLOCK_IDENTIFICATION:
-			    # Split the line obtained from log file and the 8th element is line ID
-			    logLine = line.get_line()
-
-			    line_contents = logLine.split(' ')
-			    # Checking if the current line ID is same as first line ID and is the first occurence of matching
-			    if(line_id == line_contents[7] and not put_delay):
-				delay_length = line_count - 1 # The count of total number of lines in the chart
-				put_delay = True
-			    # The first line ID 
-			    if(line_count == 1):
-				line_id = line_contents[7]
-			    yield "event: block\ndata: "+logLine+"\n\n"
-
-
-			elif line.get_state() != DATA:
-			    gevent.sleep(LOOK_DELAY)    
-
-
-			# -------------------> Jayaprakash A <------------------- 
+		                yield "event: block\ndata: "+line.get_line()+"\n\n"
+		        elif line.get_state() != DATA:
+				gevent.sleep(LOOK_DELAY)      
 			else:
-			    # Split the line obtained from log file and the 8th element is line ID
-			    logLine = line.get_line()
-
-			    line_contents = logLine.split(' ')
-			    # Checking if the current line ID is same as first line ID and is the first occurence of matching
-			    if(line_id == line_contents[7] and not put_delay):
-				delay_length = line_count - 1 # The count of total number of lines in the chart
-				put_delay = True
-
-			    # The first line ID 
-			    if(line_count == 1):
-				line_id = line_contents[7]
-			    yield "event: log\ndata: "+logLine+ "\n\n"
-
-
+				yield "event: log\ndata: "+line.get_line()+"\n\n"
 			# Reset line, so server won't send same line twice
 			line = line_and_state(None, NOLINE)
-			line_count = line_count + 1
-			log_file.close()
+			
 		#webbrowser.open_new_tab("images/img_test.png")#modified@shivendra this displays saved image in a new window
 		# Finished Sending Log
 		kill_scilab()
 		# Notify Client
 		yield "event: DONE\ndata: None\n\n"
+
+		
 
 # class used to get the user_id and the boolean value is to make run a thread    # '=> Dattatreya <=' 
 class Details:
      import uuid
+     tk_is_present = False
      my_id = uuid.uuid1()
      uid = str(my_id) # user_id
      tkbool = True  # boolean value to run the thread acc. to it
@@ -484,38 +570,38 @@ def upload():
         # Make the filename safe, remove unsupported chars
         client_id = len(xcos_file_list)
 
-        #  ----------------> Jayaprakash A <------------------
+
         # Save the file in xml extension and using it for further modification by using xml parser
         temp_file_xml_name = str(client_id)+".xml"
         file.save(os.path.join(temp_file_xml_name))
         new_xml = minidom.parse(temp_file_xml_name)
 
-        #  ---------------> Jayaprakash A <------------------
+
         blocks = new_xml.getElementsByTagName("BasicBlock")
-	tk_is_present = False
+	Details.tk_is_present = False
         # List to contain all the block IDs of tkscales so that we can create read blocks with these IDs
         block_id = []
         for block in blocks:
             if block.getAttribute("interfaceFunctionName") == "TKSCALE":
                 block_id.append(block.getAttribute("id"))
                 block.setAttribute('id', '-1') 
-		tk_is_present = True
+		Details.tk_is_present = True
                 # Changed the ID of tkscales to -1 so that virtually the tkscale blocks get disconnected from diagram at the backend
         
-        #  ---------------> Jayaprakash A <------------------
+
         # Hardcoded the real time scaling to 1.0 (i.e., no scaling of time occurs) only if tkscale is present
-        if(tk_is_present):
+        if(Details.tk_is_present):
             diagram = new_xml.getElementsByTagName("XcosDiagram")
             for dia in diagram:
                 dia.setAttribute('realTimeScaling', '1.0')
                 
-        # ------------------> Jayaprakash A <-----------------------
+
         # Save the changes made by parser
         tk_count = 0 
         with open(temp_file_xml_name,'w') as f:
             f.write(new_xml.toxml())
 
-        #  ---------------> Jayaprakash A <------------------
+
         # In front of block tkscale printing the block corresponding to read function and assigning corresponding values
         for line in fileinput.input(temp_file_xml_name, inplace=1):
 
@@ -530,7 +616,7 @@ def upload():
                 print("<data column=\"0\" line=\"1\" value=\"2\"/>")
                 print("<data column=\"0\" line=\"2\" value=\"", end = '')
 
-                # ----------------> Jayaprakash A <--------------------
+
 
 		path_current_directory = os.getcwd()
 		print(path_current_directory, end='')
@@ -555,14 +641,14 @@ def upload():
                     print(line_content,end= '')
             print(line,end = '')
 
-        # -----------------------> Jayaprakash A <------------------------
+
         # Changing the file extension from xml to xcos
         base_filename = os.path.splitext(temp_file_xml_name)[0]
         os.rename(temp_file_xml_name, base_filename + ".xcos")
         source_folder = os.getcwd()
         destination_folder = source_folder + "/uploads/"
 
-        # ----------------------> Jayaprakash A <-----------------------------
+
         # Move the xcos file to uploads directory
         folder_file_content = filter(os.path.isfile, os.listdir( os.curdir ) )
         for file in folder_file_content:
@@ -657,6 +743,18 @@ def sse_request():
 @app.route('/<path:path>')
 def static_file(path):
     return app.send_static_file(path)
+
+# route to kill scilab on closing of chart
+@app.route('/stop')
+def stop():
+	kill_scilab()
+	return "done"
+
+# route ro end blocks with no Ending parameter
+@app.route('/endBlock/<fig_id>')
+def endBlock(fig_id):
+	figure_list.remove(fig_id)
+	return "done"
 
 @app.route('/')
 def page():
