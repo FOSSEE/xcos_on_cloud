@@ -18,7 +18,7 @@
   <script src='js/jquery.min.js'></script>
 <script src='js/rangeslider.min.js'></script>
 
-<p style="position:relative;top=100px" id="curVal"></p>
+<p style="position:relative;" id="curVal"></p>
 
 <script>
 
@@ -51,8 +51,9 @@ function updateValueBubble(pos, value, context) {
   document.getElementById('curVal').value=value;
  var temp = value/norm;
  temp = temp.toFixed(3);
+  document.getElementById('curVal').style.top="200px";
  curVal.innerHTML = temp;
-
+ 
   GetSliderValue();	
   if ($valueBubble.length) {
     $valueBubble[0].style.left = Math.ceil(position) + 'px';
@@ -69,7 +70,7 @@ $element
           $ruler[0].innerHTML = getRulerRange(this.min, this.max, this.step);
     this.$range.append($ruler);
 	this.$range.append($(valueBubble));
-	this.value = norm;
+	//this.value = norm;
     updateValueBubble(null, null, this);
    //   $handle = $('.rangeslider__handle', this.$range);
       //updateHandle($handle[0], this.value);
