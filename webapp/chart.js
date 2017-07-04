@@ -312,7 +312,16 @@ function chart_init(wnd){
 				}
 			};
 			xhr.send(form);
-			
+			var xhr2= new XMLHttpRequest();
+                        xhr2.open("POST","/deletefile");
+                        xhr2.onload = function() {
+				if(this.status==200){
+                                        //blob data type to receive the file
+					var x=this.response;
+					console.log("File Deleted");
+				}
+                               };
+                        xhr2.send(form);
 		}
 
 

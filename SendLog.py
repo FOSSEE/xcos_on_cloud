@@ -194,12 +194,18 @@ def event_stream(xcos_file_id):
 	pid = 0
         #id to identify each session for saving workspace 
         session=Details.uid
+        #name of worspace file the session
         workspace="workspace"+session+".dat"
         workspace_counter=workspace_list[xcos_file_id]
-        if workspace_counter ==1:
+        #commands for ruuning of scilab based on existence of TOWS_c and FROMWSB
+        #3 means both exists,2 FROMWSB exists,1 TOWS_c exists,0 none exists meaning normal set of commands 
+        if (workspace_counter ==3 and exists(workspace)):
+            append=workspace_dict[xcos_file_id]
+            command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","load('"+workspace+"');loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);deletefile('"+workspace+"');save('"+workspace+"') ;quit()"]
+        elif (workspace_counter ==1 or workspace_counter==3):
             append=workspace_dict[xcos_file_id]
             command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);deletefile('"+workspace+"');save('"+workspace+"') ;quit()"]
-        elif workspace_counter ==2:
+        elif (workspace_counter ==2 and exists(workspace)):
             command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "load('"+workspace+"');loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);deletefile('"+workspace+"') ;quit()"]
         else:
              command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);quit()"] 
@@ -335,7 +341,7 @@ def event_stream(xcos_file_id):
 				line = line_and_state(None, NOLINE)
 				line_count = line_count + 1
 				log_file.close()
-			#webbrowser.open_new_tab("images/img_test.png")#modified@shivendra this displays saved image in a new window
+			#webbrowser.open_new_tab("images/img_test.png")#this displays saved image in a new window
 			# Finished Sending Log
 			kill_scilab()
 			# Notify Client
@@ -417,7 +423,7 @@ def event_stream(xcos_file_id):
 				line = line_and_state(None, NOLINE)
 				line_count = line_count + 1
 				log_file.close()
-			#webbrowser.open_new_tab("images/img_test.png")#modified@shivendra this displays saved image in a new window
+			#webbrowser.open_new_tab("images/img_test.png")# this displays saved image in a new window
 			# Finished Sending Log
 			kill_scilab()
 			# Notify Client
@@ -439,7 +445,7 @@ def event_stream(xcos_file_id):
 		#while (line.set(get_line_and_state(log_file)) or line.get_state() != ENDING or len(figure_list) > 0):
 		while (line.set(get_line_and_state_modified(log_file)) or len(figure_list) > 0):
 			# Get the line and loop until the state is ENDING and figure_list empty
-		        #Determine if we get block id and give it to chart.js #modified@shivendra
+		        #Determine if we get block id and give it to chart.js #
 			if line.get_state()== BLOCK_IDENTIFICATION:
 		                yield "event: block\ndata: "+line.get_line()+"\n\n"
 		        elif line.get_state() != DATA:
@@ -449,7 +455,7 @@ def event_stream(xcos_file_id):
 			# Reset line, so server won't send same line twice
 			line = line_and_state(None, NOLINE)
 			
-		#webbrowser.open_new_tab("images/img_test.png")#modified@shivendra this displays saved image in a new window
+		#webbrowser.open_new_tab("images/img_test.png")#this displays saved image in a new window
 		# Finished Sending Log
 		kill_scilab()
 		# Notify Client
@@ -457,7 +463,7 @@ def event_stream(xcos_file_id):
 
 		
 
-# class used to get the user_id and the boolean value is to make run a thread    # '=> Dattatreya <=' 
+# class used to get the user_id and the boolean value is to make run a thread    
 class Details:
      import uuid
      tk_is_present = False
@@ -469,7 +475,7 @@ class Details:
 
 
 
-# function which will check and make initialization of every required fles.   # '=> Dattatreya <=' 
+# function which will check and make initialization of every required fles.   
 def findFile():     
 	r = open("values/"+Details.uid+"_val.txt","r") 
 	line = r.readline() # at first the val.txt contains "Start" indicating the starting of the process
@@ -488,7 +494,7 @@ def findFile():
 	     return 1
 	return 2
 
-# function which changes flaoting to req scientific format    # '=> Dattatreya <=' 
+# function which changes flaoting to req scientific format    
 def changeFormat(n):
 	n = float(n)
 	check = 1
@@ -569,13 +575,13 @@ def upload():
     # Get the file
     print( "upload")
     file = request.files['file']
-
+    #flags to check if both TOWS_c and FROMWSB are present
+    flag1=0
+    flag2=0
     # Check if the file is not null
     if file:
         # Make the filename safe, remove unsupported chars
         client_id = len(xcos_file_list)
-
-
         # Save the file in xml extension and using it for further modification by using xml parser
         temp_file_xml_name = str(client_id)+".xml"
         file.save(os.path.join(temp_file_xml_name))
@@ -595,13 +601,16 @@ def upload():
             #Taking workspace_counter 1 for TOWS_c and 2 for FROMWSB
             if block.getAttribute("interfaceFunctionName")== "TOWS_c":
         	workspace_counter=1
+                flag1=1
                 main_attributes=block.getElementsByTagName("ScilabString")
                 data= main_attributes[0].getElementsByTagName("data")
                 workspace_variable=data[1].getAttribute("value")
                 workspace_dict[client_id]=workspace_variable
             if block.getAttribute("interfaceFunctionName")== "FROMWSB":
 		workspace_counter=2   
-
+                flag2=1
+        if (flag1 and flag2):
+            workspace_counter=3#both TOWS_c and FROMWSB are present
         # Hardcoded the real time scaling to 1.0 (i.e., no scaling of time occurs) only if tkscale is present
         if(Details.tk_is_present):
             diagram = new_xml.getElementsByTagName("XcosDiagram")
@@ -747,6 +756,13 @@ def DownloadFile ():
         if "audio"  in filename:
                 return send_file(download_file, as_attachment=True,mimetype='audio/basic') 
         return send_file(download_file, as_attachment=True,mimetype='application/octet-stream')
+# route for deletion of binary and audio file
+@app.route('/deletefile',methods=['POST'])
+def DeletFile ():
+        filename =request.form['path']
+        delete_file =os.getcwd()+'/'+filename
+        os.remove(delete_file)#deleting the file
+        return "0"
 		
 @app.route('/SendLog')
 def sse_request():
