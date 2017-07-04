@@ -401,24 +401,65 @@ function set_io(){
         var out_implicit = []
     }
 
+    if(inp.length != 0 && inp[0] != undefined)
+        inp = array_matrix(inp)
+    if(out.length != 0 && out[0] != undefined)
+        out = array_matrix(out)
+    if(clkout.length != 0 && clkout[0] != undefined)
+        clkout = array_matrix(clkout)
+    if(clkin.length != 0 && clkin[0] != undefined)
+        clkin = array_matrix(clkin)
+
+
     for (var i = clkin.length - 1; i >= 0; i--) {
-        clkin[i] = Math.floor(clkin[i])
+        clkin[i] = [Math.floor(clkin[i])]
     }
     var nclkin = size(clkin,1)
 
     for (var i = clkout.length - 1; i >= 0; i--) {
-        clkout[i] = Math.floor(clkout[i])
+        clkout[i] = [Math.floor(clkout[i])]
     }
     var nclkout = size(clkout,1)
     
     var ip1 = getData(graphics.pin)
+    for (var i = ip1.length - 1; i >= 0; i--) {
+        ip1[i] = [parseFloat(ip1[i])]
+    }
     var op1 = getData(graphics.pout)
+    for (var i = op1.length - 1; i >= 0; i--) {
+        op1[i] = [parseFloat(op1[i])]
+    }
+
     var cip1 = getData(graphics.pein)
+    for (var i = cip1.length - 1; i >= 0; i--) {
+        cip1[i] = [parseFloat(cip1[i])]
+    }
+
     var cop1 = getData(graphics.peout)
+    for (var i = cop1.length - 1; i >= 0; i--) {
+        cop1[i] = [parseFloat(cop1[i])]
+    }
+
     var in1 = getData(model.in)
+    for (var i = in1.length - 1; i >= 0; i--) {
+        in1[i] = [parseFloat(in1[i])]
+    }
+
     var out1 = getData(model.out)
+    for (var i = out1.length - 1; i >= 0; i--) {
+        out1[i] = [parseFloat(out1[i])]
+    }
+
     var clkin1 = getData(model.evtin)
+    for (var i = clkin1.length - 1; i >= 0; i--) {
+        clkin1[i] = [parseFloat(clkin1[i])]
+    }
+
     var clkout1 = getData(model.evtout)
+    for (var i = clkout1.length - 1; i >= 0; i--) {
+        clkout1[i] = [parseFloat(clkout1[i])]
+    }
+
     this.n1 = size(in1,1)
     this.n = inp.length/2
     if(this.n1 > this.n){
@@ -426,7 +467,7 @@ function set_io(){
     }
     else{
         for (var i = 0; i < this.n-this.n1; i++) {
-            ip1.push(0)
+            ip1.push([0])
         }
     }
 
@@ -437,27 +478,27 @@ function set_io(){
     }
     else{
         for (var i = 0; i < this.n-this.n1; i++) {
-            op1.push(0)
+            op1.push([0])
         }
     }
-    this.n1 = size(clkin1,1)
-    this.n = clkin.length/2
+    this.n1 = size(clkin1,"*")
+    this.n = size(clkin,"*")
     if(this.n1 > this.n){
         cip1 = cip1.slice(0,n)
     }
     else{
         for (var i = 0; i < this.n-this.n1; i++) {
-            cip1.push(0)
+            cip1.push([0])
         }
     }
-    this.n1 = size(clkout1,1)
-    this.n = clkout.length/2
+    this.n1 = size(clkout1,"*")
+    this.n = size(clkout,"*")
     if(this.n1 > this.n){
         cop1 = cop1.slice(0,n)
     }
     else{
         for (var i = 0; i < this.n-this.n1; i++) {
-            cop1.push(0)
+            cop1.push([0])
         }
     }
     var I = "E"
@@ -492,16 +533,16 @@ function set_io(){
     this.out2 = []
     for (var i = 0; i <= inp.length - 1; i++) {
         if(i<inp.length/2)
-            this.in.push(parseInt(inp[i][0]))
+            this.in.push(inp[i])
         else
-            this.in2.push(parseInt(inp[i][0]))
+            this.in2.push(inp[i])
     }
 
     for (var i = 0; i <= out.length - 1; i++) {
         if(i<out.length/2)
-            this.out.push(parseInt(out[i][0]))
+            this.out.push(out[i])
         else
-            this.out2.push(parseInt(out[i][0]))
+            this.out2.push(out[i])
     }
     model.in = new ScilabDouble(...this.in)
     model.in2 = new ScilabDouble(...this.in2)
@@ -534,21 +575,22 @@ function check_io(){
         var out_implicit = []
     }
     if(inp.length != 0 && inp[0] != undefined)
-        inp = colon_operator(inp)
+        inp = array_matrix(inp)
     this.nin = size(inp,1)
+
     if(out.length != 0 && out[0] != undefined)
-        out = colon_operator(out)
+        out = array_matrix(out)
     this.nout = size(out,1)
 
     if(clkin.length != 0 && clkin[0] != undefined)
-        clkin = colon_operator(clkin)
+        clkin = array_matrix(clkin)
     for (var i = clkin.length - 1; i >= 0; i--) {
         clkin[i][0] = Math.floor(clkin[i][0])
     }
     this.nclkin = size(clkin,1)
 
     for (var i = clkout.length - 1; i >= 0; i--) {
-        clkout[i] = Math.floor(clkout[i])
+        clkout[i] = [Math.floor(clkout[i])]
     }
     this.nclkout = size(clkout,1)
     
@@ -915,6 +957,19 @@ function transpose(a) {
     });
 }
 
+function array_matrix(){
+    var array = arguments[0]
+    var newArray = []
+    for (var i = array.length - 1; i >= 0; i--) {
+        if(array[i].length == undefined)
+            newArray[i] = [array[i]]
+        else{
+            newArray[i] = array[i]
+        }
+    } 
+    return newArray 
+}
+
 function colon_operator() {
     var array = arguments[0];
     var new_arr = [];
@@ -941,7 +996,7 @@ function colon_operator() {
 
 /*
 date - 16 june 2017
-name - Ritveeka Vashistha
+author - Ritveeka Vashistha
 */
 function linspace(){
     var a = parseFloat(arguments[0]);
@@ -958,7 +1013,7 @@ function linspace(){
 }
 /*
 date - 16 june 2017
-name - Ritveeka Vashistha
+author - Ritveeka Vashistha
 */
 function interpolation(){
     var x = arguments[0];
@@ -1040,13 +1095,13 @@ function interpolation(){
 }
 /*
 date - 16 june 2017
-name - Ritveeka Vashistha
+author - Ritveeka Vashistha
 */
 function jetcolormap(){
     if(arguments.length != 1)
         alert('enter one integer argument');
     else{
-        if(arguments.length == 0)
+        if(arguments.length != 0 || arguments.length == undefined)
             var n = parseInt(arguments[0]);
             if(n==0){
                 return new Array(0);
@@ -1064,7 +1119,7 @@ function jetcolormap(){
 }
 /*
 date - 26 june 2017
-name - Ritveeka Vashistha
+author - Ritveeka Vashistha
 */
 function sign(){
     var value  = arguments[0]
