@@ -468,7 +468,7 @@ function BARXY() {
         model.rpar = new ScilabDouble([this.xmin], [this.xmax], [this.ymin], [this.ymax]);
         model.ipar = new ScilabDouble([1]);
         this.x = new standard_define(new ScilabDouble([2, 2]), model, [], []);
-        this.x.graphics.in_implicit = new ScilabString(["E", , "E"]);
+        this.x.graphics.in_implicit = new ScilabString(["E"],["E"]);
         this.x.graphics.out_implicit = new ScilabDouble();
         this.x.graphics.exprs = new ScilabString(["-15"], ["15"], ["-15"], ["15"], ["1"]);
         return new BasicBlock(this.x);
@@ -3036,7 +3036,7 @@ function CONST_m() {
     CONST_m.prototype.set = function CONST_m() {
         this.c = inverse((arguments[0]["vec"]));
         this.nout = size(this.c)
-        this.displayParameter = this.c;
+        this.displayParameter = [this.c];
         this.x.model.sim = list(new ScilabString(["cstblk4_m"], new ScilabDouble([4])), new ScilabDouble([4]));
         this.x.model.opar = list(new ScilabDouble(...this.c));
         this.x.model.outtyp = new ScilabDouble([1])
