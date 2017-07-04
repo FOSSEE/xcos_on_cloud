@@ -13,7 +13,6 @@ from gevent.pywsgi import WSGIServer
 from flask import Flask, request, Response, render_template, send_from_directory ,send_file# send_file added to ease download
 from werkzeug import secure_filename
 from os.path import exists
-#import webbrowser #modifiedm@shivendra for displaying image saved
 
 monkey.patch_all(aggressive=False)
 
