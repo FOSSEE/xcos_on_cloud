@@ -14,7 +14,6 @@ from flask import Flask, request, Response, render_template, send_from_directory
 from werkzeug import secure_filename
 from os.path import exists
 #import webbrowser #modifiedm@shivendra for displaying image saved
-#from random import randint # modified_shank : to generate random image names
 
 monkey.patch_all(aggressive=False)
 
@@ -40,7 +39,7 @@ INITIALIZATION = 0
 ENDING = 1
 DATA = 2
 NOLINE = -1
-BLOCK_IDENTIFICATION =- 2
+BLOCK_IDENTIFICATION = -2
 
 # Scilab dir, can't run absolute paths
 SCI = "../scilab_for_xcos/"
@@ -50,26 +49,26 @@ figure_list = []
 # List to store filenames of files
 xcos_file_list = []
 #list to identify whether to save to workspace ,or load from workspce or neither
-workspace_list =[]
+workspace_list = []
 #dictionary to find variable to load or save from workspace
-workspace_dict ={}
+workspace_dict = {}
 
 
 class line_and_state:
-    # Class to store the line and its state
-    line = None
-    state = NOLINE
-    def __init__(self, line, state):
-        self.line = line
-        self.state = state
-    def set(self, line_state):
-        self.line = line_state[0]
-        self.state = line_state[1]
-        return False
-    def get_line(self):
-        return self.line
-    def get_state(self):
-        return self.state
+	# Class to store the line and its state
+	line = None
+	state = NOLINE
+	def __init__(self, line, state):
+		self.line = line
+		self.state = state
+	def set(self, line_state):
+		self.line = line_state[0]
+		self.state = line_state[1]
+		return False
+	def get_line(self):
+		return self.line
+	def get_state(self):
+		return self.state
         
 def parse_line(line):
    	# Function to parse the line
@@ -122,36 +121,34 @@ def get_line_and_state_modified(file):
      
 def get_line_and_state(file, count):
 
-    #  Return the line from the log filebased on the line count 
-
+    # Return the line from the log filebased on the line count 
     # Function to get a new line from file
     # This also parses the line and appends new figures to figure List
     global figure_list
     line = file.readlines()
 
     if not line[count]: # If required line is not present
-        return (None, NOLINE)
+    	return (None, NOLINE)
 
     parse_result = parse_line(line[count])
     figure_id = parse_result[0]
     state = parse_result[1]
     if state == INITIALIZATION:
-        # New figure created
-        # Add figure ID to list
-        figure_list.append(figure_id)
-        return (None, INITIALIZATION)
+	    # New figure created
+	    # Add figure ID to list
+	    figure_list.append(figure_id)
+	    return (None, INITIALIZATION)
     elif state == BLOCK_IDENTIFICATION:#check for block identification 
             return (str(figure_id),BLOCK_IDENTIFICATION)
     elif state == ENDING:
-        # End of figure
-        # Remove figure ID from list
-        figure_list.remove(figure_id)
-        return (None, ENDING)
+	    # End of figure
+	    # Remove figure ID from list
+	    figure_list.remove(figure_id)
+	    return (None, ENDING)
     return (line[count], DATA)
 def get_line_and_state(file, count):
 
-    #  Return the line from the log filebased on the line count 
-
+    # Return the line from the log filebased on the line count 
     # Function to get a new line from file
     # This also parses the line and appends new figures to figure List
     global figure_list
@@ -169,7 +166,7 @@ def get_line_and_state(file, count):
         figure_list.append(figure_id)
         return (None, INITIALIZATION)
     elif state == BLOCK_IDENTIFICATION:#check for block identification 
-            return (str(figure_id),BLOCK_IDENTIFICATION)
+        return (str(figure_id),BLOCK_IDENTIFICATION)
     elif state == ENDING:
         # End of figure
         # Remove figure ID from list
@@ -235,20 +232,13 @@ def event_stream(xcos_file_id):
 		# Remove xcos file
 		subprocess.Popen(["rm", "-f", xcos_file_dir+xcos_file_name], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False) 
 		scilab_proc.kill()
-                
-        #Sink Identification file  
-        #File created to idenify the block
-        #identify_block_name="identify_block_"+pid+".txt"
-        #identify_block= open(identify_block_name, "r")
-        
+               
 	# Log file directory
 	# As the scilab process is spawned by this script
 	#    the log directory is same as that of this script
 	log_dir = "" 
 	# Log file name
         log_name = "scilab-log-"+pid+".txt"
-
-	#log_name = "scilab-log-"+str(7275)+".txt"       # to test a particular log file
 
 	# Initialise output and error variables for subprocess
 	scilab_out = ""
@@ -269,20 +259,13 @@ def event_stream(xcos_file_id):
 		try:
 			# For processes taking less than 10 seconds
 			scilab_out, scilab_err = scilab_proc.communicate(timeout=10)
-			# Check for errors in Scilab  modified_shank
+			# Check for errors in Scilab 
 			if "Empty diagram" in scilab_out:
 				yield "event: ERROR\ndata: Empty diagram\n\n"
 				kill_scilab()
 				return
 			# Open the log file
 			log_file = open(log_dir + log_name, "r")
-
-			#identify block using file
-			#identify_block= open(identify_block_name, "r")
-			#block_value=identify_block.readline()
-			#identify_block.close()
-			#yield "event: block\ndata: " + block_value + "\n\n"
-			# Check for empty diagram
 	
 			# Start sending log
 			line = line_and_state(None, NOLINE)
@@ -349,7 +332,7 @@ def event_stream(xcos_file_id):
 
 		# For processes taking more than 10 seconds
 		except subprocess.TimeoutExpired:
-		    	# Check for errors in Scilab  modified_shank
+		    	# Check for errors in Scilab 
 			if "Empty diagram" in scilab_out:
 				yield "event: ERROR\ndata: Empty diagram\n\n"
 				kill_scilab()
