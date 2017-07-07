@@ -53,7 +53,8 @@ xcos_file_list = []
 workspace_list = []
 # Dictionary to find variable to load or save from workspace
 workspace_dict = {}
-
+log_dir = ''
+log_name = ''
 
 class line_and_state:
     # Class to store the line and its state
@@ -206,11 +207,13 @@ def event_stream(xcos_file_id):
     def kill_scilab():
         # Kill scilab by it's pid
         subprocess.Popen(["kill", "-9", pid])   
+
         # Remove log file
         subprocess.Popen(["rm", "-f", log_dir+log_name], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
         # Remove xcos file
         subprocess.Popen(["rm", "-f", xcos_file_dir+xcos_file_name], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False) 
         scilab_proc.kill()
+        line_count = 0
                
     # Log file directory
     # As the scilab process is spawned by this script,
@@ -222,15 +225,14 @@ def event_stream(xcos_file_id):
     # Initialise output and error variables for subprocess
     scilab_out = ""
     scilab_err = ""
-    gevent.sleep(10)
+
     line_count = 0
     line = line_and_state(None, NOLINE)
     # Checks if such a file exists
     while not (os.path.isfile(log_name)):
         pass
-    gevent.sleep(1)
     # This variable is for running the sleep command
-
+ 
     # Start sending log
     put_delay = False
     line_id = -1
@@ -267,7 +269,8 @@ def event_stream(xcos_file_id):
             if put_delay:
                 gevent.sleep(0.1 / delay_length)
 
-
+            if not (os.path.isfile(log_name)):
+                break
             log_file = open(log_dir + log_name, "r+")
 
             if not ( line.set(get_line_and_state(log_file,line_count)) or line.get_state() != ENDING or len(figure_list) > 0 ):
@@ -316,11 +319,14 @@ def event_stream(xcos_file_id):
 
         # Finished Sending Log
         kill_scilab()
+
         # Notify Client
         yield "event: DONE\ndata: None\n\n"
 
     else:
         # Open the log file
+        if not (os.path.isfile(log_name)):
+            return
         log_file = open(log_dir + log_name, "r")
     
         # Start sending log
@@ -339,6 +345,7 @@ def event_stream(xcos_file_id):
 
         # Finished Sending Log
         kill_scilab()
+
         # Notify Client
         yield "event: DONE\ndata: None\n\n"
 
@@ -458,9 +465,12 @@ def getDetailsThread():
 def stopDetailsThread():
     Details.tkbool = False # stops the thread
     import os, glob
+
     for filename in glob.glob("values/"+Details.uid+"*"):
             # deletes all files created under the 'uid' name
-            os.remove(filename)
+        os.remove(filename)
+
+            
 
 
 # Route that will process the file upload
@@ -598,7 +608,11 @@ def UpdateTKfile():
 
         elif n==1:
             # stops the thread
-            stopDetailsThread()
+            if not (os.path.isfile(log_name)):
+                stopDetailsThread()
+                return ""
+            open(log_dir + log_name,"w")
+            
         
         return ""
     else:
@@ -688,6 +702,7 @@ def static_file(path):
 @app.route('/stop')
 def stop():
     kill_scilab()
+
     return "done"
 
 
