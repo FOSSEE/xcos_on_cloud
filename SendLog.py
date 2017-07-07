@@ -9,6 +9,7 @@ import time
 import threading
 from gevent import monkey
 import fileinput
+import bs4
 from gevent.pywsgi import WSGIServer
 from flask import Flask, request, Response, render_template, send_from_directory ,send_file
 # Added send_file to ease download
@@ -42,7 +43,7 @@ NOLINE = -1
 BLOCK_IDENTIFICATION = -2
 
 # Scilab dir, can't run absolute paths
-SCI = "../scilab_for_xcos/"
+SCI = "../../scilab_for_xcos/"
 
 # List to store figure IDs
 figure_list = []
@@ -237,79 +238,13 @@ def event_stream(xcos_file_id):
     if(Details.tk_is_present):
         try:
             # For processes taking less than 10 seconds
-            scilab_out, scilab_err = scilab_proc.communicate(timeout=10)
+            scilab_out, scilab_err = scilab_proc.communicate(timeout=4)
             # Check for errors in Scilab 
             if "Empty diagram" in scilab_out:
                 yield "event: ERROR\ndata: Empty diagram\n\n"
                 kill_scilab()
                 return
-            # Open the log file
-            log_file = open(log_dir + log_name, "r")
-    
-            # Start sending log
-            line = line_and_state(None, NOLINE)
-            while (1):
-
-            # The chart must be updated for all the various lines it has in 0.1 seconds.
-            # Hence dividing the sleep time 0.1 by the number of lines the chart contains
-
-                if put_delay:
-                    gevent.sleep(0.1 / delay_length)
-
-
-                log_file = open(log_dir + log_name, "r+")
-
-                if not ( line.set(get_line_and_state(log_file,line_count)) or line.get_state() != ENDING or len(figure_list) > 0 ):
-                    break
-
-
-                if line.get_state()== BLOCK_IDENTIFICATION:
-                    # Split the line obtained from log file and the 8th element is line ID
-                    logLine = line.get_line()
-
-                    line_contents = logLine.split(' ')
-                    # Checking if the current line ID is same as first line ID and is the first occurence of matching
-                    if(line_id == line_contents[7] and not put_delay):
-                        # The count of total number of lines in the chart
-                        delay_length = line_count - 1
-                        put_delay = True
-                    # The first line ID 
-                    if(line_count == 1):
-                        line_id = line_contents[7]
-                    yield "event: block\ndata: "+logLine+"\n\n"
-
-
-                elif line.get_state() != DATA:
-                    gevent.sleep(LOOK_DELAY)    
-
-
-
-                else:
-                    # Split the line obtained from log file and the 8th element is line ID
-                    logLine = line.get_line()
-
-                    line_contents = logLine.split(' ')
-                    # Checking if the current line ID is same as first line ID and is the first occurence of matching
-                    if(line_id == line_contents[7] and not put_delay):
-                        # The count of total number of lines in the chart
-                        delay_length = line_count - 1
-                        put_delay = True
-
-                    # The first line ID 
-                    if(line_count == 1):
-                        line_id = line_contents[7]
-                    yield "event: log\ndata: "+logLine+ "\n\n"
-
-
-                # Reset line, so server won't send same line twice
-                line = line_and_state(None, NOLINE)
-                line_count = line_count + 1
-                log_file.close()
-
-            # Finished Sending Log
-            kill_scilab()
-            # Notify Client
-            yield "event: DONE\ndata: None\n\n"
+           
 
         # For processes taking more than 10 seconds
         except subprocess.TimeoutExpired:
@@ -320,69 +255,69 @@ def event_stream(xcos_file_id):
                 return
      
             # Open the log file
-            log_file = open(log_dir + log_name, "r")
-    
-            # Start sending log
+        log_file = open(log_dir + log_name, "r")
+
+        # Start sending log
+        line = line_and_state(None, NOLINE)
+        while (True):
+
+            # The chart must be updated for all the various lines it has in 0.1 seconds.
+            # Hence dividing the sleep time 0.1 by the number of lines the chart contains
+
+            if put_delay:
+                gevent.sleep(0.1 / delay_length)
+
+
+            log_file = open(log_dir + log_name, "r+")
+
+            if not ( line.set(get_line_and_state(log_file,line_count)) or line.get_state() != ENDING or len(figure_list) > 0 ):
+                break
+
+
+            if line.get_state()== BLOCK_IDENTIFICATION:
+                # Split the line obtained from log file and the 8th element is line ID
+                logLine = line.get_line()
+
+                line_contents = logLine.split(' ')
+                # Checking if the current line ID is same as first line ID and is the first occurence of matching
+                if(line_id == line_contents[7] and not put_delay):
+                    delay_length = line_count - 1
+                    # The count of total number of lines in the chart
+                    put_delay = True
+                # The first line ID 
+                if(line_count == 1):
+                    line_id = line_contents[7]
+                yield "event: block\ndata: "+logLine+"\n\n"
+
+            elif line.get_state() != DATA:
+                gevent.sleep(LOOK_DELAY)    
+
+            else:
+                # Split the line obtained from log file and the 8th element is line ID
+                logLine = line.get_line()
+
+                line_contents = logLine.split(' ')
+                # Checking if the current line ID is same as first line ID and is the first occurence of matching
+                if(line_id == line_contents[7] and not put_delay):
+                    # Take the count of total number of lines in the chart
+                    delay_length = line_count - 1 
+                    put_delay = True
+
+                # The first line ID 
+                if(line_count == 1):
+                    line_id = line_contents[7]
+                yield "event: log\ndata: "+logLine+ "\n\n"
+
+
+            # Reset line, so server won't send same line twice
             line = line_and_state(None, NOLINE)
-            while (1):
+            line_count = line_count + 1
+            log_file.close()
 
-                # The chart must be updated for all the various lines it has in 0.1 seconds.
-                # Hence dividing the sleep time 0.1 by the number of lines the chart contains
-
-                if put_delay:
-                    gevent.sleep(0.1 / delay_length)
-
-
-                log_file = open(log_dir + log_name, "r+")
-
-                if not ( line.set(get_line_and_state(log_file,line_count)) or line.get_state() != ENDING or len(figure_list) > 0 ):
-                    break
-
-
-                if line.get_state()== BLOCK_IDENTIFICATION:
-                    # Split the line obtained from log file and the 8th element is line ID
-                    logLine = line.get_line()
-
-                    line_contents = logLine.split(' ')
-                    # Checking if the current line ID is same as first line ID and is the first occurence of matching
-                    if(line_id == line_contents[7] and not put_delay):
-                        delay_length = line_count - 1
-                        # The count of total number of lines in the chart
-                        put_delay = True
-                    # The first line ID 
-                    if(line_count == 1):
-                        line_id = line_contents[7]
-                    yield "event: block\ndata: "+logLine+"\n\n"
-
-                elif line.get_state() != DATA:
-                    gevent.sleep(LOOK_DELAY)    
-
-                else:
-                    # Split the line obtained from log file and the 8th element is line ID
-                    logLine = line.get_line()
-
-                    line_contents = logLine.split(' ')
-                    # Checking if the current line ID is same as first line ID and is the first occurence of matching
-                    if(line_id == line_contents[7] and not put_delay):
-                        # Take the count of total number of lines in the chart
-                        delay_length = line_count - 1 
-                        put_delay = True
-
-                    # The first line ID 
-                    if(line_count == 1):
-                        line_id = line_contents[7]
-                    yield "event: log\ndata: "+logLine+ "\n\n"
-
-
-                # Reset line, so server won't send same line twice
-                line = line_and_state(None, NOLINE)
-                line_count = line_count + 1
-                log_file.close()
-
-            # Finished Sending Log
-            kill_scilab()
-            # Notify Client
-            yield "event: DONE\ndata: None\n\n"
+        # Finished Sending Log
+        kill_scilab()
+        # Notify Client
+        yield "event: DONE\ndata: None\n\n"
 
     else:
         # Open the log file
@@ -532,7 +467,6 @@ def stopDetailsThread():
 @app.route('/upload', methods=['POST'])
 def upload():
     # Get the file
-    print( "upload")
     file = request.files['file']
     # flags to check if both TOWS_c and FROMWSB are present
     flag1=0
@@ -637,7 +571,7 @@ def upload():
         for file in folder_file_content:
             if file.endswith(".xcos"):
                 shutil.copy(file, destination_folder)
-                subprocess.Popen(["rm",file])# After moving to the required folder deleting the xcos file.
+                os.remove(file)# After moving to the required folder deleting the xcos file.
         temp_file_xml_name = base_filename + ".xcos"
         xcos_file_list.append(temp_file_xml_name)
         workspace_list.append(workspace_counter)
@@ -680,7 +614,7 @@ def importXcos():
     with open("webapp/xcos/"+str(Details.names[Details.uid+"eid"])+".xcos") as inf:
         # read the xcos file contents
         Details.names[Details.uid+"xcosContents"] = inf.read()
-    import bs4
+
     with open("webapp/index.html") as inf:
         txt = inf.read()
         # load soup to edit the html file
@@ -704,7 +638,6 @@ def importXcos():
 
 @app.route('/ChangeIndexFile',  methods=['POST'])
 def ChangeIndexFile():
-    import bs4
     with open("webapp/index.html") as inf:
         txt = inf.read()
         # load soup to edit the html file
