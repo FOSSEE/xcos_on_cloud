@@ -1,31 +1,27 @@
 
-
 <html>
-   <head>
-      <meta content="text/html;charset=utf-8" http-equiv="Content-Type"/>
-      <meta content="utf-8" http-equiv="encoding"/>
-      <title>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type"/>
+<meta content="utf-8" http-equiv="encoding"/>
+<title>
          Xcos
       </title>
-      <!-- Loads and initializes the library -->
-      <script src="jquery/jquery-1.8.2.js" type="text/javascript"></script>
-      <script src="mxClient.min.js" type="text/javascript"></script>
-      <script src="jquery/farbtastic.js" type="text/javascript"></script>
-      <link href="jquery/farbtastic.css" rel="stylesheet" type="text/css"/>
-      <link href="jquery/jquery-ui.css" rel="stylesheet"/>
-      <script src="details.js" type="text/javascript"></script>
-      <script src="setup.js" type="text/javascript"></script>
-      <script src="combined.js" type="text/javascript"></script>
-      <script src="orientation.js" type="text/javascript"></script>
-
-    <script type="text/javascript" src="highcharts/highcharts.js"></script> <!-- Used for producing 2d-highcharts -->
-    <script type="text/javascript" src="highcharts/highcharts-3d.js"></script> <!-- Used for producing 3d-highcharts in output if required --> 
-    <script type="text/javascript" src="highcharts/exporting.js"></script> <!-- Used for the exporting feature of highcharts -->
-
-
-      <script src="Queue.js" type="text/javascript"></script>
-      <script src="chart.js" type="text/javascript"></script>
-      <script type="text/javascript">
+<!-- Loads and initializes the library -->
+<script src="jquery/jquery-1.8.2.js" type="text/javascript"></script>
+<script src="mxClient.min.js" type="text/javascript"></script>
+<script src="jquery/farbtastic.js" type="text/javascript"></script>
+<link href="jquery/farbtastic.css" rel="stylesheet" type="text/css"/>
+<link href="jquery/jquery-ui.css" rel="stylesheet"/>
+<script src="details.js" type="text/javascript"></script>
+<script src="setup.js" type="text/javascript"></script>
+<script src="combined.js" type="text/javascript"></script>
+<script src="orientation.js" type="text/javascript"></script>
+<script src="highcharts/highcharts.js" type="text/javascript"></script> <!-- Used for producing 2d-highcharts -->
+<script src="highcharts/highcharts-3d.js" type="text/javascript"></script> <!-- Used for producing 3d-highcharts in output if required -->
+<script src="highcharts/exporting.js" type="text/javascript"></script> <!-- Used for the exporting feature of highcharts -->
+<script src="Queue.js" type="text/javascript"></script>
+<script src="chart.js" type="text/javascript"></script>
+<script type="text/javascript">
          var editor ;
           	window.onbeforeunload = function (e) {
              
@@ -1749,7 +1745,7 @@
                             div.appendChild(node);
          
                             node.style.visibility = "visible";
-                            var wind = showModalWindow(graph, 'Set Context', div, 410, 440);
+                            var wind = showModalWindow(graph, 'Set Context', div, 268, 162);
          	    if(ViewExampleXcos.innerHTML != 'XcosNull')
          							 
               	    {			
@@ -3653,10 +3649,10 @@
                 };
              
       </script>
-      <!--
+<!--
          Updates connection points before the routing is called.
          -->
-      <script type="text/javascript">
+<script type="text/javascript">
          // Computes the position of edge to edge connection points.
            mxGraphView.prototype.updateFixedTerminalPoint = function(edge, terminal, source, constraint) {
          
@@ -3722,10 +3718,10 @@
                edge.setAbsoluteTerminalPoint(pt, source);
            };
       </script>
-      <!--
+<!--
          Overrides methods to preview and create new edges.
          -->
-      <script type="text/javascript">
+<script type="text/javascript">
          // Sets source terminal point for edge-to-edge connections.
            mxConnectionHandler.prototype.createEdgeState = function(me) {
                var edge = this.graph.createEdge();
@@ -3828,10 +3824,10 @@
                return result;
            };
       </script>
-      <!--
+<!--
          Adds in-place highlighting for complete cell area (no hotspot).
          -->
-      <script type="text/javascript">
+<script type="text/javascript">
          mxConnectionHandlerCreateMarker = mxConnectionHandler.prototype.createMarker;
            mxConnectionHandler.prototype.createMarker = function() {
                var marker = mxConnectionHandlerCreateMarker.apply(this, arguments);
@@ -3854,10 +3850,10 @@
                return marker;
            }
       </script>
-      <!--
+<!--
          Implements a perpendicular wires connection edge style
          -->
-      <script type="text/javascript">
+<script type="text/javascript">
          mxEdgeStyle.WireConnector = function(state, source, target, hints, result) {
                state.cell.waypoints = state.cell.geometry.points;
                // Creates array of all way- and terminalpoints
@@ -3974,59 +3970,59 @@
                return mxGraphCreateHandler.apply(this, arguments);
            };
       </script>
-   </head>
-   <!-- Creating p'id for each tkblock -->
-   <!-- tkchange will call GetcurVal() if any one of the slider value is updated -->
-   <!-- ViewExampleXcos will get the xcos file imported from the file with 'eid' obtained from 'view example' link -->
-   <p hidden="" id="tkchange"></p>
-   <p hidden="" id="tk1"></p>
-   <p hidden="" id="tk2"></p>
-   <p hidden="" id="tk3"></p>
-   <p hidden="" id="tk4"></p>
-   <p hidden="" id="tk5"></p>
-   <p hidden="" id="tk6"></p>
-   <p hidden="" id="tk7"></p>
-   <p hidden="" id="tk8"></p>
-   <p hidden="" id="tk9"></p>
-   <p hidden="" id="tk10"></p>
-   <p hidden="" id="ViewExampleXcos">XcosNull</p>
-   <!-- Page passes the container for the graph to the program -->
-   <body onload="main(document.getElementById('graphContainer'),
+</head>
+<!-- Creating p'id for each tkblock -->
+<!-- tkchange will call GetcurVal() if any one of the slider value is updated -->
+<!-- ViewExampleXcos will get the xcos file imported from the file with 'eid' obtained from 'view example' link -->
+<p hidden="" id="tkchange"></p>
+<p hidden="" id="tk1"></p>
+<p hidden="" id="tk2"></p>
+<p hidden="" id="tk3"></p>
+<p hidden="" id="tk4"></p>
+<p hidden="" id="tk5"></p>
+<p hidden="" id="tk6"></p>
+<p hidden="" id="tk7"></p>
+<p hidden="" id="tk8"></p>
+<p hidden="" id="tk9"></p>
+<p hidden="" id="tk10"></p>
+<p hidden="" id="ViewExampleXcos">XcosNull</p>
+<!-- Page passes the container for the graph to the program -->
+<body onload="main(document.getElementById('graphContainer'),
       document.getElementById('outlineContainer'),
       document.getElementById('toolbarContainer'),
       document.getElementById('sidebarContainer'),
       document.getElementById('statusContainer')); CheckViewExample()" style="margin:0px;">
-      <!-- Creates a container for the splash screen -->
-      <div id="splash" style="position:absolute;top:0px;left:0px;width:100%;height:100%;background:white;z-index:1;">
-         <center id="splash" style="padding-top:230px;">
-            <img src="images/loading.gif"/>
-         </center>
-      </div>
-      <!-- Creates a container for the sidebar -->
-      <div id="toolbarContainer" style="position:absolute;white-space:nowrap;overflow:hidden;top:0px;left:0px;max-height:24px;height:36px;right:0px;padding:6px;background-image:url('images/toolbar_bg.gif');"></div>
-      <!-- Creates a container for the toolbox -->
-      <div class="ui-accordion ui-widget ui-helper-reset" id="sidebarContainer" style="position:absolute;overflow:scroll;top:36px;left:0px;bottom:36px;max-width:266px;width:270px;padding-top:10px;padding-left:4px;"></div>
-      <!-- Creates a container for the graph -->
-      <div id="graphContainer" style="position:absolute;overflow:hidden;top:36px;left:270px;bottom:36px;right:0px;background-image:url('images/grid.gif');cursor:default;"></div>
-      <!-- Creates a container for the outline -->
-      <div id="outlineContainer" style="position:absolute;overflow:hidden;top:36px;right:0px;width:200px;height:140px;background:transparent;border-style:solid;border-color:black;"></div>
-      <!-- Creates a container for the sidebar -->
-      <div id="statusContainer" style="text-align:right;position:absolute;overflow:hidden;bottom:0px;left:0px;max-height:24px;height:36px;right:0px;color:white;padding:6px;background-image:url('images/toolbar_bg.gif');">
-         <div style="font-size:10pt;float:left;">
-            <a href="http://fossee.in/" target="_tab">
+<!-- Creates a container for the splash screen -->
+<div id="splash" style="position:absolute;top:0px;left:0px;width:100%;height:100%;background:white;z-index:1;">
+<center id="splash" style="padding-top:230px;">
+<img src="images/loading.gif"/>
+</center>
+</div>
+<!-- Creates a container for the sidebar -->
+<div id="toolbarContainer" style="position:absolute;white-space:nowrap;overflow:hidden;top:0px;left:0px;max-height:24px;height:36px;right:0px;padding:6px;background-image:url('images/toolbar_bg.gif');"></div>
+<!-- Creates a container for the toolbox -->
+<div class="ui-accordion ui-widget ui-helper-reset" id="sidebarContainer" style="position:absolute;overflow:scroll;top:36px;left:0px;bottom:36px;max-width:266px;width:270px;padding-top:10px;padding-left:4px;"></div>
+<!-- Creates a container for the graph -->
+<div id="graphContainer" style="position:absolute;overflow:hidden;top:36px;left:270px;bottom:36px;right:0px;background-image:url('images/grid.gif');cursor:default;"></div>
+<!-- Creates a container for the outline -->
+<div id="outlineContainer" style="position:absolute;overflow:hidden;top:36px;right:0px;width:200px;height:140px;background:transparent;border-style:solid;border-color:black;"></div>
+<!-- Creates a container for the sidebar -->
+<div id="statusContainer" style="text-align:right;position:absolute;overflow:hidden;bottom:0px;left:0px;max-height:24px;height:36px;right:0px;color:white;padding:6px;background-image:url('images/toolbar_bg.gif');">
+<div style="font-size:10pt;float:left;">
+<a href="http://fossee.in/" target="_tab">
             FOSSEE
             </a>
-         </div>
-      </div>
-      <!-- Secret -->
-      <p class="accordion-expand-holder" style="display:none">
-         <a class="accordion-expand-all" id="toggleBlocks">
+</div>
+</div>
+<!-- Secret -->
+<p class="accordion-expand-holder" style="display:none">
+<a class="accordion-expand-all" id="toggleBlocks">
          Expand All
          </a>
-      </p>
-   </body>
-   <!-- It's good if this part happens after the entire page has loaded-->
-   <script type="text/javascript">
+</p>
+</body>
+<!-- It's good if this part happens after the entire page has loaded-->
+<script type="text/javascript">
       // Preload all images
         var directory = ["/blocks/", "/images/", "/palettes/"];
         for (folder in directory) {
@@ -4112,5 +4108,3 @@
         });
    </script>
 </html>
-
-
