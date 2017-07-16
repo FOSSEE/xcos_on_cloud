@@ -2460,73 +2460,43 @@ function CLSS () {
     }
 
  
-CLSS.prototype.get = function CLSS() {
+    CLSS.prototype.get = function CLSS() {
         var options={
             A:["A matrix",this.A.toString().replace(/,/g," ")],
-            B:["B matrix",this.B],
-            C:["C matrix",this.C],
-            D:["D matrix",this.D],
+            B:["B matrix",this.B.toString().replace(/,/g," ")],
+            C:["C matrix",this.C.toString().replace(/,/g," ")],
+            D:["D matrix",this.D.toString().replace(/,/g," ")],
             x0:["Initial state",this.x0],
         }
         return options
     }
-CLSS.prototype.set = function CLSS() {
-    this.A = inverse(arguments[0]["A"])
-    this.B = inverse((arguments[0]["B"]))
-    this.C = inverse((arguments[0]["C"]))
-    this.D = inverse((arguments[0]["D"]))
-    this.x0 = inverse((arguments[0]["x0"]))
-    this.out = size(this.C,1)
-    if(this.out == 0)
-        this.out = []
-    this.in = size(this.B,2)
-    if(this.in == 0)
-        this.in = []
-    var io = check_io(this.x.model,this.x.graphics,[this.in],[this.out],[],[])
+    CLSS.prototype.set = function CLSS() {
+        this.A = inverse(arguments[0]["A"])
+        this.B = inverse((arguments[0]["B"]))
+        this.C = inverse((arguments[0]["C"]))
+        this.D = inverse((arguments[0]["D"]))
+        this.x0 = inverse((arguments[0]["x0"]))
+        this.out = size(this.C,1)
+        if(this.out == 0)
+            this.out = []
+        this.in = size(this.B,2)
+        if(this.in == 0)
+            this.in = []
+        var io = check_io(this.x.model,this.x.graphics,[this.in],[this.out],[],[])
 
-    var rpar = new ScilabDouble(...this.A,...this.B,...this.C,...this.D)
-    this.x.model.dep_ut = new ScilabBoolean(false,true)
-    this.x.model.rpar = rpar
-    this.x.model.state = colon_operator(this.x0)
-    var exprs = new ScilabString([this.A.toString().replace(/,/g, " ")],[this.B.toString().replace(/,/g, " ")],[this.C.toString().replace(/,/g, " ")],[this.D.toString().replace(/,/g, " ")])
-    this.x.graphics.exprs=exprs
-    return new BasicBlock(this.x)
+        var rpar = new ScilabDouble(...this.A,...this.B,...this.C,...this.D)
+        this.x.model.dep_ut = new ScilabBoolean(false,true)
+        this.x.model.rpar = rpar
+        this.x.model.state = colon_operator(this.x0)
+        var exprs = new ScilabString([this.A.toString().replace(/,/g, " ")],[this.B.toString().replace(/,/g, " ")],[this.C.toString().replace(/,/g, " ")],[this.D.toString().replace(/,/g, " ")])
+        this.x.graphics.exprs=exprs
+        return new BasicBlock(this.x)
     }
-CLSS.prototype.details = function CLSS() {
-    return this.x
-    }
-}
-
-function CLSS() {
-
-    CLSS.prototype.define = function CLSS() {
-        this.x0 = 0;
-        this.A = -1;
-        this.B = 1;
-        this.C = 1;
-        this.D = 0;
-        this.in1 = 1;
-        this.out = 1;
-
-        var model = scicos_model();
-        model.sim = list(new ScilabString(["csslti4"]), new ScilabDouble([4]));
-        model.in = new ScilabDouble([this.in1]);
-        model.out = new ScilabDouble([this.out]);
-        model.state = new ScilabDouble([this.x0]);
-        model.rpar = new ScilabDouble([this.A], [this.B], [this.C], [this.D]);
-        model.blocktype = new ScilabString(["c"]);
-        model.dep_ut = new ScilabBoolean([false, true]);
-
-        var exprs = new ScilabString([this.A], [this.B], [this.C], [this.D], [this.x0]);
-        var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"CLSS\",sz(1),sz(2));"]);
-        this.x = new standard_define(new ScilabDouble([4, 2]), model, exprs, gr_i);
-        return new BasicBlock(this.x);
-    }
-
     CLSS.prototype.details = function CLSS() {
-        return this.x;
+        return this.x
     }
 }
+
 function CMAT3D () {
 
 CMAT3D.prototype.define = function CMAT3D() {
@@ -15225,7 +15195,7 @@ RFILE_f.prototype.set = function RFILE_f() {
     
     this.nout = size(this.outmask,"*")
 
-    if(this.tmask1 == []){
+    if(this.tmask1.length == 0){
         this.ievt = 0
         this.cout = []
         this.tmask1 = [[0]]
@@ -15235,7 +15205,7 @@ RFILE_f.prototype.set = function RFILE_f() {
         this.cout = 1
     }
 
-    var io = check_io(this.x.model,this.x.graphics,[],this.nout,[1],this.cout)
+    var io = check_io(this.x.model,this.x.graphics,[],[this.nout],[1],this.cout)
     if(this.ievt == 0)
         this.x.model.firing = new ScilabDouble()
     else
@@ -15247,8 +15217,8 @@ RFILE_f.prototype.set = function RFILE_f() {
         this.value[i][0] = this.N*this.value[i]
     }
     var dstate = new ScilabDouble([-1],[-1],[this.lunit],...this.value,[1])
-    this.x.model.dstate = new ScilabDouble(...this.dstate);
-    this.x.model.ipar = new ScilabDouble(...this.ipar);
+    this.x.model.dstate = dstate;
+    this.x.model.ipar = ipar;
     var exprs = new ScilabString([this.tmask1.toString().replace(/,/g, " ")],[this.outmask.toString().replace(/,/g, " ")],[this.fname1],[this.frmt1],[this.N])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
@@ -17626,24 +17596,24 @@ function TOWS_c() {
         }
         return options
     }
-TOWS_c.prototype.set = function TOWS_c() {
-    this. nz = parseFloat((arguments[0][" nz"]))
-    this. varnam = arguments[0][" varnam"]
-    this. herit = parseFloat((arguments[0][" herit"]))
-    this.x.model.intyp = new ScilabDouble([-1])
-    var io = set_io(this.x.model,this.x.graphics,[[-1],[-2]],[],ones(1-this.herit,1),[])
-    if(this.herit == 1){
-        this.x.model.blocktype = new ScilabDouble(["x"]);
+    TOWS_c.prototype.set = function TOWS_c() {
+        this.nz = parseFloat((arguments[0]["nz"]))
+        this.varnam = arguments[0]["varnam"]
+        this.herit = parseFloat((arguments[0]["herit"]))
+        this.x.model.intyp = new ScilabDouble([-1])
+        var io = set_io(this.x.model,this.x.graphics,[[-1],[-2]],[],ones(1-this.herit,1),[])
+        if(this.herit == 1){
+            this.x.model.blocktype = new ScilabDouble(["x"]);
+        }
+        else{
+            this.x.model.blocktype = new ScilabDouble(["d"]);
+        }
+        this.x.model.ipar = new ScilabDouble([this.nz],[this.varnam.length],[ascii(this.varnam)])
+        var exprs = new ScilabString([this.nz],[this.varnam],[this.herit])
+        this.x.graphics.exprs=exprs
+        return new BasicBlock(this.x)
+        }
     }
-    else{
-        this.x.model.blocktype = new ScilabDouble(["d"]);
-    }
-    this.x.model.ipar = new ScilabDouble([this.nz],[this.varnam.length],[ascii(this.varnam)])
-    var exprs = new ScilabString([this. nz],[this. varnam],[this. herit])
-    this.x.graphics.exprs=exprs
-    return new BasicBlock(this.x)
-    }
-}
 
 function TRASH_f() {
 
