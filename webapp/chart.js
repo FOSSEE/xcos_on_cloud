@@ -245,15 +245,15 @@ function chart_init(wnd){
 
 			x1  = parseFloat(data[5]),
 			y1  = parseFloat(data[6]),
-			x2  = parseFloat(data[8]);
-			y2  = parseFloat(data[9]);
+			x2  = parseFloat(data[7]);
+			y2  = parseFloat(data[8]);
 
 			if(block_entry_BARXY == 1){
 
 				fig_id = block;
 				l_id = fig_id + 1;
 
-		        create_new_chart(fig_id, data[16], data[12], data[13], data[10], data[11], 'line', data[14]+'-'+fig_id);
+		        create_new_chart(fig_id, data[14], data[11], data[12], data[9], data[10], 'line', data[13]+'-'+fig_id);
 		        block_entry_BARXY = block_entry_BARXY + 1;
 		        var chart = $('#chart-'+fig_id.toString()).highcharts();
 		        chart.addSeries({
