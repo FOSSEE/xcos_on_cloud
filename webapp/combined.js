@@ -92,6 +92,30 @@ function AFFICH_m() {
         this.nt = parseFloat((arguments[0]["nt"]))
         this.nd = parseFloat((arguments[0]["nd"]))
         this.herit = parseFloat((arguments[0]["herit"]))
+        if(this.font<=0){
+            alert("Font number must be positive");
+            AFFICH_m.get();
+        }
+
+            if(this.fontsize<=0){
+                alert("Font size must be positive");
+                AFFICH_m.get();
+            }
+
+            if(this.nt<=3){
+                alert("Total number of digits must be greater than 3");
+                AFFICH_m.get();
+            }
+
+            if(this.nd<0){
+                alert("Number of rational part digits must be greater or equal 0");
+                AFFICH_m.get();
+            }
+
+            if((this.herit!=0)||(this.herit!=1)){
+                alert("Accept inherited values are 0 and 1");
+                AFFICH_m.get();
+            }
         this.x.model.intyp = new ScilabDouble([1])
         var io = set_io(this.x.model,this.x.graphics,this.in,[],ones(1-this.herit,1),[])
         this.x.model.ipar = new ScilabDouble([this.font],[this.fontsize],[this.colr],[this.nt],[this.nd],this.in[0])
@@ -498,6 +522,18 @@ function BARXY() {
         this.ymin = parseFloat((arguments[0]["ymin"]))
         this.ymax = parseFloat((arguments[0]["ymax"]))
         this.thickness = parseFloat((arguments[0]["thickness"]))
+        if(this.ymin>=this.ymax){
+                alert("Ymax must be greater than Ymin");
+                BARXY.get();
+        }
+            if(this.xmin>=this.xmax){
+                alert("Xmax must be greater than Xmin");
+                BARXY.get();
+            }
+            if(this.thickness<=0){
+                alert("Thickness must be strictly positive.");
+                BARXY.get();
+            }
         this.x.model.rpar = new ScilabDouble([this.xmin],[this.xmax],[this.ymin],[this.ymax])
         this.x.model.ipar = new ScilabDouble([this.thickness]);
         var exprs = new ScilabString([this.xmin],[this.xmax],[this.ymin],[this.ymax],[this.thickness])
@@ -610,7 +646,33 @@ function BITSET() {
     BITSET.prototype.set = function BITSET() {
         this.Datatype = parseFloat((arguments[0]["Datatype"]))
         this.bit = parseFloat((arguments[0]["bit"]))
-        
+        if(Math.floor(this.bit)!=this.bit){
+               alert("Wrong type for 'Index of Bit' parameter:"+this.bit+"\nMust be integer.");
+                BITSET.get();
+        }
+        if((this.Datatype == 3)||(this.Datatype == 6)){
+            if((this.bit>31)||(this.bit < 0)){
+                alert("Wrong value for 'Index of Bit' parameter:"+this.bit+"\nMust be in the interval [0, 31]");
+                BITSET.get();
+            }
+        }
+        else if((this.Datatype==4)||(this.Datatype==7)){
+                if(this.bit > 15 ||this.bit < 0){
+                    alert("Wrong value for 'Index of Bit' parameter: "+this.bit+"\nMust be in the interval [0, 15]");
+                    BITSET.get();
+                }
+        }
+        else if((this.Datatype==5)||(this.Datatype==8)){
+
+                if(this.bit > 7 ||this.bit < 0){
+                    alert("Wrong value for 'Index of Bit' parameter: "+this.bit+"\nMust be in the interval [0, 7]");
+                    BITSET.get();
+                }
+        }
+        else{
+                alert("Wrong value for 'Data Type' parameter: "+this.Datatype+"\nMust be in the interval [3, 8]");
+                BITSET.get();
+        }
         if(this.Datatype == 3 || this.Datatype == 6){
             this.n = Math.pow(2,this.bit)
             this.bit = uint32(this.bit)
@@ -766,6 +828,22 @@ BOUNCEXY.prototype.set = function BOUNCEXY() {
     this.xmax = parseFloat((arguments[0]["xmax"]))
     this.ymin = parseFloat((arguments[0]["ymin"]))
     this.ymax = parseFloat((arguments[0]["ymax"]))
+    if(size(this.clrs,"*")!=size(this.siz,"*")){
+        alert("colors and radii must have equal size (number of balls)");
+        BOUNCEXY.get();
+    }
+            if(this.win<-1){
+                alert("Window number cannot be inferior than -1");
+                BOUNCEXY.get();
+            }
+            if(this.ymin>=this.ymax){
+                alert("Ymax must be greater than Ymin");
+                BOUNCEXY.get();
+            }
+            if(this.xmin>=this.xmax){
+                alert("Xmax must be greater than Xmin");
+                BOUNCEXY.get();
+            }
     this.z = [];
     for (var i = 0; i < size(this.clrs, "*"); i++) {
         this.z[6 * (i) + 0] = [0];
@@ -836,6 +914,18 @@ BPLATFORM.prototype.set = function BPLATFORM() {
     this.xmax = parseFloat((arguments[0]["xmax"]))
     this.ymin = parseFloat((arguments[0]["ymin"]))
     this.ymax = parseFloat((arguments[0]["ymax"]))
+    if((this.plen<=0)||(this.csiz<=0)){
+                alert("Pendulum length and cart size must be positive.");
+                BPLATFORM.get();
+            }
+            if(this.ymin>=this.ymax){
+                alert("Ymax must be greater than Ymin");
+                BPLATFORM.get();
+            }
+            if(this.xmin>=this.xmax){
+                alert("Xmax must be greater than Xmin");
+                BPLATFORM.get();
+            }
     var rpar = new ScilabDouble([this.plen],[this.csiz],[this.phi],[this.xmin],[this.xmax],[this.ymin],[this.ymax])
     model.rpar = rpar
     var exprs = new ScilabString([this.plen],[this.csiz],[this.phi],[this.xmin],[this.xmax],[this.ymin],[this.ymax])
@@ -907,6 +997,38 @@ CANIMXY.prototype.set = function CANIMXY() {
     this.ymin = parseFloat((arguments[0]["ymin"]))
     this.ymax = parseFloat((arguments[0]["ymax"]))
     this.N = parseFloat((arguments[0]["N"]))
+    if((size(this.wpos,"*")!=0)&&(size(this.wpos,"*")!=2)){
+                alert("Window position must be [] or a 2 vector");
+                CANIMXY.get();
+            }
+            if((size(this.wdim,"*")!=0)&&(size(this.wdim,"*")!=2)){
+                alert("Window dim must be [] or a 2 vector");
+                CANIMXY.get();
+            }
+            if(this.win<-1){
+                alert("Window number cannot be inferior than -1");
+                CANIMXY.get();
+            }
+            if(this.nbr_curves<=0){
+                alert("Number of curves cannot be negative or null");
+                CANIMXY.get();
+            }
+            if(this.N<1){
+                alert("Buffer size must be at least 1");
+                CANIMXY.get();
+            }
+            if((this.N==1)&&(this.clrs>0)){
+                alert("Buffer size must be at least 2");
+                CANIMXY.get();
+            }
+            if(this.ymin>=this.ymax){
+                alert("Ymax must be greater than Ymin");
+                CANIMXY.get();
+            }
+            if(this.xmin>=this.xmax){
+                alert("Xmax must be greater than Xmin");
+                CANIMXY.get();
+            }
     this.in = ones(2,1)
     this.in2 = ones(2,1)
     for (var i = this.in.length - 1; i >= 0; i--) {
@@ -999,6 +1121,54 @@ CANIMXY3D.prototype.set = function CANIMXY3D() {
     this.vec_z = inverse(arguments[0]["vec_z"])
     this.param3ds = inverse(arguments[0]["param3ds"])
     this.N = parseFloat((arguments[0]["N"]))
+    if((size(this.wpos,"*")!=0)&&(size(this.wpos,"*")!=2)){
+                alert("Window position must be [] or a 2 vector");
+                CANIMXY3D.get();
+    }
+            if((size(this.wdim,"*")!=0)&&(size(this.wdim,"*")!=2)){
+                alert("Window dim must be [] or a 2 vector");
+                CANIMXY3D.get();
+            }
+            if(this.win<-1){
+                alert("Window number cannot be inferior than -1");
+                CANIMXY3D.get();
+            }
+            if(size(this.clrs,"*")!=size(this.siz,"*")){
+                alert("Colors and Size must have same size");
+                CANIMXY3D.get();
+            }
+            if(this.nbr_curves<=0){
+                alert("Number of curves cannot be negative or null");
+                CANIMXY3D.get();
+            }
+            if(size(this.clrs,"*")<this.nbr_curves){
+                alert("You must have at least same size for clrs and the number of curves");
+                CANIMXY3D.get();
+            }
+            if(this.N<1){
+                alert("Buffer size must be at least 1");
+                CANIMXY3D.get();
+            }
+            if(this.N<2){
+                for(var i=0;i<this.nbr_curves;i++){
+                    if(this.clrs[i]>0){
+                        alert("Buffer size must be at least 2 or Change a color (must be <0)");
+                        CANIMXY3D.get();
+                    }
+                }
+            }
+            if(this.vec_y[0]>=this.vec_y[1]){
+                alert("Ymax must be higher than Ymin");
+                CANIMXY3D.get();
+            }
+            if(this.vec_x[0]>=this.vec_x[1]){
+                alert("Xmax must be higher than Xmin");
+                CANIMXY3D.get();
+            }
+            if(this.vec_z[0]>=this.vec_z[1]){
+                alert("Zmax must be higher than Zmin");
+                CANIMXY3D.get();
+            }
     this.in = ones(3,1)
     this.in2 = ones(3,1)
     for (var i = this.in.length - 1; i >= 0; i--) {
@@ -1336,6 +1506,34 @@ function CFSCOPE() {
         this.per = parseFloat(arguments[0]["per"]);
         this.N = parseFloat((arguments[0]["N"]));
         this.wu = parseFloat(arguments[0]["wu"]);
+        if((size(this.wpos,"*")!=0)&&(size(this.wpos,"*")!=2)){
+                alert("Window position must be [] or a 2 vector");
+                CFSCOPE.get();
+            }
+            if((size(this.wdim,"*")!=0)&&(size(this.wdim,"*")!=2)){
+                alert("Window dim must be [] or a 2 vector");
+                CFSCOPE.get();
+            }
+            if(this.win<-1){
+                alert("Window number cannot be inferior than -1");
+                CFSCOPE.get();
+            }
+            if(this.per<=0){
+                alert("Refresh period must be positive");
+                CFSCOPE.get();
+            }
+            if(this.N<2){
+                alert("Buffer size must be at least 2");
+                CFSCOPE.get();
+            }
+            if(this.ymin>=this.ymax){
+                alert("Ymax must be greater than Ymin");
+                CFSCOPE.get();
+            }
+            if(this.wu<0){
+                alert("Link to view must be positive");
+                CFSCOPE.get();
+            }
         if(this.wpos.length == 0 || this.wpos[0].length == 0){
             this.wpos = [[-1], [-1]]
         }
@@ -1469,6 +1667,13 @@ CLKGOTO.prototype.get = function CLKGOTO() {
 CLKGOTO.prototype.set = function CLKGOTO() {
     this.tag = arguments[0]["tag"]
     this.tagvis = parseFloat((arguments[0]["tagvis"]))
+    msg = "";
+    if (this.tagvis>3||this.tagvis<1){
+        msg = "Tag Visibility must be between 1 and 3";
+    if (msg.length)
+    alert(msg);
+    CLKGOTO.get();
+    }
     this.x.model.opar = list(new ScilabString(this.tag))
     this.x.model.ipar = new ScilabDouble([this.tagvis]);
     this.x.model.evtin = new ScilabDouble([1]);
@@ -1574,6 +1779,10 @@ CLKINV_f.prototype.get = function CLKINV_f() {
     }
 CLKINV_f.prototype.set = function CLKINV_f() {
     this.prt = parseFloat((arguments[0]["prt"]))
+    if(this.prt<=0){
+        alert("Wrong values for 'Port Number' parameter: "+this.prt+"\nStrictly positive integer expected.");
+        CLKINV_f_get();
+    }
     this.x.model.ipar = new ScilabDouble([this.prt]);
     this.x.model.evtout = new ScilabDouble([1]);
     this.x.model.firing = new ScilabDouble([-1]);
@@ -1633,6 +1842,10 @@ CLKOUTV_f.prototype.get = function CLKOUTV_f() {
     }
 CLKOUTV_f.prototype.set = function CLKOUTV_f() {
     this.prt = parseFloat((arguments[0]["prt"]))
+    if(this.prt<=0){
+        alert("Wrong value for 'Port Number' parameter: "+this.prt+"\nStrictly positive integer expected.");
+        CLKOUTV_f.get();
+    }
     this.x.model.ipar = new ScilabDouble([this.prt]);
     this.x.model.evtin = new ScilabDouble([1]);
     var exprs = new ScilabString([this.prt])
@@ -1706,6 +1919,10 @@ function CLOCK_c() {
     }
 
     CLOCK_c.prototype.set = function CLOCK_c() {
+        if(this.dt<=0){
+                alert("Wrong values for 'Period' parameter: "+this.dt+"\nStrictly positive number expected.");
+                CLOCK_c.get();
+        }
         this.x.model.rpar.objs[1].model.firing = new ScilabDouble([arguments[0]["t0"]]);
         this.x.model.rpar.objs[1].model.rpar = new ScilabDouble([arguments[0]["dt"]], [arguments[0]["t0"]]);
         this.x.model.rpar.objs[1].graphics.exprs = new ScilabString([arguments[0]["dt"]], [arguments[0]["t0"]])
@@ -2460,7 +2677,7 @@ function CLSS () {
     }
 
  
-    CLSS.prototype.get = function CLSS() {
+CLSS.prototype.get = function CLSS() {
         var options={
             A:["A matrix",this.A.toString().replace(/,/g," ")],
             B:["B matrix",this.B.toString().replace(/,/g," ")],
@@ -2484,6 +2701,7 @@ function CLSS () {
             this.in = []
         var io = check_io(this.x.model,this.x.graphics,[this.in],[this.out],[],[])
 
+
         var rpar = new ScilabDouble(...this.A,...this.B,...this.C,...this.D)
         this.x.model.dep_ut = new ScilabBoolean(false,true)
         this.x.model.rpar = rpar
@@ -2491,12 +2709,43 @@ function CLSS () {
         var exprs = new ScilabString([this.A.toString().replace(/,/g, " ")],[this.B.toString().replace(/,/g, " ")],[this.C.toString().replace(/,/g, " ")],[this.D.toString().replace(/,/g, " ")])
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
-    }
-    CLSS.prototype.details = function CLSS() {
-        return this.x
+     }
+
+CLSS.prototype.details = function CLSS() {
+    return this.x
     }
 }
 
+function CLSS() {
+
+    CLSS.prototype.define = function CLSS() {
+        this.x0 = 0;
+        this.A = -1;
+        this.B = 1;
+        this.C = 1;
+        this.D = 0;
+        this.in1 = 1;
+        this.out = 1;
+
+        var model = scicos_model();
+        model.sim = list(new ScilabString(["csslti4"]), new ScilabDouble([4]));
+        model.in = new ScilabDouble([this.in1]);
+        model.out = new ScilabDouble([this.out]);
+        model.state = new ScilabDouble([this.x0]);
+        model.rpar = new ScilabDouble([this.A], [this.B], [this.C], [this.D]);
+        model.blocktype = new ScilabString(["c"]);
+        model.dep_ut = new ScilabBoolean([false, true]);
+
+        var exprs = new ScilabString([this.A], [this.B], [this.C], [this.D], [this.x0]);
+        var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"CLSS\",sz(1),sz(2));"]);
+        this.x = new standard_define(new ScilabDouble([4, 2]), model, exprs, gr_i);
+        return new BasicBlock(this.x);
+    }
+
+    CLSS.prototype.details = function CLSS() {
+        return this.x;
+    }
+}
 function CMAT3D () {
 
 CMAT3D.prototype.define = function CMAT3D() {
@@ -2543,6 +2792,14 @@ CMAT3D.prototype.set = function CMAT3D() {
     this.colormap = jetcolormap(parseFloat((arguments[0]["colormap"])))
     this.cmin = parseFloat((arguments[0]["cmin"]))
     this.cmax = parseFloat((arguments[0]["cmax"]))
+    if(size(this.vec_x,"*")!=size(this.vec_y,"*")){
+                alert("Vector X and Vector Y must have the same size");
+                CMAT3D.get();
+    }
+            if(this.cmax<=this.cmin){
+                alert("Error with minimum and maximum value");
+                CMAT3D.get();
+            }
     this.size_x = size(this.vec_x,"*")
     this.size_c = size(...this.colormap,1)
     var ipar = new ScilabDouble([this.cmin],[this.cmax],[this.size_c],[this.size_x])
@@ -2597,6 +2854,10 @@ function CMATVIEW () {
         this.colormap = jetcolormap(parseFloat(arguments[0]["colormap"]));
         this.cmin= parseFloat(arguments[0]["cmin"]);
         this.cmax= parseFloat(arguments[0]["cmax"]);
+        if(this.cmax<=this.cmin){
+                alert("Error with minimum and maximum value");
+                CMATVIEW.get();
+        }
         this.alpha_c = 0.24;
         this.beta_c = 1;
         var ipar = new ScilabDouble([this.cmax],[this.cmin],[this.size_c])
@@ -2645,65 +2906,69 @@ function CMSCOPE() {
         this.N = parseFloat((arguments[0]["N"]));
         this.heritance = parseFloat((arguments[0]["heritance"]));
         this.nom = arguments[0]["nom"];
-        // flag = true;
-        // if(this.in1.length<=0){
-        //     flag=false;
-        //     alert("one input port is must");
-        // }
-        // // var min=1;
-        // // for (var i = this.in1.length - 1; i >= 0; i--) {
-        // //     if(this.in1[i]<min)
-        // //         min=this.in1[i];
-        // // }
-        // if(Min(this.in1)<=0){
-        //     alert("port sizes must be positive");
-        //     flag=false;
-        // }
-        // // var sum=0;
-        // // for (var i = 0; i < this.in1.length; i++) {
-        // //     sum+=parseFloat(this.in1[i]);
-        // // }
-        // if(size(this.clrs,"*")<sum(this.in1)){
-        //     alert("not enough colors defined (atleast )"+sum.toString());
-        //     flag=false;
-        // }
-        // if(size(this.wpos,"*") != 0 && size(this.wpos,"*")!=2){
-        //     alert("window position must be 0 or 2");
-        //     flag=false;            
-        // }
-        // if(size(this.wdim,"*") != 0 && size(this.wdim,"*")!=2){
-        //     alert("window position must be 0 or 2");
-        //     flag=false;            
-        // }
-        // if(size(this.per,"*") != size(this.ymin,"*")){
-        //     alert("size of refresh period must equal size of ymin/ymax");
-        //     flag=false;            
-        // }
-        // if(Min(this.per) <= 0){
-        //     alert("port sizes must be positive");
-        //     flag=false;
-        // }
-
-        // if(this.N< 2){
-        //     alert("buffer size must be atleast 2");
-        //     flag=false;
-        // }
-        // // if(Or(Not(compare(this.ymin,this.ymax,2)))) {
-        // //     alert("ymax must be greater than ymin");
-        // //     flag = false;
-        // // }
-        // // if(Not(Or(compare(this.heritance,[0,1],3)))) {
-        // //     alert("Accept herited events must be zero or one");
-        // //     flag = false;
-        // if(Or(compare(this.ymin,this.ymax,">="))){
-        //     alert("ymax must be greater than ymin");
-        //     flag = false;
-        // }
-        // if(Not(Or(compare(this.heritance,[0,1],"==")))) {
-        //     alert("Accept herited events must be zero or one");
-        //     flag = false;        
-        // }
-        // alert(flag);
+         if(size(this.in1,"*")<=0){
+                alert("Block must have at least one input port");
+                CMSCOPE.get();
+            }
+            for(var i=0;i<size(this.in1,1);i++)
+            {
+                for(var j=0;j<size(this.in1,2);j++)
+                {
+                    if(this.in1[i][j]<=0)
+                    {
+                        alert("Port sizes must be positive");
+                        CMSCOPE.get();
+                    }
+                }
+            }
+            var sum=0;
+            for(var i=0;i<size(this.in1,1);i++)
+            {
+                for(var j=0;j<size(this.in1,2);j++)
+                {
+                    sum=sum+this.in1[i][j];
+                }
+            }
+            if(size(this.clrs,"*")<sum){
+                alert("Not enough colors defined (at least "+sum+")");
+                CMSCOPE.get();
+            }
+            if((size(this.wpos,"*")!=0)&&(size(this.wpos,"*")!=2)){
+                alert("Window position must be [] or a 2 vector");
+                CMSCOPE.get();
+            }
+            if((size(this.wdim,"*")!=0)&&(size(this.wdim,"*")!=2)){
+                alert("Window dim must be [] or a 2 vector");
+                CMSCOPE.get();
+            }
+            if(this.win<-1){
+                alert("Window number can''t be  < -1");
+                CMSCOPE.get();
+            }
+            if(size(this.per,"*")!=size(this.ymin,"*")){
+                alert("Size of Refresh Period must equal size of Ymin/Ymax vector");
+                CMSCOPE.get();
+            }
+            for(var i=0;i<size(this.per,1);i++){
+            for(var j=0;j<size(this.per,2);j++){
+                if(this.per[i]<=0){
+                    alert("Refresh Period must be positive");
+                    CMSCOPE.get();
+                }
+            }
+            }
+            if(this.N<2){
+                alert("Buffer size must be at least 2");
+                CMSCOPE.get();
+            }
+            if(this.ymin>=this.ymax){
+                alert("Ymax must be greater than Ymin");
+                CMSCOPE.get();
+            }
+            if((this.heritance!=0)&&(this.heritance!=1)){
+                alert("Accept herited events must be 0 or 1");
+                CMSCOPE.get();
+            }
         this.in1 = colon_operator(this.in1)
         this.a = size(this.in1,1)
         this.in2 = ones(this.a,1)
@@ -2798,6 +3063,14 @@ CONST.prototype.set = function CONST() {
     this.C = inverse(arguments[0]["C"])
     this.sz=size(this.C)
     this.nout=size(this.C,"*")
+    if(this.nout==0){
+        alert("C must have at least one element");
+        CONST.get();
+    }
+    if(this.sz>1){
+        alert("C matrix is not supported, use CONST_m instead");
+        CONST.get();
+    }
     this.x.model.rpar = new ScilabDouble(...this.C)
     this.x.model.out = new ScilabDouble([this.nout])
     var exprs = new ScilabString([this.C.toString().replace(/,/g, " ")])
@@ -2891,6 +3164,25 @@ CONSTRAINT2_c.prototype.set = function CONSTRAINT2_c() {
     this.N = size(this.x0,"*")
     this.Nxd = size(this.xd0,"*")
     this.Nid = size(this.id,"*")
+    if((this.N!=this.Nxd)||(this.N!=this.Nid)){
+                alert("incompatible sizes, states, their derivatives, and ID should be the same size ");
+                CONSTRAINT2_c.get();
+    }
+
+            if(this.N<=0){
+                alert("number of states (constraints) must be > 0 ");
+                CONSTRAINT2_c.get();
+            }
+
+                for(var i=0;i<this.N;i++){
+                    if((this.id[i]!=0)&&(this.id[i]!=1)){
+                        alert(["Id(i) must be either"+"\n0 when x''(i) is not present in the feedback"+"\n1: when x''(i) is present in the feedback"]);
+                        CONSTRAINT2_c.get();
+                    }
+                    if (this.id[i]==0)
+                        this.id[i]=-1;
+                }
+    
     this.x.model.state = new ScilabDouble(...this.x0,...this.xd0)
     this.x.model.out = new ScilabDouble([this.N],[this.N])
     this.x.model.in = new ScilabDouble([this.N])
@@ -2940,6 +3232,10 @@ CONSTRAINT_c.prototype.set = function CONSTRAINT_c() {
     this.x0 = inverse(arguments[0]["x0"])
     this.x0 = transpose(this.x0)
     this.N = size(this.x0,"*")
+    if(this.N<=0){
+                alert("number of states (constraints) must be > 0 ");
+                CONSTRAINT_c.get();
+    }
     this.x.model.state = new ScilabDouble(...this.x0,...zeros(this.N,1))
     this.x.model.out = new ScilabDouble([this.N])
     this.x.model.in = new ScilabDouble([this.N])
@@ -2988,6 +3284,10 @@ CONST_f.prototype.get = function CONST_f() {
 CONST_f.prototype.set = function CONST_f() {
     this.C = inverse(arguments[0]["C"])
     this.nout = size(this.C,"*")
+    if(this.nout==0){
+        alert("C must have at least one element");
+        CONST_f.get();
+    }
     this.x.model.rpar = new ScilabDouble(...this.C)
     this.x.model.out = new ScilabDouble(this.nout)
     var exprs = new ScilabString([this.C.toString().replace(/,/g, " ")])
@@ -3005,7 +3305,11 @@ function CONST_m() {
     }
     CONST_m.prototype.set = function CONST_m() {
         this.c = inverse((arguments[0]["vec"]));
-        this.nout = size(this.c)
+        this.nout = size(this.c,"*")
+        if(this.nout==0){
+            alert("Wrong size for 'Constant Value' parameter"+"\nConstant value must have at least one element.");
+            CONST_m.get();
+        }
         this.displayParameter = [this.c];
         this.x.model.sim = list(new ScilabString(["cstblk4_m"], new ScilabDouble([4])), new ScilabDouble([4]));
         this.x.model.opar = list(new ScilabDouble(...this.c));
@@ -3114,7 +3418,18 @@ function CONVERT() {
             this.it = 1
         if(this.ot == 2)
             this.ot = 1
-
+        if((this.np!=0)&&(this.np!=1)&&(this.np!=2)){
+                alert("Wrong value for 'Do on Overflow' parameter: "+this.np+"\nMust be in the interval [0, 2]");
+                CONVERT.get();
+        }
+        else if((this.it>8)||(this.it<1)){
+                alert("Wrong value for 'Input Type' parameter: "+this.it+"\nMust be in the interval [1, 8]");
+                CONVERT.get();
+        }
+        else if((this.ot>8)||(this.ot<1)){
+                alert("Wrong value for 'Output Type' parameter: "+this.ot+"\nMust be in the interval [1, 8]");
+                CONVERT.get();
+        }
         this.x.model.sim = list(new ScilabString(["convert"]), new ScilabDouble([4]));
         
         var ipar = 0
@@ -3496,6 +3811,14 @@ Counter.prototype.set = function Counter() {
     this.rule = parseFloat((arguments[0]["rule"]))
     this.maxim = Math.floor(this.maxim)
     this.minim = Math.floor(this.minim)
+    if(this.maxim<this.minim){
+        alert("Wrong values for ''Maximum'' and ''Minimum'' parameters: "+this.minim+" "+this.maxim+"\n''Minimum'' must be less than ''Maximum''.");
+        Counter.get();
+    }
+    if((this.rule!=1)&&(this.rule!=2)){
+        alert("Wrong value for ''Rule'' parameter: "+this.rule+"\nMust be in the interval [1,2]");
+        Counter.get();
+    }
     this.x.model.dstate = new ScilabDouble([0]);
     this.x.model.ipar = new ScilabDouble([this.rule],[this.maxim],[this.minim])
     var exprs = new ScilabString([this.minim],[this.maxim],[this.rule])
@@ -3567,7 +3890,34 @@ CSCOPE.prototype.set = function CSCOPE() {
     this.N = parseFloat((arguments[0]["N"]))
     this.heritance = parseFloat((arguments[0]["heritance"]))
     this.nom = arguments[0]["nom"]
-    
+    if((size(this.wpos,"*")!=0)&&(size(this.wpos,"*")!=2)){
+                alert("Window position must be [] or a 2 vector");
+                CSCOPE.get();
+            }
+            if((size(this.wdim,"*")!=0)&&(size(this.wdim,"*")!=2)){
+                alert("Window dim must be [] or a 2 vector");
+                CSCOPE.get();
+            }
+            if(this.win<-1){
+                alert("Window number can''t be  < -1");
+                CSCOPE.get();
+            }
+            if(this.per<=0){
+                alert("Refresh period must be positive");
+                CSCOPE.get();
+            }
+            if(this.N<2){
+                alert("Buffer size must be at least 2");
+                CSCOPE.get();
+            }
+            if(this.ymin>=this.ymax){
+                alert("Ymax must be greater than Ymin");
+                CSCOPE.get();
+            }
+            if((this.heritance!=0)&&(this.heritance!=1)){
+                alert("Accept herited events must be 0 or 1");
+                CSCOPE.get();
+            }
     var io = set_io(this.x.model,this.x.graphics,[[-1],[1]],[],ones(1-this.heritance,1),[])
 
     if(this.wpos.length == 0){
@@ -3652,6 +4002,38 @@ CSCOPXY.prototype.set = function CSCOPXY() {
     this.ymin = parseFloat((arguments[0]["ymin"]))
     this.ymax = parseFloat((arguments[0]["ymax"]))
     this.N = parseFloat((arguments[0]["N"]))
+    if((size(this.wpos,"*")!=0)&&(size(this.wpos,"*")=2)){
+                alert("Window position must be [] or a 2 vector");
+                CSCOPXY.get();
+            }
+            if((size(this.wdim,"*")!=0)&&(size(this.wdim,"*")!=2)){
+                alert("Window dim must be [] or a 2 vector");
+                CSCOPXY.get();
+            }
+            if(this.nbr_curves<=0){
+                alert("Number of Curves cannot be negative or null");
+                CSCOPXY.get();
+            }
+            if(this.win<-1){
+                alert("Window number cannot be inferior than -1");
+                CSCOPXY.get();
+            }
+            if(this.N<1){
+                alert("Buffer size must be at least 1");
+                CSCOPXY.get();
+            }
+            if((this.N==1)&&(this.clrs>0)){
+                alert("Buffer size must be at least 2");
+                CSCOPXY.get();
+            }
+            if(this.ymin>=this.ymax){
+                alert("Ymax must be greater than Ymin");
+                CSCOPXY.get();
+            }
+            if(this.xmin>=this.xmax){
+                alert("Xmax must be greater than Xmin");
+                CSCOPXY.get();
+            }
     if(this.wpos.length == 0){
         this.wpos = [[-1],[-1]];
     }
@@ -3732,7 +4114,52 @@ function CSCOPXY3D() {
         this.vec_z = inverse((arguments[0]["vec_z"]))
         this.param3ds = inverse((arguments[0]["param3ds"]))
         this.N = parseFloat((arguments[0]["N"]))
-        
+        if((size(this.wpos,"*")!=0)&&(size(this.wpos,"*")!=2)){
+                alert("Window position must be [] or a 2 vector");
+                CSCOPXY3D.get();
+            }
+            if((size(this.wdim,"*")!=0)&&(size(this.wdim,"*")!=2)){
+                alert("Window dim must be [] or a 2 vector");
+                CSCOPXY3D.get();
+            }
+            if(size(this.clrs,"*")!=size(this.siz,"*")){
+                alert("Colors and Size must have same size");
+                CSCOPXY3D.get();
+            }
+            if(this.br_curves<=0){
+                alert("Number of curves cannot be negative or null");
+                CSCOPXY3D.get();
+            }
+            if(this.win<-1){
+                alert("Window number cannot be inferior than -1");
+                CSCOPXY3D.get();
+            }
+            if(this.N<1){
+                alert("Buffer size must be at least 1");
+                CSCOPXY3D.get();
+            }
+            if(this.N<2){
+                for(var i=0;i<size(this.clrs,1);i++){
+                for(var j=0;j<size(this.clrs,2);j++){
+                    if(this.clrs[i][j]<=0){
+                        alert("Buffer size must be at least 2 or Change a color (must be >0)");
+                        CSCOPXY3D.get();
+                    }
+                }
+                }
+            }
+            if(this.vec_y[0]>=this.vec_y[1]){
+                alert("Ymax must be higher than Ymin");
+                CSCOPXY3D.get();
+            }
+            if(vec_x[0]>=vec_x[1]){
+                alert("Xmax must be higher than Xmin");
+                CSCOPXY3D.get();
+            }
+            if(this.vec_z[0]>=this.vec_z[1]){
+                alert("Zmax must be higher than Zmin");
+                CSCOPXY3D.get();
+            }
         this.in = ones(3,1)
         for (var i = this.in.length - 1; i >= 0; i--) {
             this.in[i][0] = this.in[i][0]*this.nbr_curves
@@ -3821,6 +4248,10 @@ CUMSUM.prototype.set = function CUMSUM() {
             this.function_name = "cumsum_c"
             this.out = [1,-2]
         }
+        else{
+                    alert("decomposition type is not supported");
+                    CUMSUM.get();
+            }
         this.x.model.intyp = new ScilabDouble([1])
         this.x.model.outtyp = new ScilabDouble([1])
     }
@@ -3836,10 +4267,18 @@ CUMSUM.prototype.set = function CUMSUM() {
         else if(this.decomptyp == 2){
             this.function_name = "cumsumz_c"
         }
+        else{
+                    alert("decomposition type is not supported");
+                    CUMSUM.get();
+            }
         this.x.model.intyp = new ScilabDouble([2])
         this.x.model.outtyp = new ScilabDouble([2])
 
     }
+    else{
+                alert("Datatype is not supported");
+                CUMSUM.get();
+        }
     this.in = [parseFloat(getData(this.x.model.in)),parseFloat(getData(this.x.model.in2))]
     this.out = [parseFloat(getData(this.x.model.out)),parseFloat(getData(this.x.model.out2))]
     var io = set_io(this.x.model,this.x.graphics,this.in,this.out,[],[])
@@ -4038,6 +4477,10 @@ DEADBAND.prototype.get = function DEADBAND() {
 DEADBAND.prototype.set = function DEADBAND() {
     this.maxp = parseFloat((arguments[0]["maxp"]))
     this.minp = parseFloat((arguments[0]["minp"]))
+    if(this.maxp<=this.minp){
+                alert("Upper limit must be > Lower limit");
+                DEADBAND.get();
+    }
     this.zeroc = parseFloat((arguments[0]["zeroc"]))
     var rpar = new ScilabDouble([this.maxp],[this.minp])
     this.x.model.rpar = new ScilabDouble(this.maxp,this.minp);
@@ -4113,6 +4556,18 @@ DELAYV_f.prototype.set = function DELAYV_f() {
     this.nin = parseFloat((arguments[0]["nin"]))
     this.zz0 = inverse(arguments[0]["zz0"])
     this.T = parseFloat((arguments[0]["T"]))
+    //try{
+        if(size(this.zz0,"*")<2){
+        alert("Register length must be at least 2");
+        DELAYV_f.get();
+    }
+    if(this.T<=0){
+        alert("Delay must be positive");
+        DELAYV_f.get();
+    }
+    //}
+    //catch(e)
+    //{}
     var io = check_io(this.x.model,this.x.graphics,[[this.nin],[1]],[this.nin],[1],[[1],[1]])
     this.z0 = ones(11,1)
     this.told = 1
@@ -6558,6 +7013,23 @@ DLSS.prototype.set = function DLSS() {
     this.in = size(this.B,2)
     if(this.in == 0)
         this.in = []
+    var ms=size(this.A,1);
+    var ns=size(this.A,2);
+            /*var okD=true;
+            if(size(this.D,"*")!=(size(this.C,1)*size(this.B,2))){
+                if(size(this.D,"*")==1){
+                    this.D = this.D*ones(this.C*this.B) ;
+                }
+                else if(size(this.D,"*")==0){
+                    this.D = zeros(this.C*this.B) ;
+                }
+                else
+                    okD=false;
+            }*/
+            if(ms!=ns){
+                alert("Matrix A is not square");
+                DLSS.get();
+            }
     var io = check_io(this.x.model,this.x.graphics,[this.in],[this.out],[],[])
 
     var rpar = new ScilabDouble(...this.A,...this.B,...this.C,...this.D)
@@ -7118,6 +7590,10 @@ ESELECT_f.prototype.set = function ESELECT_f() {
     else
         this.inh = 1
     this.out = Math.floor(this.out)
+    if(this.out<2){
+        alert("Block must have at least two output ports");
+        ESELECT_f.get();
+    }
     var io = check_io(this.x.model,this.x.graphics,[1],[],[this.inh],ones(this.out,1))
     this.x.model.evtout = new ScilabDouble(...ones(this.out,1))
     this.value = ones(this.out,1)
@@ -7191,6 +7667,10 @@ function EVTDLY_c() {
     }
 EVTDLY_c.prototype.set = function EVTDLY_c() {
     this.dt = parseFloat((arguments[0]["dt"]))
+    if(this.dt<=0){
+        alert("Delay must be positive");
+        EVTDLY_c.get();
+    }
     this.ff = parseFloat((arguments[0]["ff"]))
     this.x.model.rpar = new ScilabDouble([this.dt],[this.ff])
     this.x.model.firing = new ScilabDouble([this.ff]);
@@ -7335,6 +7815,9 @@ EXPBLK_m.prototype.get = function EXPBLK_m() {
     }
 EXPBLK_m.prototype.set = function EXPBLK_m() {
     this.a = parseFloat((arguments[0]["a"]))
+    if(this.a<=0){
+        alert("a^u : a must be positive");
+    }
     this.x.model.rpar = new ScilabDouble([this.a]);
     var exprs = new ScilabString([this.a])
     this.x.graphics.exprs=exprs
@@ -7404,8 +7887,28 @@ function EXTRACT() {
             this.x.model.intyp = new ScilabDouble([2])
             this.x.model.outtyp = new ScilabDouble([2])
         }
+        else{
+                alert("Datatype is not supported");
+                EXTRACT.get();
+        }
         this.ma = size(this.a,1)
         this.mb = size(this.b,1)
+        if((this.ma==0)||(this.mb==0)){
+            alert("empty field");
+            EXTRACT.get();
+        }
+            for(var i=this.ma-1;i>=0;i--){
+                if(this.a[i]<=0){
+                    alert("invalid index");
+                    EXTRACT.get();
+                }
+            }
+            for(j=this.mb-1;j>=0;j--){
+                if(this.b[j]<=0){
+                    alert("invalid index");
+                    EXTRACT.get();
+                }
+            }
         this.x.model.ipar = new ScilabDouble(...this.a,...this.b,[this.ma],[this.mb])
         this.in = [parseFloat(getData(this.x.model.in)),parseFloat(getData(this.x.model.in2))]
         this.out = [[this.ma],[this.mb]]
@@ -8571,6 +9074,10 @@ EXTTRI.prototype.set = function EXTTRI() {
         else if(this.decomptyp == 3){
             this.function_name = "extdiag"
         }
+        else{
+                    alert("decomposition type is not supported");
+                    EXTTRI.get();
+            }
         this.x.model.intyp = new ScilabDouble([1])
         this.x.model.outtyp = new ScilabDouble([1])
     }
@@ -8585,9 +9092,17 @@ EXTTRI.prototype.set = function EXTTRI() {
         else if(this.decomptyp == 3){
             this.function_name = "extdiagz"
         }
+        else{
+                    alert("decomposition type is not supported");
+                    EXTTRI.get();
+            }
         this.x.model.intyp = new ScilabDouble([2])
         this.x.model.outtyp = new ScilabDouble([2])
     }
+    else{
+                alert("Datatype is not supported");
+                EXTTRI.get();
+        }
     model.sim = list(new ScilabString([this.function_name]), new ScilabDouble([4]));
     this.x.graphics.exprs = label
     var exprs = new ScilabString([this.typ],[this.decomptyp])
@@ -9147,7 +9662,16 @@ function FROMWSB() {
     }
 GAINBLK.prototype.set = function GAINBLK() {
     this.gain = inverse(arguments[0]["gain"])
+    if(this.gain.length==0){
+        alert("Gain must have at least one element");
+        GAINBLK.get();
+    }
     this.over = parseFloat((arguments[0]["over"]))
+    if((this.over<0)||(this.over>2))
+    {
+        alert("Do on Overflow must be 0,1,2");
+        GAINBLK.get();
+    }
     if(this.gain.length == 1 && this.gain[0].length == 1){
         this.x.model.intyp = new ScilabDouble([1])
         this.x.model.outtyp = new ScilabDouble([1])
@@ -9207,7 +9731,10 @@ GAINBLK_f.prototype.get = function GAINBLK_f() {
     }
 GAINBLK_f.prototype.set = function GAINBLK_f() {
     this.gain = inverse(arguments[0]["gain"])
-    
+    if(this.gain.length==0){
+        alert("Gain must have at least one element");
+        GAINBLK_f.get();
+    }
     this.out = size(this.gain,1)
     this.in = size(this.gain,2)
     var io = check_io(this.x.model,this.x.graphics,[this.in],[this.out],[],[])
@@ -9252,8 +9779,16 @@ function GAIN_f() {
     }
     GAIN_f.prototype.set = function GAIN_f() {
         this.gain = inverse(arguments[0]["gain"])
+        try{
+        if(this.gain.length==0){
+            alert("Gain must have at least one element");
+            GAIN_f.get();
+        }
+        }
+        catch(e){}
         this.out = size(this.gain,1)
         this.in = size(this.gain,2)
+        
         var io = check_io(this.x.model,this.x.graphics,[this.in],[this.out],[],[])
 
         var exprs = new ScilabString([sci2exp(this.gain)])
@@ -9363,6 +9898,10 @@ GENSIN_f.prototype.set = function GENSIN_f() {
     this.M = parseFloat((arguments[0]["M"]))
     this.F = parseFloat((arguments[0]["F"]))
     this.P = parseFloat((arguments[0]["P"]))
+    if(this.F<0){
+        alert("Wrong value for ''Frequency'' parameter: "+this.F+"\nStrictly positive integer expected.");
+        GENSIN_f.get();
+    }
     var io = check_io(this.x.model,this.x.graphics,[],[[1]],[],[])
     this.x.model.rpar = new ScilabDouble([this.M],[this.F],[this.P])
     this.x.model.out2 = new ScilabDouble([1]);
@@ -9462,6 +10001,10 @@ function GOTO() {
     GOTO.prototype.set = function GOTO() {
         this.tag = arguments[0]["tag"]
         this.tagvis = parseFloat((arguments[0]["tagvis"]))
+        if ((this.tagvis<1)||(this.tagvis>3)){
+            alert("Tag Visibility must be between 1 and 3");
+            GOTO.get();
+        }
         this.x.model.opar = list(new ScilabString([this.tag]))
         this.x.model.ipar = new ScilabDouble([this.tagvis]);
         var exprs = new ScilabString([this.tag],[sci2exp(this.tagvis)])
@@ -9517,6 +10060,10 @@ function GOTOMO() {
 GOTOMO.prototype.set = function GOTOMO() {
     this.tag = arguments[0]["tag"]
     this.tagvis = parseFloat((arguments[0]["tagvis"]))
+    if((this.tagvis<1)||(this.tagvis>3)){
+        alert("Tag Visibility must be between 1 and 3");
+        GOTOMO.get();
+    }
     this.x.model.opar = list(new ScilabString([this.tag]))
     this.x.model.ipar = new ScilabDouble([this.tagvis]);
     var exprs = new ScilabString([this.tag],[sci2exp(this.tagvis)])
@@ -9803,6 +10350,10 @@ HYSTHERESIS.prototype.get = function HYSTHERESIS() {
 HYSTHERESIS.prototype.set = function HYSTHERESIS() {
     this.high_lim = parseFloat((arguments[0]["high_lim"]))
     this.low_lim = parseFloat((arguments[0]["low_lim"]))
+    if(this.low_lim>this.high_lim){
+                alert("switch on value must be larger than switch off value");
+                HYSTHERESIS.get();
+    }
     this.out_high = parseFloat((arguments[0]["out_high"]))
     this.out_low = parseFloat((arguments[0]["out_low"]))
     this.nzz = parseFloat((arguments[0]["nzz"]))
@@ -10070,6 +10621,10 @@ function INIMPL_f() {
 INIMPL_f.prototype.set = function INIMPL_f() {
     this.prt = parseFloat((arguments[0]["prt"]))
     this.prt = Math.floor(this.prt)
+    if(this.prt<=0){
+        alert("Wrong value for ''Port Number'' parameter: "+this.prt+"\nStrictly positive integer expected.");
+        INIMPL_f.get();
+    }
     this.x.model.ipar = new ScilabDouble([this.prt]);
     var exprs = new ScilabString([this.prt])
     this.x.graphics.exprs=exprs
@@ -10182,6 +10737,21 @@ function INTEGRAL_m() {
                     this.lowp[i] = n*this.lowp[i]
                 }
             }
+            //try{
+            /*if((size(this.x0,1)!=size(this.maxp,1))||(size(this.x0,1)!=size(this.lowp,1))){
+                        alert("x0 and Upper limit and Lower limit must have same size");
+                        INTEGRAL_m.get();}*/
+    
+                    if(this.maxp<=this.lowp){
+                        alert("Upper limits must be > Lower limits");
+                        INTEGRAL_m.get();
+                    }
+                    if((this.x0>this.maxp)||(this.x0<this.lowp)){
+                        alert("Initial condition x0 should be inside the limits")
+                        INTEGRAL_m.get();
+                    }
+           // }
+            //catch(e){}
             var rpar = new ScilabDouble(...this.maxp,...this.lowp)
             this.x.model.nzcross = new ScilabDouble([size(this.x0,"*")])
             this.x.model.nmode = new ScilabDouble([size(this.x0,"*")])
@@ -10274,7 +10844,11 @@ INTMUL.prototype.set = function INTMUL() {
     this.ot = this.Datatype
     this.x.model.outtyp = new ScilabDouble([this.ot])
     this.x.model.intyp = new ScilabDouble(...this.it)
-    if(this.Datatype == 3){
+    if((this.np!=0)&&(this.np!=1)&&(this.np!=2)){
+                alert("Wrong value for 'Do on Overflow' parameter: "+this.np+"\nMust be in the interval [0, 2]");
+                INTMUL.get();
+    }
+    else if(this.Datatype == 3){
         if(this.np == 0)
             model.sim = list(new ScilabString(["matmul_i32n"]), new ScilabDouble([4]))
         else if(this.np == 1)
@@ -10283,7 +10857,7 @@ INTMUL.prototype.set = function INTMUL() {
             model.sim = list(new ScilabString(["matmul_i32e"]), new ScilabDouble([4]))
 
     }
-    if(this.Datatype == 4){
+    else if(this.Datatype == 4){
         if(this.np == 0)
             model.sim = list(new ScilabString(["matmul_i16n"]), new ScilabDouble([4]))
         else if(this.np == 1)
@@ -10292,7 +10866,7 @@ INTMUL.prototype.set = function INTMUL() {
             model.sim = list(new ScilabString(["matmul_i16e"]), new ScilabDouble([4]))
 
     }
-    if(this.Datatype == 5){
+    else if(this.Datatype == 5){
         if(this.np == 0)
             model.sim = list(new ScilabString(["matmul_i8n"]), new ScilabDouble([4]))
         else if(this.np == 1)
@@ -10301,7 +10875,7 @@ INTMUL.prototype.set = function INTMUL() {
             model.sim = list(new ScilabString(["matmul_i8e"]), new ScilabDouble([4]))
 
     }
-    if(this.Datatype == 6){
+    else if(this.Datatype == 6){
         if(this.np == 0)
             model.sim = list(new ScilabString(["matmul_ui32n"]), new ScilabDouble([4]))
         else if(this.np == 1)
@@ -10310,7 +10884,7 @@ INTMUL.prototype.set = function INTMUL() {
             model.sim = list(new ScilabString(["matmul_ui32e"]), new ScilabDouble([4]))
 
     }
-    if(this.Datatype == 7){
+    else if(this.Datatype == 7){
         if(this.np == 0)
             model.sim = list(new ScilabString(["matmul_ui16n"]), new ScilabDouble([4]))
         else if(this.np == 1)
@@ -10319,13 +10893,18 @@ INTMUL.prototype.set = function INTMUL() {
             model.sim = list(new ScilabString(["matmul_i32e"]), new ScilabDouble([4]))
 
     }
-    if(this.Datatype == 8){
+    else if(this.Datatype == 8){
         if(this.np == 0)
             model.sim = list(new ScilabString(["matmul_ui8n"]), new ScilabDouble([4]))
         else if(this.np == 1)
             model.sim = list(new ScilabString(["matmul_ui8s"]), new ScilabDouble([4]))
         else
             model.sim = list(new ScilabString(["matmul_ui8e"]), new ScilabDouble([4]))
+
+    }
+    else{
+        alert("Wrong value for 'Data Type' parameter: "+this.Datatype+"\nMust be in the interval [3, 8]");
+        INTMUL.get();
 
     }
     this.x.model.ipar = new ScilabDouble([this.np]);
@@ -10372,6 +10951,41 @@ INTRP2BLK_f.prototype.set = function INTRP2BLK_f() {
     this.a = inverse(arguments[0]["a"])
     this.b = inverse(arguments[0]["b"])
     this.c = inverse(arguments[0]["c"])
+    if((size(this.a,"*")!=size(this.c,"c"))||(size(this.b,"*")!=size(this.c,"r"))){
+        alert("incompatible dimension");
+        INTRP2BLK_f.get();
+    }
+    if(size(this.a,1)>1){
+    var m=0;
+    for(var i=0;i<size(this.a,1)-1;i++)
+    {
+        if((this.a[i+1][0]-this.a[i][0])<=0){
+            m=1;
+            break;
+        }
+
+    }
+    if(m==1){
+                alert("X must be strictly increasing");
+                INTRP2BLK_f.get();
+            }
+    }
+    if(size(this.b,1)>1){
+    var n=0;
+    for(var i=1;i<size(this.b,1)-1;i++)
+    {
+        if((this.b[i+1][0]-this.b[i][0])<=0)
+        {
+            n=1;
+            break;
+        }
+    }
+
+            if(n==1){
+                alert("Y must be strictly increasing");
+                INTRP2BLK_f.get();
+            }
+        }
     this.x.model.rpar = new ScilabDouble(...this.a,...this.b,...this.c)
     this.x.model.ipar = new ScilabDouble([this.a.length],[this.b.length])
     var exprs = new ScilabString([this.a.toString().replace(/,/g, " ")],[this.b.toString().replace(/,/g, " ")],[this.c.toString().replace(/,/g, " ")])
@@ -10379,7 +10993,6 @@ INTRP2BLK_f.prototype.set = function INTRP2BLK_f() {
     return new BasicBlock(this.x)
     }
 }
-
 function INTRPLBLK_f() {
 
     INTRPLBLK_f.prototype.define = function INTRPLBLK_f() {
@@ -10415,6 +11028,41 @@ INTRPLBLK_f.prototype.get = function INTRPLBLK_f() {
 INTRPLBLK_f.prototype.set = function INTRPLBLK_f() {
     this.a = inverse(arguments[0]["a"])
     this.b = inverse(arguments[0]["b"])
+    if(size(this.a,"*")!=size(this.b,"*")){
+        alert("X and Y must have the same size");
+        INTRPLBLK_f.get();
+    }
+    if(size(this.a,1)>1){
+    var m=0;
+    for(var i=0;i<size(this.a,1)-1;i++)
+    {
+        if((this.a[i+1][0]-this.a[i][0])<=0){
+            m=1;
+            break;
+        }
+
+    }
+    if(m==1){
+                alert("X must be strictly increasing");
+                INTRP2BLK_f.get();
+            }
+    }
+    /*if(size(this.b,1)>1){
+    var n=0;
+    for(var i=1;i<size(this.b,1)-1;i++)
+    {
+        if((this.b[i+1][0]-this.b[i][0])<=0)
+        {
+            n=1;
+            break;
+        }
+    }
+
+            if(n==1){
+                alert("Y must be strictly increasing");
+                INTRP2BLK_f.get();
+            }
+        }*/
     this.x.model.rpar = new ScilabDouble(...this.a,...this.b)
     var exprs = new ScilabString([this.a.toString().replace(/,/g, " ")],[this.b.toString().replace(/,/g, " ")])
     this.x.graphics.exprs=exprs
@@ -10520,6 +11168,18 @@ IN_f.prototype.set = function IN_f() {
     this.prt = parseFloat((arguments[0]["prt"]))
     this.otsz = inverse(arguments[0]["otsz"])
     this.ot = parseFloat((arguments[0]["ot"])) 
+    if(this.prt<=0){
+        alert("Port number must be a positive integer");
+        IN_f.get();
+    }
+    if(size(this.otsz,"*")!=2){
+        alert("Outport Size must be a 2 elements vector");
+        IN_f.get();
+    }
+    if(((this.ot<1)||(this.ot>9))&&(this.ot!=-1)){
+        alert("Outport type must be a number between 1 and 9, or -1 for inheritance.");
+        IN_f.get();
+    }
     this.x.model.ipar = new ScilabDouble([this.prt]);
     this.x.model.firing = new ScilabDouble()
     this.x.model.out = this.otsz[0]
@@ -10578,9 +11238,19 @@ function ISELECT_m() {
         this.typ = parseFloat((arguments[0]["typ"]))
         this.nout = parseFloat((arguments[0]["nout"]))
         this.z0 = parseFloat((arguments[0]["z0"]))
-        this.x.model.dstate = new ScilabDouble([this.zo])
-        var exprs = new ScilabString([sci2exp(this.typ)],[sci2exp(this.nout)],[sci2exp(this.z0)])
-        this.x.graphics.exprs=exprs
+        if(this.z0>this.nout||this.z0<=0 ){
+                alert("initial connected input is not a valid input port number");
+                ISELECT_m.get();
+        }
+        else if ((this.typ<1)||(this.typ>8)){
+                alert("Datatype is not supported");
+                ISELECT_m.get();
+        }
+        else{
+            this.x.model.dstate = new ScilabDouble([this.zo])
+            var exprs = new ScilabString([sci2exp(this.typ)],[sci2exp(this.nout)],[sci2exp(this.z0)])
+            this.x.graphics.exprs=exprs
+        }
         return new BasicBlock(this.x)
     }
 }
@@ -10620,6 +11290,10 @@ function LOGBLK_f() {
     }
 LOGBLK_f.prototype.set = function LOGBLK_f() {
     this.a = parseFloat((arguments[0]["a"]))
+    if(this.a<=1){
+        alert("Basis must be larger than 1");
+        LOGBLK_f.get();
+    }
     this.x.model.rpar = new ScilabDouble([this.a]);
     var exprs = new ScilabString([this.a])
     this.x.graphics.exprs=exprs
@@ -10682,7 +11356,28 @@ LOGIC.prototype.set = function LOGIC() {
 
     this.nin = Math.log(this.row)/Math.log(2)
     this.nout = this.col
-
+    var u1=Math.floor(this.nin);
+            //if (herit<>0) then herit=1;end; The test below verify the value of parameter
+    var f=0;
+    for(var j=this.row-1;j>=0;j--){
+        for(var k=this.col-1;k>=0;k--)
+            {
+                if((this.mat[j][k]!= 1)&&(this.mat[j][k]!= 0))
+                    f++;
+            }
+    }    
+    if(u1!=this.nin){
+        alert("Wrong size for 'Truth Table' parameter: "+size(this.mat,1)+"\nNumber of rows must be a power of two.");
+        LOGIC.get();
+    }
+    else if(f!=0){
+       alert("Wrong value for ''Truth Table' parameter.\nElements must be in the interval [0, 1]");
+        LOGIC.get();
+    }
+    else if((this.herit<0)||(this.herit>1)){
+        alert("Wrong value for 'Accepts Inherited Events' parameter: "+this.herit+"\nMust be in the interval [0, 1]");
+        LOGIC.get();
+    }
     this.in = [...ones(this.nin,1),...ones(this.nin,1)]
     this.out = [...ones(this.nout,1),...ones(this.nout,1)]
     
@@ -10806,6 +11501,10 @@ function MATBKSL() {
             this.x.model.outtyp = new ScilabDouble([2])
 
         }
+        else{
+                alert("Datatype is not supported");
+                MATBKSL.get();
+            }
         this.x.model.sim = list(new ScilabString([this.function_name]), new ScilabDouble([4]));
         var exprs = new ScilabString([this.typ])
         this.x.graphics.exprs=exprs
@@ -10997,6 +11696,10 @@ MATDET.prototype.set = function MATDET() {
         this.it = 2
         this.ot = 2
     }
+    else{
+                alert("Datatype is not supported");
+                MATDET.get();
+        }
     this.x.model.intyp = new ScilabDouble([this.it])
     this.x.model.outtyp = new ScilabDouble([this.ot])
     this.x.model.sim = list(new ScilabString([this.function_name]), new ScilabDouble([4]));
@@ -11059,6 +11762,10 @@ function MATDIAG() {
             this.x.model.intyp = new ScilabDouble([2])
             this.x.model.outtyp = new ScilabDouble([2])
         }
+        else{
+                alert("Datatype is not supported");
+                MATDIAG.get();
+            }
         this.x.model.sim = list(new ScilabString([this.function_name]), new ScilabDouble([4]));
         this.x.graphics.exprs = label
         var exprs = new ScilabString([this.typ])
@@ -11124,6 +11831,10 @@ function MATDIV() {
             this.x.model.outtyp = new ScilabDouble([2])
             this.x.model.intyp = new ScilabDouble([2],[2])
         }
+        else{
+                alert("Datatype is not supported");
+                MATDIV.get();
+            }
         this.x.model.sim = list(new ScilabString([this.function_name]), new ScilabDouble([4]));
         var exprs = new ScilabString([this.typ])
         this.x.graphics.exprs=exprs
@@ -11191,6 +11902,10 @@ MATEIG.prototype.set = function MATEIG() {
             this.out = [[-1],[-1],[-1],[-1]]
             this.ot = [[2],[2]]
         }
+        else{
+                    alert("decomposition type is not supported");
+                    MATEIG.get();
+            }
         this.it = 1
     }
     else if(this.typ == 2){
@@ -11204,8 +11919,16 @@ MATEIG.prototype.set = function MATEIG() {
             this.out = [[-1],[-1],[-1],[-1]]
             this.ot = [[2],[2]]
         }
+        else{
+                    alert("decomposition type is not supported");
+                    MATEIG.get();
+            }
         this.it = 2
     }
+    else{
+                alert("Datatype is not supported");
+                MATEIG.get();
+        }
     this.in = [[-1],[-1]]
     this.x.model.intyp = new ScilabDouble([this.it])
     this.x.model.outtyp = new ScilabDouble(...this.out)
@@ -11266,6 +11989,10 @@ MATEXPM.prototype.set = function MATEXPM() {
     else if(this.typ == 2){
         this.function_name = "matz_expm"
     }
+    else{
+                alert("Datatype is not supported");
+                MATEXPM.get();
+        }
     this.x.model.sim = list(new ScilabString([this.function_name]),new ScilabDouble([4]))
     var exprs = new ScilabString([this.typ])
     this.x.graphics.exprs=exprs
@@ -11327,6 +12054,10 @@ MATINV.prototype.set = function MATINV() {
         this.ot = 2
         this.it = 2
     }
+    else{
+                alert("Datatype is not supported");
+                MATINV.get();
+        }
     this.x.model.intyp = new ScilabDouble([this.it])
     this.x.model.outtyp = new ScilabDouble([this.ot])
     this.x.model.sim = list(new ScilabString([this.function_name]),new ScilabDouble([4]))
@@ -11389,6 +12120,10 @@ function MATLU() {
             this.ot = [[2],[2]]
             this.it = 2
         }
+        else{
+                alert("Datatype is not supported");
+                MATLU.get();
+            }
         this.x.model.intyp = new ScilabDouble([this.it])
         this.x.model.outtyp = new ScilabDouble(...this.ot)
         this.x.model.sim = list(new ScilabString([this.function_name]), new ScilabDouble([4]));
@@ -11456,6 +12191,10 @@ MATMAGPHI.prototype.set = function MATMAGPHI() {
         this.x.model.outtyp = new ScilabDouble([1],[1])
         this.out = [[-1],[-2]]
     }
+    else{
+                alert("decomposition type is not supported");
+                MATMAGPHI.get();
+        }
     var io = set_io(this.x.model,this.x.graphics,this.in,this.out,[],[])
     this.x.model.sim = list(new ScilabString([this.function_name]),new ScilabDouble([4]))
     var exprs = new ScilabString([this.decomptyp])
@@ -11505,7 +12244,14 @@ function MATMUL() {
         this.dtype = parseFloat((arguments[0]["dtype"]))
         this.rule = parseFloat((arguments[0]["rule"]))
         this.np = parseFloat((arguments[0]["np"]))
-        
+        if((this.dtype<1)||(this.dtype>8)){
+                alert("type is not supported");
+                MATMUL.get();
+        }
+            if((this.rule<1)||(this.rule>3)){
+                alert("Multiplication rule must be only 1,2 or 3");
+                MATMUL.get();
+            }
         if(this.rule == 2){
             if(this.np == 0)
                 this.function_name = "matmul2_m"
@@ -11662,6 +12408,10 @@ MATPINV.prototype.set = function MATPINV() {
         this.ot = 2
         this.it = 2
     }
+    else{
+                alert("Datatype is not supported");
+                MATPINV.get();
+        }
     this.x.model.intyp = new ScilabDouble([this.it])
     this.x.model.outtyp = new ScilabDouble([this.ot])
     this.x.model.sim = list(new ScilabString([this.function_name]),new ScilabDouble([4]))
@@ -11724,7 +12474,34 @@ MATRESH.prototype.set = function MATRESH() {
     this.out = inverse(arguments[0]["out"])
     this.nout = size(this.out)
     this.nin = size(this.l1)
-
+    var so1=size(this.out,1);
+    var so2=size(this.out,2);
+    var si1=size(this.l1,1);
+    var si2=size(this.l1,2);
+    if(so1*so2==0){
+                alert("output must have at least one element");
+                MATRESH.get();
+    }
+            if(si1*si2==0){
+                alert("input must have at least one element");
+                MATRESH.get();
+            }
+    if(size(this.l1,1)>1){
+    if(this.out[0].length>(this.l1[0].length*this.l1[1].length)){
+                    alert("the first dimension of the output is too big");
+                    MATRESH.get();
+    }
+            if(size(this.out,1)>1){
+                if(this.out[1].length>(this.l1[0].length*this.l1[1].length)){
+                    alert("the second dimension of the output is too big");
+                    MATRESH.get();
+                }
+                if((this.out[1].length*this.out[0].length)>(this.l1[0].length*this.l1[1].length)){
+                    alert("the dimensions of the output are too big");
+                    MATRESH.get();
+                }
+            }
+    }
     if(this.typ == 1){
         this.function_name = "mat_reshape"
         this.ot = 1
@@ -11736,6 +12513,10 @@ MATRESH.prototype.set = function MATRESH() {
         this.it = 2
 
     }
+    else{
+                alert("Datatype is not supported");
+                MATRESH.get();
+        }
     this.x.model.intyp = new ScilabDouble([this.it])
     this.x.model.outtyp = new ScilabDouble([this.ot])
     var io = set_io(this.x.model,this.x.graphics,this.l1,this.out,[],[])
@@ -11810,6 +12591,10 @@ MATSING.prototype.set = function MATSING() {
             this.ot = [[1],[1],[1]]
 
         }
+        else{
+                    alert("decomposition type is not supported");
+                    MATSING.get();
+            }
         this.it = 1
     }
     else if(this.typ == 2){
@@ -11828,8 +12613,16 @@ MATSING.prototype.set = function MATSING() {
             this.ot = [[2],[1],[2]]
 
         }
+        else{
+                    alert("decomposition type is not supported");
+                    MATSING.get();
+            }
         this.it = 2
     }
+    else{
+                alert("Datatype is not supported");
+                MATSING.get();
+        }
     this.x.model.intyp = new ScilabDouble([this.it])
     this.x.model.outtyp = new ScilabDouble(...this.ot)
     var io = set_io(this.x.model,this.x.graphics,this.in,this.out,[],[])
@@ -11899,8 +12692,11 @@ MATSUM.prototype.set = function MATSUM() {
         else if(this.decomptyp == 2){
             this.function_name = "mat_suml"
             this.out = [[-1],[1]]
-
         }
+        else{
+                    alert("decomposition type is not supported");
+                    MATSUM.get();
+            }
         this.it = 1
         this.ot = 1
     }
@@ -11920,8 +12716,16 @@ MATSUM.prototype.set = function MATSUM() {
             this.out = [[-1],[1]]
 
         }
+        else{
+                    alert("decomposition type is not supported");
+                    MATSUM.get();
+            }
         this.it = 2
         this.ot = 2
+    }
+    else{
+        alert("Datatype is not supported");
+        MATSUM.get();
     }
     this.in = [parseFloat(getData(this.x.model.in)),parseFloat(getData(this.x.model.in2)) ]
     var io = set_io(this.x.model,this.x.graphics,this.in,this.out,[],[])
@@ -11983,6 +12787,10 @@ MATTRAN.prototype.set = function MATTRAN() {
         this.x.model.intyp = new ScilabDouble([2])
         this.x.model.outtyp = new ScilabDouble([2])
     }
+    else{
+                alert("Datatype is not supported");
+                MATTRAN.get();
+        }
     this.x.model.sim = list(new ScilabString([this.function_name]),new ScilabDouble([4]))
     this.x.graphics.exprs = label
     var exprs = new ScilabString([this.typ],[this.rule])
@@ -12087,6 +12895,11 @@ MATZREIM.prototype.set = function MATZREIM() {
         this.x.model.outtyp = new ScilabDouble([2])
         this.out = [[-1],[-2]]
     }
+    else
+    {
+        alert("decomposition type is not supported");
+        MATZREIM.get();
+    }
     var io = set_io(this.x.model,this.x.graphics,this.in,this.out,[],[])
     this.x.model.sim = list(new ScilabString([this.function_name]),new ScilabDouble([4]))
     var exprs = new ScilabString([this.decomptyp])
@@ -12134,6 +12947,10 @@ MAXMIN.prototype.get = function MAXMIN() {
 MAXMIN.prototype.set = function MAXMIN() {
     this.mm = parseFloat((arguments[0]["mm"]))
     this.nin = parseFloat((arguments[0]["nin"]))
+    if((this.nin!=1)&&(this.nin!=2)){
+                alert("Wrong number of inputs, only 1 and 2 allowed");
+                MAXMIN.get();
+    }
     this.zcr = parseFloat((arguments[0]["zcr"]))
     if(this.zcr != 0){
         this.zcr = -1
@@ -12149,7 +12966,7 @@ MAXMIN.prototype.set = function MAXMIN() {
 
     this.x.model.nzcross = new ScilabDouble([this.zcr]);
     if(this.nin == 1){
-        this.x.model.nmode = new ScilabDouble([abs(this.zcr)]);
+        this.x.model.nmode = new ScilabDouble([Math.abs(this.zcr)]);
     }
     else{
         this.x.model.nmode = new ScilabDouble([this.zcr]);
@@ -12511,6 +13328,14 @@ Modulo_Count.prototype.set = function Modulo_Count() {
     this.ini_c = parseFloat((arguments[0]["ini_c"]))
     this.base = parseFloat((arguments[0]["base"]))
     this.ini_c = Math.floor(this.ini_c)
+    if(this.ini_c<0){
+        alert("Wrong value for ''Initial State'' parameter: "+this.ini_c+"\nNull or positive integer expected.");
+        Modulo_Count.get();
+    }
+    if(this.base<=0){
+        alert("Wrong values for ''Upper Limit'' parameter: "+this.base+"\nStrictly positive integer expected.");
+        Modulo_Count.get();
+    }
     this.x.model.ipar = new ScilabDouble([this.base]);
     this.x.model.dstate = new ScilabDouble([this.ini_c]);
     var exprs = new ScilabString([this.ini_c],[this.base])
@@ -12550,6 +13375,18 @@ function MUX() {
     }
 MUX.prototype.set = function MUX() {
     this.in = inverse(arguments[0]["in"])
+    if(size(this.in,"*")==1 ){
+        if(this.in<2||this.in>31){
+            alert("Block must have at least two input ports and at most 31");
+                MUX.get();
+        }
+    }
+    else{
+        if(size(this.in,"*")<2| or(this.in==0)|size(this.in,"*")>31){
+            alert("Block must have at least two input ports and at most 31. Size 0 is not allowed.");
+            MUX.get();
+        }
+    }
     if(size(this.in,"*") == 1){
         var n = this.in[0]
         this.inp = []
@@ -12688,9 +13525,23 @@ M_SWITCH.prototype.set = function M_SWITCH() {
     this.rule = parseFloat((arguments[0]["rule"]))
     this.nin = Math.floor(this.nin)
     this.base = Math.floor(this.base)
+    if(this.nin<1){
+        alert("Number of inputs must be >=1 ");
+        M_SWITCH.get();
+    }
+    else if((this.base!=1)&&(this.base!=0)){
+        alert("base indexing must be 1 or 0");
+        M_SWITCH.get();
+    }
+    else if((this.rule!=1)&&(this.rule!=0)&&(this.rule!=2)&&(this.rule!=3)){
+        alert("incorrect rounding rule");
+        M_SWITCH.get();
+    }
+    else{
     this.x.model.ipar = new ScilabDouble([this.base],[this.rule])
     var exprs = new ScilabString([this.nin],[this.base],[this.rule])
     this.x.graphics.exprs=exprs
+    }
     return new BasicBlock(this.x)
     }
 }
@@ -13025,6 +13876,10 @@ function OUTIMPL_f() {
     }
 OUTIMPL_f.prototype.set = function OUTIMPL_f() {
     this.prt = parseFloat((arguments[0]["prt"]))
+    if(this.prt<=0){
+        alert("Wrong value for 'Port Number' parameter: "+this.prt+"\nStrictly positive integer expected.");
+        OUTIMPL_f.get();
+    }
     this.x.model.ipar = new ScilabDouble([this.prt]);
     var exprs = new ScilabString([this.prt])
     this.x.graphics.exprs=exprs
@@ -13091,6 +13946,10 @@ function OUT_f () {
     }
 OUT_f.prototype.set = function OUT_f() {
     this.prt = parseFloat((arguments[0]["prt"]))
+    if(this.prt<=0){
+        alert("Wrong value for 'Port Number' parameter: "+this.prt+"\nStrictly positive integer expected.");
+        OUT_f.get();
+    }
     this.x.model.ipar = new ScilabDouble([this.prt]);
     var exprs = new ScilabString([this.prt])
     this.x.graphics.exprs=exprs
@@ -14062,6 +14921,10 @@ function PRODUCT() {
 PRODUCT.prototype.set = function PRODUCT() {
     this.sgn = inverse(arguments[0]["sgn"])
     if(size(this.sgn,1) == 1){
+        if(this.sgn<1){
+            alert("Number of inputs must be > 0");
+            PRODUCT.get();
+        }
         if(this.sgn[0] == 1){
             this.in = -1
             this.sgn = []
@@ -14075,7 +14938,21 @@ PRODUCT.prototype.set = function PRODUCT() {
             this.nout = -1
         }
     }
-    
+    else
+    {
+        for(var i=0;i<size(this.sgn,1);i++){
+            for(var j=0;j<size(this.sgn,2);j++){
+                if(Math.abs(this.sgn[i][j])!=1){
+                    alert("Signs can only be +1 or -1");
+                    PRODUCT.get();  
+                }
+            }
+        }
+        //if(Math.abs(this.sgn)!=1){
+            //alert("Signs can only be +1 or -1");
+            //PRODUCT.get();
+        //}
+    }
     this.x.model.ipar = new ScilabDouble(...this.sgn);
     var exprs = new ScilabString([sci2exp(this.sgn)],[this.divideByZero])
     this.x.graphics.exprs=exprs
@@ -14571,6 +15448,10 @@ function QUANT_f() {
     QUANT_f.prototype.set = function QUANT_f() {
         this.pas = parseFloat((arguments[0]["pas"]))
         this.meth = parseFloat((arguments[0]["meth"]))
+        if((this.meth<1)||(this.meth>4)){
+                alert("Quantization Type must be from 1 to 4");
+                QUANT_f.get();
+        }
         this.x.model.rpar = new ScilabDouble([this.pas])
         this.x.model.ipar = new ScilabDouble([this.meth]);
         switch(this.meth){
@@ -14632,6 +15513,10 @@ RAMP.prototype.set = function RAMP() {
     this.slope = parseFloat((arguments[0]["slope"]))
     this.stt = parseFloat((arguments[0]["stt"]))
     this.iout = parseFloat((arguments[0]["iout"]))
+    if(this.stt<0){
+        alert("Wrong value for ''Start Time'' parameter: "+this.stt+"\nNull or positive integer expected.");
+        RAMP.get();
+    }
     this.x.model.rpar = new ScilabDouble([this.slope],[this.stt],[this.iout])
     var exprs = new ScilabString([this.slope],[this.stt],[this.iout])
     this.x.graphics.exprs=exprs
@@ -14699,7 +15584,10 @@ RAND_m.prototype.set = function RAND_m() {
     this.a = inverse(arguments[0]["a"])
     this.b = inverse(arguments[0]["b"])
     this.seed_c = inverse(arguments[0]["seed_c"])
-    
+    if((this.flag!=0)&&(this.flag!=1)){
+        alert("flag must be equal to 1 or 0");
+        RAND_m.get();
+    }
     this.out = size(this.a)
 
     if(this.typ == 1){
@@ -14716,6 +15604,10 @@ RAND_m.prototype.set = function RAND_m() {
     else if(this.typ == 2){
         alert("complex numbers not supported")
     }
+    else{
+            alert("Datatype is not supported");
+            RAND_m.get();
+        }
     var io = set_io(this.x.model,this.x.graphics,[],this.out,[1],[])
     this.x.model.sim = list(new ScilabString([this.function_name]),new ScilabDouble([4]))
     this.x.model.ipar = new ScilabDouble([this.flag]);
@@ -14759,6 +15651,10 @@ RATELIMITER.prototype.get = function RATELIMITER() {
 RATELIMITER.prototype.set = function RATELIMITER() {
     this.maxp = parseFloat((arguments[0]["maxp"]))
     this.minp = parseFloat((arguments[0]["minp"]))
+    if((this.maxp<=this.minp)||(this.maxp<=0)||(this.minp>=0)){
+                alert("We must have max_slope> 0 > min_slope.");
+                RATELIMITER.get();
+    }
     var rpar = new ScilabDouble([this.maxp],[this.minp])
     this.x.model.rpar = new ScilabDouble(...this.rpar);
     var exprs = new ScilabString([this.maxp],[this.minp])
@@ -14811,6 +15707,26 @@ function READAU_f() {
         this.fname1 = arguments[0]["fname1"]
         this.N = parseFloat((arguments[0]["N"]))
         this.swap = parseFloat((arguments[0]["swap"]))
+       // if alreadyran&fname1<>fname then
+               // block_parameter_error(gettext("Simulation running !!! You cannot modify Input file name"), ..
+                //gettext("End current simulation first."));
+                // Remove this test user can't modify time in dialog
+                //     elseif alreadyran&size(tmask1)<>size(tmask) then
+                //       message(['You cannot modify time management when running';'End current simulation first'])
+            if(this.fname1==""){
+                alert("Wrong value for 'Input File Name' parameter."+"\nYou must provide a filename.");
+                READAU_f.get();
+            }
+            if(this.N<1){
+                alert("Wrong value for 'Buffer size' parameter: "+this.N+"\nMust be greater than 1");
+                READAU_f.get();
+            }
+            //elseif alreadyran & (N <> ipar(6)) then
+               // block_parameter_error(msprintf(gettext("You cannot modify ''%s'' when running."), gettext("Buffer Size")), gettext("End current simulation first."));
+            if((this.swap!=0)&&(this.swap!=1)){
+                alert("Wrong value for 'Swap Mode' parameter: "+this.swap+"\nMust be in the interval [0, 1]");
+                READAU_f.get();
+            }
         this.M = 1
         this.frmt1 = "uc"
         this.outmask = 1
@@ -14936,6 +15852,10 @@ function REGISTER() {
     }
     REGISTER.prototype.set = function REGISTER() {
         this.z0 = inverse(arguments[0]["z0"])
+        if((size(this.z0,1)*size(this.z0,2))<1){
+                alert("Register length must be at least 1");
+                REGISTER.get();
+        }
         this.it = parseInt((arguments[0]["it"]))
         if(this.it == 1){
             this.function_name = "delay4"
@@ -14978,6 +15898,11 @@ function REGISTER() {
                 for (var i = this.z0.length - 1; i >= 0; i--) {
                     this.z0[i][0] = uint8(this.z0[i][0])
                 }
+            }
+            else
+            {
+                alert("Datatype is not supported");
+                    REGISTER.get();
             }
             this.x.model.odstate = list(new ScilabDouble(...this.z0))
             this.x.model.dstate = new ScilabDouble()
@@ -15082,6 +16007,10 @@ function RELAY_f() {
     RELAY_f.prototype.set = function RELAY_f() {
         this.nin = parseFloat((arguments[0]["nin"]))
         this.z0 = parseFloat((arguments[0]["z0"]))
+        if(this.z0>this.nin||this.z0<=0){
+                alert("initial connected input is not a valid input port number");
+                RELAY_f.get();
+        }
         this.x.model.dstate = new ScilabDouble([this.z0-1])
         var exprs = new ScilabString([this.nin],[this.z0])
         this.x.graphics.exprs=exprs
@@ -15194,7 +16123,53 @@ RFILE_f.prototype.set = function RFILE_f() {
     this.N = parseFloat((arguments[0]["N"]))
     
     this.nout = size(this.outmask,"*")
+    if(size(this.tmask1,1)> 1){
+        alert("Wrong value for 'Time Record Selection' parameter: "+this.tmask1+"\nEmpty matrix or scalar expected.");
+        RFILE_f.get();
+    }
 
+            else if((size(this.tmask1,"*")!=0)&&(this.tmask1<1)){
+                alert("Wrong value for 'Time Record Selection' parameter: "+this.tmask1+"\nStrictly positive integer expected.");
+                RFILE_f.get();
+            }
+
+            else if((this.lunit>0)&&(size(this.frmt,1)!=size(this.frmt1,1))){
+                alert("Simulation running !!! You cannot switch <br />between formatted and unformatted"+"\nEnd current simulation first.");
+                RFILE_f.get();
+            }
+
+            else if((this.lunit>0)&&(this.fname1!=this.fname)){
+                alert("Simulation running !!! You cannot modify ''Input File Name''"+"\nEnd current simulation first.");
+                RFILE_f.get();
+            }
+
+            else if((this.lunit>0)&&(size(this.tmask1,"*")!=size(this.tmask,"*"))){
+                alert("Simulation running !!! You cannot modify ''Time Record Selection''"+"\nEnd current simulation first.");
+                RFILE_f.get();
+            }
+
+            else if(this.fname1==""){
+                alert("Wrong value for 'Input File Name' parameter: "+this.fname1+"\nYou must provide a filename.");
+                RFILE_f.get();
+            }
+                // Simple check for including of the format's string  in parenthesis
+            //else if((this.frmt1!="")&&(this.frmt1.substr(0,1)!="(")||(this.frmt1.substr(this.frmt1.length-1,this.frmt1.length)!=")")){
+              //  alert("Wrong format for 'Input Format' parameter: "+this.frmt1+"\nYou must enclose the format''s string between parentheses.");
+                //RFILE_f.get();
+            //}
+            else if(this.N<2){
+                alert("Wrong value for 'Buffer Size' parameter: "+this.N+"\nBuffer size must be at least 2.");
+                RFILE_f.get();
+            }
+            else if(this.nout==0){
+                alert("Wrong value for 'Outputs Record Selection' parameter: "+this.nout+"\nYou must read at least one field in record.");
+                RFILE_f.get();
+            }
+
+            else if(this.outmask<1){
+                alert("Wrong value for 'Outputs Record Selection' parameter: "+this.outmask+"\nStrictly positive indexes expected.");
+                RFILE_f.get();
+            }
     if(this.tmask1.length == 0){
         this.ievt = 0
         this.cout = []
@@ -15219,6 +16194,7 @@ RFILE_f.prototype.set = function RFILE_f() {
     var dstate = new ScilabDouble([-1],[-1],[this.lunit],...this.value,[1])
     this.x.model.dstate = dstate;
     this.x.model.ipar = ipar;
+
     var exprs = new ScilabString([this.tmask1.toString().replace(/,/g, " ")],[this.outmask.toString().replace(/,/g, " ")],[this.fname1],[this.frmt1],[this.N])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
@@ -15337,6 +16313,11 @@ ROOTCOEF.prototype.set = function ROOTCOEF() {
         this.it = 2
         this.ot = 2
     }
+    else
+    {
+        alert("Datatype is not supported");
+        ROOTCOEF.get();
+    }
     this.x.model.intyp = new ScilabDouble([this.it])
     this.x.model.outtyp = new ScilabDouble([this.ot])
     this.in = [this.inp,parseFloat(getData(this.x.model.in2))]
@@ -15386,6 +16367,10 @@ SAMPHOLD_m.prototype.get = function SAMPHOLD_m() {
     }
 SAMPHOLD_m.prototype.set = function SAMPHOLD_m() {
     this.it = parseFloat((arguments[0]["it"]))
+    if((this.it<1)||(this.it>8)){
+                alert("Datatype is not supported");
+                SAMPHOLD_m.get();
+    }
     this.x.model.intyp = new ScilabDouble([this.it])
     this.x.model.outtyp = new ScilabDouble([this.it])
     this.in = [getData(this.x.model.in),getData(this.x.model.in2)]
@@ -15431,6 +16416,15 @@ SampleCLK.prototype.get = function SampleCLK() {
 SampleCLK.prototype.set = function SampleCLK() {
     this.frequ = parseFloat((arguments[0]["frequ"]))
     this.offset = parseFloat((arguments[0]["offset"]))
+    if(this.frequ<0){
+        alert("Frequency must be a positive number");
+        SampleCLK.get();
+    }
+
+            if(Math.abs(this.offset)>this.frequ){
+                alert("The |Offset| must be less than the Frequency");
+                SampleCLK.get();
+            }
     this.x.model.rpar = new ScilabDouble([this.frequ],[this.offset])
     this.x.model.evtout = new ScilabDouble([1]);
     this.x.model.firing = new ScilabDouble([-1]);
@@ -15477,6 +16471,10 @@ SATURATION.prototype.get = function SATURATION() {
 SATURATION.prototype.set = function SATURATION() {
     this.maxp = parseFloat((arguments[0]["maxp"]))
     this.minp = parseFloat((arguments[0]["minp"]))
+    if(this.maxp<=this.minp){
+        alert("Upper limit must be > Lower limit");
+        SATURATION.get();
+    }
     this.zeroc = parseFloat((arguments[0]["zeroc"]))
     var rpar = new ScilabDouble([this.maxp],[this.minp])
     this.x.model.rpar =  rpar;
@@ -15550,6 +16548,10 @@ function SCALAR2VECTOR() {
 SCALAR2VECTOR.prototype.set = function SCALAR2VECTOR() {
     this.nout = parseFloat((arguments[0]["nout"]))
     this.nout = Math.floor(this.nout)
+    if(this.nout!=-1 &&this.nout<=0){
+        alert("size of output must be -1 or >0");
+        SCALAR2VECTOR.get();
+    }
     var exprs = new ScilabString([this.nout])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
@@ -15732,7 +16734,10 @@ function SHIFT() {
         this.Datatype = parseFloat((arguments[0]["Datatype"]))
         this.nb = parseFloat((arguments[0]["nb"]))
         this.np = parseFloat((arguments[0]["np"]))
-        
+        if((this.np!=0)&&(this.np!=1)){
+                alert("Wrong value for ''Shift Type' parameter: "+this.np+"\nMust be in the interval [0, 1]");
+                SHIFT.get();
+        }
         this.it = this.Datatype
         this.ot = this.Datatype
         if(this.Datatype == 3 || this.Datatype == 6){
@@ -15769,7 +16774,7 @@ function SHIFT() {
                     this.function_name = "shift_16_RC"
             }
         }
-        if(this.Datatype == 5 || this.Datatype == 8){
+        else if(this.Datatype == 5 || this.Datatype == 8){
             if(this.nb > 0){
                 if(this.np == 0)
                     this.function_name = "shift_8_LA"
@@ -15785,6 +16790,10 @@ function SHIFT() {
                 else if(this.np == 1)
                     this.function_name = "shift_8_RC"
             }
+        }
+        else{
+            alert( "Wrong value for 'Data Type' parameter: "+this.Datatype+"\nMust be in the interval [3, 8]");
+            SHIFT.get();
         }
         this.x.model.sim = list(new ScilabString([this.function_name]), new ScilabDouble([4]));
         var io = set_io(this.x.model,this.x.graphics,[[-1],[-2]],[[-1],[-2]],[],[])
@@ -16320,6 +17329,11 @@ SQRT.prototype.set = function SQRT() {
         this.function_name = "mat_sqrt"
     }else if(this.typ == 2){
         this.function_name = "matz_sqrt"
+    }
+    else
+    {
+        alert("type is not supported");
+        SQRT.get();
     }
     this.x.model.intyp = new ScilabDouble([this.typ])
     this.x.model.outyp = new ScilabDouble([this.typ])
@@ -16923,6 +17937,31 @@ SUBMAT.prototype.set = function SUBMAT() {
         this.ot = 2
         this.it = 2
     }
+    else
+    {
+        alert("Datatype is not supported");
+        SUBMAT.get();
+    }
+    if((this.a<=0)||(this.b<=0)||(this.c<=0)||(this.d<=0)){
+                alert("invalid index");
+                SUBMAT.get();
+    }
+            if(this.b<this.a){
+                alert("ending row must be greater than starting row");
+                SUBMAT.get();
+            }
+            if(this.d<this.c){
+                alert("ending column must be greater than starting column");
+                SUBMAT.get();
+            }
+            /*if(this.b>inp(1) then
+                message ("index of ending row is out of range");
+                ok=%f;
+            end
+            if d>inp(2) then
+                message ("index of ending column is out of range");
+                ok=%f;
+            end*/
     this.x.model.intyp = new ScilabDouble([this.it])
     this.x.model.outtyp = new ScilabDouble([this.ot])
     this.in = [parseFloat(this.inp[0]),parseFloat(this.inp[1])]
@@ -16981,8 +18020,26 @@ function SUMMATION() {
         this.Datatype = parseInt((arguments[0]["Datatype"]))
         this.sgn = inverse(arguments[0]["sgn"])
         this.satur = parseInt((arguments[0]["satur"]))
-        
+        if((this.satur!=0)&&(this.satur!=1)&&(this.satur!=2)){
+                alert("Do on overflow must be 0,1,2");
+                SUMMATION.get();
+        }
+        var f=0;
+        for(var i=size(this.sgn,1)-1;i>=0;i--)
+        {
+            for(var j=size(this.sgn,2)-1;j>=0;j--)
+            {
+                if(Math.abs(this.sgn[i][j])!=1){
+                    f=1;
+                    break;
+                }
+            }
+        }
         if(size(this.sgn,1) == 1){
+            if(this.sgn<1){
+                    alert("Number of inputs must be > 0");
+                    SUMMATION.get();
+            }
             if(this.sgn[0] == 1){
                 this.in = -1
                 this.in2 = -2
@@ -17005,6 +18062,10 @@ function SUMMATION() {
             }
         }
         else{
+            if(f==1){
+                    alert("Signs can only be +1 or -1");
+                    SUMMATION.get();
+            }
             this.in = ones(this.sgn,1)
             for (var i = this.in.length - 1; i >= 0; i--) {
                 this.in[i][0] = -1*this.in[i][0]
@@ -17267,6 +18328,10 @@ function SWITCH2_m() {
     }
 SWITCH2_m.prototype.set = function SWITCH2_m() {
     this.ot = parseFloat((arguments[0]["ot"]))
+    if ((this.ot<1)|(this.ot>8)){
+        alert("Datatype is not supported");
+        SWITCH2_m.get();
+    }
     this.rule = parseFloat((arguments[0]["rule"]))
     this.thra = parseFloat((arguments[0]["thra"]))
     this.nzz = parseFloat((arguments[0]["nzz"]))
@@ -17350,6 +18415,10 @@ function SWITCH_f() {
 SWITCH_f.prototype.set = function SWITCH_f() {
     this.nin = parseFloat((arguments[0]["nin"]))
     this.z0 = parseFloat((arguments[0]["z0"]))
+    if(this.z0>this.nin||this.z0<=0){
+        alert("initial connected input is not a valid input port number");
+        SWITCH_f.get();
+    }
     this.x.model.ipar = new ScilabDouble([this.z0]-1)
     var exprs = new ScilabString([this.nin],[this.z0])
     this.x.graphics.exprs=exprs
@@ -17479,6 +18548,14 @@ TIME_DELAY.prototype.set = function TIME_DELAY() {
     this.T = parseInt((arguments[0]["T"]))
     this.init = parseInt((arguments[0]["init"]))
     this.N = parseInt((arguments[0]["N"]))
+    if(this.N<2){
+                alert("Buffer must be larger than 2");
+                TIME_DELAY.get();
+    }
+            if(this.T<=0){
+                alert("Delay must be positive");
+                TIME_DELAY.get();
+            }
 
     var io = check_io(this.x.model,this.x.graphics,[-1],[-1],[],[])
 
@@ -17614,6 +18691,41 @@ function TOWS_c() {
         return new BasicBlock(this.x)
         }
     }
+//TOWS_c.prototype.set = function TOWS_c() {
+    //this. nz = parseFloat((arguments[0][" nz"]))
+    //this. varnam = arguments[0][" varnam"]
+    //this. herit = parseFloat((arguments[0][" herit"]))
+   // if(this.nz<=0){
+     //   alert("Size of buffer must be positive");
+       // TOWS_c.get();
+   // }
+    /*var r=false;
+            var ierr=execstr("r = validvar(varnam)", "errcatch");
+            if((!r)||(ierr!=0)||(this.varnam.length>19)){
+                alert("Invalid variable name."; "Please choose another variable name.");
+                TOWS_c.get();
+            }
+    execstr("if type("+varnam+") <> 17 | or(fieldnames("+varnam+") <> [""values""; ""time""]) then" + ...
+            " message([""Protected variable name.""; ""Please choose another variable name.""]);" + ...
+            " ok = %f;" + ...
+            " end", "errcatch");*/
+    //this.x.model.intyp = new ScilabDouble([-1])
+    //try{
+    /*var io = set_io(this.x.model,this.x.graphics,[[-1],[-2]],[],ones((1-this.herit),1),[])
+
+    if(this.herit == 1){
+        this.x.model.blocktype = new ScilabDouble(["x"]);
+    }
+    else{
+        this.x.model.blocktype = new ScilabDouble(["d"]);
+    }
+    this.x.model.ipar = new ScilabDouble([this.nz],[this.varnam.length],[ascii(this.varnam)])
+//}catch(e){}
+    var exprs = new ScilabString([this. nz],[this. varnam],[this. herit])
+    this.x.graphics.exprs=exprs
+    return new BasicBlock(this.x)
+    }
+}*/
 
 function TRASH_f() {
 
@@ -17673,6 +18785,11 @@ function TrigFun() {
     }
 TrigFun.prototype.set = function TrigFun() {
     this.fun = arguments[0]["fun"]
+    if((this.fun!="sin")&&(this.fun!="cos")&&(this.fun!="tan")&&(this.fun!="sinh")&&(this.fun!="cosh")&&(this.fun!="tanh")&&(this.fun!="asin")&&(this.fun!="acos")&&(this.fun!="atan")&&(this.fun!="asinh")&&(this.fun!="acosh")&&(this.fun!="atanh"))
+    {
+        alert("Sorry but "+this.fun +" is not in the list!");
+        TrigFun.get();
+    }
     model.sim = list(new ScilabString([this.fun+"_blk"]), new ScilabDouble([4]));
     var exprs = new ScilabString([this.fun])
     this.x.graphics.exprs=exprs
@@ -17800,6 +18917,14 @@ function VARIABLE_DELAY() {
         this.T = parseFloat((arguments[0]["T"]))
         this.init = parseFloat((arguments[0]["init"]))
         this.N = parseFloat((arguments[0]["N"]))
+        if(this.N<2){
+                alert("Buffer must be larger than 2");
+                VARIABLE_DELAY.get();
+        }
+            if(this.T<=0){
+                alert("Delay must be positive");
+                VARIABLE_DELAY.get();
+            }
         var io = check_io(this.x.model,this.x.graphics,[[-1],[1]],[-1],[],[])
         this.x.model.rpar = new ScilabDouble([this.T],[this.init])
         this.x.model.ipar = new ScilabDouble([this.N]);
@@ -18003,6 +19128,14 @@ function WRITEAU_f() {
         
         this.N= parseFloat((arguments[0]["N"]));
         this.swap= parseFloat((arguments[0]["swap"]));
+        if(this.N<1){
+                alert("Wrong value for 'Buffer Size' parameter: "+this.N+"\nStrictly positive integer expected.");
+                WRITEAU_f.get();
+        }
+            if((this.swap!=0)&&(this.swap!=1)){
+                alert("Wrong value for 'Swap Mode (0:No, 1:Yes)' parameter: "+this.swap+"\nMust be in the interval [0, 1]");
+                WRITEAU_f.get();
+            }
         this.x.model.sim = list(new ScilabString(["writeau"]), new ScilabDouble([2]));
         this.x.model.in = new ScilabDouble([this.in1]);
         this.x.model.dstate = new ScilabDouble([-1], [this.lunit], ...zeros((this.nin + 1) * this.N, 1));
@@ -18061,6 +19194,18 @@ function WRITEC_f () {
         this.frmt = (arguments[0]["frmt1"]);
         this.N = parseFloat((arguments[0]["N"]));
         this.swap = parseFloat((arguments[0]["swap"]));
+        if(this.N<1){
+                alert("Wrong value for 'Buffer Size' parameter: "+this.N+"\nStrictly positive integer expected.");
+                WRITEC_f.get();
+        }
+        if(this.in<=0){
+                alert("Wrong value for 'Input Size' parameter: "+this.in+"\nStrictly positive integer expected.");
+                WRITEC_f.get();
+        }
+        if((this.swap!=0)&&(this.swap!=1)){
+                alert("Wrong value for 'Swap Mode' parameter: "+this.swap+"\nMust be in the interval [0, 1]");
+                WRITEC_f.get();
+        }
         this.nin=this.in;
         this.x.model.ipar = new ScilabDouble([this.fname.length], ..._str2code(this.frmt), [this.N], [this.swap], ..._str2code(this.fname));
         this.x.model.in = new ScilabDouble([this.in]);
@@ -18107,6 +19252,10 @@ function ZCROSS_f() {
     }
     ZCROSS_f.prototype.set = function ZCROSS_f() {
         this.in = parseFloat((arguments[0]["in"]))
+        if(this.in<=0){
+            alert("Block must have at least one input");
+            ZCROSS_f.get();
+        }
         this.kk=0
         for (var jj = 1; jj <= this.in; jj++) {
             this.kk = this.kk + Math.pow(2,this.in+jj-1)
