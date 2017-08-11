@@ -62,8 +62,8 @@ function AFFICH_m() {
         model.dep_ut = new ScilabBoolean([true, false]);
         model.label = new ScilabString([""]);
         var exprs = new ScilabString([sci2exp([parseFloat(...getData(model.in)), parseFloat(...getData(model.in2))])], [this.font], [this.fontsize], [this.colr], [this.nt], [this.nd], [0]);
-        var n = "0";
-        this.displayParameter = [n];
+        var n =0;
+        this.displayParameter = [n.toFixed(1)];
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"AFFICH_m\",sz(1),sz(2));"]);
         this.x = new standard_define(new ScilabDouble([3, 2]), model, exprs, gr_i);
         this.x.graphics.style = new ScilabString(["AFFICH_m"]);
@@ -112,7 +112,7 @@ function AFFICH_m() {
                 AFFICH_m.get();
             }
 
-            if((this.herit!=0)||(this.herit!=1)){
+            if((this.herit!=0)&&(this.herit!=1)){
                 alert("Accept inherited values are 0 and 1");
                 AFFICH_m.get();
             }
@@ -585,6 +585,8 @@ function BIGSOM_f() {
 }
 function BITCLEAR() {
     BITCLEAR.prototype.define = function BITCLEAR() {
+        this.Datatype=3
+        this.bit=0
         var model = scicos_model();
         model.sim = list(new ScilabString(["bit_clear_32"]), new ScilabDouble([4]));
         model.in = new ScilabDouble([1]);
@@ -606,6 +608,73 @@ function BITCLEAR() {
     }
     BITCLEAR.prototype.details = function BITCLEAR() {
         return this.x;
+    }
+    BITCLEAR.prototype.get=function BITCLEAR(){
+        var options={
+            Datatype:["Data Type (3:int32, 4:int16, 5:int8, ...)",this.Datatype],
+            bit:["Index of Bit (0 is least significant)",this.bit],
+        }
+        return options
+    }
+    BITCLEAR.prototype.set=function BITCLEAR(){
+        this.Datatype = parseFloat((arguments[0]["Datatype"]))
+        this.bit = parseFloat((arguments[0]["bit"]))
+        if(Math.floor(this.bit)!=this.bit){
+               alert("Wrong type for 'Index of Bit' parameter:"+this.bit+"\nMust be integer.");
+                BITCLEAR.get();
+        }
+        if((this.Datatype == 3)||(this.Datatype == 6)){
+            if((this.bit>31)||(this.bit < 0)){
+                alert("Wrong value for 'Index of Bit' parameter:"+this.bit+"\nMust be in the interval [0, 31]");
+                BITCLEAR.get();
+            }
+        }
+        else if((this.Datatype==4)||(this.Datatype==7)){
+                if(this.bit > 15 ||this.bit < 0){
+                    alert("Wrong value for 'Index of Bit' parameter: "+this.bit+"\nMust be in the interval [0, 15]");
+                    BITCLEAR.get();
+                }
+        }
+        else if((this.Datatype==5)||(this.Datatype==8)){
+
+                if(this.bit > 7 ||this.bit < 0){
+                    alert("Wrong value for 'Index of Bit' parameter: "+this.bit+"\nMust be in the interval [0, 7]");
+                    BITCLEAR.get();
+                }
+        }
+        else{
+                alert("Wrong value for 'Data Type' parameter: "+this.Datatype+"\nMust be in the interval [3, 8]");
+                BITCLEAR.get();
+        }
+        if(this.Datatype == 3 || this.Datatype == 6){
+            this.bit = uint32(this.bit)
+            this.n = (Math.pow(2,32)-1)-Math.pow(2,this.bit)
+            this.n = uint32(this.n)
+            this.x.model.sim = list(new ScilabString(["bit_clear_32"]), new ScilabDouble([4]));
+        }
+        else if(this.Datatype == 4 || this.Datatype == 7){
+            this.bit = uint16(this.bit)
+            this.n = (Math.pow(2,16)-1)-Math.pow(2,this.bit)
+            this.n = uint16(this.n)
+            this.x.model.sim = list(new ScilabString(["bit_clear_16"]), new ScilabDouble([4]));
+        }
+        else if(this.Datatype == 5 || this.Datatype == 8){
+            this.bit = uint8(this.bit)
+            this.n = (Math.pow(2,8)-1)-Math.pow(2,this.bit)
+            this.n = uint8(this.n)
+            this.x.model.sim = list(new ScilabString(["bit_clear_8"]), new ScilabDouble([4]));
+        }
+
+        this.x.model.intyp = new ScilabDouble([this.Datatype])
+        this.x.model.outtyp = new ScilabDouble([this.Datatype])
+        this.in = [parseFloat(getData(this.x.model.in)),parseFloat(getData(this.x.model.in2))]
+        this.out = [[1],[1]]
+        var io = set_io(this.x.model,this.x.graphics,this.in,this.out,[],[])
+        this.x.model.opar = list(new ScilabDouble([this.n]))
+        var exprs = new ScilabString([sci2exp(this.Datatype)],[sci2exp(this.bit)])
+        this.x.graphics.exprs=exprs
+        return new BasicBlock(this.x)
+
     }
 }
 function BITSET() {
@@ -1679,6 +1748,7 @@ CLKGOTO.prototype.set = function CLKGOTO() {
     this.x.model.evtin = new ScilabDouble([1]);
     this.x.model.firing = new ScilabDouble([-1]);
     var exprs = new ScilabString([this.tag],[sci2exp(this.tagvis)])
+    this.displayParameter = [this.tag];
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
@@ -1724,6 +1794,7 @@ CLKGotoTagVisibility.prototype.set = function CLKGotoTagVisibility() {
     this.tag = arguments[0]["tag"]
     this.x.model.opar = list(new ScilabString([this.tag]))
     var exprs = new ScilabString([this.tag])
+    this.displayParameter = [this.tag];
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
@@ -1849,6 +1920,7 @@ CLKOUTV_f.prototype.set = function CLKOUTV_f() {
     this.x.model.ipar = new ScilabDouble([this.prt]);
     this.x.model.evtin = new ScilabDouble([1]);
     var exprs = new ScilabString([this.prt])
+    this.displayParameter = [this.prt];
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
@@ -2677,7 +2749,7 @@ function CLSS () {
     }
 
  
-CLSS.prototype.get = function CLSS() {
+	CLSS.prototype.get = function CLSS() {
         var options={
             A:["A matrix",this.A.toString().replace(/,/g," ")],
             B:["B matrix",this.B.toString().replace(/,/g," ")],
@@ -2716,36 +2788,7 @@ CLSS.prototype.details = function CLSS() {
     }
 }
 
-function CLSS() {
 
-    CLSS.prototype.define = function CLSS() {
-        this.x0 = 0;
-        this.A = -1;
-        this.B = 1;
-        this.C = 1;
-        this.D = 0;
-        this.in1 = 1;
-        this.out = 1;
-
-        var model = scicos_model();
-        model.sim = list(new ScilabString(["csslti4"]), new ScilabDouble([4]));
-        model.in = new ScilabDouble([this.in1]);
-        model.out = new ScilabDouble([this.out]);
-        model.state = new ScilabDouble([this.x0]);
-        model.rpar = new ScilabDouble([this.A], [this.B], [this.C], [this.D]);
-        model.blocktype = new ScilabString(["c"]);
-        model.dep_ut = new ScilabBoolean([false, true]);
-
-        var exprs = new ScilabString([this.A], [this.B], [this.C], [this.D], [this.x0]);
-        var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"CLSS\",sz(1),sz(2));"]);
-        this.x = new standard_define(new ScilabDouble([4, 2]), model, exprs, gr_i);
-        return new BasicBlock(this.x);
-    }
-
-    CLSS.prototype.details = function CLSS() {
-        return this.x;
-    }
-}
 function CMAT3D () {
 
 CMAT3D.prototype.define = function CMAT3D() {
@@ -3299,7 +3342,7 @@ function CONST_m() {
     CONST_m.prototype.get = function CONST_m() {
 
         var options = {
-            vec: ["Constant Value", this.c.toString()]
+            vec: ["Constant Value", this.c.toString().replace(/,/g," ")]
         };
         return options;
     }
@@ -3316,7 +3359,7 @@ function CONST_m() {
         this.x.model.outtyp = new ScilabDouble([1])
 
         this.x.model.rpar = new ScilabDouble();
-        var io = set_io(this.x.model,this.x.graphics,[],[...this.nout],[],[])
+        var io = set_io(this.x.model,this.x.graphics,[],[this.nout],[],[])
         this.x.graphics.exprs = new ScilabString([sci2exp(this.c)]);
         return new BasicBlock(this.x);
     }
@@ -4679,7 +4722,9 @@ function DELAY_f() {
             from: new ScilabDouble([5, 2, 0]),
             to: new ScilabDouble([4, 1, 1])
         }));
-
+        this.dt = 0.1;
+        this.z0 = zeros(11, 1);
+        this.zz0 = math.subset(this.z0, math.index(math.range(0, math.size(this.z0)[0] - 1), 0));
         this.x = scicos_block();
         this.x.gui = new ScilabString(["DELAY_f"]);
         this.x.graphics.sz = new ScilabDouble([2, 2]);
@@ -4701,6 +4746,27 @@ function DELAY_f() {
     DELAY_f.prototype.details = function DELAY_f() {
         return this.x;
     }
+    DELAY_f.prototype.get = function DELAY_f() {
+        var options={
+            dt:["Discretization time step",this.dt],
+            zz0:["Register initial state",this.zz0.toString().replace(/,/g," ")],
+        }
+        return options;
+    }
+    DELAY_f.prototype.set = function DELAY_f() {
+    this.dt = parseFloat((arguments[0]["dt"]))
+    this.zz0 = inverse(arguments[0]["zz0"])
+    if(size(this.zz0,"*")<1){
+        alert("Register length must be at least 1");
+        DELAY_f.get();
+    }
+    if(this.dt<=0){
+        alert("Discretization time step must be positive");
+        DELAY_f.get();
+    }
+    return new BasicBlock(this.x)
+    }
+
 }function DEMUX() {
 
     DEMUX.prototype.define = function DEMUX() {
@@ -4725,9 +4791,49 @@ function DELAY_f() {
         return new BasicBlock(this.x);
     }
 
+    DEMUX.prototype.get=function DEMUX(){
+        var options={
+            out:["number of output ports or vector of sizes",this.out.toString()]
+        }
+        return options    
+    }
+    DEMUX.prototype.set=function DEMUX(){
+        this.out=inverse(arguments[0]["out"])
+        if(size(this.out,"*")==1){
+                if((this.out<2)||(this.out>31)){
+                    alert("Block must have at least 2 and at most 31 output ports");
+                    DEMUX.get();
+                }
+                else{
+                    var n=this.out[0]
+                    this.inp=[]
+                    for(var i=1;i<=n;i++)
+                    {
+                        this.inp.push([-1*i])
+                    }
+                    var io=check_io(this.x.model,this.x.graphics,0,this.inp,[],[])
+                }
+        } 
+        else{
+                if((size(this.out,"*")<2)||(this.out==0)||(size(this.out,"*")>31)){
+                    alert("Block must have at least 2 and at most 31 output ports"+"\nsize 0 is not allowed")
+                    DEMUX.get();
+                }
+                else{
+                    this.nin=sum(this.out)
+                    var io=check_io(this.x.model,this.x.graphics,this.nin,this.out,[],[])
+                }
+        }
+        var exprs=new ScilabString(this.out.toString())  
+        this.x.graphics.exprs=exprs
+        this.x.model.ipar=new ScilabDouble(...this.out)
+        return new BasicBlock(this.x) 
+    }
+
     DEMUX.prototype.details = function DEMUX() {
         return this.x;
     }
+
 }
 function DEMUX_f() {
 
@@ -4750,6 +4856,44 @@ function DEMUX_f() {
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"DEMUX_f\",sz(1),sz(2));"]);
         this.x = new standard_define(new ScilabDouble([.5, 2]), model, exprs, gr_i);
         return new BasicBlock(this.x);
+    }
+    DEMUX_f.prototype.get=function DEMUX_f(){
+        var options={
+            out:["number of output ports or vector of sizes",this.out.toString()]
+        }
+        return options    
+    }
+    DEMUX_f.prototype.set=function DEMUX_f(){
+        this.out=inverse(arguments[0]["out"])
+        if(size(this.out,"*")==1){
+                if((this.out<2)||(this.out>8)){
+                    alert("Block must have at least 2 and at most 8 output ports");
+                    DEMUX_f.get();
+                }
+                else{
+                    var n=this.out[0]
+                    this.inp=[]
+                    for(var i=1;i<=n;i++)
+                    {
+                        this.inp.push([-1*i])
+                    }
+                    var io=check_io(this.x.model,this.x.graphics,0,this.inp,[],[])
+                }
+        } 
+        else{
+                if((size(this.out,"*")<2)||(this.out==0)||(size(this.out,"*")>8)){
+                    alert("Block must have at least 2 and at most 8 output ports"+"\nsize 0 is not allowed")
+                    DEMUX_f.get();
+                }
+                else{
+                    this.nin=sum(this.out)
+                    var io=check_io(this.x.model,this.x.graphics,this.nin,this.out,[],[])
+                }
+        }
+        var exprs=new ScilabString(this.out.toString())  
+        this.x.graphics.exprs=exprs
+        this.x.model.ipar=new ScilabDouble(...this.out)
+        return new BasicBlock(this.x) 
     }
     DEMUX_f.prototype.details = function DEMUX_f() {
         return this.x;
@@ -6908,7 +7052,8 @@ function DLR() {
         this.B = 1;
         this.C = 1;
         this.D = 0;
-
+        this.num="1";
+        this.den="1+z";
         var model = scicos_model();
         model.sim = list(new ScilabString(["dsslti4"]), new ScilabDouble([4]));
         model.in = new ScilabDouble([1]);
@@ -6928,6 +7073,133 @@ function DLR() {
     }
     DLR.prototype.details = function DLR() {
         return this.x;
+    }
+    DLR.prototype.get=function DLR(){
+    	var options={
+    		num:["Numerator (z)",this.num.toString()],
+    		den:["Denominator (z)",this.den.toString()],
+    	}
+    	return options
+    }
+    DLR.prototype.set=function DLR(){
+    	this.num=arguments[0]["num"]
+    	this.den=arguments[0]["den"]
+        var a=[];
+        var b=[];
+        var j=0;
+        var k=0;
+        var l=0;
+        var m1;
+        var m2;
+        for(var i=0;i<this.num.length;i++)
+        {
+            if(this.num.charAt(i)=='^')
+            {
+                k=1;
+                break;
+            }
+        }
+        if(k==0)
+        {
+            for(var i=0;i<this.num.length;i++)
+            {
+                if(this.num.charAt(i)=='z')
+                {
+                    l=1;
+                    break;
+                }
+            }
+            if(l==0)
+                m1=0;
+            else
+                m1=1;
+        }
+        else{
+        for(var i=0;i<this.num.length;i++)
+        {
+            if(this.num.charAt(i)=='^')
+            {
+                a[j++]=this.num[i+1];
+            }
+        }
+        m1=a[0];
+        for(var i=1;i<j;i++)
+        {
+            if(a[i]>m1)
+                m1=a[i];
+        }
+        }
+        j=0;
+        k=0;
+        l=0;
+        for(var i=0;i<this.den.length;i++)
+        {
+            if(this.den.charAt(i)=='^')
+            {
+                k=1;
+                break;
+            }
+        }
+        if(k==0)
+        {
+            for(var i=0;i<this.den.length;i++)
+            {
+                if(this.den.charAt(i)=='z')
+                {
+                    l=1;
+                    break;
+                }
+            }
+            if(l==0)
+                m2=0;
+            else
+                m2=1;
+        }
+        else{
+        for(var i=0;i<this.den.length;i++)
+        {
+            if(this.den.charAt(i)=='^')
+            {
+                b[j++]=this.den[i+1];
+            }
+        }
+        m2=b[0];
+        for(var i=1;i<j;i++)
+        {
+            if(b[i]>m2)
+                m2=b[i];
+        }
+        }
+        if(m1>m2){
+            alert("Transfer function must be proper");
+            DLR.get();
+        }
+        //this.H=cont_frm(this.num,this.den);
+        //H=cont_frm(num,den)
+        //[A,B,C,D]=H(2:5);
+        var exprs=new ScilabString([this.num.toString()],[this.den.toString()])
+        this.x.graphics.exprs=exprs
+        var ns=size(this.A,1);
+        var ns1=size(this.A,2);
+        //if ns1<=ns then
+            //x0=x0(1:ns1)
+        //else
+           // x0(ns1,1)=0
+        //end
+        //var rpar = new ScilabDouble(...this.A,...this.B,...this.C,...this.D);
+        this.x.model.dstate=new ScilabDouble(this.x0)
+        //this.x.model.rpar=rpar
+        //if norm(D,1)<>0 then
+            //mmm=[%t %f];
+        //else
+            //mmm=[%f %f];
+        //end
+        //if or(model.dep_ut<>mmm) then
+            //model.dep_ut=mmm,
+        //end
+        this.x.model.dep_ut = new ScilabBoolean(false,false)
+        this.x.model.firing=[]
+    	return new BasicBlock(this.x)
     }
 }
 
@@ -7675,6 +7947,7 @@ EVTDLY_c.prototype.set = function EVTDLY_c() {
     this.x.model.rpar = new ScilabDouble([this.dt],[this.ff])
     this.x.model.firing = new ScilabDouble([this.ff]);
     var exprs = new ScilabString([this.dt],[sci2exp(this.ff)])
+    this.displayParameter = [this.dt];
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
@@ -7733,6 +8006,7 @@ EVTGEN_f.prototype.set = function EVTGEN_f() {
     this.tt = parseFloat((arguments[0]["tt"]))
     this.x.model.firing = new ScilabDouble([this.tt])
     var exprs = new ScilabString([this.tt])
+    this.displayParameter = [this.tt];
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
@@ -8818,7 +9092,10 @@ function EXTRACTBITS() {
 
     EXTRACTBITS.prototype.define = function EXTRACTBITS() {
         this.numb = [];
-
+        this.Datatype=3
+        this.rule=1
+        this.bit=0
+        this.scal=0
         var model = scicos_model();
         model.sim = list(new ScilabString(["extract_bit_32_UH0"]), new ScilabDouble([4]));
         model.in = new ScilabDouble([1]);
@@ -8840,6 +9117,206 @@ function EXTRACTBITS() {
     }
     EXTRACTBITS.prototype.details = function EXTRACTBITS() {
         return this.x;
+    }
+    EXTRACTBITS.prototype.get=function EXTRACTBITS(){
+        var options={
+            Datatype:["Data Type (3:int32, 4:int16, 5:int8, ...)",this.Datatype],
+            rule:["Bits to extract",this.rule],
+            bit:["Number of Bits or Index of Bit",this.bit.toString().replace(/,/g," ")],
+            scal:["Treat Bit Field as an Integer (0:No, 1:Yes)",this.scal],
+        }
+        return options
+    }
+    EXTRACTBITS.prototype.set=function EXTRACTBITS(){
+        this.Datatype = parseFloat((arguments[0]["Datatype"]))
+        this.rule = parseFloat((arguments[0]["rule"]))
+        this.bit = inverse((arguments[0]["bit"]))
+        this.scal = parseFloat((arguments[0]["scal"]))
+
+        if((this.rule<1)||(this.rule>5)){
+                alert("Wrong value for 'Bits to Extract' parameter: "+this.rule+"\nMust be in the interval [1, 5]");
+                EXTRACTBITS.get();
+        }
+        if((this.scal<0)||(this.scal>1)){
+                alert("Wrong value for 'Treat Bit Field as an Integer' parameter: "+this.scal+"\nMust be in the interval [0, 1]");
+                EXTRACTBITS.get();
+        }
+        this.in = [parseFloat(getData(this.x.model.in)),parseFloat(getData(this.x.model.in2))]
+        if((this.rule==3)||(this.rule==4)){
+            if(size(this.bit,"*")!=1){
+                alert("Wrong size for 'Number of Bits or Index of Bit' parameter: "+this.bit+"\nMust be a single value.");
+                EXTRACTBITS.get();
+            }
+            else
+                this.numb=this.bit;
+        }
+        else if(this.rule==5){
+            if(size(this.bit,"*")!=2){
+                alert("Wrong size for 'Number of Bits or Index of Bit' parameter: "+this.bit+"\nMust have this form: [Start, End].");
+                EXTRACTBITS.get();
+            }
+            else if(this.bit[0]>this.bit[1]){
+                alert("Wrong values for 'Number of Bits or Index of Bit' parameter: "+this.bit+"\n''Start'' must be less than ''End''.");
+                EXTRACTBITS.get();
+            }
+            else
+                this.numb=this.bit[1]-this.bit[0];
+        }
+        else{
+            this.bit=0;
+            this.numb=[];
+        }
+
+        if((this.Datatype==3)||(this.Datatype==6))
+        {
+        	if(this.rule==1)
+        	{
+        		if(this.scal==0)
+        			this.x.model.sim = list(new ScilabString(["extract_bit_32_UH0"]), new ScilabDouble([4]));
+        		if(this.scal==1)
+        		{
+        			if(this.Datatype==3)
+        				this.x.model.sim = list(new ScilabString(["extract_bit_32_UH1"]), new ScilabDouble([4]));
+        			if(this.Datatype==6)
+        				this.x.model.sim = list(new ScilabString(["extract_bit_u32_UH1"]), new ScilabDouble([4]));	
+        		}
+
+        	}
+        	if(this.rule==2)
+        		this.x.model.sim = list(new ScilabString(["extract_bit_32_LH"]), new ScilabDouble([4]));
+        	if(this.rule==3)
+        	{
+        		if(this.scal==0)
+        			this.x.model.sim = list(new ScilabString(["extract_bit_32_MSB0"]), new ScilabDouble([4]));
+        		if(this.scal==1)
+        		{
+        			if(this.Datatype==3)
+        				this.x.model.sim = list(new ScilabString(["extract_bit_32_MSB1"]), new ScilabDouble([4]));
+        			if(this.Datatype==6)
+        				this.x.model.sim = list(new ScilabString(["extract_bit_u32_MSB1"]), new ScilabDouble([4]));	
+        		}
+
+        	}
+        	if(this.rule==4)
+        		this.x.model.sim = list(new ScilabString(["extract_bit_32_LSB"]), new ScilabDouble([4]));
+        	if(this.rule==5)
+        	{
+        		if(this.scal==0)
+        			this.x.model.sim = list(new ScilabString(["extract_bit_32_RB0"]), new ScilabDouble([4]));
+        		if(this.scal==1)
+        		{
+        			if(this.Datatype==3)
+        				this.x.model.sim = list(new ScilabString(["extract_bit_32_RB1"]), new ScilabDouble([4]));
+        			if(this.Datatype==6)
+        				this.x.model.sim = list(new ScilabString(["extract_bit_u32_RB1"]), new ScilabDouble([4]));	
+        		}
+
+        	}	
+        }
+        if((this.Datatype==4)||(this.Datatype==7))
+        {
+        	
+        	if(this.rule==1)
+        	{
+        		if(this.scal==0)
+        			this.x.model.sim = list(new ScilabString(["extract_bit_16_UH0"]), new ScilabDouble([4]));
+        		if(this.scal==1)
+        		{
+        			if(this.Datatype==4)
+        				this.x.model.sim = list(new ScilabString(["extract_bit_16_UH1"]), new ScilabDouble([4]));
+        			if(this.Datatype==7)
+        				this.x.model.sim = list(new ScilabString(["extract_bit_u16_UH1"]), new ScilabDouble([4]));	
+        		}
+
+        	}
+        	if(this.rule==2)
+        		this.x.model.sim = list(new ScilabString(["extract_bit_16_LH"]), new ScilabDouble([4]));
+        	if(this.rule==3)
+        	{
+        		if(this.scal==0)
+        			this.x.model.sim = list(new ScilabString(["extract_bit_16_MSB0"]), new ScilabDouble([4]));
+        		if(this.scal==1)
+        		{
+        			if(this.Datatype==3)
+        				this.x.model.sim = list(new ScilabString(["extract_bit_16_MSB1"]), new ScilabDouble([4]));
+        			if(this.Datatype==6)
+        				this.x.model.sim = list(new ScilabString(["extract_bit_u16_MSB1"]), new ScilabDouble([4]));	
+        		}
+
+        	}
+        	if(this.rule==4)
+        		this.x.model.sim = list(new ScilabString(["extract_bit_16_LSB"]), new ScilabDouble([4]));
+        	if(this.rule==5)
+        	{
+        		if(this.scal==0)
+        			this.x.model.sim = list(new ScilabString(["extract_bit_16_RB0"]), new ScilabDouble([4]));
+        		if(this.scal==1)
+        		{
+        			if(this.Datatype==3)
+        				this.x.model.sim = list(new ScilabString(["extract_bit_16_RB1"]), new ScilabDouble([4]));
+        			if(this.Datatype==6)
+        				this.x.model.sim = list(new ScilabString(["extract_bit_u16_RB1"]), new ScilabDouble([4]));	
+        		}
+
+        	}	
+        }
+        if((this.Datatype==5)||(this.Datatype==8))
+        {
+        	
+        	if(this.rule==1)
+        	{
+        		if(this.scal==0)
+        			this.x.model.sim = list(new ScilabString(["extract_bit_8_UH0"]), new ScilabDouble([4]));
+        		if(this.scal==1)
+        		{
+        			if(this.Datatype==5)
+        				this.x.model.sim = list(new ScilabString(["extract_bit_8_UH1"]), new ScilabDouble([4]));
+        			if(this.Datatype==8)
+        				this.x.model.sim = list(new ScilabString(["extract_bit_u8_UH1"]), new ScilabDouble([4]));	
+        		}
+
+        	}
+        	if(this.rule==2)
+        		this.x.model.sim = list(new ScilabString(["extract_bit_8_LH"]), new ScilabDouble([4]));
+        	if(this.rule==3)
+        	{
+        		if(this.scal==0)
+        			this.x.model.sim = list(new ScilabString(["extract_bit_8_MSB0"]), new ScilabDouble([4]));
+        		if(this.scal==1)
+        		{
+        			if(this.Datatype==5)
+        				this.x.model.sim = list(new ScilabString(["extract_bit_8_MSB1"]), new ScilabDouble([4]));
+        			if(this.Datatype==8)
+        				this.x.model.sim = list(new ScilabString(["extract_bit_u8_MSB1"]), new ScilabDouble([4]));	
+        		}
+
+        	}
+        	if(this.rule==4)
+        		this.x.model.sim = list(new ScilabString(["extract_bit_8_LSB"]), new ScilabDouble([4]));
+        	if(this.rule==5)
+        	{
+        		if(this.scal==0)
+        			this.x.model.sim = list(new ScilabString(["extract_bit_8_RB0"]), new ScilabDouble([4]));
+        		if(this.scal==1)
+        		{
+        			if(this.Datatype==5)
+        				this.x.model.sim = list(new ScilabString(["extract_bit_8_RB1"]), new ScilabDouble([4]));
+        			if(this.Datatype==8)
+        				this.x.model.sim = list(new ScilabString(["extract_bit_u8_RB1"]), new ScilabDouble([4]));	
+        		}
+
+        	}	
+        }
+        
+        this.x.model.intyp = new ScilabDouble([this.Datatype])
+        this.x.model.outtyp = new ScilabDouble([this.Datatype])
+        
+        this.out = [[1],[1]]
+        var io = set_io(this.x.model,this.x.graphics,this.in,this.out,[],[])
+        this.x.model.ipar = new ScilabDouble([this.bit],[this.numb])
+        var exprs = new ScilabString([sci2exp(this.Datatype)],[sci2exp(this.rule)],[sci2exp(this.bit)],[sci2exp(this.scal)])
+        this.x.graphics.exprs=exprs
+        return new BasicBlock(this.x)
     }
 }
 function EXTRACTOR() {
@@ -10315,7 +10792,7 @@ function HYSTHERESIS() {
     HYSTHERESIS.prototype.define = function HYSTHERESIS() {
         this.in1 = 1;
         this.ipar = 0;
-        this.nzz = 2;
+        this.nzz = 1;
         this.rpar = [[1], [0], [1], [0]];
 
         var model = scicos_model();
@@ -10742,14 +11219,14 @@ function INTEGRAL_m() {
                         alert("x0 and Upper limit and Lower limit must have same size");
                         INTEGRAL_m.get();}*/
     
-                    if(this.maxp<=this.lowp){
+                    /*if(this.maxp<=this.lowp){
                         alert("Upper limits must be > Lower limits");
                         INTEGRAL_m.get();
                     }
                     if((this.x0>this.maxp)||(this.x0<this.lowp)){
                         alert("Initial condition x0 should be inside the limits")
                         INTEGRAL_m.get();
-                    }
+                    }*/
            // }
             //catch(e){}
             var rpar = new ScilabDouble(...this.maxp,...this.lowp)
@@ -11186,6 +11663,7 @@ IN_f.prototype.set = function IN_f() {
     this.x.model.out2 = this.otsz[1]
     this.x.model.outtyp = this.ot
     var exprs = new ScilabString()
+    this.displayParameter = [this.prt];
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
@@ -13427,6 +13905,43 @@ function MUX_f() {
         this.x = new standard_define(new ScilabDouble([0.5, 2]), model, exprs, gr_i);
         return new BasicBlock(this.x);
     }
+    MUX_f.prototype.get = function MUX_f() {
+        var options={
+            in1:["number of input ports or vector of sizes",this.in1.toString()]
+        }
+        return options
+    }
+    MUX_f.prototype.set = function MUX_f() {
+    this.in1 = inverse(arguments[0]["in1"])
+    if(size(this.in1,"*")==1 ){
+        if(this.in1<2||this.in1>8){
+            alert("Block must have at least two input ports and at most 8");
+                MUX_f.get();
+        }
+    }
+    else{
+        if(size(this.in1,"*")<2| or(this.in1==0)|size(this.in1,"*")>8){
+            alert("Block must have at least two input ports and at most 8. Size 0 is not allowed.");
+            MUX_f.get();
+        }
+    }
+    if(size(this.in1,"*") == 1){
+        var n = this.in1[0]
+        this.inp = []
+        for (var i = 1; i <= n; i++ ) {
+            this.inp.push([-1*i])
+        }
+        var io = check_io(this.x.model,this.x.graphics,this.inp,0,[],[])
+    }
+    else{
+        this.nout = sum(this.in1)
+        var io = check_io(this.x.model,this.x.graphics,this.in1,this.nout,[],[])
+    }
+    this.x.model.ipar = new ScilabDouble(...this.in1)
+    var exprs = new ScilabString(this.in1.toString())
+    this.x.graphics.exprs = exprs
+    return new BasicBlock(this.x)
+}
     MUX_f.prototype.details = function MUX_f() {
         return this.x;
     }
@@ -13451,35 +13966,56 @@ function M_freq() {
         this.x = new standard_define(new ScilabDouble([3, 2]), model, exprs, gr_i);
         return new BasicBlock(this.x);
     }
+    
 
     M_freq.prototype.details = function M_freq() {
         return this.x;
     }
     /**m_freq function is needed**/
 
-    // M_freq.prototype.get = function M_freq() {
-    //     if(this.frequ == undefined || this.frequ == null ){
-    //         this.frequ = sci2exp([[1],[2]])
-    //     }
-    //     if(this.offset == undefined || this.offset == null ){
-    //         this.offset = sci2exp([[0],[0]])
-    //     }
+    /* M_freq.prototype.get = function M_freq() {
+         if(this.frequ == undefined || this.frequ == null ){
+             this.frequ = sci2exp([[1],[2]])
+         }
+         if(this.offset == undefined || this.offset == null ){
+             this.offset = sci2exp([[0],[0]])
+         }
 
-    //     var options={
-    //         frequ:["Sample time",this.frequ.toString().replace(/,/g," ")],
-    //         offset:["Offset",this.offset.toString().replace(/,/g," ")],
-    //     }
-    //     return options
-    // }
-    // M_freq.prototype.set = function M_freq() {
-    //     this.frequ = inverse(arguments[0]["frequ"])
-    //     this.offset = inverse(arguments[0]["offset"])
-    //     var offset = 
-    //     this.x.model.opar = list(CASE NOT ENCOUNTERED 10, CASE NOT ENCOUNTERED 10, CASE NOT ENCOUNTERED 10, CASE NOT ENCOUNTERED 10)
-    //     var exprs = new ScilabString(sci2exp(this.frequ),sci2exp(this.offset))
-    //     this.x.graphics.exprs=exprs
-    //     return new BasicBlock(this.x)
-    // }
+         var options={
+             frequ:["Sample time",this.frequ.toString().replace(/,/g," ")],
+             offset:["Offset",this.offset.toString().replace(/,/g," ")],
+         }
+         return options
+     }
+     M_freq.prototype.set = function M_freq() {
+        this.frequ = inverse(arguments[0]["frequ"])
+        this.offset = inverse(arguments[0]["offset"])
+        if((size(frequ,"*"))!=(size(offset,"*"))){
+            alert("offset and frequency must have the same size");
+            M_freq.get();
+        }
+        for(var i=0;i<size(this.frequ,1);i++)
+        {
+            for(j=0;j<size(this.frequ,2);j++)
+            {
+                if(this.frequ[i][j]<=0)
+                {
+                    alert("Frequency must be a positive number");
+                    M_freq.get();
+                }
+                if(Math.abs(this.offset[i][j])>this.frequ[i][j])
+                {
+                    alert("The |Offset| must be less than the Frequency");
+                    M_freq.get();  
+                }
+            }
+        }
+         var offset = 
+         this.x.model.opar = list(CASE NOT ENCOUNTERED 10, CASE NOT ENCOUNTERED 10, CASE NOT ENCOUNTERED 10, CASE NOT ENCOUNTERED 10)
+         var exprs = new ScilabString(sci2exp(this.frequ),sci2exp(this.offset))
+         this.x.graphics.exprs=exprs
+         return new BasicBlock(this.x)
+     }*/
 }
 function M_SWITCH() {
 
@@ -18483,6 +19019,47 @@ function TCLSS() {
     TCLSS.prototype.details = function TCLSS() {
         return this.x;
     }
+    TCLSS.prototype.get = function DLSS() {
+        var options={
+            A:["A matrix",this.A.toString().replace(/,/g," ")],
+            B:["B matrix",this.B.toString().replace(/,/g," ")],
+            C:["C matrix",this.C.toString().replace(/,/g," ")],
+            D:["D matrix",this.D.toString().replace(/,/g," ")],
+            x0:["Initial state",this.x0.toString().replace(/,/g," ")],
+        }
+        return options
+    }
+    TCLSS.prototype.set=function TCLSS(){
+        this.A = inverse(arguments[0]["A"])
+        this.B = inverse((arguments[0]["B"]))
+        this.C = inverse((arguments[0]["C"]))
+        this.D = inverse((arguments[0]["D"]))
+        this.x0 = inverse((arguments[0]["x0"]))
+        this.out=size(this.C,1);
+        if(this.out==0)
+            this.out=[]
+        this.in=size(this.B,2);
+        if(this.in==0)
+            this.in=[]
+        var ms=size(this.A,1);
+        var ns=size(this.A,2);
+        if(ms!=ns){
+            alert("A matrix must be square");
+            TCLSS.get();
+        }
+        var io = check_io(this.x.model,this.x.graphics,[[this.in],[this.ms]],[this.out],1,[])
+        var exprs = new ScilabString([this.A.toString().replace(/,/g, " ")], [this.B.toString().replace(/,/g, " ")], [this.C.toString().replace(/,/g, " ")], [this.D.toString().replace(/,/g, " ")], [this.x0.toString().replace(/,/g, " ")])
+        this.x.graphics.exprs=exprs
+        var rpar = new ScilabDouble(...this.A,...this.B,...this.C,...this.D)
+        this.x.model.rpar = rpar
+        this.x.model.dep_ut = new ScilabBoolean(false,true)
+        if(this.D!=[])
+            this.x.model.sim = list(new ScilabString(["tcslti4"]), new ScilabDouble([4]));
+        else
+            this.x.model.sim = list(new ScilabString(["tcsltj4"]), new ScilabDouble([4]));
+        return new BasicBlock(this.x)
+    }
+
 }
 function TEXT_f() {
 

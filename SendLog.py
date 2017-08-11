@@ -43,7 +43,7 @@ NOLINE = -1
 BLOCK_IDENTIFICATION = -2
 
 # Scilab dir, can't run absolute paths
-SCI = "../scilab_for_xcos/"
+SCI = "../scilab_for_xcos-master/"
 
 # List to store figure IDs
 figure_list = []

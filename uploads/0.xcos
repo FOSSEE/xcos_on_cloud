@@ -1,9 +1,0 @@
-<?xml version="1.0" ?><XcosDiagram background="-1" finalIntegrationTime="100.0" title="MavXcos">
-    <mxGraphModel as="model">
-        <root>
-            <mxCell id="0"/>
-            <mxCell id="1" parent="0"/>
-        </root>
-    </mxGraphModel>
-  <mxCell as="defaultParent" id="1" parent="0"/>
-</XcosDiagram>
