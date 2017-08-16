@@ -351,6 +351,59 @@ function AUTOMAT() {
     AUTOMAT.prototype.details = function AUTOMAT() {
         return this.x;
     }
+    AUTOMAT.prototype.get=function AUTOMAT(){
+        var options={
+            NMode:["Number (finite-state) Modes",this.NMode],
+            Minitial:["Initial Mode",this.Minitial],
+            NX:["Number of continuous-time states",this.NX],
+            X0:["Continuous-time states intial values",this.X0.toString().replace(/,/g," ")],
+            XP:["Xproperties of continuous-time states in each Mode",this.XP.toString().replace(/,/g," ")],
+            C1:["Jump from Mode 1:[..;M_final(Guard=In(1).i);..]",this.C1.toString().replace(/,/g," ")],
+            C2:["Jump from Mode 2:[..;M_final(Guard=In(2).i);..]",this.C2.toString().replace(/,/g," ")],  
+        }
+        return options
+    }
+    AUTOMAT.prototype.set=function AUTOMAT(){
+        this.NMode=parseFloat(arguments[0]["NMode"])
+        this.Minitial=parseFloat(arguments[0]["Minitial"])
+        this.NX=parseFloat(arguments[0]["NX"])
+        this.X0=inverse(arguments[0]["X0"])
+        this.XP=inverse(arguments[0]["XP"])
+        this.C1=inverse(arguments[0]["C1"])
+        this.C2=inverse(arguments[0]["C2"])
+        if(this.NX!=size(this.X0,"*")){
+            alert("the size of intial continuous-time states should be NX="+this.NX);
+            AUTOMAT.get();
+        }
+        var rXP=size(this.XP,1);
+        var cXP=size(this.XP,2);
+        if(cXP!=this.NX){
+            alert("Xproperty matrix is not valid: it should have NX="+this.NX+" columns");
+            AUTOMAT.get();
+        }
+        else if((rXP!=this.NMode)&&(rXP>1)){
+            alert("Xproperty matrix is not valid: it should have NMode="+this.NMode+" or 1 row(s)");
+            AUTOMAT.get();
+        }
+        else if(rXP==1){
+            //for i=1:NMode-1
+                this.XP[rXP]=this.XP[0];// xproprties are identical in modes.
+            //end
+        }
+        this.XP=transpose(this.XP);
+        //this.XP=matrix(this.XP,this.NMode*this.NX,1);// put XP in column vector to be stocked in ipar
+        var ipar=[[this.NMode],[this.Minitial],[this.NX],[this.XP]];
+        //var rpar=matrix(this.X0,this.NX,1);// put X0 in a column vector;
+        var INP=ones(this.NMode,1);
+        return new BasicBlock(this.x);
+    }
+}
+function transpose(a) {
+    return Object.keys(a[0]).map(function (c) {
+        return a.map(function (r) {
+            return r[c];
+        });
+    });
 }
 function Bache() {
 
