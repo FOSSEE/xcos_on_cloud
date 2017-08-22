@@ -1835,6 +1835,7 @@
          	   var row=0,min,max,norm,num=1,cscount=0; // variables to store the values
          	   	var winArr = new Array();
          	   	var Bblock_tag=xmlDoc.getElementsByTagName("BasicBlock"); 	// get all 'BasicBlock' tags from xml code
+                var Ablock_tag=xmlDoc.getElementsByTagName("AfficheBlock");   // get all 'AfficheBlock' tags from xml code
          		var mx_tag = xmlDoc.getElementsByTagName("mxCell"); 	// get all 'mxCell' tags from xml code
          		var tkid  = new Array(); 				// array which stores the main id of each tkblock
          		var clkid = new Array(); 				// array which stores every CLOCK_c ids
@@ -1904,6 +1905,32 @@
          				}
          			}
          		}
+                for (var i=0;i<Ablock_tag.length;i++)
+                {
+                    if(Ablock_tag[i].attributes.blockElementName.value == "AFFICH_m")        // if block is AFFICH_m
+                    {
+                        tkid[m++] = parseInt(Ablock_tag[i].attributes.id.value);        // a.store tk ids
+                
+                        var Sdouble_tag=Ablock_tag[i].getElementsByTagName("ScilabDouble");     // b. under scilab double tag in real parameters attributes take the input size,font number,font size,color,total number of digits,number of rational part digits,block inherits values
+                        var Realpart_tag=Sdouble_tag[1].getElementsByTagName("data");   
+
+                        if(row>10)
+                        {
+                            alert("maximum \"10\" Affich_m blocks are allowed");         // limit - only (maximum) 10 Affich_m should use in an experiment
+                            wnd.destroy(); 
+                            break;
+                        }               
+                        valArr[row]=new Array();
+                        valArr[row][0]=parseFloat(Realpart_tag[0].attributes.realPart.value); // input size value
+                        valArr[row][1]=parseFloat(Realpart_tag[1].attributes.realPart.value);   // font number value
+                        valArr[row][2]=parseFloat(Realpart_tag[2].attributes.realPart.value);   // font size value
+                        valArr[row][3]=parseFloat(Realpart_tag[3].attributes.realPart.value);   // color value
+                        valArr[row][4]=parseFloat(Realpart_tag[4].attributes.realPart.value);   // total number of digits value
+                        valArr[row][5]=parseFloat(Realpart_tag[5].attributes.realPart.value);   //number of rational part digits value
+                        valArr[row][6]=parseFloat(Realpart_tag[6].attributes.realPart.value);   //block inherits value
+                        row++;  
+                    }   
+                }
          		
          		 // finding splits from every link, TKSCALE parameter values
          		
@@ -2173,7 +2200,7 @@
                                     // If no error in uploading, initialize chart
                                     clientID = this.responseText;
          
-         		     if(row<=10 && row >= 1)
+         		     if((row<=10 && row >= 1)&&(Ablock_tag.length==0))
          		     {
          			myAjaxreq("Start", "/UpdateTKfile");
          			CreateSlider();  // if tkblocks are <=10 then create slider else not    

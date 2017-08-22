@@ -390,11 +390,34 @@ function AUTOMAT() {
                 this.XP[rXP]=this.XP[0];// xproprties are identical in modes.
             //end
         }
-        this.XP=transpose(this.XP);
-        //this.XP=matrix(this.XP,this.NMode*this.NX,1);// put XP in column vector to be stocked in ipar
+        var YP=math.matrix(transpose(this.XP));
+        this.XP=YP.resize([this.NMode*this.NX,1]);
         var ipar=[[this.NMode],[this.Minitial],[this.NX],[this.XP]];
-        //var rpar=matrix(this.X0,this.NX,1);// put X0 in a column vector;
+        var Y0=math.matrix(this.X0);
+        var rpar=Y0.resize([this.NX,1]);// put X0 in a column vector;
         var INP=ones(this.NMode,1);
+        if(this.NX>0)
+            OUT=[[2],[2*this.NX]];
+        else
+            OUT=[2];
+        MaxModes=1;
+        nzcross=0;
+        /*if(MaxModes>this.NMode){
+            alert("Number of Modes should be "+MaxModes+"\nA destination Mode in Mode#"+imax+"''s targets is invalid!");
+            AUTOMAT.get();
+        }
+        if(MaxModes<this.NMode){
+            alert("There is an unused Mode or the Number of Modes should be "+MaxModes);
+            AUTOMAT.get();
+        }*/
+        var io=check_io(this.x.model,this.x.graphics,[INP],[OUT],[],[1])
+        this.x.model.nzcross=nzcross;
+        this.x.model.state=ones(2*this.NX,1);
+        this.x.graphics.gr_i[0][0]="txt=[''Automaton'';''nM="+this.NMode+",nX="+this.NX+"''];"
+        var exprs=new ScilabString([this.NMode],[this.Minitial],[this.NX],[this.X0.toString().replace(/,/g," ")],[this.XP.toString().replace(/,/g," ")],[this.C1.toString().replace(/,/g," ")],[this.C2.toString().replace(/,/g," ")])
+        this.x.graphics.exprs=exprs
+        this.x.model.ipar=ipar;
+        this.x.model.rpar=rpar;
         return new BasicBlock(this.x);
     }
 }
@@ -19307,6 +19330,10 @@ function TOWS_c() {
         this.nz = parseFloat((arguments[0]["nz"]))
         this.varnam = arguments[0]["varnam"]
         this.herit = parseFloat((arguments[0]["herit"]))
+        if(this.nz<=0){
+            alert("Size of buffer must be positive");
+            TOWS_c.get();
+        }
         this.x.model.intyp = new ScilabDouble([-1])
         var io = set_io(this.x.model,this.x.graphics,[[-1],[-2]],[],ones(1-this.herit,1),[])
         if(this.herit == 1){
@@ -19317,10 +19344,12 @@ function TOWS_c() {
         }
         this.x.model.ipar = new ScilabDouble([this.nz],[this.varnam.length],[ascii(this.varnam)])
         var exprs = new ScilabString([this.nz],[this.varnam],[this.herit])
+        this.displayParameter = [[this.varnam],[this.nz]];
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
         }
     }
+
 //TOWS_c.prototype.set = function TOWS_c() {
     //this. nz = parseFloat((arguments[0][" nz"]))
     //this. varnam = arguments[0][" varnam"]
