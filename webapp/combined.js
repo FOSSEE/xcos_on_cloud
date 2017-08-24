@@ -130,7 +130,7 @@ function AFFICH_m() {
     }
 }
 function ANDBLK() {
-    ANDBLK.prototype.define = function ANDBLK() {
+    ANDBLK.prototype.get = function ANDBLK() {
         alert("parameters can not be changed")
     }
 
@@ -1421,6 +1421,7 @@ function CBLOCK() {
 
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"CBLOCK\",sz(1),sz(2));"]);
         this.x = new standard_define(new ScilabDouble([4, 2]), model, label, gr_i);
+        this.displayParameter=[this.funam];
         return new BasicBlock(this.x)
     }
 
@@ -1450,6 +1451,7 @@ function CBLOCK4() {
 
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"CBLOCK4\",sz(1),sz(2));"]);
         this.x = new standard_define(new ScilabDouble([4, 2]), model, label, gr_i);
+        this.displayParameter=[this.funam];
         return new BasicBlock(this.x);
     }
 
@@ -2765,6 +2767,10 @@ function DLATCH() {
     DLATCH.prototype.details = function DLATCH() {
         return this.x;
     }
+    DLATCH.prototype.get=function DLATCH()
+    {
+        alert("parameters can not be changed");
+    }
 }
 
 
@@ -3260,7 +3266,9 @@ function CONSTRAINT2_c() {
         model.dep_ut = new ScilabBoolean([false, true]);
 
         var exprs = list(new ScilabString([sci2exp(this.x0)]), new ScilabString([sci2exp(this.xd0)]), new ScilabString([sci2exp(this.id)]));
-
+        var k = this.x0.toString();
+    var n = this.xd0.toString();//Check the correctness of these parametres 
+    this.displayParameter = [[k],[n]];
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"CONSTRAINT2_c\",sz(1),sz(2));"]);
         this.x = new standard_define(new ScilabDouble([3, 2]), model, exprs, gr_i);
         return new BasicBlock(this.x);
@@ -3907,7 +3915,7 @@ function COSBLK_f() {
         model.dep_ut = new ScilabBoolean([false, false]);
 
         var exprs = new ScilabString([this.minim], [this.maxim], [this.rule]);
-
+        this.displayParameter=[[this.minim],[this.maxim]];
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"Counter\",sz(1),sz(2));"]);
         this.x = new standard_define(new ScilabDouble([3, 2]), model, exprs, gr_i);
         return new BasicBlock(this.x);
@@ -3941,6 +3949,7 @@ Counter.prototype.set = function Counter() {
     this.x.model.dstate = new ScilabDouble([0]);
     this.x.model.ipar = new ScilabDouble([this.rule],[this.maxim],[this.minim])
     var exprs = new ScilabString([this.minim],[this.maxim],[this.rule])
+    this.displayParameter=[[this.minim],[this.maxim]];
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
@@ -4553,6 +4562,7 @@ function c_block() {
         var label = list(new ScilabString([sci2exp(this.in1)], [sci2exp(this.out)], [sci2exp(this.rpar)], [this.funam]), list(new ScilabDouble()));
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"c_block\",sz(1),sz(2));"]);
         this.x = new standard_define(new ScilabDouble([3, 2]), model, label, gr_i);
+        this.displayParameter=[this.funam];
         return new BasicBlock(this.x);
     }
     c_block.prototype.details = function c_block() {
@@ -5000,7 +5010,7 @@ function DERIV() {
     }
 }
 function DFLIPFLOP() {
-    DFLIPFLOP.prototype.define = function DFLIPFLOP() {
+    DFLIPFLOP.prototype.get = function DFLIPFLOP() {
         alert("parameters can not be changed")
     }
 
@@ -9764,6 +9774,7 @@ function fortran_block() {
 
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"fortran_block\",sz(1),sz(2));"]);
         this.x = new standard_define(new ScilabDouble([4, 2]), model, label, gr_i);
+        this.displayParameter=[this.funam];
         return new BasicBlock(this.x);
     }
     fortran_block.prototype.details = function fortran_block() {
@@ -10015,6 +10026,10 @@ FROMMO.prototype.set = function FROMMO() {
 function FROMWSB() {
 
     FROMWSB.prototype.define = function FROMWSB() {
+        this.varnam="V";
+        this.Method=1;
+        this.ZC=1;
+        this.OutEnd=0;
         var scs_m_1 = scicos_diagram({
             version: new ScilabString(["scicos4.2"]),
             props: scicos_params({
@@ -10174,6 +10189,38 @@ function FROMWSB() {
     }
     FROMWSB.prototype.details = function FROMWSB() {
         return this.x;
+    }
+    FROMWSB.prototype.get=function FROMWSB(){
+        var options={
+            varnam:["Variable name",this.varnam.toString()],
+            Method:["Interpolation Method",this.Method],
+            ZC:["Enable zero crossing(0:No, 1:Yes)?",this.ZC],
+            OutEnd:["Output at end(0:Zero, 1:Hold, 2:Repeat)",this.OutEnd],
+        }
+        return options
+    }
+    FROMWSB.prototype.set=function FROMWSB(){
+        this.varnam=arguments[0]["varnam"]
+        this.Method=parseFloat(arguments[0]["Method"])
+        this.ZC=parseFloat(arguments[0]["ZC"])
+        this.OutEnd=parseFloat(arguments[0]["OutEnd"])
+        if((this.Method!=0)&&(this.Method!=1)&&(this.Method!=2)&&(this.Method!=3)){
+            alert("Interpolation method should be chosen in [0,1,2,3]");
+            FROMWSB.get();
+        }
+        if((this.ZC!=0)&&(this.ZC!=1)){
+            alert("Zero crossing should be either 0 or 1");
+            FROMWSB.get();
+        }
+        if((this.OutEnd!=0)&&(this.OutEnd!=1)&&(this.OutEnd!=2)){
+            alert("Output at end option should be either 0 or 1");
+            FROMWSB.get();
+        }
+        this.x.model.ipar = new ScilabDouble([this.varnam.length],[_str2code(this.varnam)],[this.Method],[this.ZC],[this.OutEnd])
+        var io=set_io(this.x.model,this.x.graphics,[],[[-1],[-2]],[],[]);
+        var exprs=new ScilabString(this.varnam.toString(),this.Method,this.ZC,this.OutEnd)
+        this.x.graphics.exprs=exprs
+        return new BasicBlock(this.x);
     }
 }function GAINBLK() {
 
@@ -10399,6 +10446,7 @@ function generic_block3() {
 
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"generic_block3\",sz(1),sz(2));"]);
         this.x = new standard_define(new ScilabDouble([4, 2]), model, label, gr_i);
+        this.displayParameter=[this.function_name];
         return new BasicBlock(this.x);
     }
     generic_block3.prototype.details = function generic_block3() {
@@ -10717,7 +10765,7 @@ GotoTagVisibilityMO.prototype.set = function GotoTagVisibilityMO() {
 }
 
 function Ground() {
-    Ground.prototype.define = function Ground() {
+    Ground.prototype.get = function Ground() {
         alert("Parameters can not be changed")
     }
 
@@ -14179,6 +14227,10 @@ function NEGTOPOS_f() {
     NEGTOPOS_f.prototype.details = function NEGTOPOS_f() {
         return this.x;
     }
+    NEGTOPOS_f.prototype.get=function NEGTOPOS_f()
+    {
+        alert("parameters can not be changed");
+    }
 }
 function NMOS() {
 
@@ -14242,7 +14294,7 @@ NMOS.prototype.set = function NMOS() {
     this.dW = inverse(arguments[0]["dW"])
     this.dL = inverse(arguments[0]["dL"])
     this.RDS = inverse(arguments[0]["RDS"])
-    thi.x.model.equations.parameters = list(new ScilabString(["W"], ["L"], ["Beta"], ["Vt"], ["K2"], ["K5"], ["dW"], ["dL"], ["RDS"]), new ScilabDouble([this.W], [this.L], [this.Beta], [this.Vt], [this.K2], [this.K5], [this.dW], [this.dL], [this.RDS]));
+    this.x.model.equations.parameters = list(new ScilabString(["W"], ["L"], ["Beta"], ["Vt"], ["K2"], ["K5"], ["dW"], ["dL"], ["RDS"]), new ScilabDouble([this.W], [this.L], [this.Beta], [this.Vt], [this.K2], [this.K5], [this.dW], [this.dL], [this.RDS]));
     var exprs = new ScilabString([this.W.toString().replace(/,/g, " ")],[this.L.toString().replace(/,/g, " ")],[this.Beta.toString().replace(/,/g, " ")],[this.Vt.toString().replace(/,/g, " ")],[this.K2.toString().replace(/,/g, " ")],[this.K5.toString().replace(/,/g, " ")],[this.dW.toString().replace(/,/g, " ")],[this.dL.toString().replace(/,/g, " ")],[this.RDS.toString().replace(/,/g, " ")])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
@@ -14421,7 +14473,7 @@ function OpAmp() {
         return this.x;
     }
     OpAmp.prototype.get = function OpAmp() {
-        if(this.OLGain == undefined){
+        /*if(this.OLGain == undefined){
             this.OLGain = ""
             this.Sath = ""
             this.Satl = ""
@@ -14431,9 +14483,10 @@ function OpAmp() {
             Sath:["positive saturation voltage",this.Sath],
             Satl:["Negative saturation voltage",this.Satl],
         }
-        return options
+        return options*/
+        alert("parameters can not be changed");
     }
-OpAmp.prototype.set = function OpAmp() {
+/*OpAmp.prototype.set = function OpAmp() {
     this.OLGain = parseFloat((arguments[0]["OLGain"]))
     this.Sath = parseFloat((arguments[0]["Sath"]))
     this.Satl = parseFloat((arguments[0]["Satl"]))
@@ -14442,7 +14495,7 @@ OpAmp.prototype.set = function OpAmp() {
     var exprs = new ScilabString([this.OLGain],[this.Sath],[this.Satl])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
-    }
+    }*/
 }
 
 function OUTIMPL_f() {
@@ -15416,6 +15469,9 @@ function POSTONEG_f() {
     }
     POSTONEG_f.prototype.details = function POSTONEG_f() {
         return this.x;
+    }
+    POSTONEG_f.prototype.get=function POSTONEG_f(){
+        alert("parameters can not be changed");
     }
 }
 
@@ -17296,6 +17352,9 @@ function SELF_SWITCH() {
     SELF_SWITCH.prototype.details = function SELF_SWITCH() {
         return this.x;
     }
+    SELF_SWITCH.prototype.get=function SELF_SWITCH(){
+        alert("parameters can not be changed");
+    }
 }
 function SHIFT() {
 
@@ -18786,7 +18845,7 @@ function SUM_f() {
     }
 }
 function SUPER_f() {
-    SUPER_f.prototype.define = function SUPER_f() {
+    SUPER_f.prototype.get = function SUPER_f() {
         alert("parameters can not be changed ")
     }
 
@@ -19536,6 +19595,10 @@ function VariableResistor() {
     VariableResistor.prototype.details = function VariableResistor() {
         return this.x;
     }
+    VariableResistor.prototype.get=function VariableResistor()
+    {
+        alert("parameters can not be changed");
+    }
 }
 function VARIABLE_DELAY() {
 
@@ -19618,7 +19681,7 @@ function VirtualCLK0() {
 
 }
 function VoltageSensor() {
-    VoltageSensor.prototype.define = function VoltageSensor() {
+    VoltageSensor.prototype.get = function VoltageSensor() {
         alert("parameters can not be changed")
     }
 
