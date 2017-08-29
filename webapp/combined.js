@@ -3199,6 +3199,7 @@ CONST.prototype.set = function CONST() {
     this.x.model.rpar = new ScilabDouble(...this.C)
     this.x.model.out = new ScilabDouble([this.nout])
     var exprs = new ScilabString([this.C.toString().replace(/,/g, " ")])
+    this.displayParameter = [this.C]; 
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
@@ -3438,14 +3439,11 @@ function CONST_m() {
             CONST_m.get();
         }
         this.displayParameter = [this.c];
-        this.x.model.sim = list(new ScilabString(["cstblk4_m"], new ScilabDouble([4])), new ScilabDouble([4]));
-        this.x.model.opar = list(new ScilabDouble(...this.c));
-        this.x.model.outtyp = new ScilabDouble([1])
-
-        this.x.model.rpar = new ScilabDouble();
-        var io = set_io(this.x.model,this.x.graphics,[],[this.nout],[],[])
-        this.x.graphics.exprs = new ScilabString([sci2exp(this.c)]);
-        return new BasicBlock(this.x);
+        this.x.model.rpar = new ScilabDouble(...this.c)
+    	this.x.model.out = new ScilabDouble([this.nout])
+    	var exprs = new ScilabString([this.c.toString().replace(/,/g, " ")])
+    	this.x.graphics.exprs=exprs
+    	return new BasicBlock(this.x)
     }
     CONST_m.prototype.internal = function CONST_m() {
         this.c = [1];
