@@ -974,9 +974,16 @@ function colon_operator() {
     var array = arguments[0];
     var new_arr = [];
     var i, j;
-    for (i = 0; i < array[0].length; i++) {
+    if(array[0].length == undefined){
         for (j = 0; j < array.length; j++) {
-            new_arr.push([array[j][i]]);
+            new_arr.push([array[j]]);
+        }
+    }
+    else{
+        for (i = 0; i < array[0].length; i++) {
+            for (j = 0; j < array.length; j++) {
+                new_arr.push([array[j][i]]);
+            }
         }
     }
     return new_arr;

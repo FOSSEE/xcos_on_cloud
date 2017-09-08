@@ -2801,6 +2801,22 @@ function CLR() {
         this.x = new standard_define(new ScilabDouble([3, 2]), model, exprs, gr_i);
         return new BasicBlock(this.x);
     }
+    CLR.prototype.get = function CLR() {
+        var options={
+            num:["Numerator (s)","1"],
+            den:["Denominator (s)","1+s"],
+        }
+        return options
+    }
+    CLR.prototype.set = function CLR() {
+        this.num = arguments[0]["num"]
+        this.den = arguments[0]["den"]
+        //this.x.model.state = new ScilabDouble([this.x0]);
+        //this.x.model.rpar = rpar
+        //var exprs = new ScilabString(this.num,this.den)
+        //this.x.graphics.exprs=exprs
+        return new BasicBlock(this.x)
+    }
     CLR.prototype.details = function CLR() {
         return this.x;
     }
@@ -2833,20 +2849,20 @@ function CLSS () {
  
 	CLSS.prototype.get = function CLSS() {
         var options={
-            A:["A matrix",this.A.toString().replace(/,/g," ")],
-            B:["B matrix",this.B.toString().replace(/,/g," ")],
-            C:["C matrix",this.C.toString().replace(/,/g," ")],
-            D:["D matrix",this.D.toString().replace(/,/g," ")],
-            x0:["Initial state",this.x0],
+            A:["A matrix",matrix_js_scilab(this.A)],
+            B:["B matrix",matrix_js_scilab(this.B)],
+            C:["C matrix",matrix_js_scilab(this.C)],
+            D:["D matrix",matrix_js_scilab(this.D)],
+            x0:["Initial state",this.x0.toString().replace(/,/g," ")],
         }
         return options
     }
     CLSS.prototype.set = function CLSS() {
-        this.A = inverse(arguments[0]["A"])
-        this.B = inverse((arguments[0]["B"]))
-        this.C = inverse((arguments[0]["C"]))
-        this.D = inverse((arguments[0]["D"]))
-        this.x0 = inverse((arguments[0]["x0"]))
+        this.A = MatrixInverse(arguments[0]["A"])
+        this.B = MatrixInverse(arguments[0]["B"])
+        this.C = MatrixInverse(arguments[0]["C"])
+        this.D = MatrixInverse(arguments[0]["D"])
+        this.x0 = inverse(arguments[0]["x0"])
         this.out = size(this.C,1)
         if(this.out == 0)
             this.out = []
@@ -2854,13 +2870,12 @@ function CLSS () {
         if(this.in == 0)
             this.in = []
         var io = check_io(this.x.model,this.x.graphics,[this.in],[this.out],[],[])
-
-
-        var rpar = new ScilabDouble(...this.A,...this.B,...this.C,...this.D)
+        
+        var rpar = new ScilabDouble(...colon_operator(this.A),...colon_operator(this.B),...colon_operator(this.C),...colon_operator(this.D))
         this.x.model.dep_ut = new ScilabBoolean(false,true)
         this.x.model.rpar = rpar
-        this.x.model.state = colon_operator(this.x0)
-        var exprs = new ScilabString([this.A.toString().replace(/,/g, " ")],[this.B.toString().replace(/,/g, " ")],[this.C.toString().replace(/,/g, " ")],[this.D.toString().replace(/,/g, " ")])
+        this.x.model.state = new ScilabDouble(...this.x0);
+        var exprs = new ScilabString([matrix_js_scilab(this.A)],[matrix_js_scilab(this.B)],[matrix_js_scilab(this.C)],[matrix_js_scilab(this.D)],[this.x0.toString().replace(/,/g," ")])
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
      }

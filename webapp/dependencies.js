@@ -1328,8 +1328,11 @@ function size() {
         if(arguments[0].length == undefined)
             res = [1]
 
-        if (res.length == 1)
-            res.push(1);
+        if (res.length == 1){
+            var a = res[0];
+            res[0] = 1;
+            res.push(a);
+        }
 
         switch (arguments[1]) {
             case 'r': return res[0];
@@ -1411,6 +1414,32 @@ function compare(){//will return an array of boolean values "compares if array1>
     return result;    
 }
 
+function MatrixInverse() {
+    var str = "[["
+    var arg = arguments[0];
+    if(arg.indexOf(';') == -1){
+        if(arg != "[]"){
+            str = '['
+            arg = arg.replace(/ /g, ",");
+            str += arg + "]";
+        }else{
+            str = "[]"
+        }
+        var array = JSON.parse(str);
+    }
+    else{
+        if(arg != "[]"){
+            arg = arg.replace(/ /g, ",");
+            arg = arg.replace(/;/g, "],[");
+            str += arg + "]]";
+        }else{
+            str = "[]"
+        }
+        var array = JSON.parse(str);
+    }
+    return array;
+}
+
 function inverse() {
     var str = "[["
     var arg = arguments[0];
@@ -1425,6 +1454,26 @@ function inverse() {
 }
 
 
+//replaces ',' by " " and ];[ by ;
+//e.g.
+//[[-1,-1];[-2,-2]] =>  '-1 -1;-1 -1'
+function matrix_js_scilab(){
+    var arg = arguments[0];
+    str = ""
+    if(arg.length == undefined){
+        return arg.toString();
+    }
+    else if(arg[0].length == undefined){
+        return arg.toString().replace(/,/g," ");
+    }
+    else{
+        for (var i = 0; i < arg.length; i++) {
+            str += ";"+arg[i].join(" ");
+        }
+        str = str.substring(1,str.length);
+        return str;
+    }
+}
 //function updated (8/6/17) to get ascii values for char
 //previous code is commented
 function _str2code() {
