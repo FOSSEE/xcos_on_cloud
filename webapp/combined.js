@@ -2853,7 +2853,7 @@ function CLSS () {
             B:["B matrix",sci2exp(this.B)],
             C:["C matrix",sci2exp(this.C)],
             D:["D matrix",sci2exp(this.D)],
-            x0:["Initial state",this.x0.toString().replace(/,/g," ")],
+            x0:["Initial state",sci2exp(this.x0)],
         }
         return options
     }
