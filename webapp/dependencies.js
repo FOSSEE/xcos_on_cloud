@@ -1414,24 +1414,24 @@ function compare(){//will return an array of boolean values "compares if array1>
     return result;    
 }
 
+//converts [1,1;1,2] => [[1,1],[1,2]]
+//and [1,1,1] => [1,1,1]
+//and 1 => [0]
 function MatrixInverse() {
-    var str = "[["
+    var str = "["
     var arg = arguments[0];
     if(arg.indexOf(';') == -1){
-        if(arg != "[]"){
-            str = '['
-            arg = arg.replace(/ /g, ",");
-            str += arg + "]";
-        }else{
-            str = "[]"
+        if(arg.indexOf(',') == -1){
+            str += arg + ']';
+            var array = JSON.parse(str);
         }
-        var array = JSON.parse(str);
+        else
+            var array = JSON.parse(arg);
     }
     else{
         if(arg != "[]"){
-            arg = arg.replace(/ /g, ",");
             arg = arg.replace(/;/g, "],[");
-            str += arg + "]]";
+            str += arg + "]";
         }else{
             str = "[]"
         }

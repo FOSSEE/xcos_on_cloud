@@ -2849,20 +2849,21 @@ function CLSS () {
  
 	CLSS.prototype.get = function CLSS() {
         var options={
-            A:["A matrix",matrix_js_scilab(this.A)],
-            B:["B matrix",matrix_js_scilab(this.B)],
-            C:["C matrix",matrix_js_scilab(this.C)],
-            D:["D matrix",matrix_js_scilab(this.D)],
+            A:["A matrix",sci2exp(this.A)],
+            B:["B matrix",sci2exp(this.B)],
+            C:["C matrix",sci2exp(this.C)],
+            D:["D matrix",sci2exp(this.D)],
             x0:["Initial state",this.x0.toString().replace(/,/g," ")],
         }
         return options
     }
+
     CLSS.prototype.set = function CLSS() {
         this.A = MatrixInverse(arguments[0]["A"])
         this.B = MatrixInverse(arguments[0]["B"])
         this.C = MatrixInverse(arguments[0]["C"])
         this.D = MatrixInverse(arguments[0]["D"])
-        this.x0 = inverse(arguments[0]["x0"])
+        this.x0 = MatrixInverse(arguments[0]["x0"])
         this.out = size(this.C,1)
         if(this.out == 0)
             this.out = []
@@ -2875,7 +2876,7 @@ function CLSS () {
         this.x.model.dep_ut = new ScilabBoolean(false,true)
         this.x.model.rpar = rpar
         this.x.model.state = new ScilabDouble(...this.x0);
-        var exprs = new ScilabString([matrix_js_scilab(this.A)],[matrix_js_scilab(this.B)],[matrix_js_scilab(this.C)],[matrix_js_scilab(this.D)],[this.x0.toString().replace(/,/g," ")])
+        var exprs = new ScilabString([sci2exp(this.A)],[sci2exp(this.B)],[sci2exp(this.C)],[sci2exp(this.D)],[sci2exp(this.x0)])
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
      }
@@ -4006,7 +4007,7 @@ function CSCOPE() {
         this.nom = ""
     }
         var options={
-            clrs:["Color (>0) or mark (<0) vector (8 entries)",this.clrs],
+            clrs:["Color (>0) or mark (<0) vector (8 entries)",this.clrs.toString().replace(/,/g," ")],
             win:["Output window number (-1 for automatic)",this.win],
             wpos:["Output window position",this.wpos.toString().replace(/,/g," ")],
             wdim:["Output window sizes",this.wdim.toString().replace(/,/g," ")],
@@ -4674,7 +4675,7 @@ function DELAYV_f() {
         model.dstate = new ScilabDouble(...this.z0);
         model.rpar = new ScilabDouble([this.T / (size(this.zz0, "*"))]);
         model.blocktype = new ScilabString(["d"]);
-        model.firing = new ScilabDouble([0, -1]);
+        model.firing = new ScilabDouble([0,-1]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
         var exprs = new ScilabString([this.nin], [this.zz0.toString().replace(/,/g, ";")], [this.T]);
@@ -17141,7 +17142,7 @@ function SATURATION() {
     SATURATION.prototype.details = function SATURATION() {
         return this.x;
     }
-SATURATION.prototype.get = function SATURATION() {
+    SATURATION.prototype.get = function SATURATION() {
         var options={
             maxp:["Upper limit",this.maxp],
             minp:["Lower limit",this.minp],
@@ -17149,27 +17150,28 @@ SATURATION.prototype.get = function SATURATION() {
         }
         return options
     }
-SATURATION.prototype.set = function SATURATION() {
-    this.maxp = parseFloat((arguments[0]["maxp"]))
-    this.minp = parseFloat((arguments[0]["minp"]))
-    if(this.maxp<=this.minp){
-        alert("Upper limit must be > Lower limit");
-        SATURATION.get();
-    }
-    this.zeroc = parseFloat((arguments[0]["zeroc"]))
-    var rpar = new ScilabDouble([this.maxp],[this.minp])
-    this.x.model.rpar =  rpar;
-    if(this.zeroc != 0){
-        this.x.model.nzcross = new ScilabDouble([2]);
-        this.x.model.nmode = new ScilabDouble([1]);
-    }
-    else{
-        this.x.model.nzcross = new ScilabDouble([0]);
-        this.x.model.nmode = new ScilabDouble([0]);
-    }
-    var exprs = new ScilabString([this.maxp],[this.minp],parseFloat(getData(model.nmode)[0]))
-    this.x.graphics.exprs=exprs
-    return new BasicBlock(this.x)
+    SATURATION.prototype.set = function SATURATION() {
+        this.maxp = parseFloat((arguments[0]["maxp"]))
+        this.minp = parseFloat((arguments[0]["minp"]))
+        this.zeroc = parseFloat((arguments[0]["zeroc"]))
+
+        if(this.maxp<=this.minp){
+            alert("Upper limit must be > Lower limit");
+            SATURATION.get();
+        }
+        var rpar = new ScilabDouble([this.maxp],[this.minp])
+        this.x.model.rpar =  rpar;
+        if(this.zeroc != 0){
+            this.x.model.nzcross = new ScilabDouble([2]);
+            this.x.model.nmode = new ScilabDouble([1]);
+        }
+        else{
+            this.x.model.nzcross = new ScilabDouble([0]);
+            this.x.model.nmode = new ScilabDouble([0]);
+        }
+        var exprs = new ScilabString([this.maxp],[this.minp],parseFloat(getData(model.nmode)[0]))
+        this.x.graphics.exprs=exprs
+        return new BasicBlock(this.x)
     }
 }
 
