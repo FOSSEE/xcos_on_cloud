@@ -5,14 +5,11 @@ The main aim of this project will be to port core functionalities of Xcos to a b
 
 ## Installation
 
-	 git clone https://github.com/FOSSEE/xcos-on-web
+	 git clone https://github.com/FOSSEE/xcos_on_cloud
 	
-	 Follow the steps given in the doc- "StepstocompileScilab-5.5.2.pdf"
+	 Follow the steps given in the pdf- "Steps-to-setup-and-run-Xcos_on_cloud-locally"
 	
-	 cd ../xcos-on-web && python SendLog.py
-
-(The directories `scilab` and `xcos-on-web` must be within the same folder)
-
+	 
 ## License information
 This project has a Creative Commons Public License.
 
@@ -22,8 +19,9 @@ An online demo can be found over here:
 
     http://xcos.fossee.in
 
-## Developers and Testers
+## Developers and Testers 
 
+* Dipti Ghosalkar, FOSSEE IIT Bombay
 * Jayaprakash A, Indian Institute of Technology, Palakkad
 * Shashank Bhalotia, Shri Ramdeobaba College of Engineering and Management, Nagpur
 * Ritveeka Vashistha, IIT Guwahati, Guwahati
@@ -31,13 +29,8 @@ An online demo can be found over here:
 * Shivendra Pratap Singh, Indian institute of Information Tecnology, Kalyani
 * SK Mainul Islam, St. Thomas' College of Engineering & Technology, Kolkata
 * RuhiTaj Reddypalli, National Institute of Technology Karnataka, Surathkal
-* Amit Kumar Yadav, Motilal Nehru National Institute of Technology, Allahabad
-* Chhavi Agarwal, National Institute of Technology, Kurukshetra
-* Hrishikesh Hiraskar, National Institute of Technology Karnataka, Surathkal
-* Jitesh Jha, Manipal Institute of Technology, Manipal
-* Kumar Saarang Singh, Manipal Institute of Technology, Manipal
-* Nimish Singhal, Manipal Institute of Technology, Manipal
-* Pooja Soundalgekar, National Institute of Technology Karnataka, Surathkal
-* Supritha Suresh, Visvesvaraya Technological University, Karnataka
-* Vishnu Nair, Indian Institute of Technology, Bombay
-* Adhitya Kamakshidasan, Visvesvaraya National Institute of Technology, Nagpur
+
+## Initial and Older version of Xcos on cloud can accessed on following link 
+
+    https://github.com/FOSSEE/xcos-on-web
+
