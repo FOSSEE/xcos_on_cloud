@@ -765,7 +765,7 @@
         <!-- new value for the label defined in the interface function of block -->
     </add>
     <add as="TEXT_f" extend="Label">
-        <!--<add as="displayedLabel" value="Text"/>  -->
+       <add as="displayedLabel" value="&lt;BR&gt;%s"/>  
         <add as="strokeColor" value="none"/>
         <add as="fillColor" value="none"/>
     </add>
@@ -856,6 +856,9 @@
         <add as="displayedLabel" value="%s V&lt;br/&gt;~"/>
     </add>
     <add as="SWITCH2_m" extend="Icon">
+        <add as="image" value="blocks/SWITCH.svg"/>
+    </add>
+    <add as="SWITCH" extend="Icon">
         <add as="image" value="blocks/SWITCH.svg"/>
     </add>
     <add as="OpAmp" extend="blockWithLabel">
