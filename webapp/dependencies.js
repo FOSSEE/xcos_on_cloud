@@ -1313,6 +1313,21 @@ function ones() {
         return math.ones(args);
     }
 }
+//ones function added  for summation block only 
+function oness() {
+    if (arguments.length == 0) {
+        return [1];
+    } else if (arguments.length == 1) {
+        var a = arguments[0];
+        if (typeof a.length === 'undefined') {
+            return [1];
+        } else {
+            return math.oness(math.size(a));
+        }
+    } else {
+        return [1];
+    }
+}
 
 function size() {
 
