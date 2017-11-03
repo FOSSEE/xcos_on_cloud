@@ -858,7 +858,7 @@
     <add as="SWITCH2_m" extend="Icon">
         <add as="image" value="blocks/SWITCH.svg"/>
     </add>
-    <add as="SWITCH" extend="Icon">
+    <add as="Switch" extend="Icon">
         <add as="image" value="blocks/SWITCH.svg"/>
     </add>
     <add as="OpAmp" extend="blockWithLabel">
