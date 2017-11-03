@@ -875,7 +875,7 @@ function BOUNCE() {
         this.y1 = [[3],[5]];
         this.yd = [[0],[0]];
         this.g = 9.81;
-        this.C = 0;
+        this.c = 0;
         this.rpar1 = ones(this.n, 1);
         this.rpar2 = this.rpar1;
         this.state = [...math.transpose(this.x1), ...math.transpose(this.xd), ...math.transpose(this.y1), ...math.transpose(this.yd)];
@@ -885,7 +885,7 @@ function BOUNCE() {
         model.in = new ScilabDouble();
         model.out = new ScilabDouble([this.n], [this.n]);
         model.state = new ScilabDouble(...colon_operator(this.state));
-        model.rpar = new ScilabDouble(...this.rpar1, ...this.rpar2, ...this.walls, [this.g], [this.C]);
+        model.rpar = new ScilabDouble(...this.rpar1, ...this.rpar2, ...this.walls, [this.g], [this.c]);
         model.ipar = new ScilabDouble(...this.ipar);
         model.nzcross = new ScilabDouble([this.n * (this.n - 1) / 2 + 4 * this.n]);
         model.blocktype = new ScilabString(["c"]);
@@ -907,7 +907,7 @@ function BOUNCE() {
 	y1:["Ypos",this.y1.toString().replace(/,/g," ")],
 	yd:["Ydpos",this.yd.toString().replace(/,/g," ")],
 	g:["g(gravity) ",this.g],
-	C:["C (aerodynamic coeff) ",this.C],
+	c:["C (aerodynamic coeff) ",this.c],
         
          }
     return options
@@ -923,14 +923,25 @@ function BOUNCE() {
 	this.y1 = inverse(arguments[0]["y1"])
 	this.yd = inverse(arguments[0]["yd"])
     	this.g=parseFloat(arguments[0]["g"])
-    	this.C=parseFloat(arguments[0]["C"])
-	//this.rpar1 = ones(this.n, 1);
-       // this.rpar2 = this.rpar1;
-	//model.rpar = new ScilabDouble(...this.rpar1, ...this.rpar2, ...this.walls, [this.g], [this.C]);
-      //  model.ipar = new ScilabDouble(...this.ipar);
-	//var exprs = new ScilabString([sci2exp(this.rpar1)], [sci2exp(this.rpar2)], [sci2exp(this.mass)], [sci2exp(this.radius)], [sci2exp(this.walls)], [sci2exp(this.x1)], [sci2exp(this.xd)], [sci2exp(this.y1)], [sci2exp(this.yd)]);
-      //  var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"BOUNCE\",sz(1),sz(2));"]);
-      //  this.x = new standard_define(new ScilabDouble([3, 2]), model, exprs, gr_i);
+    	this.c=parseFloat(arguments[0]["c"])
+	this.rpar1 = ones(this.n, 1);
+        this.rpar2 = this.rpar1;
+        this.state = [...math.transpose(this.x1), ...math.transpose(this.xd), ...math.transpose(this.y1), ...math.transpose(this.yd)];
+	var model = scicos_model();
+	model.rpar = new ScilabDouble(...this.rpar1, ...this.rpar2, ...this.walls, [this.g], [this.c]);
+        model.ipar = new ScilabDouble(...this.ipar);
+	model.in = new ScilabDouble(); 
+	model.out = new ScilabDouble([this.n], [this.n]);
+        model.state = new ScilabDouble(...colon_operator(this.state));
+        model.rpar = new ScilabDouble(...this.rpar1, ...this.rpar2, ...this.walls, [this.g], [this.c]);
+        model.ipar = new ScilabDouble(...this.ipar);
+        model.nzcross = new ScilabDouble([this.n * (this.n - 1) / 2 + 4 * this.n]);
+        model.blocktype = new ScilabString(["c"]);
+        model.dep_ut = new ScilabBoolean([false, true]);
+
+	var exprs = new ScilabString([sci2exp(this.rpar1)], [sci2exp(this.rpar2)], [sci2exp(this.mass)], [sci2exp(this.radius)], [sci2exp(this.walls)], [sci2exp(this.x1)], [sci2exp(this.xd)], [sci2exp(this.y1)], [sci2exp(this.yd)]);
+        var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"BOUNCE\",sz(1),sz(2));"]);
+        this.x = new standard_define(new ScilabDouble([3, 2]), model, exprs, gr_i);
 
     return new BasicBlock(this.x)
     }
@@ -5073,6 +5084,7 @@ function DELAY_f() {
     }
     DEMUX.prototype.set=function DEMUX(){
         this.out=inverse(arguments[0]["out"])
+var model = scicos_model();
         if(size(this.out,"*")==1){
                 if((this.out<2)||(this.out>31)){
                     alert("Block must have at least 2 and at most 31 output ports");
@@ -5098,6 +5110,7 @@ function DELAY_f() {
                     var io=check_io(this.x.model,this.x.graphics,this.nin,this.out,[],[])
                 }
         }
+	this.x.model.in = new ScilabDouble([0]);
         var exprs=new ScilabString(this.out.toString())
         this.x.graphics.exprs=exprs
         this.x.model.ipar=new ScilabDouble(...this.out)
@@ -5164,6 +5177,7 @@ function DEMUX_f() {
                     var io=check_io(this.x.model,this.x.graphics,this.nin,this.out,[],[])
                 }
         }
+	this.x.model.in = new ScilabDouble([0]);
         var exprs=new ScilabString(this.out.toString())
         this.x.graphics.exprs=exprs
         this.x.model.ipar=new ScilabDouble(...this.out)
@@ -12498,8 +12512,12 @@ function MATCATH() {
             this.in1[i] = -1*this.in1[i]
         }
         this.in2 = []
-        for (var i = 2  ; i <= this.nin+1; i--) {
-            this.in2.push([-1*i])
+
+        //for (var i = 2  ; i <= this.nin+1; i--) {
+        //    this.in2.push([-1*i]);
+        //}
+	for (var i = this.nin-1  ;i >= 0; i--) {
+           this.in2.push([-1*i]);
         }
         this.x.model.intyp = new ScilabDouble(...this.in1)
         this.x.model.outtyp = new ScilabDouble([-1])
@@ -12563,9 +12581,13 @@ function MATCATV() {
             this.in1[i] = -1*this.in1[i]
         }
         this.in2 = []
-        for (var i = 2  ; i <= this.nin+1; i--) {
-            this.in2.push([-1*i])
+        //for (var i = 2  ; i <= this.nin+1; i--) {
+       //     this.in2.push([-1*i])
+      //  }
+	for (var i = this.nin-1  ;i >= 0; i--) {
+           this.in2.push([-1*i]);
         }
+	var model = scicos_model();
         this.x.model.intyp = new ScilabDouble(...this.in1)
         this.x.model.outtyp = new ScilabDouble([-1])
         this.in = [...this.in2,...this.in1]
@@ -14367,6 +14389,7 @@ MUX.prototype.set = function MUX() {
         this.nout = sum(this.in)
         var io = check_io(this.x.model,this.x.graphics,this.in,this.nout,[],[])
     }
+    this.x.model.out = new ScilabDouble([0]);
     this.x.model.ipar = new ScilabDouble(...this.in)
     var exprs = new ScilabString(this.in.toString())
     this.x.graphics.exprs = exprs
@@ -14427,6 +14450,7 @@ function MUX_f() {
         this.nout = sum(this.in1)
         var io = check_io(this.x.model,this.x.graphics,this.in1,this.nout,[],[])
     }
+    this.x.model.out = new ScilabDouble([0]);
     this.x.model.ipar = new ScilabDouble(...this.in1)
     var exprs = new ScilabString(this.in1.toString())
     this.x.graphics.exprs = exprs
@@ -14511,7 +14535,7 @@ function M_SWITCH() {
     M_SWITCH.prototype.define = function M_SWITCH() {
         this.in1 = [[1], [-1], [-1]];
         this.ipar = [[1], [3]];
-        this.nin = 2;
+        this.nin = 3;
 
         var model = scicos_model();
         model.sim = list(new ScilabString(["mswitch"]), new ScilabDouble([4]));
@@ -14562,11 +14586,11 @@ M_SWITCH.prototype.set = function M_SWITCH() {
         alert("incorrect rounding rule");
         M_SWITCH.get();
     }
-    else{
+    this.x.model.in = new ScilabDouble(...this.in1);
     this.x.model.ipar = new ScilabDouble([this.base],[this.rule])
     var exprs = new ScilabString([this.nin],[this.base],[this.rule])
     this.x.graphics.exprs=exprs
-    }
+    
     return new BasicBlock(this.x)
     }
 }
@@ -16932,7 +16956,7 @@ function READC_f() {
          }
          return options
      }
-    /* READC_f.prototype.set = function READC_f() {
+     READC_f.prototype.set = function READC_f() {
          this.tmask = (arguments[0]["tmask"])
          this.outmask = (arguments[0]["outmask"])
          this.fname = arguments[0]["fname"]
@@ -16943,14 +16967,15 @@ function READC_f() {
          this.swap = parseFloat((arguments[0]["swap"]))
          this.x.model.firing = new ScilabDouble([-1]);
          this.x.model.firing = new ScilabDouble([0]);
-         var ipar = new ScilabDouble([function not encountered],[function not encountered],[this.ievt],[this.N],[this.M],[this.swap],[this.offset],[function not encountered],[this.tmask1],...this.outmask)
-        var dstate = new ScilabDouble([-1],[-1],[this.lunit],[function not encountered])
+var model = scicos_model();
+         var ipar = new ScilabDouble([this.fname.length], ..._str2code(this.frmt), [this.ievt], [this.N], [this.M], [this.swap], [this.offset], ..._str2code(this.fname), [this.tmask], [this.outmask]);
+        model.dstate = new ScilabDouble([1], [1], [this.lunit], ...zeros(this.N * this.M, 1));
          this.x.model.dstate = dstate
-         this.x.model.ipar = new ScilabDouble(...this.ipar);
-         var exprs = new ScilabString([this.tmask1.toString().replace(/,/g, " ")],[sci2exp(this.outmask)],[this.fname1],[this.frmt1],[this.M],[this.N],[this.offset],[this.swap])
+         this.x.model.ipar = ipar;
+         var exprs = new ScilabString([this.tmask.toString().replace(/,/g, " ")],[sci2exp(this.outmask)],[this.fname],[this.frmt],[this.M],[this.N],[this.offset],[this.swap])
          this.x.graphics.exprs=exprs
          return new BasicBlock(this.x)
-     }*/
+     }
 
 }
 function REGISTER() {
@@ -17824,6 +17849,10 @@ function SELF_SWITCH() {
     }
     SELF_SWITCH.prototype.get=function SELF_SWITCH(){
         alert("parameters can not be changed");
+    }
+    SELF_SWITCH.prototype.set=function SELF_SWITCH(){
+       this.x.graphics.style = new ScilabString(["SELF_SWITCH;SELF_SWITCH_ON"]);
+	return new BasicBlock(this.x);
     }
 }
 function SHIFT() {
@@ -19203,30 +19232,31 @@ function SUMMATION() {
     }
     SUMMATION.prototype.get = function SUMMATION() {
         if(this.Datatype == undefined || this.Datatype == null){
-            this.Datatype = "1"
+            this.Datatype = 1;
         }
         if(this.sgn == undefined || this.sgn == null){
-            this.sgn = "[[1];[-1]]"
+            this.sgn = [[1],[-1]];
         }
         if(this.satur == undefined || this.satur == null){
-            this.satur = "0"
+            this.satur = 0;
         }
         var options={
             Datatype:["Datatype (1=real double  2=complex 3=int32 ...)",this.Datatype],
-	    sgn:["Number of inputs or sign vector (of +1, -1)",sci2exp(this.sgn)],
+	    sgn:["Number of inputs or sign vector (of +1, -1)",this.sgn.toString().replace(/,/g, " ")],
             satur:["Do on Overflow(0=Nothing 1=Saturate 2=Error)",this.satur],
         }
         return options
     }
     SUMMATION.prototype.set = function SUMMATION() {
         this.Datatype = parseInt((arguments[0]["Datatype"]))
-	this.sgn = MatrixInverse(arguments[0]["sgn"])
+	this.sgn = inverse(arguments[0]["sgn"])
 
         this.satur = parseInt((arguments[0]["satur"]))
         if((this.satur!=0)&&(this.satur!=1)&&(this.satur!=2)){
                 alert("Do on overflow must be 0,1,2");
                 SUMMATION.get();
         }
+
         var f=0;
         for(var i=size(this.sgn,1)-1;i>=0;i--)
         {
@@ -19251,7 +19281,7 @@ function SUMMATION() {
                 this.nout2 = 1
             }
             else{
-                this.in = ones(this.sgn,1)
+                this.in = oness(this.sgn,1)
                 for (var i = this.in.length - 1; i >= 0; i--) {
                     this.in[i][0] = -1*this.in[i][0]
                 }
@@ -19259,7 +19289,7 @@ function SUMMATION() {
                 for (var i = this.in2.length - 1; i >= 0; i--) {
                     this.in2[i][0] = 2*this.in2[i][0]
                 }
-                this.sgn = ones(this.sgn,1)
+                this.sgn = oness(this.sgn,1)
                 this.nout = -1
                 this.nout2 = -2
             }
@@ -19269,7 +19299,9 @@ function SUMMATION() {
                     alert("Signs can only be +1 or -1");
                     SUMMATION.get();
             }
-            this.in = ones(this.sgn,1)
+
+            this.in = oness(this.sgn,1)
+
             for (var i = this.in.length - 1; i >= 0; i--) {
                 this.in[i][0] = -1*this.in[i][0]
             }
@@ -19277,11 +19309,12 @@ function SUMMATION() {
             for (var i = this.in2.length - 1; i >= 0; i--) {
                 this.in2[i][0] = 2*this.in2[i][0]
             }
-            this.nout = -1
-            this.nout2 = -2
+            this.nout = -1;
+            this.nout2 = -2;
         }
 
-        this.it = ones(size(this.in,1),1)
+        this.it = oness(size(this.in,1),1)
+
         for (var i = this.it.length - 1; i >= 0; i--) {
             this.it[i][0] = this.Datatype*this.it[i][0]
         }
@@ -19335,8 +19368,11 @@ function SUMMATION() {
             }
 
         }
+
+	this.nout = -1;
+        this.nout2 = -2;
         this.in = [...this.in,...this.in2]
-        this.out = [...this.nout,...this.nout2]
+        this.out =new ScilabDouble([-1],[-2]) //[...this.nout,...this.nout2]
         this.x.model.intyp = new ScilabDouble(...this.it)
         this.x.model.outtyp = new ScilabDouble(this.ot)
 
@@ -19460,7 +19496,7 @@ function Switch() {
     }
 
     Switch.prototype.details = function Switch() {
-        this.x;
+        return this.x;
     }
     Switch.prototype.get = function Switch() {
         var options={
@@ -19474,6 +19510,7 @@ function Switch() {
 	    this.Roff = (arguments[0]["Roff"])
 	    this.x.model.equations.parameters = list(new ScilabString(...this.S), new ScilabDouble([this.Ron],[this.Roff]));
 	    var exprs = new ScilabString(...this.Z)
+	    var model = scicos_model();
 	    this.x.graphics.exprs=exprs
 	    return new BasicBlock(this.x)
 	 }
@@ -20324,7 +20361,7 @@ function VVsourceAC() {
 
     VVsourceAC.prototype.define = function VVsourceAC() {
         var model = scicos_model();
-
+	
         model.in = new ScilabDouble([1], [1]);
         model.out = new ScilabDouble([1]);
 
