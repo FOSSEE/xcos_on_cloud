@@ -471,7 +471,7 @@
         <add as="displayedLabel" value="INV"/>
     </add>
     <add as="MATCATV" extend="blockWithLabel">
-        <add as="displayedLabel" value="Vert&lt;BR&gt;         Cat"/>
+        <add as="displayedLabel" value="Vert&lt;BR&gt;Cat"/>
     </add>
     <add as="MATSUM" extend="blockWithLabel">
      <add as="displayedLabel" value="MATSUM"/>
@@ -483,7 +483,7 @@
         <add as="displayedLabel" value="ROOT&lt;BR&gt;COEF"/>
     </add>
     <add as="MATCATH" extend="blockWithLabel">
-        <add as="displayedLabel" value="Horiz&lt;BR&gt;         Cat"/>
+        <add as="displayedLabel" value="Horiz&lt;BR&gt;Cat"/>
     </add>
     <add as="MATLU" extend="blockWithLabel">
         <add as="displayedLabel" value="LU"/>
@@ -761,7 +761,7 @@
 		<add as="displayedLabel" value="%s"/>
     </add>
     <add as="RELATIONALOP" extend="blockWithLabel">
-        <add as="displayedLabel" value="Relational&lt;BR&gt;         op : &amp;&lt;"/>
+        <add as="displayedLabel" value="Relational&lt;BR&gt;         op : %s"/>
         <!-- new value for the label defined in the interface function of block -->
     </add>
     <add as="TEXT_f" extend="Label">
@@ -935,7 +935,7 @@
     <add as="MUX_f" extend="MUX"/>
     <add as="MEMORY_f" extend="blockWithLabel"/>
     <add as="LOGICAL_OP" extend="blockWithLabel">
-        <add as="displayedLabel" value="AND"/>
+        <add as="displayedLabel" value="%s"/>
     </add>
     <add as="generic_block" extend="blockWithLabel">
         <add as="displayedLabel" value="GENERIC"/>
