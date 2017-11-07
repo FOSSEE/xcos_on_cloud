@@ -1314,7 +1314,7 @@ function ones() {
     }
 }
 //ones function added  for summation block only 
-function oness() {
+/*function oness() {
     if (arguments.length == 0) {
         return [1];
     } else if (arguments.length == 1) {
@@ -1327,7 +1327,7 @@ function oness() {
     } else {
         return [1];
     }
-}
+}*/
 
 function size() {
 
