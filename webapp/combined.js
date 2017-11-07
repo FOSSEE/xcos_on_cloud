@@ -12129,10 +12129,12 @@ IN_f.prototype.set = function IN_f() {
         alert("Outport type must be a number between 1 and 9, or -1 for inheritance.");
         IN_f.get();
     }
+    this.x.model.out = new ScilabDouble([-1]);
+    this.x.model.out2 = new ScilabDouble([-2]);
     this.x.model.ipar = new ScilabDouble([this.prt]);
     this.x.model.firing = new ScilabDouble()
-    this.x.model.out = this.otsz[0]
-    this.x.model.out2 = this.otsz[1]
+    //this.x.model.out = this.otsz[0]
+    //this.x.model.out2 = this.otsz[1]
     this.x.model.outtyp = this.ot
     var exprs = new ScilabString()
     this.displayParameter = [this.prt];
@@ -12354,16 +12356,21 @@ function LOGICAL_OP() {
         this.in1 = [[-1], [-1]];
         this.ipar = 0;
         this.nin = 2;
-
+	this.label="AND";
+	this.oprt=0;
+	this.bit=0;
+	this.data=1;
+	var arr = [];
+        arr.push(math.range(-1, -this.nin, -1, true)._data);
         var model = scicos_model();
         model.sim = list(new ScilabString(["logicalop"]), new ScilabDouble([4]));
-        model.in = new ScilabDouble(...this.in1);
-        model.out = new ScilabDouble([-1]);
-        model.ipar = new ScilabDouble([this.ipar]);
+        model.in = new ScilabDouble(...math.transpose(arr));
+        model.out = new ScilabDouble([0]);
+        model.ipar = new ScilabDouble([this.oprt],[this.nin]);
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
-
-        var exprs = new ScilabString([this.nin], [this.ipar]);
+	this.displayParameter = [this.label];
+        var exprs = new ScilabString([this.nin]);
 
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"LOGICAL_OP\",sz(1),sz(2));"]);
         this.x = new standard_define(new ScilabDouble([2, 2]), model, exprs, gr_i);
@@ -12372,8 +12379,79 @@ function LOGICAL_OP() {
     LOGICAL_OP.prototype.details = function LOGICAL_OP() {
         return this.x;
     }
+    LOGICAL_OP.prototype.get = function LOGICAL_OP() {
+        
+        var options={
+	    nin:["number of inputs" ,this.nin.toString()],
+            oprt:["Operator: AND (0), OR (1), NAND (2), NOR (3), XOR (4), NOT (5)",this.oprt],
+	    bit:["Bitwise Rule(0=No 1=yes)" ,this.bit],
+	    data:["Datatype (1=double 3=int32 ...)" ,this.data],
+        }
+        return options
+    }
+   LOGICAL_OP.prototype.set = function LOGICAL_OP() {
+	this.nin = inverse((arguments[0]["nin"]))
+        this.oprt = parseInt((arguments[0]["oprt"]))
+	this.bit = parseInt((arguments[0]["bit"]))
+	this.data = parseInt((arguments[0]["data"]))
+if (this.oprt==5 && this.nin>1){
+alert("Only one input allowed for NOT operation");
 }
 
+	if(this.oprt <0 || this.oprt >5){
+	alert("Incorrect operator must be 0 to 5.");
+	}
+		if (this.oprt == 0 ){
+                    this.label = "AND";
+		}
+                else if (this.oprt == 1 ){
+                    this.label = "OR";
+		}
+                else if (this.oprt == 2 ){
+                    this.label = "NAND"; // <
+		}
+                else if (this.oprt == 3 ){
+                    this.label = "NOR"; // <=
+		}
+                else if (this.oprt == 4 ){
+                    this.label = "XOR"; // >
+		}
+                else if (this.oprt == 5 ){
+                    this.label = "NOT"; // >=
+		}
+	var model = scicos_model();
+         model.sim = list(new ScilabString(["logicalop"]), new ScilabDouble([4]));
+	var arr = [];
+        arr.push(math.range(-1, -this.nin, -1, true)._data);
+        model.in = new ScilabDouble(...math.transpose(arr));
+        model.out = new ScilabDouble([0]);
+        model.ipar = new ScilabDouble([this.oprt],[this.nin]);
+        model.blocktype = new ScilabString(["c"]);
+        model.dep_ut = new ScilabBoolean([true, false]);
+	this.displayParameter = [this.label];
+ 	if(size(this.nin,"*") == 1){
+        var n = this.nin[0]
+        this.inp = []
+        for (var i = 1; i <= n; i++ ) {
+            this.inp.push([-1*i])
+        }
+        var io = check_io(this.x.model,this.x.graphics,this.inp,0,[],[])
+    }
+    else{
+        this.nout = sum(this.in1)
+        var io = check_io(this.x.model,this.x.graphics,this.nin,this.nout,[],[])
+    }
+
+        
+	this.x.model.out = new ScilabDouble([0]);
+    	this.x.model.ipar = new ScilabDouble(...this.nin)
+    	var exprs = new ScilabString(this.nin.toString())
+    	this.x.graphics.exprs = exprs
+        var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"LOGICAL_OP\",sz(1),sz(2));"]);
+        this.x = new standard_define(new ScilabDouble([2, 2]), model, exprs, gr_i);
+        return new BasicBlock(this.x);
+}
+}
 function LOOKUP_f() {
 
     LOOKUP_f.prototype.define = function LOOKUP_f() {
@@ -12493,9 +12571,11 @@ function MATCATH() {
         this.x = new standard_define(new ScilabDouble([2, 3]), model, label, gr_i);
         return new BasicBlock(this.x);
     }
+
     MATCATH.prototype.details = function MATCATH() {
         return this.x;
     }
+
     MATCATH.prototype.get = function MATCATH() {
         if(this.nin == undefined || this.nin == null){
             this.nin = "2"
@@ -12505,12 +12585,14 @@ function MATCATH() {
         }
         return options
     }
+
     MATCATH.prototype.set = function MATCATH() {
         this.nin = parseFloat((arguments[0]["nin"]))
         this.in1 = ones(this.nin,1)
         for (var i = this.in1.length - 1; i >= 0; i--) {
             this.in1[i] = -1*this.in1[i]
         }
+
         this.in2 = []
 
         //for (var i = 2  ; i <= this.nin+1; i--) {
@@ -15075,6 +15157,7 @@ OUT_f.prototype.set = function OUT_f() {
     }
     this.x.model.ipar = new ScilabDouble([this.prt]);
     var exprs = new ScilabString([this.prt])
+    this.displayParameter = [this.prt];
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
@@ -17109,8 +17192,10 @@ function RELATIONALOP() {
 
     RELATIONALOP.prototype.define = function RELATIONALOP() {
         this.ipar = 2;
-        this.label = "&lt";
-
+        this.label = "<";
+	this.oprt=2;
+	this.zcr=0;
+	this.data=1;
         var model = scicos_model();
         model.sim = list(new ScilabString(["relationalop"]), new ScilabDouble([4]));
         model.in = new ScilabDouble([1], [1]);
@@ -17119,8 +17204,8 @@ function RELATIONALOP() {
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
-        var exprs = new ScilabString([this.ipar], [0]);
-
+        var exprs = new ScilabString([this.ipar]);
+	this.displayParameter = [this.label];
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"RELATIONALOP\",sz(1),sz(2));"]);
         this.x = new standard_define(new ScilabDouble([2, 2]), model, exprs, gr_i);
         this.x.graphics.style = new ScilabString(["fontSize=13;fontStyle=1;displayedLabel=" + label]);
@@ -17129,6 +17214,91 @@ function RELATIONALOP() {
     RELATIONALOP.prototype.details = function RELATIONALOP() {
         return this.x;
     }
+    RELATIONALOP.prototype.get = function RELATIONALOP() {
+        
+        var options={
+            oprt:["Operator:==(0),~=(1),<(2),<=(3),>(4),>=(5)",this.oprt],
+	    zcr:["Use zero crossing (no: 0), (yes: 1)" ,this.zcr],
+	    data:["Datatype (1=double 3=int32 ...)" ,this.data],
+        }
+        return options
+    }
+    RELATIONALOP.prototype.set = function RELATIONALOP() {
+        this.oprt = parseInt((arguments[0]["oprt"]))
+	this.zcr = parseInt((arguments[0]["zcr"]))
+	this.data = parseInt((arguments[0]["data"]))
+
+	if(this.zcr< 0 || this.zcr >1)
+	{
+ 		alert("incorrect operator");
+		RELATIONALOP.get();
+	}
+		if (this.oprt == 0 ){
+                    this.label = "==";
+		}
+                else if (this.oprt == 1 ){
+                    this.label = "~=";
+		}
+                else if (this.oprt == 2 ){
+                    this.label = "<"; // <
+		}
+                else if (this.oprt == 3 ){
+                    this.label = "<="; // <=
+		}
+                else if (this.oprt == 4 ){
+                    this.label = ">"; // >
+		}
+                else if (this.oprt == 5 ){
+                    label = ">="; // >=
+		}
+	/*if (this.data==1) {
+ var model = scicos_model();
+                model.sim=list(new ScilabString(["relationalop"]), new ScilabDouble([4]));
+}
+            else if (this.data==3|| this.data==9) {
+ var model = scicos_model();
+                model.sim=list(new ScilabString(["relational_op_i32"]), new ScilabDouble([4]));
+}
+            else if(this.data==4) {
+ var model = scicos_model();
+                model.sim=list(new ScilabString(["relational_op_i16"]), new ScilabDouble([4]));
+}
+            else if(this.data==5) {
+ var model = scicos_model();
+                model.sim=list(new ScilabString(["relational_op_i8"]), new ScilabDouble([4]));
+}
+            else if(this.data==6) {
+ var model = scicos_model();
+                model.sim=list(new ScilabString(["relational_op_ui32"]), new ScilabDouble([4]));
+}
+            else if(this.data==7) {
+ var model = scicos_model();
+                model.sim=list(new ScilabString(["relational_op_ui16"]), new ScilabDouble([4]));
+}
+            else if(this.data==8){
+ var model = scicos_model();
+                model.sim=list(new ScilabString(["relational_op_ui8"]), new ScilabDouble([4]));
+}
+            else {
+                alert("Datatype is not supported");
+		//RELATIONALOP.get();
+                }*/
+
+ 	var model = scicos_model();
+	model.sim = list(new ScilabString(["relationalop"]), new ScilabDouble([4]));
+        model.in = new ScilabDouble([1], [1]);
+        model.out = new ScilabDouble([1]);
+        model.ipar = new ScilabDouble([this.ipar]);
+        model.blocktype = new ScilabString(["c"]);
+        model.dep_ut = new ScilabBoolean([true, false]);
+        var exprs = new ScilabString([this.ipar]);
+	this.displayParameter = [this.label];
+        var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"RELATIONALOP\",sz(1),sz(2));"]);
+        this.x = new standard_define(new ScilabDouble([2, 2]), model, exprs, gr_i);
+        this.x.graphics.style = new ScilabString(["fontSize=13;fontStyle=1;displayedLabel=" + label]);
+        return new BasicBlock(this.x);
+}
+
 }
 
 function RELAY_f() {
@@ -19212,6 +19382,7 @@ function SUMMATION() {
 	this.satur = 0;
         var model = scicos_model();
         model.sim = list(new ScilabString(["summation"]), new ScilabDouble([4]));
+	model.rpar = new ScilabDouble(...this.sgn);
         model.in = new ScilabDouble([1], [-1]);
         model.out = new ScilabDouble([-1]);
         model.in2 = new ScilabDouble([-2], [-2]);
@@ -19281,7 +19452,8 @@ function SUMMATION() {
                 this.nout2 = 1
             }
             else{
-                this.in = oness(this.sgn,1)
+		this.in = ones(size(this.sgn,"*"),1)
+                //this.in = oness(this.sgn,1)
                 for (var i = this.in.length - 1; i >= 0; i--) {
                     this.in[i][0] = -1*this.in[i][0]
                 }
@@ -19300,8 +19472,8 @@ function SUMMATION() {
                     SUMMATION.get();
             }
 
-            this.in = oness(this.sgn,1)
-
+            //this.in = oness(this.sgn,1)
+this.in = ones(size(this.sgn,"*"),1)
             for (var i = this.in.length - 1; i >= 0; i--) {
                 this.in[i][0] = -1*this.in[i][0]
             }
@@ -19313,8 +19485,8 @@ function SUMMATION() {
             this.nout2 = -2;
         }
 
-        this.it = oness(size(this.in,1),1)
-
+       // this.it = oness(size(this.in,1),1)
+	this.it= ones(size(this.sgn,"*"),1)
         for (var i = this.it.length - 1; i >= 0; i--) {
             this.it[i][0] = this.Datatype*this.it[i][0]
         }
