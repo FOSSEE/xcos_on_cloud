@@ -263,7 +263,7 @@ function ScilabBoolean() {
     }
 }
 
- 
+
 
 function ScilabDouble() {
     var i = 0,
@@ -277,7 +277,7 @@ function ScilabDouble() {
                 this["data" + i + j] = new data();
                 if(array[i][j] % 1 == 0) {
                     this["data" + i + j].realPart = parseFloat(array[i][j]).toFixed(1);
-                } 
+                }
                 else {
                     this["data" + i + j].realPart = array[i][j];
                 }
@@ -420,7 +420,7 @@ function set_io(){
         clkout[i] = [Math.floor(clkout[i])]
     }
     var nclkout = size(clkout,1)
-    
+
     var ip1 = getData(graphics.pin)
     for (var i = ip1.length - 1; i >= 0; i--) {
         ip1[i] = [parseFloat(ip1[i])]
@@ -593,7 +593,7 @@ function check_io(){
         clkout[i] = [Math.floor(clkout[i])]
     }
     this.nclkout = size(clkout,1)
-    
+
     var ip1 = getData(graphics.pin)
     for (var i = ip1.length - 1; i >= 0; i--) {
         ip1[i] = [parseFloat(ip1[i])]
@@ -811,11 +811,11 @@ function STEP() {
         model.out = new ScilabDouble([1]);
         model.out2 = new ScilabDouble([1]);
         model.outtyp = new ScilabDouble([1]);
-        model.firing = new ScilabDouble([1]); 
+        model.firing = new ScilabDouble([1]);
         model.rpar = new ScilabDouble(...this.rpar);
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([false, false]);
-        
+
         var exprs = new ScilabString([1],...this.rpar);
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"STEP\",sz(1),sz(2));"]);
 
@@ -840,7 +840,7 @@ function BasicBlock() {
         this.id = options.id;
         this.interfaceFunctionName = arguments.callee.caller.name;
         this.ordering = options.ordering;
-        this.parent = "1"; // modified_shank : earlier : this.parent = options.parent; 
+        this.parent = "1"; // modified_shank : earlier : this.parent = options.parent;
         if (options.model.sim instanceof Array) {
             this.simulationFunctionName = getData(options.model.sim[0])[0];
             var func_type;
@@ -966,8 +966,8 @@ function array_matrix(){
         else{
             newArray[i] = array[i]
         }
-    } 
-    return newArray 
+    }
+    return newArray
 }
 
 function colon_operator() {
@@ -1140,3 +1140,21 @@ function sign(){
         return 0
     }
 }
+
+/*
+ * date : 26 November 2017
+ * Author - Dipti G
+ * This function is used in const_m and const block for passing string function value like parameters and return actual
+ * compute value
+ */
+ function getValueOfImaginaryInput(inputvalue){
+         var actualDoubleValue=null;
+         if(inputvalue.includes("pi")){
+                 actualDoubleValue=Math.PI;
+         }else{
+         actualDoubleValue=math.eval(inputvalue);
+
+        }
+
+         return actualDoubleValue;
+ }
