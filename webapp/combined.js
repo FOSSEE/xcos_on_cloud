@@ -908,7 +908,7 @@ function BOUNCE() {
 	yd:["Ydpos",this.yd.toString().replace(/,/g," ")],
 	g:["g(gravity) ",this.g],
 	c:["C (aerodynamic coeff) ",this.c],
-        
+
          }
     return options
 
@@ -930,7 +930,7 @@ function BOUNCE() {
 	var model = scicos_model();
 	model.rpar = new ScilabDouble(...this.rpar1, ...this.rpar2, ...this.walls, [this.g], [this.c]);
         model.ipar = new ScilabDouble(...this.ipar);
-	model.in = new ScilabDouble(); 
+	model.in = new ScilabDouble();
 	model.out = new ScilabDouble([this.n], [this.n]);
         model.state = new ScilabDouble(...colon_operator(this.state));
         model.rpar = new ScilabDouble(...this.rpar1, ...this.rpar2, ...this.walls, [this.g], [this.c]);
@@ -3334,54 +3334,78 @@ function CMSCOPE() {
 function CONST() {
 
 
-    CONST.prototype.define = function CONST() {
+	CONST.prototype.define = function CONST() {
 
-        this.C = 1;
+		this.C = 1;
 
-        var model = scicos_model();
-        model.sim = list(new ScilabString(["cstblk4"]), new ScilabDouble([4]));
-        model.in = new ScilabDouble();
-        model.out = new ScilabDouble([1]);
-        model.rpar = new ScilabDouble([this.C]);
-        model.blocktype = new ScilabString(["d"]);
-        model.dep_ut = new ScilabBoolean([false, false]);
+		var model = scicos_model();
+		model.sim = list(new ScilabString(["cstblk4"]), new ScilabDouble([4]));
+		model.in = new ScilabDouble();
+		model.out = new ScilabDouble([1]);
+		model.rpar = new ScilabDouble([this.C]);
+		model.blocktype = new ScilabString(["d"]);
+		model.dep_ut = new ScilabBoolean([false, false]);
 
-        var exprs = new ScilabString([sci2exp(this.C)]);
-        var n = sci2exp(this.C).toString();
-        this.displayParameter = [n];
-        var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"CONST\",sz(1),sz(2));"]);
-        this.x = new standard_define(new ScilabDouble([2, 2]), model, exprs, gr_i);
-        return new BasicBlock(this.x);
-    }
+		var exprs = new ScilabString([sci2exp(this.C)]);
+		var n = sci2exp(this.C).toString();
+		this.displayParameter = [n];
+		var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"CONST\",sz(1),sz(2));"]);
+		this.x = new standard_define(new ScilabDouble([2, 2]), model, exprs, gr_i);
+		return new BasicBlock(this.x);
+	}
 
-    CONST.prototype.details = function CONST() {
-        return this.x;
-    }
-CONST.prototype.get = function CONST() {
-        var options={
-            C:["Constant",this.C.toString().replace(/,/g," ")],
-        }
-        return options
-    }
-CONST.prototype.set = function CONST() {
-    this.C = inverse(arguments[0]["C"])
-    this.sz=size(this.C)
-    this.nout=size(this.C,"*")
-    if(this.nout==0){
-        alert("C must have at least one element");
-        CONST.get();
-    }
-    if(this.sz>1){
-        alert("C matrix is not supported, use CONST_m instead");
-        CONST.get();
-    }
-    this.x.model.rpar = new ScilabDouble(...this.C)
-    this.x.model.out = new ScilabDouble([this.nout])
-    var exprs = new ScilabString([this.C.toString().replace(/,/g, " ")])
-    this.displayParameter = [this.C];
-    this.x.graphics.exprs=exprs
-    return new BasicBlock(this.x)
-    }
+	CONST.prototype.details = function CONST() {
+		return this.x;
+	}
+	CONST.prototype.get = function CONST() {
+		var options = {
+			C: ["Constant", this.C.toString().replace(/,/g, " ")],
+		}
+		return options
+	}
+	CONST.prototype.set = function CONST() {
+		this.C = (arguments[0]["C"])
+		var exprs;
+
+		if (this.C.match(/[a-z()+\-*/.^{}]/i)) {
+			var value = getValueOfImaginaryInput(this.C);
+			if (value == "undefined") {
+				CONST.get();
+			} else {
+				exprs = new ScilabString([this.C]);
+				this.x.model.rpar = new ScilabDouble([value]);
+				this.C = this.C;
+				this.displayParameter = [this.C];
+				//this.sz = size(new ScilabDouble([value]));
+				//this.nout = size(new ScilabDouble([value]), "*");
+			}
+
+
+		} else {
+			this.C = MatrixInverse(this.C);
+			this.sz = size(this.C);
+			this.nout = size(this.C, "*");
+
+			if (this.nout == 0) {
+				alert("C must have at least one element");
+				CONST.get();
+			}
+			if (this.sz > 1) {
+				alert("C matrix is not supported, use CONST_m instead");
+				CONST.get();
+			}
+			exprs = new ScilabString([sci2exp(this.C)]);
+			this.x.model.rpar = new ScilabDouble([this.C]);
+			this.displayParameter = [this.C];
+
+		}
+
+
+		this.x.model.out = new ScilabDouble([this.nout])
+
+		this.x.graphics.exprs = exprs
+		return new BasicBlock(this.x)
+	}
 }
 function ConstantVoltage() {
 
@@ -3603,70 +3627,110 @@ CONST_f.prototype.set = function CONST_f() {
     }
 }
 function CONST_m() {
-    CONST_m.prototype.get = function CONST_m() {
+	CONST_m.prototype.get = function CONST_m() {
 
-        var options = {
-            vec: ["Constant Value", sci2exp(this.c)]
-        };
-        return options;
-    }
-    CONST_m.prototype.set = function CONST_m() {
-        this.c = MatrixInverse(arguments[0]["vec"]);
-        this.nout = size(this.c,"*")
-        if(this.nout==0){
-            alert("Wrong size for 'Constant Value' parameter"+"\nConstant value must have at least one element.");
-            CONST_m.get();
-        }
-        this.displayParameter = [this.c];
-        this.x.model.rpar = new ScilabDouble(...colon_operator(this.c))
-    	this.x.model.out = new ScilabDouble([this.nout])
-    	var exprs = new ScilabString([sci2exp(this.c)])
-    	this.x.graphics.exprs=exprs
-    	return new BasicBlock(this.x)
-    }
-    CONST_m.prototype.internal = function CONST_m() {
-        this.c = [1];
-        var model = new scicos_model();
-        model.sim = list(new ScilabString(["cstblk4"]), new ScilabDouble([4]));
-        model.in = new ScilabDouble();
-        model.out = new ScilabDouble([this.c.length]);
-        model.in2 = new ScilabDouble();
-        model.out2 = new ScilabDouble([this.c.length]);
-        model.rpar = new ScilabDouble([this.c]);
-        model.opar = list();
-        model.blocktype = new ScilabString(["d"]);
-        model.dep_ut = new ScilabBoolean([false, false]);
+		var options = "";
+		var str = this.c.toString();
+		if (!str.match(/[a-z()+\-*/.^{}]/i)) {
+			options = {
+				vec: ["Constant Value", sci2exp(this.c)]
+			};
 
-        var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"CONST_m\",sz(1),sz(2));"]);
-        var exprs = new ScilabString([this.c]);
-        var block = new standard_define(new ScilabDouble([80, 80]), model, exprs, gr_i); // 1 -> 80
-        block.graphics.style = new ScilabString(["CONST_m"]);
-        return block;
-    }
-    CONST_m.prototype.define = function CONST_m() {
-        this.c = [1];
-        var model = new scicos_model();
-        model.sim = list(new ScilabString(["cstblk4"]), new ScilabDouble([4]));
-        model.in = new ScilabDouble();
-        model.out = new ScilabDouble([this.c.length]);
-        model.in2 = new ScilabDouble();
-        model.out2 = new ScilabDouble([this.c.length]);
-        model.rpar = new ScilabDouble([this.c]);
-        model.opar = list();
-        model.blocktype = new ScilabString(["d"]);
-        this.displayParameter = [1];
-        model.dep_ut = new ScilabBoolean([false, false]);
+		} else {
+			options = {
+				vec: ["Constant Value", this.c]
+			};
 
-        var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"CONST_m\",sz(1),sz(2));"]);
-        var exprs = new ScilabString([this.c]);
-        this.x = new standard_define(new ScilabDouble([80, 80]), model, exprs, gr_i); // 1 -> 80
-        this.x.graphics.style = new ScilabString(["CONST_m"]);
-        return new BasicBlock(this.x);
-    }
-    CONST_m.prototype.details = function CONST_m() {
-        return this.x;
+		}
 
-    }
+
+		return options;
+	}
+	CONST_m.prototype.set = function CONST_m() {
+		var exprs = "";
+		var str = arguments[0]["vec"];
+		if (str.match(/[a-z()+\-*/.^{}]/i)) {
+			var value = getValueOfImaginaryInput(str);
+			if (value == "null") {
+				m.get();
+			} else {
+				exprs = new ScilabString([str]);
+				this.x.model.opar = list(new ScilabDouble([value]));
+				this.displayParameter = [str];
+				this.nout = size(value, "*")
+				if (this.nout == 0) {
+					alert("Wrong size for 'Constant Value' parameter" + "\nConstant value must have at least one element.");
+					CONST_m.get();
+				}
+				this.x.model.rpar = new ScilabDouble();
+				this.x.model.out = new ScilabDouble([this.nout]);
+				this.c = str;
+
+			}
+
+
+		} else {
+			this.c = MatrixInverse(arguments[0]["vec"]);
+			this.nout = size(this.c, "*")
+			if (this.nout == 0) {
+				alert("Wrong size for 'Constant Value' parameter" + "\nConstant value must have at least one element.");
+				CONST_m.get();
+			}
+			this.displayParameter = [sci2exp(this.c)];
+			this.x.model.rpar = new ScilabDouble();
+			this.x.model.out = new ScilabDouble([this.nout]);
+			exprs = new ScilabString([sci2exp(this.c)]);
+			this.x.model.opar = list(new ScilabDouble([this.c]));
+
+		}
+
+
+		this.x.graphics.exprs = exprs
+		return new BasicBlock(this.x)
+	}
+	CONST_m.prototype.internal = function CONST_m() {
+		this.c = [1];
+		var model = new scicos_model();
+		model.sim = list(new ScilabString(["cstblk4"]), new ScilabDouble([4]));
+		model.in = new ScilabDouble();
+		model.out = new ScilabDouble([this.c.length]);
+		model.in2 = new ScilabDouble();
+		model.out2 = new ScilabDouble([this.c.length]);
+		model.rpar = new ScilabDouble();
+		model.opar = list(new ScilabDouble([this.c]));
+		model.blocktype = new ScilabString(["d"]);
+		model.dep_ut = new ScilabBoolean([false, false]);
+
+		var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"CONST_m\",sz(1),sz(2));"]);
+		var exprs = new ScilabString([this.c]);
+		var block = new standard_define(new ScilabDouble([80, 80]), model, exprs, gr_i); // 1 -> 80
+		block.graphics.style = new ScilabString(["CONST_m"]);
+		return block;
+	}
+	CONST_m.prototype.define = function CONST_m() {
+		this.c = [1];
+		var model = new scicos_model();
+		model.sim = list(new ScilabString(["cstblk4"]), new ScilabDouble([4]));
+		model.in = new ScilabDouble();
+		model.out = new ScilabDouble([this.c.length]);
+		model.in2 = new ScilabDouble();
+		model.out2 = new ScilabDouble([this.c.length]);
+		model.rpar = new ScilabDouble();
+		model.opar = list(new ScilabDouble([this.c]));
+		model.blocktype = new ScilabString(["d"]);
+		this.displayParameter = [1];
+		model.dep_ut = new ScilabBoolean([false, false]);
+
+		var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"CONST_m\",sz(1),sz(2));"]);
+		var exprs = new ScilabString([sci2exp(this.c)]);
+		this.x = new standard_define(new ScilabDouble([80, 80]), model, exprs, gr_i); // 1 -> 80
+		this.x.graphics.style = new ScilabString(["CONST_m"]);
+		return new BasicBlock(this.x);
+	}
+	CONST_m.prototype.details = function CONST_m() {
+		return this.x;
+
+	}
 }
 function CONVERT() {
 
@@ -4195,7 +4259,7 @@ CSCOPE.prototype.set = function CSCOPE() {
     this.N = parseFloat((arguments[0]["N"]))
     this.heritance = parseFloat((arguments[0]["heritance"]))
     this.nom = arguments[0]["nom"]
-	
+
 
     if((size(this.wpos,"*")!=0)&&(size(this.wpos,"*")!=2)){
                 alert("Window position must be [] or a 2 vector");
@@ -4845,214 +4909,276 @@ function DEBUG() {
 
 function DELAYV_f() {
 
-    DELAYV_f.prototype.define = function DELAYV_f() {
-        this.nin = 1;
-        this.z0 = zeros(11, 1);
-        this.zz0 = math.subset(this.z0, math.index(math.range(0, math.size(this.z0)[0] - 1), 0));
-        this.T = 1;
+	DELAYV_f.prototype.define = function DELAYV_f() {
+		this.nin = 1;
+		this.z0 = zeros(11, 1);
+		this.zz0 = math.subset(this.z0, math.index(math.range(0, math.size(this.z0)[0] - 1), 0));
+		this.T = 1;
 
-        var model = scicos_model();
-        model.sim = list(new ScilabString(["delayv"]), new ScilabDouble([1]));
-        model.in = new ScilabDouble([this.nin], [1]);
-        model.out = new ScilabDouble([this.nin]);
-        model.evtin = new ScilabDouble([1]);
-        model.evtout = new ScilabDouble([1], [1]);
-        model.dstate = new ScilabDouble(...this.z0);
-        model.rpar = new ScilabDouble([this.T / (size(this.zz0, "*"))]);
-        model.blocktype = new ScilabString(["d"]);
-        model.firing = new ScilabDouble([0,-1]);
-        model.dep_ut = new ScilabBoolean([true, false]);
+		var model = scicos_model();
+		model.sim = list(new ScilabString(["delayv"]), new ScilabDouble([1]));
+		model.in = new ScilabDouble([this.nin], [1]);
+		model.out = new ScilabDouble([this.nin]);
+		model.evtin = new ScilabDouble([1]);
+		model.evtout = new ScilabDouble([1], [1]);
+		model.dstate = new ScilabDouble(...this.z0);
+		model.rpar = new ScilabDouble([this.T / (size(this.zz0, "*"))]);
+		model.blocktype = new ScilabString(["d"]);
+		model.firing = new ScilabDouble([0, -1]);
+		model.dep_ut = new ScilabBoolean([true, false]);
 
-        var exprs = new ScilabString([this.nin], [this.zz0.toString().replace(/,/g, ";")], [this.T]);
+		var exprs = new ScilabString([this.nin], [this.zz0.toString().replace(/,/g, ";")], [this.T]);
 
-        var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"DELAYV_f\",sz(1),sz(2));"]);
-        this.x = new standard_define(new ScilabDouble([3, 2]), model, exprs, gr_i);
-        return new BasicBlock(this.x);
-    }
-    DELAYV_f.prototype.details = function DELAYV_f() {
-        return this.x;
-    }
-DELAYV_f.prototype.get = function DELAYV_f() {
-        var options={
-            nin:["Number of inputs",this.nin],
-            zz0:["Register initial condition",this.zz0.toString().replace(/,/g," ")],
-            T:["Max delay",this.T],
-        }
-        return options;
-    }
-DELAYV_f.prototype.set = function DELAYV_f() {
-    this.nin = parseFloat((arguments[0]["nin"]))
-    this.zz0 = inverse(arguments[0]["zz0"])
-    this.T = parseFloat((arguments[0]["T"]))
-    //try{
-        if(size(this.zz0,"*")<2){
-        alert("Register length must be at least 2");
-        DELAYV_f.get();
-    }
-    if(this.T<=0){
-        alert("Delay must be positive");
-        DELAYV_f.get();
-    }
-    //}
-    //catch(e)
-    //{}
-    var io = check_io(this.x.model,this.x.graphics,[[this.nin],[1]],[this.nin],[1],[[1],[1]])
-    this.z0 = ones(11,1)
-    this.told = 1
-    this.x.model.dstate = new ScilabDouble(...this.zz0,[this.told])
-    this.value = this.T/size(this.zz0,"*")
-    this.x.model.rpar = new ScilabDouble([this.value])
-    var exprs = new ScilabString([this.nin],[this.zz0.toString().replace(/,/g, " ")],[this.T])
-    this.x.graphics.exprs=exprs
-    return new BasicBlock(this.x)
-    }
+		var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"DELAYV_f\",sz(1),sz(2));"]);
+		this.x = new standard_define(new ScilabDouble([3, 2]), model, exprs, gr_i);
+		return new BasicBlock(this.x);
+	}
+	DELAYV_f.prototype.details = function DELAYV_f() {
+		return this.x;
+	}
+	DELAYV_f.prototype.get = function DELAYV_f() {
+		var options = {
+			nin: ["Number of inputs", this.nin],
+			zz0: ["Register initial condition", this.zz0.toString().replace(/,/g, " ")],
+			T: ["Max delay", this.T],
+		}
+		return options;
+	}
+	DELAYV_f.prototype.set = function DELAYV_f() {
+		this.nin = parseFloat((arguments[0]["nin"]))
+		this.zz0 = inverse(arguments[0]["zz0"])
+		this.T = parseFloat((arguments[0]["T"]))
+		//try{
+		if (size(this.zz0, "*") < 2) {
+			alert("Register length must be at least 2");
+			DELAYV_f.get();
+		}
+		if (this.T <= 0) {
+			alert("Delay must be positive");
+			DELAYV_f.get();
+		}
+		//}
+		//catch(e)
+		//{}
+		var io = check_io(this.x.model, this.x.graphics, [
+			[this.nin],
+			[1]
+		], [this.nin], [1], [
+			[1],
+			[1]
+		])
+		this.z0 = ones(11, 1)
+		this.told = 1
+		this.x.model.dstate = new ScilabDouble(...this.zz0, [this.told])
+		this.value = this.T / size(this.zz0, "*")
+		this.x.model.rpar = new ScilabDouble([this.value])
+		var exprs = new ScilabString([this.nin], [this.zz0.toString().replace(/,/g, ";")], [this.T])
+		this.x.graphics.exprs = exprs
+		return new BasicBlock(this.x)
+	}
 
 }
 
 function DELAY_f() {
+	var evtdly = new EVTDLY_f().internal();
+	var register = new REGISTER_f().internal();
+	var input_port = new IN_f().internal();
+	var output_port = new OUT_f().internal();
+	var split = new CLKSPLIT_f().internal();
+	var diagram = scicos_diagram();
 
-    DELAY_f.prototype.define = function DELAY_f() {
-        var evtdly = new EVTDLY_f().internal();
-        evtdly.graphics.orig = new ScilabDouble([243, 296]);
-        evtdly.graphics.sz = new ScilabDouble([40, 40]);
-        evtdly.graphics.flip = new ScilabBoolean([true]);
-        evtdly.graphics.exprs = new ScilabString(["0.1"], ["0"]);
-        evtdly.graphics.pein = new ScilabDouble([10]);
-        evtdly.graphics.peout = new ScilabDouble([7]);
-        evtdly.model.rpar = new ScilabDouble([0.1]);
-        evtdly.model.firing = new ScilabDouble([0]);
-        evtdly.model.uid = new ScilabString([count]); // changed
-        evtdly.doc = list(new ScilabString([count++]));
-        evtdly.model.outtyp = new ScilabDouble();
+	DELAY_f.prototype.define = function DELAY_f() {
 
-        var register = new REGISTER_f().internal();
-        register.graphics.orig = new ScilabDouble([238, 195]);
-        register.graphics.sz = new ScilabDouble([50, 50]);
-        register.graphics.flip = new ScilabBoolean([true]);
-        register.graphics.exprs = new ScilabString(["0;0;0;0;0;0;0;0;0;0"]);
-        register.graphics.pin = new ScilabDouble([6]);
-        register.graphics.pout = new ScilabDouble([5]);
-        register.graphics.pein = new ScilabDouble([9]);
-        register.model.uid = new ScilabString([count]); // changed
-        register.doc = list(new ScilabString([count++]));
-        register.model.in2 = new ScilabDouble([1]);
-        register.model.intyp = new ScilabDouble([1]);
-        register.model.out2 = new ScilabDouble([1]);
+		evtdly.graphics.orig = new ScilabDouble([243, 296]);
+		evtdly.graphics.sz = new ScilabDouble([40, 40]);
+		evtdly.graphics.flip = new ScilabBoolean([true]);
+		evtdly.graphics.exprs = new ScilabString(["0.1"], ["0"]);
+		evtdly.graphics.pein = new ScilabDouble([10]);
+		evtdly.graphics.peout = new ScilabDouble([7]);
+		evtdly.model.rpar = new ScilabDouble([0.1]);
+		evtdly.model.firing = new ScilabDouble([0]);
+		evtdly.model.uid = new ScilabString([count]); // changed
+		evtdly.doc = list(new ScilabString([count++]));
+		evtdly.model.outtyp = new ScilabDouble();
 
-        var input_port = new IN_f().internal();
-        input_port.graphics.orig = new ScilabDouble([92, 210]);
-        input_port.graphics.sz = new ScilabDouble([20, 20]);
-        input_port.graphics.flip = new ScilabBoolean([true]);
-        input_port.graphics.exprs = new ScilabString(["1"], ["1"]);
-        input_port.graphics.pout = new ScilabDouble([6]);
-        input_port.model.ipar = new ScilabDouble([1]);
-        input_port.model.uid = new ScilabString([count]); // changed
-        input_port.doc = list(new ScilabString([count++]));
-        input_port.model.outtyp = new ScilabDouble([-1]);
 
-        var output_port = new OUT_f().internal();
-        output_port.graphics.orig = new ScilabDouble([440, 210]);
-        output_port.graphics.sz = new ScilabDouble([20, 20]);
-        output_port.graphics.flip = new ScilabBoolean([true]);
-        output_port.graphics.exprs = new ScilabString(["1"], ["1"]);
-        output_port.graphics.pin = new ScilabDouble([5]);
-        output_port.model.ipar = new ScilabDouble([1]);
-        output_port.model.uid = new ScilabString([count]); // changed
-        output_port.doc = list(new ScilabString([count++]));
-        output_port.model.outtyp = new ScilabDouble();
+		register.graphics.orig = new ScilabDouble([238, 195]);
+		register.graphics.sz = new ScilabDouble([50, 50]);
+		register.graphics.flip = new ScilabBoolean([true]);
+		register.graphics.exprs = new ScilabString(["0;0;0;0;0;0;0;0;0;0"]);
+		register.graphics.pin = new ScilabDouble([6]);
+		register.graphics.pout = new ScilabDouble([5]);
+		register.graphics.pein = new ScilabDouble([9]);
+		register.model.uid = new ScilabString([count]); // changed
+		register.doc = list(new ScilabString([count++]));
+		register.model.in2 = new ScilabDouble([1]);
+		register.model.intyp = new ScilabDouble([1]);
+		register.model.out2 = new ScilabDouble([1]);
 
-        var split = new CLKSPLIT_f().internal();
-        split.graphics.orig = new ScilabDouble([263, 271.2]);
-        split.graphics.pein = new ScilabDouble([7]);
-        split.graphics.peout = new ScilabDouble([9], [10]);
-        split.model.uid = new ScilabString([count]); // changed
-        split.doc = list(new ScilabString([count++]));
 
-        var diagram = scicos_diagram();
-        diagram.objs.push(input_port);
-        diagram.objs.push(output_port);
-        diagram.objs.push(register);
-        diagram.objs.push(evtdly);
-        diagram.objs.push(split);
-        diagram.objs.push(scicos_link({
-            xx: new ScilabDouble([296.6], [440]),
-            yy: new ScilabDouble([220], [220]),
-            from: new ScilabDouble([3, 1, 0]),
-            to: new ScilabDouble([2, 1, 1])
-        }));
-        diagram.objs.push(scicos_link({
-            xx: new ScilabDouble([112], [229.4]),
-            yy: new ScilabDouble([220], [220]),
-            from: new ScilabDouble([1, 1, 0]),
-            to: new ScilabDouble([3, 1, 1])
-        }));
-        diagram.objs.push(scicos_link({
-            xx: new ScilabDouble([263], [263]),
-            yy: new ScilabDouble([290.3], [271.2]),
-            ct: new ScilabDouble([5, -1]),
-            from: new ScilabDouble([4, 1, 0]),
-            to: new ScilabDouble([5, 1, 1])
-        }));
-        diagram.objs.push(scicos_link({
-            xx: new ScilabDouble([263], [263]),
-            yy: new ScilabDouble([271.2], [250.7]),
-            ct: new ScilabDouble([5, -1]),
-            from: new ScilabDouble([5, 1, 0]),
-            to: new ScilabDouble([3, 1, 1])
-        }));
-        diagram.objs.push(scicos_link({
-            xx: new ScilabDouble([263], [308.6], [308.6], [263], [263]),
-            yy: new ScilabDouble([271.2], [271.2], [367], [367], [341.7]),
-            ct: new ScilabDouble([5, -1]),
-            from: new ScilabDouble([5, 2, 0]),
-            to: new ScilabDouble([4, 1, 1])
-        }));
-        this.dt = 0.1;
-        this.z0 = zeros(11, 1);
-        this.zz0 = math.subset(this.z0, math.index(math.range(0, math.size(this.z0)[0] - 1), 0));
-        this.x = scicos_block();
-        this.x.gui = new ScilabString(["DELAY_f"]);
-        this.x.graphics.sz = new ScilabDouble([2, 2]);
-        this.x.graphics.gr_i = new ScilabDouble();
-        this.x.graphics.pin = new ScilabDouble([0]);
-        this.x.graphics.pout = new ScilabDouble([0]);
-        this.x.model.sim = new ScilabString(["csuper"]);
-        this.x.model.in = new ScilabDouble([1]);
-        this.x.model.out = new ScilabDouble([1]);
-        this.x.model.blocktype = new ScilabString(["h"]);
-        this.x.model.dep_ut = new ScilabBoolean([false, false]);
-        this.x.model.rpar = diagram;
-        this.x.graphics.in_implicit = new ScilabString(["E"]);
-        this.x.graphics.in_style = new ScilabString([""]);
-        this.x.graphics.out_implicit = new ScilabString(["E"]);
-        this.x.graphics.out_style = new ScilabString([""]);
-        return new BasicBlock(this.x);
-    }
-    DELAY_f.prototype.details = function DELAY_f() {
-        return this.x;
-    }
-    DELAY_f.prototype.get = function DELAY_f() {
-        var options={
-            dt:["Discretization time step",this.dt],
-            zz0:["Register initial state",this.zz0.toString().replace(/,/g," ")],
-        }
-        return options;
-    }
-    DELAY_f.prototype.set = function DELAY_f() {
-    this.dt = parseFloat((arguments[0]["dt"]))
-    this.zz0 = inverse(arguments[0]["zz0"])
-    if(size(this.zz0,"*")<1){
-        alert("Register length must be at least 1");
-        DELAY_f.get();
-    }
-    if(this.dt<=0){
-        alert("Discretization time step must be positive");
-        DELAY_f.get();
-    }
-    return new BasicBlock(this.x)
-    }
+		input_port.graphics.orig = new ScilabDouble([92, 210]);
+		input_port.graphics.sz = new ScilabDouble([20, 20]);
+		input_port.graphics.flip = new ScilabBoolean([true]);
+		input_port.graphics.exprs = new ScilabString(["1"], ["1"]);
+		input_port.graphics.pout = new ScilabDouble([6]);
+		input_port.model.ipar = new ScilabDouble([1]);
+		input_port.model.uid = new ScilabString([count]); // changed
+		input_port.doc = list(new ScilabString([count++]));
+		input_port.model.outtyp = new ScilabDouble([-1]);
 
-}function DEMUX() {
+
+		output_port.graphics.orig = new ScilabDouble([440, 210]);
+		output_port.graphics.sz = new ScilabDouble([20, 20]);
+		output_port.graphics.flip = new ScilabBoolean([true]);
+		output_port.graphics.exprs = new ScilabString(["1"], ["1"]);
+		output_port.graphics.pin = new ScilabDouble([5]);
+		output_port.model.ipar = new ScilabDouble([1]);
+		output_port.model.uid = new ScilabString([count]); // changed
+		output_port.doc = list(new ScilabString([count++]));
+		output_port.model.outtyp = new ScilabDouble();
+
+
+		split.graphics.orig = new ScilabDouble([263, 271.2]);
+		split.graphics.pein = new ScilabDouble([7]);
+		split.graphics.peout = new ScilabDouble([9], [10]);
+		split.model.uid = new ScilabString([count]); // changed
+		split.doc = list(new ScilabString([count++]));
+
+
+		diagram.objs.push(input_port);
+		diagram.objs.push(output_port);
+		diagram.objs.push(register);
+		diagram.objs.push(evtdly);
+		diagram.objs.push(split);
+		diagram.objs.push(scicos_link({
+			xx: new ScilabDouble([296.6], [440]),
+			yy: new ScilabDouble([220], [220]),
+			from: new ScilabDouble([3, 1, 0]),
+			to: new ScilabDouble([2, 1, 1])
+		}));
+		diagram.objs.push(scicos_link({
+			xx: new ScilabDouble([112], [229.4]),
+			yy: new ScilabDouble([220], [220]),
+			from: new ScilabDouble([1, 1, 0]),
+			to: new ScilabDouble([3, 1, 1])
+		}));
+		diagram.objs.push(scicos_link({
+			xx: new ScilabDouble([263], [263]),
+			yy: new ScilabDouble([290.3], [271.2]),
+			ct: new ScilabDouble([5, -1]),
+			from: new ScilabDouble([4, 1, 0]),
+			to: new ScilabDouble([5, 1, 1])
+		}));
+		diagram.objs.push(scicos_link({
+			xx: new ScilabDouble([263], [263]),
+			yy: new ScilabDouble([271.2], [250.7]),
+			ct: new ScilabDouble([5, -1]),
+			from: new ScilabDouble([5, 1, 0]),
+			to: new ScilabDouble([3, 1, 1])
+		}));
+		diagram.objs.push(scicos_link({
+			xx: new ScilabDouble([263], [308.6], [308.6], [263], [263]),
+			yy: new ScilabDouble([271.2], [271.2], [367], [367], [341.7]),
+			ct: new ScilabDouble([5, -1]),
+			from: new ScilabDouble([5, 2, 0]),
+			to: new ScilabDouble([4, 1, 1])
+		}));
+		this.dt = 0.1;
+		this.z0 = zeros(11, 1);
+		this.zz0 = math.subset(this.z0, math.index(math.range(0, math.size(this.z0)[0] - 1), 0));
+		this.x = scicos_block();
+		this.x.gui = new ScilabString(["DELAY_f"]);
+		this.x.graphics.sz = new ScilabDouble([2, 2]);
+		this.x.graphics.gr_i = new ScilabDouble();
+		this.x.graphics.pin = new ScilabDouble([0]);
+		this.x.graphics.pout = new ScilabDouble([0]);
+		this.x.model.sim = new ScilabString(["csuper"]);
+		this.x.model.in = new ScilabDouble([1]);
+		this.x.model.out = new ScilabDouble([1]);
+		this.x.model.blocktype = new ScilabString(["h"]);
+		this.x.model.dep_ut = new ScilabBoolean([false, false]);
+		this.x.model.rpar = diagram;
+		this.x.graphics.in_implicit = new ScilabString(["E"]);
+		this.x.graphics.in_style = new ScilabString([""]);
+		this.x.graphics.out_implicit = new ScilabString(["E"]);
+		this.x.graphics.out_style = new ScilabString([""]);
+		return new BasicBlock(this.x);
+	}
+	DELAY_f.prototype.details = function DELAY_f() {
+		return this.x;
+	}
+	DELAY_f.prototype.get = function DELAY_f() {
+		var options = {
+			dt: ["Discretization time step", this.dt],
+			zz0: ["Register initial state", this.zz0.toString().replace(/,/g, " ")],
+		}
+		return options;
+	}
+	DELAY_f.prototype.set = function DELAY_f() {
+		this.dt = parseFloat((arguments[0]["dt"]))
+		this.zz0 = inverse(arguments[0]["zz0"])
+		if (size(this.zz0, "*") < 1) {
+			alert("Register length must be at least 1");
+			DELAY_f.get();
+		}
+		if (this.dt <= 0) {
+			alert("Discretization time step must be positive");
+			DELAY_f.get();
+		}
+
+
+
+		evtdly.model.rpar = new ScilabDouble(this.dt);
+		register.graphics.exprs = new ScilabString([this.zz0.toString().replace(/,/g, ";")]);
+		diagram.objs.push(input_port);
+		diagram.objs.push(output_port);
+		diagram.objs.push(register);
+		diagram.objs.push(evtdly);
+		diagram.objs.push(split);
+		diagram.objs.push(scicos_link({
+			xx: new ScilabDouble([296.6], [440]),
+			yy: new ScilabDouble([220], [220]),
+			from: new ScilabDouble([3, 1, 0]),
+			to: new ScilabDouble([2, 1, 1])
+		}));
+		diagram.objs.push(scicos_link({
+			xx: new ScilabDouble([112], [229.4]),
+			yy: new ScilabDouble([220], [220]),
+			from: new ScilabDouble([1, 1, 0]),
+			to: new ScilabDouble([3, 1, 1])
+		}));
+		diagram.objs.push(scicos_link({
+			xx: new ScilabDouble([263], [263]),
+			yy: new ScilabDouble([290.3], [271.2]),
+			ct: new ScilabDouble([5, -1]),
+			from: new ScilabDouble([4, 1, 0]),
+			to: new ScilabDouble([5, 1, 1])
+		}));
+		diagram.objs.push(scicos_link({
+			xx: new ScilabDouble([263], [263]),
+			yy: new ScilabDouble([271.2], [250.7]),
+			ct: new ScilabDouble([5, -1]),
+			from: new ScilabDouble([5, 1, 0]),
+			to: new ScilabDouble([3, 1, 1])
+		}));
+		diagram.objs.push(scicos_link({
+			xx: new ScilabDouble([263], [308.6], [308.6], [263], [263]),
+			yy: new ScilabDouble([271.2], [271.2], [367], [367], [341.7]),
+			ct: new ScilabDouble([5, -1]),
+			from: new ScilabDouble([5, 2, 0]),
+			to: new ScilabDouble([4, 1, 1])
+		}));
+		this.x.model.rpar = diagram;
+
+
+
+
+		return new BasicBlock(this.x)
+	}
+
+}
+
+function DEMUX() {
 
     DEMUX.prototype.define = function DEMUX() {
         this.out = 2;
@@ -7527,7 +7653,7 @@ function DLRADAPT_f() {
             g:["Vector of gain at mesh points",sci2exp(this.g)],
 	    last_u:["past inputs (Num degree values)",sci2exp([])],
 	    last_y:["past outputs (Den degree values)",sci2exp(this.last_y)],
-	     	
+
         }
         return options
     }
@@ -10518,7 +10644,9 @@ function FROMWSB() {
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x);
     }
-}function GAINBLK() {
+}
+
+function GAINBLK() {
 
     GAINBLK.prototype.define = function GAINBLK() {
         this.gain = 1;
@@ -10594,52 +10722,54 @@ GAINBLK.prototype.set = function GAINBLK() {
 
 }
 
+
 function GAINBLK_f() {
 
-    GAINBLK_f.prototype.define = function GAINBLK_f() {
-        this.gain = 1;
-        this.in1 = 1;
-        this.out = 1;
+	GAINBLK_f.prototype.define = function GAINBLK_f() {
+		this.gain = 1;
+		this.in1 = 1;
+		this.out = 1;
 
-        var model = scicos_model();
-        model.sim = new ScilabString(["gain"]);
-        model.in = new ScilabDouble([this.in1]);
-        model.out = new ScilabDouble([this.out]);
-        model.rpar = new ScilabDouble([this.gain]);
-        model.blocktype = new ScilabString(["c"]);
-        model.dep_ut = new ScilabBoolean([true, false]);
+		var model = scicos_model();
+		model.sim = new ScilabString(["gain"]);
+		model.in = new ScilabDouble([this.in1]);
+		model.out = new ScilabDouble([this.out]);
+		model.rpar = new ScilabDouble([this.gain]);
+		model.blocktype = new ScilabString(["c"]);
+		model.dep_ut = new ScilabBoolean([true, false]);
 
-        var exprs = new ScilabString([sci2exp(this.gain)]);
-        var n = sci2exp(this.gain).toString();
-        this.displayParameter=[n];
-        var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"GAINBLK_f\",sz(1),sz(2));"]);
-        this.x = new standard_define(new ScilabDouble([2, 2]), model, exprs, gr_i);
-        return new BasicBlock(this.x);
-    }
-    GAINBLK_f.prototype.details = function GAINBLK_f() {
-        return this.x;
-    }
-GAINBLK_f.prototype.get = function GAINBLK_f() {
-        var options={
-            gain:["Gain",this.gain.toString().replace(/,/g," ")],
-        }
-        return options
-    }
-GAINBLK_f.prototype.set = function GAINBLK_f() {
-    this.gain = inverse(arguments[0]["gain"])
-    if(this.gain.length==0){
-        alert("Gain must have at least one element");
-        GAINBLK_f.get();
-    }
-    this.out = size(this.gain,1)
-    this.in = size(this.gain,2)
-    var io = check_io(this.x.model,this.x.graphics,[this.in],[this.out],[],[])
-
-    this.x.model.rpar = new ScilabDouble(...this.gain)
-    var exprs = new ScilabString([sci2exp(this.gain)])
-    this.x.graphics.exprs=exprs
-    return new BasicBlock(this.x)
-    }
+		var exprs = new ScilabString([sci2exp(this.gain)]);
+		var n = sci2exp(this.gain).toString();
+		this.displayParameter = [n];
+		var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"GAINBLK_f\",sz(1),sz(2));"]);
+		this.x = new standard_define(new ScilabDouble([2, 2]), model, exprs, gr_i);
+		return new BasicBlock(this.x);
+	}
+	GAINBLK_f.prototype.details = function GAINBLK_f() {
+		return this.x;
+	}
+	GAINBLK_f.prototype.get = function GAINBLK_f() {
+		var options = {
+			gain: ["Gain", this.gain.toString().replace(/,/g, " ")],
+		}
+		return options
+	}
+	GAINBLK_f.prototype.set = function GAINBLK_f() {
+		this.gain = inverse(arguments[0]["gain"])
+		if (this.gain.length == 0) {
+			alert("Gain must have at least one element");
+			GAINBLK_f.get();
+		}
+		this.out = size(this.gain, 1)
+		this.in = size(this.gain, 2)
+		var io = check_io(this.x.model, this.x.graphics, [this.in], [this.out], [], [])
+		var n = arguments[0]["gain"];
+		this.displayParameter = [n];
+		this.x.model.rpar = new ScilabDouble(...this.gain)
+		var exprs = new ScilabString([this.gain.toString().replace(/,/g, " ")])
+		this.x.graphics.exprs = exprs
+		return new BasicBlock(this.x)
+	}
 }
 
 function GAIN_f() {
@@ -14608,7 +14738,7 @@ function M_freq() {
                 }
             }
         }
-        
+
          return new BasicBlock(this.x)
      }
 }
@@ -14672,7 +14802,7 @@ M_SWITCH.prototype.set = function M_SWITCH() {
     this.x.model.ipar = new ScilabDouble([this.base],[this.rule])
     var exprs = new ScilabString([this.nin],[this.base],[this.rule])
     this.x.graphics.exprs=exprs
-    
+
     return new BasicBlock(this.x)
     }
 }
@@ -16116,74 +16246,74 @@ POWBLK_f.prototype.set = function POWBLK_f() {
     return new BasicBlock(this.x)
     }
 }
-function PRODUCT() {
 
-    PRODUCT.prototype.define = function PRODUCT() {
-        this.sgn = [[1],[-1]];
+	PRODUCT.prototype.define = function PRODUCT() {
+		this.sgn = [
+			[1],
+			[-1]
+		];
 
-        var model = scicos_model();
-        model.sim = list(new ScilabString(["product"]), new ScilabDouble([4]));
-        model.in = new ScilabDouble([-1], [-1]);
-        model.out = new ScilabDouble([-1]);
-        model.ipar = new ScilabDouble(...this.sgn);
-        model.blocktype = new ScilabString(["c"]);
-        model.dep_ut = new ScilabBoolean([true, false]);
+		var model = scicos_model();
+		model.sim = list(new ScilabString(["product"]), new ScilabDouble([4]));
+		model.in = new ScilabDouble([-1], [-1]);
+		model.out = new ScilabDouble([-1]);
+		model.ipar = new ScilabDouble(...this.sgn);
+		model.blocktype = new ScilabString(["c"]);
+		model.dep_ut = new ScilabBoolean([true, false]);
 
-        var exprs = new ScilabString([sci2exp(this.sgn)]);
+		var exprs = new ScilabString([sci2exp(this.sgn)]);
 
-        var gr_i = new ScilabString(["xstringb(orig(1),orig(2),&quot;PRODUCT&quot;,sz(1),sz(2));"]);
-        this.x = new standard_define(new ScilabDouble([2, 3]), model, exprs, gr_i);
-        return new Product(this.x);
-    }
-    PRODUCT.prototype.details = function PRODUCT() {
-        return this.x;
-    }
-    PRODUCT.prototype.get = function PRODUCT() {
-        var options={
-            sgn:["Number of inputs or sign vector",this.sgn.toString().replace(/,/g," ")],
-        }
-        return options
-    }
-PRODUCT.prototype.set = function PRODUCT() {
-    this.sgn = inverse(arguments[0]["sgn"])
-    if(size(this.sgn,1) == 1){
-        if(this.sgn<1){
-            alert("Number of inputs must be > 0");
-            PRODUCT.get();
-        }
-        if(this.sgn[0] == 1){
-            this.in = -1
-            this.sgn = []
-            this.nout = 1
-        }else{
-            this.in = ones(this.sgn[0],1)
-            for (var i = this.in.length - 1; i >= 0; i--) {
-                this.in[i] = -1*this.in[i]
-            }
-            this.sgn = ones(this.sgn[0],1)
-            this.nout = -1
-        }
-    }
-    else
-    {
-        for(var i=0;i<size(this.sgn,1);i++){
-            for(var j=0;j<size(this.sgn,2);j++){
-                if(Math.abs(this.sgn[i][j])!=1){
-                    alert("Signs can only be +1 or -1");
-                    PRODUCT.get();
-                }
-            }
-        }
-        //if(Math.abs(this.sgn)!=1){
-            //alert("Signs can only be +1 or -1");
-            //PRODUCT.get();
-        //}
-    }
-    this.x.model.ipar = new ScilabDouble(...this.sgn);
-    var exprs = new ScilabString([sci2exp(this.sgn)],[this.divideByZero])
-    this.x.graphics.exprs=exprs
-    return new BasicBlock(this.x)
-    }
+		var gr_i = new ScilabString(["xstringb(orig(1),orig(2),&quot;PRODUCT&quot;,sz(1),sz(2));"]);
+		this.x = new standard_define(new ScilabDouble([2, 3]), model, exprs, gr_i);
+		return new Product(this.x);
+	}
+	PRODUCT.prototype.details = function PRODUCT() {
+		return this.x;
+	}
+	PRODUCT.prototype.get = function PRODUCT() {
+		var options = {
+			sgn: ["Number of inputs or sign vector", this.sgn.toString().replace(/,/g, " ")],
+		}
+		return options
+	}
+	PRODUCT.prototype.set = function PRODUCT() {
+		this.sgn = inverse(arguments[0]["sgn"])
+		if (size(this.sgn, 1) == 1) {
+			if (this.sgn < 1) {
+				alert("Number of inputs must be > 0");
+				PRODUCT.get();
+			}
+			if (this.sgn[0] == 1) {
+				this.in = -1
+				this.sgn = []
+				this.nout = 1
+			} else {
+				this.in = ones(this.sgn[0], 1)
+				for (var i = this.in.length - 1; i >= 0; i--) {
+					this.in[i] = -1 * this.in[i]
+				}
+				this.sgn = ones(this.sgn[0], 1)
+				this.nout = -1
+			}
+		} else {
+			for (var i = 0; i < size(this.sgn, 1); i++) {
+				for (var j = 0; j < size(this.sgn, 2); j++) {
+					if (Math.abs(this.sgn[i][j]) != 1) {
+						alert("Signs can only be +1 or -1");
+						PRODUCT.get();
+					}
+				}
+			}
+			//if(Math.abs(this.sgn)!=1){
+			//alert("Signs can only be +1 or -1");
+			//PRODUCT.get();
+			//}
+		}
+		this.x.model.ipar = new ScilabDouble(...this.sgn);
+		var exprs = new ScilabString([sci2exp(this.sgn)])
+		this.x.graphics.exprs = exprs
+		return new BasicBlock(this.x)
+	}
 }
 function PROD_f() {
 
@@ -17768,62 +17898,66 @@ SampleCLK.prototype.set = function SampleCLK() {
 
 function SATURATION() {
 
-    SATURATION.prototype.define = function SATURATION() {
-        this.minp = -1;
-        this.maxp = 1;
-        this.rpar = [[this.maxp], [this.minp]];
+	SATURATION.prototype.define = function SATURATION() {
+		this.minp = -1;
+		this.maxp = 1;
+		this.rpar = [
+			[this.maxp],
+			[this.minp]
+		];
 
-        var model = scicos_model();
-        model.sim = list(new ScilabString(["satur"]), new ScilabDouble([4]));
-        model.in = new ScilabDouble([1]);
-        model.nzcross = new ScilabDouble([2]);
-        model.nmode = new ScilabDouble([1]);
-        model.out = new ScilabDouble([1]);
-        model.rpar = new ScilabDouble(...this.rpar);
-        model.blocktype = new ScilabString(["c"]);
-        model.dep_ut = new ScilabBoolean([true, false]);
-        this.zeroc = parseFloat(getData(model.nmode)[0])
-        var exprs = new ScilabString([this.maxp], [this.minp], [parseFloat(getData(model.nmode)[0])]);
+		var model = scicos_model();
+		model.sim = list(new ScilabString(["satur"]), new ScilabDouble([4]));
+		model.in = new ScilabDouble([1]);
+		model.nzcross = new ScilabDouble([2]);
+		model.nmode = new ScilabDouble([1]);
+		model.out = new ScilabDouble([1]);
+		model.rpar = new ScilabDouble(...this.rpar);
+		model.blocktype = new ScilabString(["c"]);
+		model.dep_ut = new ScilabBoolean([true, false]);
+		this.zeroc = parseFloat(getData(model.nmode)[0])
+		var exprs = new ScilabString([this.maxp], [this.minp], [parseFloat(getData(model.nmode)[0])]);
 
-        var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"SATURATION\",sz(1),sz(2));"]);
-        this.x = new standard_define(new ScilabDouble([2, 2]), model, exprs, gr_i);
-        return new BasicBlock(this.x);
-    }
-    SATURATION.prototype.details = function SATURATION() {
-        return this.x;
-    }
-    SATURATION.prototype.get = function SATURATION() {
-        var options={
-            maxp:["Upper limit",this.maxp],
-            minp:["Lower limit",this.minp],
-            zeroc:["zero crossing (0:no, 1:yes)",this.zeroc],
-        }
-        return options
-    }
-    SATURATION.prototype.set = function SATURATION() {
-        this.maxp = parseFloat((arguments[0]["maxp"]))
-        this.minp = parseFloat((arguments[0]["minp"]))
-        this.zeroc = parseFloat((arguments[0]["zeroc"]))
+		var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"SATURATION\",sz(1),sz(2));"]);
+		this.x = new standard_define(new ScilabDouble([2, 2]), model, exprs, gr_i);
+		return new BasicBlock(this.x);
+	}
+	SATURATION.prototype.details = function SATURATION() {
+		return this.x;
+	}
+	SATURATION.prototype.get = function SATURATION() {
+		var options = {
+			maxp: ["Upper limit", this.maxp],
+			minp: ["Lower limit", this.minp],
+			zeroc: ["zero crossing (0:no, 1:yes)", this.zeroc],
+		}
+		return options
+	}
+	SATURATION.prototype.set = function SATURATION() {
+		this.maxp = parseFloat((arguments[0]["maxp"]))
+		this.minp = parseFloat((arguments[0]["minp"]))
+		this.zeroc = parseFloat((arguments[0]["zeroc"]))
 
-        if(this.maxp<=this.minp){
-            alert("Upper limit must be > Lower limit");
-            SATURATION.get();
-        }
-        var rpar = new ScilabDouble([this.maxp],[this.minp])
-        this.x.model.rpar =  rpar;
-        if(this.zeroc != 0){
-            this.x.model.nzcross = new ScilabDouble([2]);
-            this.x.model.nmode = new ScilabDouble([1]);
-        }
-        else{
-            this.x.model.nzcross = new ScilabDouble([0]);
-            this.x.model.nmode = new ScilabDouble([0]);
-        }
-        var exprs = new ScilabString([this.maxp],[this.minp],parseFloat(getData(model.nmode)[0]))
-        this.x.graphics.exprs=exprs
-        return new BasicBlock(this.x)
-    }
+		if (this.maxp <= this.minp) {
+			alert("Upper limit must be > Lower limit");
+			SATURATION.get();
+		}
+		var rpar = new ScilabDouble([this.maxp], [this.minp])
+		this.x.model.rpar = rpar;
+		if (this.zeroc != 0) {
+			this.x.model.nzcross = new ScilabDouble([2]);
+			this.x.model.nmode = new ScilabDouble([1]);
+		} else {
+			this.x.model.nzcross = new ScilabDouble([0]);
+			this.x.model.nmode = new ScilabDouble([0]);
+		}
+
+		var exprs = new ScilabString([this.maxp], [this.minp], [this.zeroc])
+		this.x.graphics.exprs = exprs
+		return new BasicBlock(this.x)
+	}
 }
+
 
 function SAWTOOTH_f() {
     SAWTOOTH_f.prototype.get = function SAWTOOTH_f() {
@@ -19162,7 +19296,7 @@ this.initialvalue="int8(0)";
 	    this.x.graphics.exprs=exprs
 	    return new BasicBlock(this.x)
     }
-    
+
     SRFLIPFLOP.prototype.details = function SRFLIPFLOP() {
         return this.x;
     }
@@ -19960,7 +20094,7 @@ function TEXT_f() {
     }
 
 TEXT_f.prototype.get = function TEXT_f() {
-        
+
         var options={
             tag:["Type your text",this.tag],
         }
@@ -20533,7 +20667,7 @@ function VVsourceAC() {
 
     VVsourceAC.prototype.define = function VVsourceAC() {
         var model = scicos_model();
-	
+
         model.in = new ScilabDouble([1], [1]);
         model.out = new ScilabDouble([1]);
 
