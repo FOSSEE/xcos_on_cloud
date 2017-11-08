@@ -1,6 +1,6 @@
 $.getScript('math.js');
 
-// @Adhitya: 02-07-2016: Commented Jitesh's work to call Data Structures individually, 
+// @Adhitya: 02-07-2016: Commented Jitesh's work to call Data Structures individually,
 // and combined all of them into combined.js using combine_script.bat
 
 /*
@@ -15,7 +15,7 @@ $.ajax({
       url: "/data_structures_correct/"
     },
     success: function (data) {
-        
+
        // @Parameter: data will have the required filenames in the mentioned folder
        // For each url, add the script to the body div element with getScript function
       for (i in data) {
@@ -38,7 +38,7 @@ String.prototype.replaceAt=function(index, character) {
     Maverick, Adhitya
     ImplicitInBlock, ImplicitOutBlock, ExplicitInBlock, ExplicitOutBlock
     These blocks need their orderings to be handled.
-    We are using a bitmap to do the same. 
+    We are using a bitmap to do the same.
 */
 
 function handleOrdering(inOrOut){
@@ -62,7 +62,7 @@ function handleOrdering(inOrOut){
         window.outBitMap=bitmap;
     }
     var position = 1+index;
-    
+
     return position;
 }
 
@@ -458,7 +458,7 @@ function RoundBlock() {
 }
 
 function GroundBlock() {
-    
+
     if (arguments.length > 0) {
         var options = arguments[0];
         this.angle = options.angle; // Not Known
@@ -1364,7 +1364,7 @@ function size() {
     }
 }
 
- 
+
 
 function Min(){
     var array = arguments[0];
@@ -1381,8 +1381,8 @@ function sum(){
     var matrix = arguments[0]
     for (var i = 0; i < matrix.length; i++) {
         sum+=parseInt(matrix[i]);
-    } 
-    return sum;  
+    }
+    return sum;
 }
 
 function Or(){
@@ -1390,7 +1390,7 @@ function Or(){
     var value = false;
     for (var i = array.length - 1; i >= 0; i--) {
         value = value || (array[i] == 'true');
-    } 
+    }
     return value;
 }
 
@@ -1399,7 +1399,7 @@ function Not(){
     var result=[];
     for (var i = array.length - 1; i >= 0; i--) {
         result[i] = !array[i];
-    } 
+    }
     return result;
 }
 
@@ -1426,7 +1426,7 @@ function compare(){//will return an array of boolean values "compares if array1>
         break;
 
     }
-    return result;    
+    return result;
 }
 
 //converts [1,1;1,2] => [[1,1],[1,2]]
