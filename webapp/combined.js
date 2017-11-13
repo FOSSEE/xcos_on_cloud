@@ -12510,7 +12510,7 @@ function LOGICAL_OP() {
         return this.x;
     }
     LOGICAL_OP.prototype.get = function LOGICAL_OP() {
-        
+
         var options={
 	    nin:["number of inputs" ,this.nin.toString()],
             oprt:["Operator: AND (0), OR (1), NAND (2), NOR (3), XOR (4), NOT (5)",this.oprt],
@@ -12572,7 +12572,7 @@ alert("Only one input allowed for NOT operation");
         var io = check_io(this.x.model,this.x.graphics,this.nin,this.nout,[],[])
     }
 
-        
+
 	this.x.model.out = new ScilabDouble([0]);
     	this.x.model.ipar = new ScilabDouble(...this.nin)
     	var exprs = new ScilabString(this.nin.toString())
@@ -16247,6 +16247,8 @@ POWBLK_f.prototype.set = function POWBLK_f() {
     }
 }
 
+
+function PRODUCT() {
 	PRODUCT.prototype.define = function PRODUCT() {
 		this.sgn = [
 			[1],
@@ -17345,7 +17347,7 @@ function RELATIONALOP() {
         return this.x;
     }
     RELATIONALOP.prototype.get = function RELATIONALOP() {
-        
+
         var options={
             oprt:["Operator:==(0),~=(1),<(2),<=(3),>(4),>=(5)",this.oprt],
 	    zcr:["Use zero crossing (no: 0), (yes: 1)" ,this.zcr],
