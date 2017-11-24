@@ -242,6 +242,7 @@ function ANDBLK() {
             from: new ScilabDouble([6, 2, 0]),
             to: new ScilabDouble([5, 1, 1])
         }));
+	
         this.x = scicos_block();
         this.x.gui = new ScilabString(["ANDBLK"]);
         this.x.graphics.sz = new ScilabDouble([2, 2]);
@@ -661,8 +662,8 @@ function BIGSOM_f() {
 }
 function BITCLEAR() {
     BITCLEAR.prototype.define = function BITCLEAR() {
-        this.Datatype=3
-        this.bit=0
+        this.Datatype=3;
+        this.bit=0;
         var model = scicos_model();
         model.sim = list(new ScilabString(["bit_clear_32"]), new ScilabDouble([4]));
         model.in = new ScilabDouble([1]);
@@ -693,8 +694,8 @@ function BITCLEAR() {
         return options
     }
     BITCLEAR.prototype.set=function BITCLEAR(){
-        this.Datatype = parseFloat((arguments[0]["Datatype"]))
-        this.bit = parseFloat((arguments[0]["bit"]))
+        this.Datatype = parseInt((arguments[0]["Datatype"]))
+        this.bit = parseInt((arguments[0]["bit"]))
         if(Math.floor(this.bit)!=this.bit){
                alert("Wrong type for 'Index of Bit' parameter:"+this.bit+"\nMust be integer.");
                 BITCLEAR.get();
@@ -723,19 +724,22 @@ function BITCLEAR() {
                 BITCLEAR.get();
         }
         if(this.Datatype == 3 || this.Datatype == 6){
-            this.bit = uint32(this.bit)
+            this.bit = Uint32Array.of(this.bit)
+
             this.n = (Math.pow(2,32)-1)-Math.pow(2,this.bit)
+
             this.n = uint32(this.n)
+
             this.x.model.sim = list(new ScilabString(["bit_clear_32"]), new ScilabDouble([4]));
         }
         else if(this.Datatype == 4 || this.Datatype == 7){
-            this.bit = uint16(this.bit)
+            this.bit = Uint16Array.of(this.bit)
             this.n = (Math.pow(2,16)-1)-Math.pow(2,this.bit)
             this.n = uint16(this.n)
             this.x.model.sim = list(new ScilabString(["bit_clear_16"]), new ScilabDouble([4]));
         }
         else if(this.Datatype == 5 || this.Datatype == 8){
-            this.bit = uint8(this.bit)
+            this.bit = Uint8Array.of(this.bit)
             this.n = (Math.pow(2,8)-1)-Math.pow(2,this.bit)
             this.n = uint8(this.n)
             this.x.model.sim = list(new ScilabString(["bit_clear_8"]), new ScilabDouble([4]));
@@ -756,8 +760,8 @@ function BITCLEAR() {
 function BITSET() {
 
     BITSET.prototype.define = function BITSET() {
-        this.bit = 0
-        this.Datatype = 3
+        this.bit = 0;
+        this.Datatype = 3;
         var model = scicos_model();
         model.sim = list(new ScilabString(["bit_set_32"]), new ScilabDouble([4]));
         model.in = new ScilabDouble([1]);
@@ -820,20 +824,20 @@ function BITSET() {
         }
         if(this.Datatype == 3 || this.Datatype == 6){
             this.n = Math.pow(2,this.bit)
-            this.bit = uint32(this.bit)
-            this.n = uint32(this.n)
+            this.bit = Uint32Array.of(this.bit)
+            this.n = Uint32Array.of(this.n)
             this.x.model.sim = list(new ScilabString(["bit_set_32"]), new ScilabDouble([4]));
         }
         else if(this.Datatype == 4 || this.Datatype == 7){
             this.n = Math.pow(2,this.bit)
-            this.bit = uint16(this.bit)
-            this.n = uint16(this.n)
+            this.bit = Uint16Array.of(this.bit)
+            this.n = Uint16Array.of(this.n)
             this.x.model.sim = list(new ScilabString(["bit_set_16"]), new ScilabDouble([4]));
         }
         else if(this.Datatype == 5 || this.Datatype == 8){
             this.n = Math.pow(2,this.bit)
-            this.bit = uint8(this.bit)
-            this.n = uint8(this.n)
+            this.bit = Uint8Array.of(this.bit)
+            this.n =Uint8Array.of(this.n)
             this.x.model.sim = list(new ScilabString(["bit_set_8"]), new ScilabDouble([4]));
         }
 
@@ -847,8 +851,8 @@ function BITSET() {
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
     }
-BITSET.prototype.details = function BITSET() {
-    return this.x
+	BITSET.prototype.details = function BITSET() {
+   	 return this.x
     }
 }
 function BOUNCE() {
@@ -908,7 +912,7 @@ function BOUNCE() {
 	yd:["Ydpos",this.yd.toString().replace(/,/g," ")],
 	g:["g(gravity) ",this.g],
 	c:["C (aerodynamic coeff) ",this.c],
-
+        
          }
     return options
 
@@ -930,7 +934,7 @@ function BOUNCE() {
 	var model = scicos_model();
 	model.rpar = new ScilabDouble(...this.rpar1, ...this.rpar2, ...this.walls, [this.g], [this.c]);
         model.ipar = new ScilabDouble(...this.ipar);
-	model.in = new ScilabDouble();
+	model.in = new ScilabDouble(); 
 	model.out = new ScilabDouble([this.n], [this.n]);
         model.state = new ScilabDouble(...colon_operator(this.state));
         model.rpar = new ScilabDouble(...this.rpar1, ...this.rpar2, ...this.walls, [this.g], [this.c]);
@@ -1702,12 +1706,8 @@ function CEVENTSCOPE() {
 	this.wdim = [[600],[400]];
 	this.per = 30;
         this.nclock = 1;
-        this.win = -1;
-        this.clrs = [[1]];
-        this.wdim = [[600],[400]];
-        this.wpos = [[-1],[-1]];
-        this.per = 30;
-
+         this.clrs = [[1],[3],[5],[7],[9],[11],[13],[15]];
+        
         var model = scicos_model();
         model.sim = list(new ScilabString(["cevscpe"]), new ScilabDouble([4]));
         model.evtin = new ScilabDouble([1]);
@@ -1715,8 +1715,8 @@ function CEVENTSCOPE() {
         model.ipar = new ScilabDouble([this.win], [1], this.clrs[this.nclock - 1], ...this.wpos, ...this.wdim);
         model.blocktype = new ScilabString(["d"]);
         model.dep_ut = new ScilabBoolean([false, false]);
-
-        var exprs = new ScilabString([sci2exp(this.nclock)], this.clrs[this.nclock - 1], [this.win], [sci2exp([])], [sci2exp(this.wdim)], 		[this.per]);
+ //var exprs = new ScilabString([this.nclock],[this.clrs.toString().replace(/,/g," ")],[this.win],["[]"],[this.wdim.toString().replace(/,/g, " ")],[this.per])
+        var exprs = new ScilabString([this.nclock],[sci2exp(this.clrs[this.nclock - 1])],[this.win],[sci2exp(this.wpos)],[sci2exp(this.wdim)],[this.per]);
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"CEVENTSCOPE\",sz(1),sz(2));"]);
         this.x = new standard_define(new ScilabDouble([2, 2]), model, exprs, gr_i);
         return new BasicBlock(this.x);
@@ -1727,7 +1727,7 @@ function CEVENTSCOPE() {
 
     CEVENTSCOPE.prototype.get = function CEVENTSCOPE() {
 	var options={
-		numevents:["Number of events inputs",this.numevents],
+		nclock:["Number of events inputs",this.nclock],
 		clrs:["Color c(>0) or mark (<0)",this.clrs.toString().replace(/,/g," ")],
 		win:["Output window number (-1 for automatic)",this.win],
  		wpos:["Output window position",this.wpos.toString().replace(/,/g," ")],
@@ -1742,7 +1742,7 @@ function CEVENTSCOPE() {
     }
 
     CEVENTSCOPE.prototype.set = function CEVENTSCOPE() {
-    this.numevents=arguments[0]["numevents"]
+    this.nclock=arguments[0]["nclock"]
     this.clrs = inverse((arguments[0]["clrs"]))
     this.win = parseFloat((arguments[0]["win"]))
     this.wpos = inverse(arguments[0]["wpos"])
@@ -1775,11 +1775,11 @@ function CEVENTSCOPE() {
 		this.wdim = [[-1],[-1]];
 	    }
 
-	    var rpar = new ScilabDouble([0],[this.per])
+	    var rpar = new ScilabDouble([this.per])
 	    var ipar = new ScilabDouble([this.win],[1],...this.clrs,...this.wpos,...this.wdim)
 	    this.x.model.rpar = rpar
 	    this.x.model.ipar = ipar
-	    var exprs = new ScilabString([this.clrs.toString().replace(/,/g," ")],[this.win],["[]"],[this.wdim.toString().replace(/,/g, " ")],[this.per])
+	    var exprs = new ScilabString([this.nclock],[sci2exp(this.clrs[this.nclock - 1])],[this.win],[sci2exp(this.wpos)],[sci2exp(this.wdim)],[this.per])
 	    this.x.graphics.exprs=exprs
 	    return new BasicBlock(this.x)
     }
@@ -2959,7 +2959,7 @@ function CLR() {
 
         var exprs = new ScilabString(["1"], ["1+s"]);
 
-        this.displayParameter = [["1"], ["1"]];
+        this.displayParameter = [["1"], ["1+s"]];
         var gr_i = [];
         this.x = new standard_define(new ScilabDouble([3, 2]), model, exprs, gr_i);
         return new BasicBlock(this.x);
@@ -2978,7 +2978,22 @@ function CLR() {
         //this.x.model.rpar = rpar
         //var exprs = new ScilabString(this.num,this.den)
         //this.x.graphics.exprs=exprs
-        return new BasicBlock(this.x)
+	var str="("+this.num+")/("+this.den+")";
+	var value=math.eval(str);
+	var model = scicos_model();
+        model.sim = list(new ScilabString(["csslti4"]), new ScilabDouble([4]));
+        model.in = new ScilabDouble([1]);
+        model.out = new ScilabDouble([1]);
+        model.state = new ScilabDouble([this.x0]);
+        model.rpar = new ScilabDouble([value]);
+        model.blocktype = new ScilabString(["c"]);
+        model.dep_ut = new ScilabBoolean([false, true]);
+        var exprs = new ScilabString([this.num.toString()], [this.den.toString()]);
+        this.displayParameter = [this.num.toString(), this.den.toString()];
+        var gr_i = [];
+        this.x = new standard_define(new ScilabDouble([3, 2]), model, exprs, gr_i);
+        return new BasicBlock(this.x);
+       
     }
     CLR.prototype.details = function CLR() {
         return this.x;
@@ -3331,6 +3346,7 @@ function CMSCOPE() {
     }
 }
 
+
 function CONST() {
 
 
@@ -3584,7 +3600,7 @@ CONSTRAINT_c.prototype.set = function CONSTRAINT_c() {
 function CONST_f() {
 
     CONST_f.prototype.define = function CONST_f() {
-        this.C = 1;
+        this.C = [1];
 
         var model = scicos_model();
         model.sim = list(new ScilabString(["cstblk"]), new ScilabDouble([1]));
@@ -3595,8 +3611,7 @@ function CONST_f() {
         model.dep_ut = new ScilabBoolean([false, false]);
 
         var exprs = new ScilabString([sci2exp(this.C)]);
-        var n = sci2exp(this.C).toString();
-        this.displayParameter = [n];
+        this.displayParameter = [1];
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"CONST_f\",sz(1),sz(2));"]);
         this.x = new standard_define(new ScilabDouble([2, 2]), model, exprs, gr_i);
         return new BasicBlock(this.x);
@@ -3619,6 +3634,7 @@ CONST_f.prototype.set = function CONST_f() {
         alert("C must have at least one element");
         CONST_f.get();
     }
+	 this.displayParameter = [this.C];
     this.x.model.rpar = new ScilabDouble(...this.C)
     this.x.model.out = new ScilabDouble(this.nout)
     var exprs = new ScilabString([this.C.toString().replace(/,/g, " ")])
@@ -12480,6 +12496,45 @@ LOGIC.prototype.set = function LOGIC() {
     return new BasicBlock(this.x)
     }
 }
+/*function LOGICAL_OP() {
+
+    LOGICAL_OP.prototype.define = function LOGICAL_OP() {
+        this.in1 = [[-1], [-1]];
+        this.ipar = 0;
+        this.nin = 2;
+	this.label="AND";
+	this.oprt=0;
+	this.bit=0;
+	this.data=1;
+	var arr = [];
+        arr.push(math.range(-1, -this.nin, -1, true)._data);
+        var model = scicos_model();
+        model.sim = list(new ScilabString(["logicalop"]), new ScilabDouble([4]));
+        model.in = new ScilabDouble(...math.transpose(arr));
+        model.out = new ScilabDouble([0]);
+        model.ipar = new ScilabDouble([this.oprt]);
+        model.blocktype = new ScilabString(["c"]);
+        model.dep_ut = new ScilabBoolean([true, false]);
+	this.displayParameter = [this.label];
+        var exprs = new ScilabString([this.nin],[this.ipar]);
+
+        var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"LOGICAL_OP\",sz(1),sz(2));"]);
+        this.x = new standard_define(new ScilabDouble([2, 2]), model, exprs, gr_i);
+        return new BasicBlock(this.x);
+    }
+    LOGICAL_OP.prototype.details = function LOGICAL_OP() {
+        return this.x;
+    }
+    LOGICAL_OP.prototype.get = function LOGICAL_OP() {
+        
+        var options={
+	    nin:["number of inputs" ,this.nin.toString()],
+            oprt:["Operator: AND (0), OR (1), NAND (2), NOR (3), XOR (4), NOT (5)",this.oprt],
+	    bit:["Bitwise Rule(0=No 1=yes)" ,this.bit],
+	    data:["Datatype (1=double 3=int32 ...)" ,this.data],
+        }
+        return options
+    }*/
 function LOGICAL_OP() {
 
     LOGICAL_OP.prototype.define = function LOGICAL_OP() {
@@ -12496,11 +12551,11 @@ function LOGICAL_OP() {
         model.sim = list(new ScilabString(["logicalop"]), new ScilabDouble([4]));
         model.in = new ScilabDouble(...math.transpose(arr));
         model.out = new ScilabDouble([0]);
-        model.ipar = new ScilabDouble([this.oprt],[this.nin]);
+        model.ipar = new ScilabDouble([0]);
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 	this.displayParameter = [this.label];
-        var exprs = new ScilabString([this.nin]);
+        var exprs = new ScilabString([this.nin],[this.oprt],[this.data],[this.bit]);
 
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"LOGICAL_OP\",sz(1),sz(2));"]);
         this.x = new standard_define(new ScilabDouble([2, 2]), model, exprs, gr_i);
@@ -12510,7 +12565,7 @@ function LOGICAL_OP() {
         return this.x;
     }
     LOGICAL_OP.prototype.get = function LOGICAL_OP() {
-
+        
         var options={
 	    nin:["number of inputs" ,this.nin.toString()],
             oprt:["Operator: AND (0), OR (1), NAND (2), NOR (3), XOR (4), NOT (5)",this.oprt],
@@ -12524,9 +12579,35 @@ function LOGICAL_OP() {
         this.oprt = parseInt((arguments[0]["oprt"]))
 	this.bit = parseInt((arguments[0]["bit"]))
 	this.data = parseInt((arguments[0]["data"]))
-if (this.oprt==5 && this.nin>1){
-alert("Only one input allowed for NOT operation");
-}
+	if (this.oprt==5 && this.nin>1){
+	alert("Only one input allowed for NOT operation");
+	}
+		var model = scicos_model();
+		if (this.data==1) {
+                model.sim=list(new ScilabString(["logicalop"]), new ScilabDouble([4]));
+		model.ipar = new ScilabDouble([this.oprt],[this.bit]);
+		}
+            	else if (this.data==3) {
+                model.sim=list(new ScilabString(["logicalop_i32"]), new ScilabDouble([4]));
+		}
+            	else if(this.data==4) { 
+                model.sim=list(new ScilabString(["logicalop_i16"]), new ScilabDouble([4]));
+		}
+            	else if(this.data==5) { 
+                model.sim=list(new ScilabString(["logicalop_i8"]), new ScilabDouble([4]));
+		}
+            	else if(this.data==6) { 
+                model.sim=list(new ScilabString(["logicalop_ui32"]), new ScilabDouble([4]));
+		}
+            	else if(this.data==7) {
+                model.sim=list(new ScilabString(["logicalop_ui16"]), new ScilabDouble([4]));
+		}
+            	else if(this.data==8){
+                model.sim=list(new ScilabString(["logicalop_ui8"]), new ScilabDouble([4]));
+		}
+            	else {
+                alert("Datatype is not supported");
+                }
 
 	if(this.oprt <0 || this.oprt >5){
 	alert("Incorrect operator must be 0 to 5.");
@@ -12550,12 +12631,12 @@ alert("Only one input allowed for NOT operation");
                     this.label = "NOT"; // >=
 		}
 	var model = scicos_model();
-         model.sim = list(new ScilabString(["logicalop"]), new ScilabDouble([4]));
+       // model.sim = list(new ScilabString(["logicalop"]), new ScilabDouble([4]));
 	var arr = [];
         arr.push(math.range(-1, -this.nin, -1, true)._data);
         model.in = new ScilabDouble(...math.transpose(arr));
         model.out = new ScilabDouble([0]);
-        model.ipar = new ScilabDouble([this.oprt],[this.nin]);
+        model.ipar = new ScilabDouble([this.oprt],[this.bit]);
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 	this.displayParameter = [this.label];
@@ -12567,15 +12648,15 @@ alert("Only one input allowed for NOT operation");
         }
         var io = check_io(this.x.model,this.x.graphics,this.inp,0,[],[])
     }
-    else{
+    	else{
         this.nout = sum(this.in1)
         var io = check_io(this.x.model,this.x.graphics,this.nin,this.nout,[],[])
     }
 
-
+        
 	this.x.model.out = new ScilabDouble([0]);
-    	this.x.model.ipar = new ScilabDouble(...this.nin)
-    	var exprs = new ScilabString(this.nin.toString())
+    	this.x.model.ipar = new ScilabDouble(this.oprt,this.bit)
+    	var exprs = new ScilabString(this.nin.toString(),this.oprt.toString(),this.data.toString(),this.bit.toString())
     	this.x.graphics.exprs = exprs
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"LOGICAL_OP\",sz(1),sz(2));"]);
         this.x = new standard_define(new ScilabDouble([2, 2]), model, exprs, gr_i);
@@ -14233,7 +14314,8 @@ function MCLOCK_f() {
     MCLOCK_f.prototype.define = function MCLOCK_f() {
 	this.period=0.1;
 	this.multiplyby=2;
-        this.nn = 2;
+        //var exprs = new ScilabString([this.period], [this.multiplyby]);
+ 	this.nn = 2;
         this.dt = 0.1;
         var exprs = new ScilabString([this.dt], [this.nn]);
 
@@ -14373,9 +14455,21 @@ function MCLOCK_f() {
         return options
     }
     MCLOCK_f.prototype.set = function MCLOCK_f() {
-   	 this.period = parseFloat((arguments[0]["period"]))
-    	 this.multiplyby = parseFloat((arguments[0]["multiplyby"]))
-    	 return new BasicBlock(this.x)
+   	 this.period = ((arguments[0]["period"]))
+    	 this.multiplyby = ((arguments[0]["multiplyby"]))
+	var gr_i = new ScilabString(["xstringb(orig(1),orig(2),&quot;MCLOCK_f&quot;,sz(1),sz(2));"]);
+	this.x = scicos_block();
+	var exprs = new ScilabString([this.period], [this.multiplyby]);
+        this.x.gui = new ScilabString(["MCLOCK_f"]);
+        this.x.graphics.sz = new ScilabDouble([3, 2]);
+        this.x.graphics.gr_i = gr_i;
+        this.x.model.sim = new ScilabString(["csuper"]);
+        this.x.model.evtout = new ScilabDouble([1], [1]);
+        this.x.model.blocktype = new ScilabString(["h"]);
+        this.x.model.rpar = diagram;
+        this.x.graphics.peout = new ScilabDouble([0], [0]);
+        return new BasicBlock(this.x);
+    	 
     }
     MCLOCK_f.prototype.details = function MCLOCK_f() {
         return this.x;
@@ -14738,7 +14832,7 @@ function M_freq() {
                 }
             }
         }
-
+        
          return new BasicBlock(this.x)
      }
 }
@@ -14802,7 +14896,7 @@ M_SWITCH.prototype.set = function M_SWITCH() {
     this.x.model.ipar = new ScilabDouble([this.base],[this.rule])
     var exprs = new ScilabString([this.nin],[this.base],[this.rule])
     this.x.graphics.exprs=exprs
-
+    
     return new BasicBlock(this.x)
     }
 }
@@ -15104,8 +15198,16 @@ function NRMSOM_f() {
     }
 NRMSOM_f.prototype.set = function NRMSOM_f() {
     this.nin = parseFloat((arguments[0]["nin"]))
+var model = scicos_model();
+        model.sim = new ScilabString(["junk"]);
+        model.in = new ScilabDouble(...this.in1);
+        model.out = new ScilabDouble([-1]);
+        model.blocktype = new ScilabString(["c"]);
+        model.dep_ut = new ScilabBoolean([true, false]);
     var exprs = new ScilabString([this.nin])
     this.x.graphics.exprs=exprs
+ var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"NRMSOM_f\",sz(1),sz(2));"]);
+        this.x = new standard_define(new ScilabDouble([.2, 2]), model, exprs, gr_i);
     return new BasicBlock(this.x)
     }
 }
@@ -16018,7 +16120,22 @@ function PID() {
 	this.prop = arguments[0]["prop"]
 	this.integ = arguments[0]["integ"]
 	this.deriv = arguments[0]["deriv"]
-	return new BasicBlock(this.x)
+	var model = scicos_model();
+        model.sim = new ScilabString(["csuper"]);
+        model.in = new ScilabDouble([-1]);
+        model.in2 = new ScilabDouble([-2]);
+        model.out = new ScilabDouble([-1]);
+        model.out2 = new ScilabDouble([-2]);
+        model.intyp = new ScilabDouble([1]);
+        model.outtyp = new ScilabDouble([1]);
+        model.blocktype = new ScilabString(["h"]);
+        model.firing = new ScilabBoolean([false]);
+        model.dep_ut = new ScilabBoolean([false, false]);
+        model.rpar = scs_m;
+
+        var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"PID\",sz(1),sz(2));"]);
+        this.x = new standard_define(new ScilabDouble([2, 2]), model, new ScilabDouble(), gr_i);
+        return new BasicBlock(this.x);
     }
     PID.prototype.details = function PID() {
         return this.x;
@@ -16320,7 +16437,19 @@ function PRODUCT() {
 function PROD_f() {
 
     PROD_f.prototype.get = function PROD_f() {
-        alert("parameters could not be set")
+        alert("parameters could not be set");
+	
+    }
+PROD_f.prototype.set = function PROD_f() {
+        
+	var model = scicos_model();
+        model.sim = list(new ScilabString(["prod"]), new ScilabDouble([2]));
+        model.in = new ScilabDouble([-1], [-1]);
+        model.out = new ScilabDouble([-1]);
+        model.blocktype = new ScilabString(["c"]);
+        model.dep_ut = new ScilabBoolean([true, false]);
+
+        this.x = new standard_define(new ScilabDouble([1, 1]), model, new ScilabDouble(), new ScilabString());
         return new RoundBlock(this.x);
     }
 
@@ -17347,7 +17476,7 @@ function RELATIONALOP() {
         return this.x;
     }
     RELATIONALOP.prototype.get = function RELATIONALOP() {
-
+        
         var options={
             oprt:["Operator:==(0),~=(1),<(2),<=(3),>(4),>=(5)",this.oprt],
 	    zcr:["Use zero crossing (no: 0), (yes: 1)" ,this.zcr],
@@ -17381,40 +17510,35 @@ function RELATIONALOP() {
                     this.label = ">"; // >
 		}
                 else if (this.oprt == 5 ){
-                    label = ">="; // >=
+                    this.label = ">="; // >=
 		}
-	/*if (this.data==1) {
- var model = scicos_model();
+		var model = scicos_model();
+
+		if (this.data==1) {
                 model.sim=list(new ScilabString(["relationalop"]), new ScilabDouble([4]));
-}
-            else if (this.data==3|| this.data==9) {
- var model = scicos_model();
+		}
+            	else if (this.data==3|| this.data==9) {
                 model.sim=list(new ScilabString(["relational_op_i32"]), new ScilabDouble([4]));
-}
-            else if(this.data==4) {
- var model = scicos_model();
+		}
+            	else if(this.data==4) { 
                 model.sim=list(new ScilabString(["relational_op_i16"]), new ScilabDouble([4]));
-}
-            else if(this.data==5) {
- var model = scicos_model();
+		}
+            	else if(this.data==5) { 
                 model.sim=list(new ScilabString(["relational_op_i8"]), new ScilabDouble([4]));
-}
-            else if(this.data==6) {
- var model = scicos_model();
+		}
+            	else if(this.data==6) { 
                 model.sim=list(new ScilabString(["relational_op_ui32"]), new ScilabDouble([4]));
-}
-            else if(this.data==7) {
- var model = scicos_model();
+		}
+            	else if(this.data==7) {
                 model.sim=list(new ScilabString(["relational_op_ui16"]), new ScilabDouble([4]));
-}
-            else if(this.data==8){
- var model = scicos_model();
+		}
+            	else if(this.data==8){
                 model.sim=list(new ScilabString(["relational_op_ui8"]), new ScilabDouble([4]));
-}
-            else {
+		}
+            	else {
                 alert("Datatype is not supported");
 		//RELATIONALOP.get();
-                }*/
+                }
 
  	var model = scicos_model();
 	model.sim = list(new ScilabString(["relationalop"]), new ScilabDouble([4]));
@@ -18733,8 +18857,24 @@ function SOM_f() {
         this.x = new standard_define(new ScilabDouble([2,2]), model, exprs, gr_i);
         return new BasicBlock(this.x);
     }
+	SOM_f.prototype.set = function SOM_f() {
+        this.sgn = [[1], [1], [1]];
 
-    SINBLK_f.prototype.details = function SINBLK_f() {
+        var model = scicos_model();
+        model.sim = list(new ScilabString(["sum"]), new ScilabDouble([2]));
+        model.in = new ScilabDouble([-1], [-1], [-1]);
+        model.out = new ScilabDouble([-1]);
+        model.rpar = new ScilabDouble(...this.sgn);
+        model.blocktype = new ScilabString(["c"]);
+        model.dep_ut = new ScilabBoolean([true, false]);
+
+        var exprs = new ScilabString([sci2exp(1)], [sci2exp(this.sgn)]);
+
+        var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"SOM_f\",sz(1),sz(2));"]);
+        this.x = new standard_define(new ScilabDouble([2,2]), model, exprs, gr_i);
+        return new BasicBlock(this.x);
+    }
+    SOM_f.prototype.details = function SOM_f() {
         return this.x;
     }
 }
@@ -19298,7 +19438,7 @@ this.initialvalue="int8(0)";
 	    this.x.graphics.exprs=exprs
 	    return new BasicBlock(this.x)
     }
-
+    
     SRFLIPFLOP.prototype.details = function SRFLIPFLOP() {
         return this.x;
     }
@@ -19518,7 +19658,7 @@ function SUMMATION() {
 	this.satur = 0;
         var model = scicos_model();
         model.sim = list(new ScilabString(["summation"]), new ScilabDouble([4]));
-	model.rpar = new ScilabDouble(...this.sgn);
+	//model.rpar = new ScilabDouble(...this.sgn);
         model.in = new ScilabDouble([1], [-1]);
         model.out = new ScilabDouble([-1]);
         model.in2 = new ScilabDouble([-2], [-2]);
@@ -19609,7 +19749,7 @@ function SUMMATION() {
             }
 
             //this.in = oness(this.sgn,1)
-this.in = ones(size(this.sgn,"*"),1)
+	    this.in = ones(size(this.sgn,"*"),1)
             for (var i = this.in.length - 1; i >= 0; i--) {
                 this.in[i][0] = -1*this.in[i][0]
             }
@@ -19676,28 +19816,69 @@ this.in = ones(size(this.sgn,"*"),1)
             }
 
         }
+/*var model = scicos_model();
+        model.sim = list(new ScilabString(["summation"]), new ScilabDouble([4]));
+	//model.rpar = new ScilabDouble(...this.sgn);
+        model.in = new ScilabDouble([1], [-1]);
+        model.out = new ScilabDouble([-1]);
+        model.in2 = new ScilabDouble([-2], [-2]);
+        model.out2 = new ScilabDouble([-2]);
+        model.ipar = new ScilabDouble(...this.sgn);
+        model.blocktype = new ScilabString(["c"]);
+        model.dep_ut = new ScilabBoolean([true, false]);
+
+        var exprs = new ScilabString([sci2exp(this.sgn)]);
+
+        var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"SUMMATION\",sz(1),sz(2));"]);
+        this.x = new standard_define(new ScilabDouble([2, 3]), model, exprs, gr_i);*/
+
+
+
+
+
+
+
+	var model = scicos_model();
 
 	this.nout = -1;
         this.nout2 = -2;
         this.in = [...this.in,...this.in2]
+	this.x.model.out = new ScilabDouble([-1]);
         this.out =new ScilabDouble([-1],[-2]) //[...this.nout,...this.nout2]
         this.x.model.intyp = new ScilabDouble(...this.it)
         this.x.model.outtyp = new ScilabDouble(this.ot)
 
-        var io = set_io(this.x.model,this.x.graphics,this.in,this.out,[],[])
+        var io = set_io(this.x.model,this.x.graphics,this.in,[-1],[],[])
         this.x.model.rpar = new ScilabDouble([this.satur]);
         this.x.model.ipar = new ScilabDouble(...this.sgn);
-        var exprs = new ScilabString([sci2exp(this.Datatype)],[this.sgn.toString().replace(/,/g, " ")],[this.satur])
+        var exprs = new ScilabString([sci2exp(this.Datatype)],[sci2exp(this.sgn)],[this.satur])
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
     }
 }
 function SUM_f() {
     SUM_f.prototype.get = function SUM_f() {
-        alert("parameters can not be modified")
-        // return new RoundBlock(this.x)
+        alert("parameters can not be modified");
+         
     }
     SUM_f.prototype.define = function SUM_f() {
+        var model = scicos_model();
+
+        model.sim = list(new ScilabString(["plusblk"]), new ScilabDouble([2]));
+        model.in = new ScilabDouble([-1], [-1], [-1]);
+        model.out = new ScilabDouble([-1]);
+        model.blocktype = new ScilabString(["c"]);
+        model.dep_ut = new ScilabBoolean([true, false]);
+
+        var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"SUM_f\",sz(1),sz(2));"]);
+        var exprs = new ScilabString();
+
+        this.x = new standard_define(new ScilabDouble([1, 1]), model, exprs, gr_i);
+
+        return new RoundBlock(this.x);
+
+    }
+SUM_f.prototype.set = function SUM_f() {
         var model = scicos_model();
 
         model.sim = list(new ScilabString(["plusblk"]), new ScilabDouble([2]));
@@ -20096,7 +20277,7 @@ function TEXT_f() {
     }
 
 TEXT_f.prototype.get = function TEXT_f() {
-
+        
         var options={
             tag:["Type your text",this.tag],
         }
