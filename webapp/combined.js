@@ -744,6 +744,7 @@ function BITCLEAR() {
             this.n = uint8(this.n)
             this.x.model.sim = list(new ScilabString(["bit_clear_8"]), new ScilabDouble([4]));
         }
+	this.displayParameter=[this.bit];
 
         this.x.model.intyp = new ScilabDouble([this.Datatype])
         this.x.model.outtyp = new ScilabDouble([this.Datatype])
@@ -840,7 +841,8 @@ function BITSET() {
             this.n =Uint8Array.of(this.n)
             this.x.model.sim = list(new ScilabString(["bit_set_8"]), new ScilabDouble([4]));
         }
-
+ 	//var n =sci2exp([this.bit]).toString();
+        this.displayParameter=[this.bit];
         this.x.model.intyp = new ScilabDouble([this.Datatype])
         this.x.model.outtyp = new ScilabDouble([this.Datatype])
         this.in = [parseFloat(getData(this.x.model.in)),parseFloat(getData(this.x.model.in2))]
@@ -3621,23 +3623,24 @@ function CONST_f() {
 
         return this.x;
     }
-CONST_f.prototype.get = function CONST_f() {
+    CONST_f.prototype.get = function CONST_f() {
         var options={
-            C:["Constant",this.C.toString().replace(/,/g," ")],
+            C:["Constant",sci2exp(this.C)],
         }
         return options
     }
 CONST_f.prototype.set = function CONST_f() {
-    this.C = inverse(arguments[0]["C"])
+    this.C = MatrixInverse(arguments[0]["C"])
     this.nout = size(this.C,"*")
     if(this.nout==0){
         alert("C must have at least one element");
         CONST_f.get();
     }
-	 this.displayParameter = [this.C];
+    this.displayParameter = [this.C];
     this.x.model.rpar = new ScilabDouble(...this.C)
     this.x.model.out = new ScilabDouble(this.nout)
-    var exprs = new ScilabString([this.C.toString().replace(/,/g, " ")])
+    var exprs = new ScilabString([sci2exp(this.C)]);
+    //var exprs = new ScilabString([this.C.toString().replace(/,/g, " ")])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
@@ -12585,7 +12588,7 @@ function LOGICAL_OP() {
 		var model = scicos_model();
 		if (this.data==1) {
                 model.sim=list(new ScilabString(["logicalop"]), new ScilabDouble([4]));
-		model.ipar = new ScilabDouble([this.oprt],[this.bit]);
+		model.ipar = new ScilabDouble([this.oprt]);
 		}
             	else if (this.data==3) {
                 model.sim=list(new ScilabString(["logicalop_i32"]), new ScilabDouble([4]));
@@ -12630,13 +12633,21 @@ function LOGICAL_OP() {
                 else if (this.oprt == 5 ){
                     this.label = "NOT"; // >=
 		}
-	var model = scicos_model();
+		if (this.data==1) {
+                
+		model.ipar = new ScilabDouble([this.oprt])
+		this.x.model.ipar = new ScilabDouble([this.oprt])
+		}
+		else{
+		model.ipar = new ScilabDouble([this.oprt],[this.bit])
+		this.x.model.ipar = new ScilabDouble([this.oprt],[this.bit])
+		}
        // model.sim = list(new ScilabString(["logicalop"]), new ScilabDouble([4]));
 	var arr = [];
         arr.push(math.range(-1, -this.nin, -1, true)._data);
         model.in = new ScilabDouble(...math.transpose(arr));
         model.out = new ScilabDouble([0]);
-        model.ipar = new ScilabDouble([this.oprt],[this.bit]);
+        //model.ipar = new ScilabDouble([this.oprt],[this.bit]);
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 	this.displayParameter = [this.label];
@@ -12655,7 +12666,7 @@ function LOGICAL_OP() {
 
         
 	this.x.model.out = new ScilabDouble([0]);
-    	this.x.model.ipar = new ScilabDouble(this.oprt,this.bit)
+    	//this.x.model.ipar = new ScilabDouble([this.oprt],[this.bit])
     	var exprs = new ScilabString(this.nin.toString(),this.oprt.toString(),this.data.toString(),this.bit.toString())
     	this.x.graphics.exprs = exprs
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"LOGICAL_OP\",sz(1),sz(2));"]);
@@ -14243,6 +14254,24 @@ function MAX_f() {
     }
 
     MAX_f.prototype.define = function MAX_f() {
+        this.in = -1;
+
+        var model = scicos_model();
+        model.sim = new ScilabString(["maxblk"]);
+	model.in = new ScilabDouble([this.in1]);
+        //model.in = this.in;
+        model.out = new ScilabDouble([1]);
+        model.dstate = new ScilabDouble([0], [0]);
+        model.blocktype = new ScilabString(["c"]);
+        model.dep_ut = new ScilabBoolean([true, false]);
+
+        var exprs = new ScilabString([" "]);
+
+        var gr_i = ["xstringb(orig(1),orig(2),\"MAX_f\",sz(1),sz(2));"];
+        this.x = new standard_define(new ScilabDouble([2,2]), model, exprs, gr_i);
+        return new BasicBlock(this.x);
+    }
+	MAX_f.prototype.set = function MAX_f() {
         this.in = new ScilabDouble([-1]);
 
         var model = scicos_model();
@@ -17325,8 +17354,8 @@ var model = scicos_model();
 function REGISTER() {
 
     REGISTER.prototype.define = function REGISTER() {
-        this.z0 = zeros(10, 1);
-
+        //this.z0 = zeros(10, 1);
+	this.z0="0;0;0;0;0;0;0;0;0;0";
         var model = scicos_model();
         model.sim = list(new ScilabString(["delay4"]), new ScilabDouble([4]));
         model.in = new ScilabDouble([1]);
@@ -17336,7 +17365,7 @@ function REGISTER() {
         model.blocktype = new ScilabString(["d"]);
         model.dep_ut = new ScilabBoolean([false, false]);
 
-        var exprs = new ScilabString(this.z0.toString().replace(/,/g,";"));
+        var exprs = new ScilabString([this.z0]);//.toString().replace(/,/g,";")
 
         var gr_i = ["xstringb(orig(1),orig(2),\"REGISTER\",sz(1),sz(2));"];
         this.x = new standard_define(new ScilabDouble([3,2]), model, exprs, gr_i);
@@ -17351,13 +17380,14 @@ function REGISTER() {
         if(this.it == undefined)
             this.it = 1
         var options={
-            z0:["Register initial condition",this.z0.toString().replace(/,/g," ")],
+z0:["Register initial condition",this.z0],
+            //z0:["Register initial condition",sci2exp(this.z0)],//.toString().replace(/,/g," ")
             it:["Datatype (1=double 3=int32 ...)",this.it]
         }
         return options
     }
     REGISTER.prototype.set = function REGISTER() {
-        this.z0 = inverse(arguments[0]["z0"])
+        this.z0 = arguments[0]["z0"]
         if((size(this.z0,1)*size(this.z0,2))<1){
                 alert("Register length must be at least 1");
                 REGISTER.get();
@@ -17416,7 +17446,7 @@ function REGISTER() {
         this.x.model.sim = list(new ScilabString([this.function_name]), new ScilabDouble([4]));
         this.in = [[1],[1]]
         var io = set_io(this.x.model,this.x.graphics,this.in,this.in,[1],[])
-        var exprs = new ScilabString([this.z0.toString().replace(/,/g, " ")],[this.it])
+        var exprs = new ScilabString([this.z0],[this.it])//.toString().replace(/,/g, " ")
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
     }
@@ -17452,7 +17482,7 @@ function REGISTER_f () {
 function RELATIONALOP() {
 
     RELATIONALOP.prototype.define = function RELATIONALOP() {
-        this.ipar = 2;
+        //this.ipar = 2;
         this.label = "<";
 	this.oprt=2;
 	this.zcr=0;
@@ -17461,11 +17491,11 @@ function RELATIONALOP() {
         model.sim = list(new ScilabString(["relationalop"]), new ScilabDouble([4]));
         model.in = new ScilabDouble([1], [1]);
         model.out = new ScilabDouble([1]);
-        model.ipar = new ScilabDouble([this.ipar]);
+        model.ipar = new ScilabDouble([this.oprt]);
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
-        var exprs = new ScilabString([this.ipar]);
+        var exprs = new ScilabString([this.oprt]);
 	this.displayParameter = [this.label];
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"RELATIONALOP\",sz(1),sz(2));"]);
         this.x = new standard_define(new ScilabDouble([2, 2]), model, exprs, gr_i);
@@ -17544,10 +17574,10 @@ function RELATIONALOP() {
 	model.sim = list(new ScilabString(["relationalop"]), new ScilabDouble([4]));
         model.in = new ScilabDouble([1], [1]);
         model.out = new ScilabDouble([1]);
-        model.ipar = new ScilabDouble([this.ipar]);
+        model.ipar = new ScilabDouble([this.oprt]);
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
-        var exprs = new ScilabString([this.ipar]);
+        var exprs = new ScilabString([this.oprt],[this.zcr],[this.data]);
 	this.displayParameter = [this.label];
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"RELATIONALOP\",sz(1),sz(2));"]);
         this.x = new standard_define(new ScilabDouble([2, 2]), model, exprs, gr_i);
@@ -19542,6 +19572,12 @@ function STEP_FUNCTION() {
 function SUBMAT() {
 
     SUBMAT.prototype.define = function SUBMAT() {
+	this.typ="1";
+        this.a="1";
+        this.b="1";
+        this.c="1";
+        this.d="1";
+        this.inp=[[1],[1]];
         var model = scicos_model();
 
         this.function_name = new ScilabString(["submat"]);
@@ -19563,7 +19599,7 @@ function SUBMAT() {
         model.blocktype = new ScilabString(["c"]);
         model.firing = new ScilabDouble();
         model.dep_ut = new ScilabBoolean([true, false]);
-
+	//var exprs = new ScilabString([this.typ],[this.a],[this.b],[this.c],[this.d],[sci2exp(this.inp)]);
         this.label = new ScilabString([sci2exp(1)], [sci2exp(1)], [sci2exp(1)], [sci2exp(1)], [sci2exp(1)]);
 
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"SUBMAT\",sz(1),sz(2));"]);
@@ -19583,7 +19619,7 @@ function SUBMAT() {
         this.b="1";
         this.c="1";
         this.d="1";
-        this.inp="[1 1]";
+        this.inp=[[1],[1]];
     }
         var options={
             typ:["Datatype (1=real double  2=Complex)",this.typ],
@@ -19689,14 +19725,14 @@ function SUMMATION() {
         }
         var options={
             Datatype:["Datatype (1=real double  2=complex 3=int32 ...)",this.Datatype],
-	    sgn:["Number of inputs or sign vector (of +1, -1)",this.sgn.toString().replace(/,/g, " ")],
+	    sgn:["Number of inputs or sign vector (of +1, -1)",sci2exp(this.sgn)],//.toString().replace(/,/g, " ")
             satur:["Do on Overflow(0=Nothing 1=Saturate 2=Error)",this.satur],
         }
         return options
     }
     SUMMATION.prototype.set = function SUMMATION() {
         this.Datatype = parseInt((arguments[0]["Datatype"]))
-	this.sgn = inverse(arguments[0]["sgn"])
+	this.sgn = MatrixInverse(arguments[0]["sgn"])
 
         this.satur = parseInt((arguments[0]["satur"]))
         if((this.satur!=0)&&(this.satur!=1)&&(this.satur!=2)){
@@ -19871,7 +19907,7 @@ function SUM_f() {
         model.dep_ut = new ScilabBoolean([true, false]);
 
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"SUM_f\",sz(1),sz(2));"]);
-        var exprs = new ScilabString();
+        var exprs = new ScilabDouble();
 
         this.x = new standard_define(new ScilabDouble([1, 1]), model, exprs, gr_i);
 
@@ -19888,7 +19924,7 @@ SUM_f.prototype.set = function SUM_f() {
         model.dep_ut = new ScilabBoolean([true, false]);
 
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"SUM_f\",sz(1),sz(2));"]);
-        var exprs = new ScilabString();
+        var exprs = new ScilabDouble();
 
         this.x = new standard_define(new ScilabDouble([1, 1]), model, exprs, gr_i);
 
