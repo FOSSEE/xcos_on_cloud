@@ -7665,7 +7665,12 @@ function DLRADAPT_f() {
         return new BasicBlock(this.x);
     }
     DLRADAPT_f.prototype.get = function DLRADAPT_f() {
-        var options={
+
+	var options="";
+	var str=this.rd.toString();
+	if (str.match(/[a-z]/i)){
+
+	options={
             p:["Vector of p mesh points",sci2exp(this.p)],
 	    rn:["Numerator roots (one line for each mesh)",sci2exp([])],
             rd:["Denominator roots (one line for each mesh)",sci2exp(this.rd)],
@@ -7674,6 +7679,21 @@ function DLRADAPT_f() {
 	    last_y:["past outputs (Den degree values)",sci2exp(this.last_y)],
 
         }
+
+	}else{
+
+	options={
+            p:["Vector of p mesh points",sci2exp(this.p)],
+	    rn:["Numerator roots (one line for each mesh)",sci2exp([])],
+            rd:["Denominator roots (one line for each mesh)",this.rd],
+            g:["Vector of gain at mesh points",sci2exp(this.g)],
+	    last_u:["past inputs (Num degree values)",sci2exp([])],
+	    last_y:["past outputs (Den degree values)",sci2exp(this.last_y)],
+
+        }
+
+	}
+        
         return options
     }
 
@@ -7685,16 +7705,74 @@ function DLRADAPT_f() {
 
 	this.rd = arguments[0]["rd"]
 
+	//var m=size(this.rn,2);
+
+        //var npt=size(this.rd,1);
+	//var n=size(this.rd,2);
+	/*if (m>=n){
+
+            alert("Transfer must be strictly proper");
+
+	}else if((size(this.rn,1)!=0) && (size(this.rn,1)!=(size(this.p,"*")))){
+
+ 	    alert("Numerator roots matrix row size''s is incorrect");
+	
+	}*/
+	var rd_cal=this.rd;
+
+/*
+* Below code is to accept matrix with imaginary and real number 
+*/
+	var value=rd_cal.toString().replace(/[\[\]']+/g,''); //this remove [[ bracket
+	var arr1=value.split(/[;]+/); //splits string by ;
+	var str=[];
+	var str1=[];
+	
+// to iterate through arr1 ie. split on basis of ;
+	for(var i=0;i<arr1.length;i++){
+	 
+	  var temp=arr1[i].split(/[,]+/); //split by ,
+	
+		for(var j=0;j<temp.length;j++){
+
+		/*
+		*convert it into string with mathcomplex for sending as paramter to eval and real function.
+		*/
+	 	var temp2="math.complex('"+temp[j].replace("%i*","i")+"')"; 
+	 	 str[j]=temp2;
+
+		}
+	
+       		// adding , in between two values and no , if end element
+		if(i==(arr1.length-1)){
+			str1+="["+str+"]";
+		}else{
+			str1+="["+str+"],";
+		}
+	}
+
+
+	var temp_rd=eval("["+str1 +"]"); //this is to pass to real function used in rpar
+	var exprs="";
+	if (str1.includes("i")) {
+	this.rd=temp_rd;
+	exprs = new ScilabString([sci2exp(this.p)], [sci2exp([])], [sci2exp(this.rd, 0)], [sci2exp(this.g)], [sci2exp([])], [sci2exp(this.last_y)]);
+
+	}else{
+	this.rd=this.rd;
+	exprs = new ScilabString([sci2exp(this.p)], [sci2exp([])], [this.rd], [sci2exp(this.g)], [sci2exp([])], [sci2exp(this.last_y)]);
+
+	}
+
+	//this.x.model.ipar = new ScilabDouble(m, n, npt);
 	this.g = MatrixInverse(arguments[0]["g"])
 
 	this.last_u = MatrixInverse(arguments[0]["last_u"])
 
 	this.last_y = MatrixInverse(arguments[0]["last_y"])
-
-	var exprs = new ScilabString([sci2exp(this.p)], [sci2exp([])], [sci2exp(this.rd, 0)], [sci2exp(this.g)], [sci2exp([])], [sci2exp(this.last_y)]);
-
-	this.x.model.rpar = new ScilabDouble(...this.p, ...real(colon_operator(this.rd)), ...math.im(colon_operator(this.rd)), ...this.g);
-
+	this.x.graphics.exprs=exprs;
+	this.x.model.rpar = new ScilabDouble(...this.p, ...real(colon_operator(temp_rd)), ...math.im(colon_operator(temp_rd)), ...this.g);
+  
         return new BasicBlock(this.x)
 
     }
