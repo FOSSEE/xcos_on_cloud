@@ -29,6 +29,11 @@ var create_new_chart = function(id, no_of_graph,ymin,ymax,xmin,xmax,type_chart,t
 	ymin = parseFloat(ymin);
 	ymax = parseFloat(ymax);
 
+        //default value of pointpadding added for ceventscope
+	pointWidthvalue=0.1;
+	pointplacementvalue=0;
+	pointRangevalue = null;
+
 	var thickness = 2, chart_animation = false; 
 	if(title_text.substring(0,5)=="BARXY"){
 		//chart_animation = true;
@@ -44,7 +49,11 @@ var create_new_chart = function(id, no_of_graph,ymin,ymax,xmin,xmax,type_chart,t
                  console.log("check");
                  thickness= 0
 
-        }
+        }else if(title_text.substring(0,7)=="CEVSCPE"){ //To manipulate the graph width of ceventscope
+		pointWidthvalue=2;
+		pointplacementvalue=0;
+		pointRangevalue = 0.05;
+	}
 	
 	$('#charts').append("<div id='chart-"+id.toString()+"' style = 'height:200px;width:100%'></div>");
 
@@ -91,8 +100,13 @@ var create_new_chart = function(id, no_of_graph,ymin,ymax,xmin,xmax,type_chart,t
 			marker: {
 				enabled: false
 			},
+			column: {
+            			pointPlacement: pointplacementvalue,
+				pointRange: pointRangevalue	
+        		},
 			series: {
             	lineWidth: thickness,
+		pointWidth: pointWidthvalue,
             	states: {
                     hover: {
                         lineWidth: thickness
@@ -325,7 +339,7 @@ function chart_init(wnd){
 		}
 
 
-		if(block < 5 ||block ==9){
+		if(block < 5 ||block ==9 ||block ==23){ //added new condition for ceventscope
 			// process data for 2D-SCOPE blocks
 
 			var figure_id = parseInt(data[5]),
@@ -348,11 +362,20 @@ function chart_init(wnd){
 			     buffer_canimxy = data[18];
              		RANGE[chart_id_list.indexOf(figure_id)]=parseFloat(data[14]);
              	       }
-             	// sink block is not CSCOPXY
+             	
              	  else{
 
+			        //Event Handling block is ceventscope
+				if(block ==23){
+				chart_type = 'column';
+				create_new_chart(figure_id,data[12],0,1,0,data[13],chart_type,data[14]+'-'+data[3]);
+				RANGE[chart_id_list.indexOf(figure_id)]=parseFloat(data[13]);
+			    	}
+				// sink block is not CSCOPXY
+                                else{
 			        create_new_chart(figure_id,data[12],data[13],data[14],0,data[15],chart_type,data[16]+'-'+data[3]);
 			        RANGE[chart_id_list.indexOf(figure_id)]=parseFloat(data[15]);
+			        }
 			    }
 
 
@@ -517,7 +540,7 @@ function chart_init(wnd){
 			
 
 
-				if(block < 4){
+				if(block < 4||block==23){
 					// Shift chart axis to display new values(only for blocks requiring shift, i.e, blocks 1-3)
 					if(x>(RANGE[index])) 
 				 	  chart.xAxis[0].setExtremes(Math.floor(x-(RANGE[index]-1.0)),Math.floor(x+1.0));
