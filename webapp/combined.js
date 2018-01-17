@@ -1702,13 +1702,13 @@ function CCS() {
 function CEVENTSCOPE() {
 
     CEVENTSCOPE.prototype.define = function CEVENTSCOPE() {
-	this.numevents= 1;
-	this.win = -1;
-	this.wpos = [[-1],[-1]];
-	this.wdim = [[600],[400]];
-	this.per = 30;
-        this.nclock = 1;
-         this.clrs = [[1],[3],[5],[7],[9],[11],[13],[15]];
+	this.nclock = 1;
+	this.win = -1;	
+        this.clrs = [[1],[3],[5],[7],[9],[11],[13],[15]];
+        this.wdim = [[600],[400]];
+        this.wpos = [[-1],[-1]];
+        this.per = 30;
+
         
         var model = scicos_model();
         model.sim = list(new ScilabString(["cevscpe"]), new ScilabDouble([4]));
@@ -1717,8 +1717,9 @@ function CEVENTSCOPE() {
         model.ipar = new ScilabDouble([this.win], [1], this.clrs[this.nclock - 1], ...this.wpos, ...this.wdim);
         model.blocktype = new ScilabString(["d"]);
         model.dep_ut = new ScilabBoolean([false, false]);
- //var exprs = new ScilabString([this.nclock],[this.clrs.toString().replace(/,/g," ")],[this.win],["[]"],[this.wdim.toString().replace(/,/g, " ")],[this.per])
-        var exprs = new ScilabString([this.nclock],[sci2exp(this.clrs[this.nclock - 1])],[this.win],[sci2exp(this.wpos)],[sci2exp(this.wdim)],[this.per]);
+	
+	var exprs = new ScilabString([sci2exp([this.nclock])],[sci2exp(this.clrs[this.nclock -1]).toString().replace(/,/g," ")],[this.win],[sci2exp([])],[sci2exp(this.wdim)],[this.per]);
+
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"CEVENTSCOPE\",sz(1),sz(2));"]);
         this.x = new standard_define(new ScilabDouble([2, 2]), model, exprs, gr_i);
         return new BasicBlock(this.x);
@@ -1730,7 +1731,7 @@ function CEVENTSCOPE() {
     CEVENTSCOPE.prototype.get = function CEVENTSCOPE() {
 	var options={
 		nclock:["Number of events inputs",this.nclock],
-		clrs:["Color c(>0) or mark (<0)",this.clrs.toString().replace(/,/g," ")],
+		clrs:["Color c(>0) or mark (<0)",(this.nclock==1?this.clrs[this.nclock-1].toString().replace(/,/g," "):this.clrs.toString().replace(/,/g," "))],
 		win:["Output window number (-1 for automatic)",this.win],
  		wpos:["Output window position",this.wpos.toString().replace(/,/g," ")],
 		wdim:["Output window sizes",this.wdim.toString().replace(/,/g," ")],
@@ -1744,16 +1745,21 @@ function CEVENTSCOPE() {
     }
 
     CEVENTSCOPE.prototype.set = function CEVENTSCOPE() {
-    this.nclock=arguments[0]["nclock"]
+    var model = scicos_model();
+    this.nclock= parseInt(arguments[0]["nclock"])
     this.clrs = inverse((arguments[0]["clrs"]))
     this.win = parseFloat((arguments[0]["win"]))
     this.wpos = inverse(arguments[0]["wpos"])
     this.wdim = inverse(arguments[0]["wdim"])
     this.per = parseFloat((arguments[0]["per"]))
-	if(this.clrs.length != this.numevents){
+	if(this.clrs.length != this.nclock){
 		alert("inputs Color c(>0) or mark (<0) should be equal to Number of events inputs");
 		CEVENTSCOPE.get();
 	    }
+	if(this.nclock<=0){ 
+		alert("Block must have at least one input event");
+		CEVENTSCOPE.get();
+	     }
 	if(this.win<-1){
                 alert("Window number can''t be  < -1");
                 CEVENTSCOPE.get();
@@ -1777,11 +1783,12 @@ function CEVENTSCOPE() {
 		this.wdim = [[-1],[-1]];
 	    }
 
+	    var io = set_io(this.x.model,this.x.graphics,list(),list(),ones(this.nclock,1),[])
 	    var rpar = new ScilabDouble([this.per])
 	    var ipar = new ScilabDouble([this.win],[1],...this.clrs,...this.wpos,...this.wdim)
 	    this.x.model.rpar = rpar
 	    this.x.model.ipar = ipar
-	    var exprs = new ScilabString([this.nclock],[sci2exp(this.clrs[this.nclock - 1])],[this.win],[sci2exp(this.wpos)],[sci2exp(this.wdim)],[this.per])
+	    var exprs = new ScilabString([sci2exp([this.nclock])],[this.clrs.toString().replace(/,/g," ")],[this.win],["[]"],[sci2exp(this.wdim)],[this.per]);
 	    this.x.graphics.exprs=exprs
 	    return new BasicBlock(this.x)
     }
@@ -10026,12 +10033,12 @@ function EXTRACTOR() {
     }
     EXTRACTOR.prototype.get = function EXTRACTOR() {
         var options={
-            ind:["indices to extract",this.ind.toString().replace(/,/g," ")],
+            ind:["indices to extract",sci2exp(this.ind)],
         }
         return options
     }
 EXTRACTOR.prototype.set = function EXTRACTOR() {
-    this.ind = inverse(arguments[0]["ind"])
+    this.ind = MatrixInverse(arguments[0]["ind"])
     for (var i =this.ind.length - 1; i >= 0; i--) {
         this.ind[i] = Math.floor(this.ind[i])
     }
@@ -14580,14 +14587,14 @@ function MCLOCK_f() {
         output_port2.doc = list(new ScilabString([count++]));
 
         var split1 = new CLKSPLIT_f().internal();
-        split1.graphics.orig = new ScilabDouble([411.92504, 169.33333]);
+        split1.graphics.orig = new ScilabDouble([411.92504], [169.33333]);
         split1.graphics.pein = new ScilabDouble([3]);
         split1.graphics.peout = new ScilabDouble([9], [10]);
         split1.model.uid = new ScilabString([count]);
         split1.doc = list(new ScilabString([count++]));
 
         var split2 = new CLKSPLIT_f().internal();
-        split2.graphics.orig = new ScilabDouble([482.45315, 169.33333]);
+        split2.graphics.orig = new ScilabDouble([482.45315], [169.33333]);
         split2.graphics.pein = new ScilabDouble([5]);
         split2.graphics.peout = new ScilabDouble([12], [13]);
         split2.model.uid = new ScilabString([count]);
@@ -14672,8 +14679,9 @@ function MCLOCK_f() {
         return options
     }
     MCLOCK_f.prototype.set = function MCLOCK_f() {
-   	 this.period = ((arguments[0]["period"]))
-    	 this.multiplyby = ((arguments[0]["multiplyby"]))
+   	 this.period = parseFloat((arguments[0]["period"]))
+    	 this.multiplyby = parseFloat((arguments[0]["multiplyby"]))
+	//Extra code
 	var gr_i = new ScilabString(["xstringb(orig(1),orig(2),&quot;MCLOCK_f&quot;,sz(1),sz(2));"]);
 	this.x = scicos_block();
 	var exprs = new ScilabString([this.period], [this.multiplyby]);
@@ -14685,7 +14693,8 @@ function MCLOCK_f() {
         this.x.model.blocktype = new ScilabString(["h"]);
         this.x.model.rpar = diagram;
         this.x.graphics.peout = new ScilabDouble([0], [0]);
-        return new BasicBlock(this.x);
+	//Extra code ends
+        return new BasicBlock(this.x)
     	 
     }
     MCLOCK_f.prototype.details = function MCLOCK_f() {
@@ -20244,6 +20253,11 @@ function SWITCH2_m() {
         this.ipar = [0];
         this.nzz = 1;
         this.rpar = 0;
+	this.trial = [1];
+	this.ot=1;
+	this.rule=0;
+	this.thra=0;
+	this.nzz=1;
 
         var model = scicos_model();
         model.sim = list(new ScilabString(["switch2_m"]), new ScilabDouble([4]));
@@ -20253,14 +20267,14 @@ function SWITCH2_m() {
         model.out = new ScilabDouble([-1]);
         model.out2 = new ScilabDouble([-2]);
         model.outtyp = new ScilabDouble([1]);
-        model.ipar = new ScilabDouble(this.ipar);
+        model.ipar = new ScilabDouble([this.ipar]);
         model.rpar = new ScilabDouble([this.rpar]);
         model.nzcross = new ScilabDouble([this.nzz]);
         model.nmode = new ScilabDouble([1]);
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
-        var exprs = new ScilabString([1], this.ipar, [this.rpar], [this.nzz]);
+        var exprs = new ScilabString([sci2exp(this.trial)], [sci2exp(this.ipar)], [sci2exp(this.rpar)], [sci2exp(this.nzz)]);
 
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"SWITCH2_m\",sz(1),sz(2));"]);
         this.x = new standard_define(new ScilabDouble([2, 2]), model, exprs, gr_i);
@@ -20282,15 +20296,16 @@ function SWITCH2_m() {
     }
 
         var options={
-            ot:["Datatype (1=real double  2=complex 3=int32 ...)",sci2exp(1)],
-            rule:["pass first input if: u2>=a (0), u2>a (1), u2~=a (2)",this.rule],
-            thra:["threshold a",this.thra],
-            nzz:["use zero crossing: yes (1), no (0)",this.nzz],
+            ot:["Datatype (1=real double  2=complex 3=int32 ...)",sci2exp(this.ot)],
+            rule:["pass first input if: u2>=a (0), u2>a (1), u2~=a (2)",sci2exp(this.rule)],
+            thra:["threshold a",sci2exp(this.thra)],
+            nzz:["use zero crossing: yes (1), no (0)",sci2exp(this.nzz)],
         }
         return options
     }
 SWITCH2_m.prototype.set = function SWITCH2_m() {
-    this.ot = parseFloat((arguments[0]["ot"]))
+    var model = scicos_model();
+    this.ot = MatrixInverse((arguments[0]["ot"]))
     if ((this.ot<1)|(this.ot>8)){
         alert("Datatype is not supported");
         SWITCH2_m.get();
@@ -20306,14 +20321,14 @@ SWITCH2_m.prototype.set = function SWITCH2_m() {
     this.x.model.ipar = new ScilabDouble([this.rule])
     this.x.model.rpar = new ScilabDouble([this.thra])
     if(this.nzz != 0){
-        this.x.model.nmode = 1
-        this.x.model.nzcross = 1
+        this.x.model.nmode = new ScilabDouble([1])
+        this.x.model.nzcross = new ScilabDouble([1])
     }
     else{
-        this.x.model.nmode = 0
-        this.x.model.nzcross = 0
+        this.x.model.nmode = new ScilabDouble([0])
+        this.x.model.nzcross = new ScilabDouble([0])
     }
-    var exprs = new ScilabString(sci2exp(this.ot),[this.rule],[this.thra],[this.nzz])
+    var exprs = new ScilabString([sci2exp(this.ot)],[sci2exp(this.rule)],[sci2exp(this.thra)],[sci2exp(this.nzz)])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
