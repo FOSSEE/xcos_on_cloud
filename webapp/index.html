@@ -1835,7 +1835,7 @@
          	   var row=0,min,max,norm,num=1,cscount=0; // variables to store the values
          	   	var winArr = new Array();
          	   	var Bblock_tag=xmlDoc.getElementsByTagName("BasicBlock"); 	// get all 'BasicBlock' tags from xml code
-                var Ablock_tag=xmlDoc.getElementsByTagName("AfficheBlock");   // get all 'AfficheBlock' tags from xml code
+                        var Ablock_tag=xmlDoc.getElementsByTagName("AfficheBlock");   // get all 'AfficheBlock' tags from xml code
          		var mx_tag = xmlDoc.getElementsByTagName("mxCell"); 	// get all 'mxCell' tags from xml code
          		var tkid  = new Array(); 				// array which stores the main id of each tkblock
          		var clkid = new Array(); 				// array which stores every CLOCK_c ids
@@ -2142,12 +2142,13 @@
          				}
          			}
          		}
-         
-         	    for(var i=0;i<row;i++)
+         	
+		    if(tkgrp.length!=0){
+         	    for(var i=0;i<row;i++){
          		if(tkgrp[i]!=-1){
          		tkclk[i]=(clkdetails[tkgrp[i]][0]).toString()+"  "; } // adding the clock parameter(Period) to the tkclk in string format ( 0.1  )
-         	
-         	
+         		}
+         	     }
          	   
          	    }
          	   
@@ -2516,6 +2517,7 @@
                 function showPropertiesWindow(graph, cell) {
          
                     var name = cell.getAttribute('blockElementName');
+		    if(name!="LOOKUP_f"){
                     var defaultProperties = cell.blockInstance.instance.get(); //window[name]("get");
                     /*{
                         nbr_curves: ["Number of curves", 1],
@@ -2756,6 +2758,24 @@
          
                     content.appendChild(myform);
                     var wind = showModalWindow(graph, 'Properties', content, 450, height);
+
+		   }else{
+			/*
+			//alert("lookup_f block ");
+			// Create basic structure for the form
+                    var content = document.createElement('div');
+                    content.setAttribute("id", "lookup_f_Properties");
+         
+                    // Heading of content
+                    var heading = document.createElement('div');
+                    heading.innerHTML = "<ul id='menu'><li><a href='#'>Main Tab</a><ul><li><a href='#'>This is link A</a></li><li><a href='#'>This is link B</a></li></ul></li></ul>";
+                    //heading.id = "headingProperties"
+		    height=300;
+                    content.appendChild(heading);
+			 var wind = showModalWindow(graph, 'edit_curv', content, 450, height);
+			*/
+
+		   }
                 };
          
                 /*

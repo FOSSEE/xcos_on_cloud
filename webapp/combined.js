@@ -118,12 +118,12 @@ function AFFICH_m() {
             }
         this.x.model.intyp = new ScilabDouble([1])
         var io = set_io(this.x.model,this.x.graphics,this.in,[],ones(1-this.herit,1),[])
-        this.x.model.ipar = new ScilabDouble([this.font],[this.fontsize],[this.colr],[this.nt],[this.nd],this.in[0])
+        this.x.model.ipar = new ScilabDouble([this.font],[this.fontsize],[this.colr],[1000],[this.nt],[this.nd],this.in[0])
         this.x.model.dstate = new ScilabDouble([-1],[0],[0],[1],[1],[0],zeros(this.in[0]*this.in[1],1))
         this.x.model.evtin = new ScilabDouble(...ones(1-this.herit,1))
         var exprs = new ScilabString([this.in.toString().replace(/,/g," ")], [this.font], [this.fontsize], [this.colr], [this.nt], [this.nd], [0]);
         this.x.graphics.exprs=exprs;
-        return new BasicBlock(this.x);
+        return new AfficheBlock(this.x);
     }
     AFFICH_m.prototype.details = function AFFICH_m() {
         return this.x;
@@ -12219,8 +12219,10 @@ INTMUL.prototype.set = function INTMUL() {
         this.it[i] = this.it[i]*this.Datatype
     }
     this.ot = this.Datatype
-    this.x.model.outtyp = new ScilabDouble([this.ot])
-    this.x.model.intyp = new ScilabDouble(...this.it)
+    //this.x.model.outtyp = new ScilabDouble([this.ot])
+    //this.x.model.intyp = new ScilabDouble(...this.it)
+    this.x.model.intyp = new ScilabDouble([3, 3]);
+    this.x.model.outtyp = new ScilabDouble([3]);
     if((this.np!=0)&&(this.np!=1)&&(this.np!=2)){
                 alert("Wrong value for 'Do on Overflow' parameter: "+this.np+"\nMust be in the interval [0, 2]");
                 INTMUL.get();
@@ -12985,9 +12987,15 @@ function LOOKUP_f() {
         this.x = new standard_define(new ScilabDouble([2, 2]), model, [], gr_i);
         return new BasicBlock(this.x);
     }
+    LOOKUP_f.prototype.get = function LOOKUP_f() {
+        
+        alert("hello");
+	
+    }
     LOOKUP_f.prototype.details = function LOOKUP_f() {
         return this.x;
     }
+    
 }
 
 function MATBKSL() {
