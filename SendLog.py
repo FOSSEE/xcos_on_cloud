@@ -43,7 +43,7 @@ NOLINE = -1
 BLOCK_IDENTIFICATION = -2
 
 # Scilab dir, can't run absolute paths
-SCI = "../scilab_for_xcos-master/"
+SCI = "../scilab_for_xcos_on_cloud/"
 
 # List to store figure IDs
 figure_list = []
@@ -55,6 +55,12 @@ workspace_list = []
 workspace_dict = {}
 log_dir = ''
 log_name = ''
+# For Affich_m
+workspace_variable_list = []
+# For keeping count of affich_m blocks fro replacing with TOWS_c in diagram and also for assigning variable name for TOWS_c workspace variable
+affich_count = 0
+variable_alpha=['A','B','C','D','E','F','G','H','I','J'] 
+
 
 class line_and_state:
     # Class to store the line and its state
@@ -160,6 +166,7 @@ def event_stream(xcos_file_id):
         return
     xcos_file_id = int(xcos_file_id)
     xcos_file_dir = os.getcwd() + '/uploads/'
+    xcos_affich_function_file_dir = os.getcwd() + '/'
     xcos_file_name = xcos_file_list[xcos_file_id]
     # Get previously running scilab process IDs
     proc = subprocess.Popen("pgrep scilab", stdout=subprocess.PIPE, shell=True)
@@ -173,6 +180,26 @@ def event_stream(xcos_file_id):
     # name of worspace file the session
     workspace="workspace"+session+".dat"
     workspace_counter=workspace_list[xcos_file_id]
+    ############################################################################################################
+    #write_cmd="affichm('scilab-log-12345'";
+    #variablename="";
+    #affich_count=2;
+    #if (workspace_counter==4):
+	#for i in range(affich_count):
+	 #   variable_name=variable_alpha[i]
+	  #  variablename=variablename+","+variable_name
+    #write_cmd=write_cmd+variablename+");";
+
+    workspace_variable_list
+    write_cmd="affichm('scilab-log-12345'";
+    variablename="";
+    #affich_count=2;
+    if (workspace_counter==4):
+	for i in range(len(workspace_variable_list)):
+	    variable_name=workspace_variable_list[i]
+	    variablename=variablename+","+variable_name
+    write_cmd=write_cmd+variablename+");";
+    ############################################################################################################
     # commands for ruuning of scilab based on existence of TOWS_c and FROMWSB
     # 3 means both exists,2 FROMWSB exists,1 TOWS_c exists,0 none exists meaning normal set of commands 
     if (workspace_counter ==3 and exists(workspace)):
@@ -181,6 +208,8 @@ def event_stream(xcos_file_id):
     elif (workspace_counter ==1 or workspace_counter==3):
         append=workspace_dict[xcos_file_id]
         command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);deletefile('"+workspace+"');save('"+workspace+"') ;quit()"]
+    elif (workspace_counter ==4):     # added for affich_m
+        command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);exec('" + xcos_affich_function_file_dir + "affichm.sci" + "');"+str(write_cmd)+"deletefile('"+workspace+"');save('"+workspace+"') ;quit()"]
     elif (workspace_counter ==2 and exists(workspace)):
         command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "load('"+workspace+"');loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);deletefile('"+workspace+"') ;quit()"]
     else:
@@ -494,6 +523,17 @@ def upload():
         workspace_counter=0
         blocks = new_xml.getElementsByTagName("BasicBlock")
         Details.tk_is_present = False
+
+	# List to contain all affich blocks
+	blockaffich = new_xml.getElementsByTagName("AfficheBlock")  
+    	block_ida = []
+    	for block in blockaffich:
+            if block.getAttribute("interfaceFunctionName") == "AFFICH_m":
+               block_ida.append(block.getAttribute("id"))
+               block.setAttribute('id', '-1') 
+               workspace_counter=4
+               flag1=1
+
         # List to contain all the block IDs of tkscales so that we can create read blocks with these IDs
         block_id = []
         for block in blocks:
@@ -568,6 +608,31 @@ def upload():
                     print(line_content,end= '')
             print(line,end = '')
 
+	aff_count = 0
+	
+	for line in fileinput.input(temp_file_xml_name, inplace=1):# if the keyword argument inplace=1 is passed to fileinput.input() or to the FileInput constructor, the file is moved to a backup file and standard output is directed to the input file
+            
+            
+	    if 'interfaceFunctionName=\"AFFICH_m\"' in line:
+		 print("<BasicBlock blockType=\"d\" dependsOnU=\"1\" id=\"", end ='')
+		 print(block_ida[aff_count], end = '')
+
+	         print("\" interfaceFunctionName=\"TOWS_c\" parent=\"1\" simulationFunctionName=\"tows_c\" simulationFunctionType=\"C_OR_FORTRAN\" style=\"TOWS_c\">")
+		 print("<ScilabString as=\"exprs\" height=\"3\" width=\"1\">")
+                 print("<data column=\"0\" line=\"0\" value=\"128\"/>")
+                 #For workspace variable name
+                 print("<data column=\"0\" line=\"1\" value=\"", end = '')
+		 print(variable_alpha[aff_count], end ='')
+		 workspace_variable_list.append(variable_alpha[aff_count])
+		 print("\"/>")
+		 print("<data column=\"0\" line=\"2\" value=\"0\"/>")
+                 print("</ScilabString>")
+                 aff_count = aff_count + 1
+		 affich_count = aff_count
+		 read_file = open("Read_tows_c.txt", "r")
+                 for line_content in read_file:
+                     print(line_content,end= '')
+            print(line,end = '')
 
         # Changing the file extension from xml to xcos
         base_filename = os.path.splitext(temp_file_xml_name)[0]
