@@ -15101,6 +15101,7 @@ function MUX_f() {
     }
 }
 
+
 function M_freq() {
 
     M_freq.prototype.define = function M_freq() {
@@ -15166,10 +15167,573 @@ function M_freq() {
                 }
             }
         }
+		var model = scicos_model();
+		var mainre=mfrequ_clk(this.frequ, this.offset)
+		var m=mainre[0];
+		var den=mainre[1];
+		var off=mainre[2];
+		var count=mainre[3];
+		var m1=mainre[4];
+		var fir=mainre[5];
+//here in opar we have taken m[0] and m[1] as m will be a matrix [m[0],m[1]] due to which we will get error in opar data so we need to take it in fragments
+        	model.opar=list(new ScilabDouble(m[0],m[1]),new ScilabDouble([parseFloat(den)]),new ScilabDouble([off]),new ScilabInteger([count])); 
         
+		var mn=(2*m1.length)-1;
+               
+                if (mn>3){
+                    this.x.graphics.sz=new ScilabDouble([40+(mn-3)*10,40]);
+       			}
+                else{
+                   this.x.graphics.sz=new ScilabDouble([50,40]);
+               }
+                model.firing=new ScilabDouble(fir);
+
+		var exprs = new ScilabString([sci2exp([[1], [2]])], [sci2exp([[0], [0]])]);
+		var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"M_freq\",sz(1),sz(2));"]);
+                this.x = new standard_define(new ScilabDouble([3, 2]), model, exprs, gr_i);
+                this.x.graphics.exprs=exprs
+ 		var io =set_io(this.x.model,this.x.graphics,[],[],[1],ones(mn,1));
          return new BasicBlock(this.x)
      }
 }
+function mfrequ_clk(frequ, offset) {
+  var m = [];
+  var den = [];
+  var off = [];
+  var count = [];
+  var m1 = [];
+  var fir = [];
+  var v = frequ.concat(offset);
+  v = transpose([removeElementsWithValue(convertarray(v), 0)]); //here we convert the matrix to array and remove elements with zero values//working prototype https://repl.it/@RinkiNag24/DependentMiserablePtarmigan
+  var min_v = Math.min.apply(null, v);
+  var max_v = Math.max.apply(null, v);
+  if (max_v / min_v > 100000) {
+    alert(
+      'The difference between the frequencies is very large ,the clocks could not be synchronized'
+    );
+    return v;
+  }
+  var fixed = fixedpointgcd(v);
+  var value = fixed[0];
+  den = parseFloat(fixed[1]);
+  var result = uni(frequ, offset);
+  k = result[1];
+  m1 = result[0];
+  var frd1 = matmultiplication(frequ, den);
+  var clone = frd1.slice(0);
+  var ppcm = lcm_more_than_two_numbers(clone);
+  if (frequ.length > 1) {
+    var mat1 = [];
+    for (var j = 0; j <= frequ.length - 1; j++) {
+      var matind1 = offset[j][0] * den;
+      var matind2 = frd1[j][0];
+      var matind3 = parseFloat(ppcm);
+      mat1[j] = matindices(matind1, matind2, matind3);
+    }
+    re = convertarray(mat1);
+    var mat2 = [];
+    for (var k = 0; k <= frequ.length - 1; k++) {
+      mat2[k] = convertarray(
+        matmultiplication(ones(mat1[k].length, 1), Math.pow(2, k))
+      );
+    }
+    re1 = convertarray(mat2);
+    mat =conmat(re,re1)
+    var items = mat; //here we are transfering mat values to items var.
+    var gsortre = gsort(items); //this function will return two values n which is sorted matrix and k with index matched with its previous position before sort
+    var newmat = transpose(gsortre[0]).concat([transpose(items)[1]]);
+    var indearr = transpose(gsortre[1]);
+    mat = transpose([newmat[0]].concat(matincrease([newmat[1]], indearr))); //mat=mat(k,:);//implemented in matincrease function https://repl.it/@RinkiNag24/HarmfulFlippantAntelopegroundsquirrel it arranges the matrix in order passed by k mat of gsort as we get [n,k] from gsort function.
+    if (mat[1].length > 10000) {
+      confirm(
+        ' Warning: Your system is too hard to synchronize it will take some time\nAnd the stacksize has to be increase\n A scilab crash may occur\nDo You want me to continue?'
+      );
+    }
+
+    const matclone = mat.map(a => ({ ...a }));//cloned the matrix to prevent iteration and saving for further use
+    var mat22 = listiteration(mat, 1, mat.length - 1, 0);
+    var mat32 = listiteration(mat, 0, mat.length - 2, 0);
+    var vv = sub(mat22, mat32);
+    var arrele = [1];
+    vv = transpose([arrele.concat(transpose(vv)[0], arrele)]);
+    var kkk = findzero(vv);
+    var kk = findnzero(vv);
+    for (i = 0; i < kk.length - 1; i++) {
+      var kki = kk[i];
+      var kk1i = kk[i+1]-1;
+      var mu = listiteration(mat, kki, kk1i, 1);
+      //mat[kk[i]][1] = sum(convertarray(mu));kk(i+1)-1
+    }
+    //for i=1:size(kk,2)-1
+       //      mat(kk(i),2)=sum(mat(kk(i):kk(i+1)-1,2));
+       // end
+       //console.log(frequ[2][0])
+       if (frequ[1]==2){
+         kk.splice(1,1);
+       }//adjustment
+    for (i = 0; i < kk.length-1; i++) {
+      mat[kk[i]][1] = sum(convertarray(mu));
+    }
+    //console.log(mat)
+    //mat(kkk(:),:)=[];//https://repl.it/@RinkiNag24/HarmfulFlippantAntelopegroundsquirrel
+    mat = deletemulrows(mat, kkk);
+    //console.log(mat)//it will delete the rows listed in kkk array.
+    var last = mat.length - 1;
+    //m=[mat(1,1);mat(2:$,1)-mat(1:$-1,1)];
+    //constructing the first element of opar
+    mat22 = listiteration(mat, 1, mat.length - 1, 0);
+    mat32 = listiteration(mat, 0, mat.length - 2, 0);
+    m = transpose([[mat[0][0]].concat(transpose(sub(mat22, mat32))[0])]); //contains the first element of the chain and the delay.
+    var last_delay = parseFloat(ppcm) - mat[last][0] + mat[0][0]; // finding the last delay.
+    if (last_delay != 0) {
+      var last1 = mat.length;
+      var l_t = last1;
+      m[l_t] = last_delay; // we add the last delay to m.
+      m = m.concat(
+        [listiteration(mat, 0, mat.length - 1, 1), [mat[0][1]]],
+        [parseFloat(ppcm) + mat[0][0]].concat(
+          listiteration(mat, 0, mat.length - 1, 0)
+        )
+      );
+      // the event output for the last element//incredibeleto
+      // will be equal to the first one.
+      // the time will be the lcm+the delay of the first elementm=[m,[mat(:,2);mat(1,2)],[mat(:,1);double(ppcm)+mat(1,1)]]
+    } else {
+      m = transpose([
+        transpose(m)[0],
+        transpose(listiteration(mat, 0, mat.length - 1, 1))[0],
+        transpose(listiteration(mat, 0, mat.length - 1, 0))[0],
+      ]);
+    }
+
+    count = mat[0][0];
+    //console.log(count);// we put the first element of the matrix in a variable that will initialise the counter
+    m.splice(0, 1); //deleting first row frm m matrix
+    var mn = 2 * m1.length - 1; // find the number of event output.
+    fir = [-1, -1, -1]; // put all the element of the firing to -1//
+    //var fir=-ones(1,mn);as ones not working will work in combinedjs
+    var prog = matclone[0][1] - 1;
+    //console.log(prog);
+    fir[prog] = mat[0][0] / parseFloat(den); // programming the corresponding event output
+    // by the first element of the matrix mat.(first delay).
+    var off = 0; // the offset in this case will be equal to 0 because it is implemented in the calculation
+    // of the delay.
+  } else {
+    m = [frd1, 1, frd1];
+    // put the delay in the matrix. the delay will be equal to the one frequency.
+    count = 0; //  the counter will begin by 0.
+    mat = m;
+    off = offset; // the offset is put in the variable off. used by the simulator.
+    fir = off;
+  }
+
+  var mainre=[m,den,off,count,m1,fir,frequ,offset];
+  return mainre;
+}
+///functions used in this program
+function deletemulrows(mat, rowdelmat) {
+  //this function deletes multiple rows at a time.https://repl.it/@RinkiNag24/HarmfulFlippantAntelopegroundsquirrel
+  for (i = 0; i <= rowdelmat.length - 1; i++) {
+    //deleting rows of matrix
+    mat = mat.slice(0); // make copy
+    mat.splice(rowdelmat[i], 1);
+    if (i > 0) {
+      mat.splice(rowdelmat[i] - 1, 1);
+    }
+  }
+  return mat;
+}
+function sum(v) {
+  //for taking sum of whole matrix
+  var total = 0;
+  for (var i in v) {
+    total += v[i];
+  }
+  return total;
+}
+function convertarray(arrToConvert) {
+  //it will convert a matrix in array
+  var newArr = [];
+  for (var i = 0; i < arrToConvert.length; i++) {
+    newArr = newArr.concat(arrToConvert[i]);
+  }
+  return newArr;
+}
+function findzero(e1) {
+  //https://repl.it/@RinkiNag24/RowdyPeachpuffGrouper
+  var vind = [];
+  for (i = 0; i <= e1.length - 1; i++) {
+    //here i have fixed the col as v is row matrix
+
+    vind[i] = [];
+
+    if (e1[i] == 0) {
+      vind[i] = i;
+    }
+  }
+  var a = vind.join('').split('');
+  var result = a.map(function(x) {
+    return parseInt(x, 10);
+  });
+  return result;
+}
+function findnzero(e2) {
+  //https://repl.it/@RinkiNag24/RowdyPeachpuffGrouper
+  var vind = [];
+  for (i = 0; i <= e2.length - 1; i++) {
+    //here i have fixed the col as v is row matrix
+
+    vind[i] = [];
+
+    if (e2[i] != 0) {
+      vind[i] = i;
+    }
+  }
+  var a = vind.join('').split('');
+  var result = a.map(function(x) {
+    return parseInt(x, 10);
+  });
+  return result;
+}
+function lcm_more_than_two_numbers(input_array) {
+  if (toString.call(input_array) !== '[object Array]') return false;
+  var r1 = 0,
+    r2 = 0;
+  var l = input_array.length;
+  for (i = 0; i < l; i++) {
+    r1 = input_array[i] % input_array[i + 1];
+    if (r1 === 0) {
+      input_array[i + 1] =
+        input_array[i] * input_array[i + 1] / input_array[i + 1];
+    } else {
+      r2 = input_array[i + 1] % r1;
+      if (r2 === 0) {
+        input_array[i + 1] = input_array[i] * input_array[i + 1] / r1;
+      } else {
+        input_array[i + 1] = input_array[i] * input_array[i + 1] / r2;
+      }
+    }
+  }
+  return input_array[l - 1];
+}
+function gcd_more_than_two_numbers(input) {
+  if (toString.call(input) !== '[object Array]') return false;
+  var len, a, b;
+  len = input.length;
+  if (!len) {
+    return null;
+  }
+  a = input[0];
+  for (var i = 1; i < len; i++) {
+    b = input[i];
+    a = gcd_two_numbers(a, b);
+  }
+  return a;
+}
+function gcd_two_numbers(x, y) {
+  if (typeof x !== 'number' || typeof y !== 'number') return false;
+  x = Math.abs(x);
+  y = Math.abs(y);
+  while (y) {
+    var t = y;
+    y = x % y;
+    x = t;
+  }
+  return x;
+}
+function bubbleSort(arr) {
+  var len = arr.length;
+  for (var i = len - 1; i >= 0; i--) {
+    for (var j = 1; j <= i; j++) {
+      if (arr[j - 1] > arr[j]) {
+        var temp = arr[j - 1];
+        arr[j - 1] = arr[j];
+        arr[j] = temp;
+      }
+    }
+  }
+  return [arr];
+}
+function transpose(
+  a //this function transpose the matrix like makes rows to col and viceversa
+) {
+  return a[0].map(function(_, c) {
+    return a.map(function(r) {
+      return r[c];
+    });
+  });
+}
+//console.log(transpose([1,2]));
+function gsort(items) {
+  //gsort works same like gsort in scilab
+  var duplicate = [];
+  var iter = [];
+  for (i = 0; i <= items.length - 1; i++) {
+    iter.push(items[i][0]);
+    duplicate.push(items[i][0]);
+  }
+  newiter = bubbleSort(iter);
+  tnewiter = transpose(newiter);
+  var hash = {};
+  var index = [];
+  for (i = 0; i < newiter[0].length; i++) {
+    var ind_temp;
+    if (newiter[0][i] in hash) {
+      ind_temp = duplicate.indexOf(newiter[0][i], hash[newiter[0][i]] + 1);
+      index.push(ind_temp);
+      hash[newiter[0][i]] = ind_temp;
+    } else {
+      ind_temp = duplicate.indexOf(newiter[0][i]);
+      index.push(ind_temp);
+      hash[newiter[0][i]] = ind_temp;
+    }
+  }
+  tindex = transpose([index]);
+  var result = [tnewiter, tindex];
+  return result;
+}
+function matindices(from, diff, to) {
+  //fucntion which implements range list of scilab like matindices[1:2:10] gives 1.    3.    5.    7.    9.
+  //which was not possible in js so made function
+  var arrayindi = [];
+  for (i = 0; i <= to; i++) {
+    arrayindi.push(i);
+    i = i + diff - 1;
+    if (i >= to) {
+      return arrayindi;
+      break;
+    }
+  }
+}
+function deleteRow(arr, row) {
+  //deleting rows of matrix but single one only after that indices get changed for for multiple rows i have made deletemulrows function.
+  arr = arr.slice(0); // make copy
+  arr.splice(row - 1, 1);
+  return arr;
+}
+function listiteration(list, fromrows, torows, col) {
+  // https://repl.it/@RinkiNag24/PurpleSpiffyEmperorpenguin
+
+  var newl = list; //making a copy of list
+  var iterla = [];
+  for (i = fromrows; i <= torows; i++) {
+    iterla[i - fromrows] = [];
+    for (j = col; j <= col; j++) {
+      iterla[i - fromrows][j - col] = newl[i][j];
+    }
+  }
+  return iterla;
+}
+function sub(mat, items) {
+  //this function is for subtraction of matrix
+  var len1 = items[0].length;
+  var len2 = mat.length;
+  var ansub = [];
+  for (i = 0; i <= len2 - 1; i++) {
+    ansub[i] = [];
+    for (j = 0; j <= len1 - 1; j++) {
+      ansub[i][j] = mat[i][j] - items[i][j];
+    }
+  }
+  return ansub;
+}
+function removeElementsWithValue(arr, val) {
+  //this removes the zero elements from array .
+  var i = arr.length;
+  while (i--) {
+    if (arr[i] === val) {
+      arr.splice(i, 1);
+    }
+  }
+  return arr;
+}
+function matmultiplication(matrix, num) {
+  var mul = [];
+  for (i = 0; i <= matrix.length - 1; i++) {
+    mul[i] = [];
+    for (j = 0; j <= matrix[0].length - 1; j++) {
+      mul[i][j] = matrix[i][j] * num;
+    }
+  }
+  return mul;
+}
+function fixedpointgcd(v) {
+  //working prototype https://repl.it/@RinkiNag24/MonstrousAcidicMicrovenator
+  // This function computes the PGCD of a double vector.
+  var x = [];
+  for (i = 0; i <= v.length - 1; i++) {
+    //considered row matrix only
+    x[i] = [];
+
+    x[i][0] = Math.log10(v[i][0]);
+  }
+  var f = 0; //considering scilab result
+  v = [[1], [2]];
+  //[N,D]=rat(v,1d-9);
+  var N = v;
+  var D = [[1], [1]];
+  var den = lcm_more_than_two_numbers(convertarray(D));
+  //console.log(den);
+  var value = gcd_more_than_two_numbers(convertarray(D));
+  //console.log(value);
+  if (f > 0) {
+    value = value * Math.pow(10, f);
+  } else {
+    den = parseFloat(den) * Math.pow(10, -f);
+  }
+  var fix = [value, den];
+  return fix;
+}
+function matincrease(matrix, indearr) {
+  var rearange = [];
+  for (i = 0; i <= matrix.length - 1; i++) {
+    rearange[i] = [];
+
+    for (j = 0; j <= matrix[0].length - 1; j++) {
+      rearange[i][j] = matrix[i][indearr[0][j]];
+    }
+  }
+  return rearange;
+}
+function ones() {
+  if (arguments.length == 0) {
+    return [1];
+  } else if (arguments.length == 1) {
+    var a = arguments[0];
+    if (typeof a.length === 'undefined') {
+      return [1];
+    } else {
+      return math.ones(math.size(a));
+    }
+  } else {
+    var args = Array.prototype.slice.call(arguments);
+    return math.ones(args);
+  }
+}
+//uni function
+function uni(fr, of) {
+  var k = [];
+  var m = [];
+  var ot = [];
+
+  for (var i = 0; i < fr.length; i++) {
+    var istreated = false;
+    var ind = [];
+    ind = m.indexOf(fr[i]);
+    if (ind == '') {
+      m[i] = fr[i];
+      ot[i] = [of[i]];
+      k[i] = [i + 1];
+    } else {
+      for (var j = 0; j <= ind; j++) {
+        if (of[i] == ot[j]) {
+          istreated = true;
+        }
+      }
+      if (!istreated) {
+        m[i] = fr[i];
+        ot[i] = [of[i]];
+        k[i] = [i + 1];
+      }
+    }
+  }
+
+  var result = [m, k];
+  //console.log(k)
+  return result;
+}
+function conmat(v, v1) {
+  //only for col matrix it joins two matrix
+  result = [];
+  for (i = 0; i <= v.length - 1; i++) {
+    result[i] = [];
+    result[i] = [v[i], v1[i]];
+  }
+  return result;
+}
+
+
+/*function M_freq() {//old mfreq function
+
+    M_freq.prototype.define = function M_freq() {
+        var model = scicos_model();
+	this.frequ = [[1],[2]];
+	this.offset = [[0],[0]];
+        model.sim = list(new ScilabString(["m_frequ"]), new ScilabDouble([4]));
+        model.evtout = new ScilabDouble([1], [1], [1]);
+        model.evtin = new ScilabDouble([1]);
+        model.rpar = new ScilabDouble();
+        model.opar = list(new ScilabDouble([1, 1, 0], [1, 1, 1], [1, 3, 2]), new ScilabDouble([1]), new ScilabDouble([0]), new ScilabDouble([0]));
+        model.blocktype = new ScilabString(["d"]);
+        model.firing = new ScilabDouble([0, -1, -1]);
+        model.dep_ut = new ScilabBoolean([false, false]);
+
+        var exprs = new ScilabString([sci2exp([[1], [2]])], [sci2exp([[0], [0]])]);
+
+        var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"M_freq\",sz(1),sz(2));"]);
+        this.x = new standard_define(new ScilabDouble([3, 2]), model, exprs, gr_i);
+        return new BasicBlock(this.x);
+    }
+
+
+    M_freq.prototype.details = function M_freq() {
+        return this.x;
+    }
+    /**m_freq function is needed**/
+
+   /* M_freq.prototype.get = function M_freq() {
+         if(this.frequ == undefined || this.frequ == null ){
+             this.frequ = sci2exp([[1],[2]])
+         }
+         if(this.offset == undefined || this.offset == null ){
+             this.offset = sci2exp([[0],[0]])
+         }
+
+         var options={
+             frequ:["Sample time",this.frequ.toString().replace(/,/g," ")],
+             offset:["Offset",this.offset.toString().replace(/,/g," ")],
+         }
+         return options
+     }
+     M_freq.prototype.set = function M_freq() {
+        this.frequ = inverse(arguments[0]["frequ"])
+        this.offset = inverse(arguments[0]["offset"])
+       // if((size(frequ,"*"))!=(size(offset,"*"))){
+       //     alert("offset and frequency must have the same size");
+       //     M_freq.get();
+       // }
+        for(var i=0;i<size(this.frequ,1);i++)
+        {
+            for(j=0;j<size(this.frequ,2);j++)
+            {
+                if(this.frequ[i][j]<=0)
+                {
+                    alert("Frequency must be a positive number");
+                    M_freq.get();
+                }
+                if(Math.abs(this.offset[i][j])>this.frequ[i][j])
+                {
+                    alert("The |Offset| must be less than the Frequency");
+                    M_freq.get();
+                }
+            }
+        }
+        model.sim = list(new ScilabString(["m_frequ"]), new ScilabDouble([4]));
+        model.evtout = new ScilabDouble([1], [1], [1]);
+        model.evtin = new ScilabDouble([1]);
+        model.rpar = new ScilabDouble();
+        model.opar = list(new ScilabDouble([1, 1, 0], [1, 1, 1], [1, 3, 2]), new ScilabDouble([1]), new ScilabDouble([0]), new ScilabDouble([0]));
+        model.blocktype = new ScilabString(["d"]);
+        model.firing = new ScilabDouble([0, -1, -1]);
+        model.dep_ut = new ScilabBoolean([false, false]);
+
+        var exprs = new ScilabString([sci2exp([[1], [2]])], [sci2exp([[0], [0]])]);
+
+        var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"M_freq\",sz(1),sz(2));"]);
+        this.x = new standard_define(new ScilabDouble([3, 2]), model, exprs, gr_i);
+        return new BasicBlock(this.x);
+     }
+}*/
 function M_SWITCH() {
 
     M_SWITCH.prototype.define = function M_SWITCH() {
