@@ -16145,20 +16145,10 @@ function mfrequ_clk(frequ, offset) {
     vv = transpose([arrele.concat(transpose(vv)[0], arrele)]);
     var kkk = findzero(vv);
     var kk = findnzero(vv);
-    for (i = 0; i < kk.length - 1; i++) {
+    for (var i = 0; i <= kk.length - 2; i++) {
       var kki = kk[i];
-      var kk1i = kk[i+1]-1;
+      var kk1i = (kk[i+1])-1;
       var mu = listiteration(mat, kki, kk1i, 1);
-      //mat[kk[i]][1] = sum(convertarray(mu));kk(i+1)-1
-    }
-    //for i=1:size(kk,2)-1
-       //      mat(kk(i),2)=sum(mat(kk(i):kk(i+1)-1,2));
-       // end
-       //console.log(frequ[2][0])
-       if (frequ[1]==2){
-         kk.splice(1,1);
-       }//adjustment
-    for (i = 0; i < kk.length-1; i++) {
       mat[kk[i]][1] = sum(convertarray(mu));
     }
     //console.log(mat)
