@@ -1639,6 +1639,7 @@ function genSwitchInnerDiagram(stateOpen) {
     return diagram;
 }
 ////////////////////////////////////////////////////// M_FREQ Block /////////////////////////////////////////////////////////////////
+
 function mfrequ_clk(frequ, offset) {
   var m = [];
   var den = [];
@@ -1742,8 +1743,8 @@ function mfrequ_clk(frequ, offset) {
     count = mat[0][0];
     //console.log(count);// we put the first element of the matrix in a variable that will initialise the counter
     m.splice(0, 1); //deleting first row frm m matrix
-    var mn = 2 * m1.length - 1; // find the number of event output.
-    fir = [-1, -1, -1]; // put all the element of the firing to -1//
+     var mn = Math.pow(2, m1.length)-1; // find the number of event output.
+    fir = matmultiplication(ones(1,mn),-1)[0];// put all the element of the firing to -1//
     //var fir=-ones(1,mn);as ones not working will work in combinedjs
     var prog = matclone[0][1] - 1;
     //console.log(prog);
@@ -1759,7 +1760,7 @@ function mfrequ_clk(frequ, offset) {
     off = offset; // the offset is put in the variable off. used by the simulator.
     fir = off;
   }
-
+fir = matmultiplication(ones(1,mn),-1)[0];
   var mainre=[m,den,off,count,m1,fir,frequ,offset];
   return mainre;
 }
@@ -1929,7 +1930,7 @@ function matindices(from, diff, to) {
   //fucntion which implements range list of scilab like matindices[1:2:10] gives 1.    3.    5.    7.    9.
   //which was not possible in js so made function
   var arrayindi = [];
-  for (i = 0; i <= to; i++) {
+  for (i = from; i <= to; i++) {
     arrayindi.push(i);
     i = i + diff - 1;
     if (i >= to) {
@@ -2075,6 +2076,7 @@ function uni(fr, of) {
   //console.log(k)
   return result;
 }
+
 function conmat(v, v1) {
   //only for col matrix it joins two matrix
   result = [];
