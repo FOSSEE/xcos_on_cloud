@@ -12529,7 +12529,7 @@ function Gyrator() {
         model.sim = new ScilabString([this.ModelName]);
         mo.inputs = new ScilabString(...this.MI);
         mo.outputs = new ScilabString(...this.MO);
-        console.log(this.MI);
+        //console.log(this.MI);
         model.rpar = new ScilabDouble(...this.PrametersValue);
         mo.parameters = list(new ScilabString(...this.ParametersName), new ScilabDouble(...this.PrametersValue), new ScilabDouble(...zeros(this.ParametersName)));
         var exprs = new ScilabString(["1"], ["1"]);
@@ -12563,7 +12563,8 @@ function Gyrator() {
 Gyrator.prototype.set = function Gyrator() {
     this.G1 = parseFloat((arguments[0]["G1"]))
     this.G2 = parseFloat((arguments[0]["G2"]))
-    this.x.model.equations.parameters = list(new ScilabString(["G1"],["G2"]), new ScilabDouble([this.G1],[this.G2]));
+   // this.x.model.equations.parameters = list(new ScilabString(["G1"],["G2"]), new ScilabDouble([this.G1],[this.G2]));
+   this.x.model.equations.parameters =list(new ScilabString(...this.ParametersName), list(new ScilabDouble([this.G1]),new ScilabDouble([this.G2])), new ScilabDouble(...zeros(this.ParametersName)));
     var exprs = new ScilabString([this.G1],[this.G2])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
@@ -12730,7 +12731,7 @@ function IdealTransformer() {
     }
 IdealTransformer.prototype.set = function IdealTransformer() {
     this.N = parseFloat((arguments[0]["N"]))
-    this.x.model.equations.parameters = list(new ScilabString(["N"]), new ScilabDouble([this.N]));
+    this.x.model.equations.parameters = list(new ScilabString(["N"]), list(new ScilabDouble([this.N])),new ScilabDouble([0]));
     var exprs = new ScilabString([this.N])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
@@ -16240,7 +16241,8 @@ function NMOS() {
         mo.model = new ScilabString(["NMOS"]);
         mo.outputs = new ScilabString(["D"], ["B"], ["S"]);
         mo.inputs = new ScilabString(["G"]);
-        mo.parameters = list(new ScilabString(["W"], ["L"], ["Beta"], ["Vt"], ["K2"], ["K5"], ["dW"], ["dL"], ["RDS"]), new ScilabDouble([this.W], [this.L], [this.Beta], [this.Vt], [this.K2], [this.K5], [this.dW], [this.dL], [this.RDS]));
+        //mo.parameters = list(new ScilabString(["W"], ["L"], ["Beta"], ["Vt"], ["K2"], ["K5"], ["dW"], ["dL"], ["RDS"]), new ScilabDouble([this.W], [this.L], [this.Beta], [this.Vt], [this.K2], [this.K5], [this.dW], [this.dL], [this.RDS]));
+        mo.parameters = list(new ScilabString(["W"], ["L"], ["Beta"], ["Vt"], ["K2"], ["K5"], ["dW"], ["dL"], ["RDS"]), list(new ScilabDouble([this.W]),new ScilabDouble([this.L]),new ScilabDouble([this.Beta]),new ScilabDouble([this.Vt]),new ScilabDouble([this.K2]), new ScilabDouble([this.K5]),new ScilabDouble([this.dW]),new ScilabDouble([this.dL]),new ScilabDouble([this.RDS])));
         model.equations = mo;
         model.in = new ScilabDouble(...ones(size(getData(mo.inputs), "*"), 1));
         model.out = new ScilabDouble(...ones(size(getData(mo.outputs), "*"), 1));
@@ -16258,29 +16260,29 @@ function NMOS() {
     }
     NMOS.prototype.get = function NMOS() {
         var options={
-            W:["Width [m]",this.W.toString().replace(/,/g," ")],
-            L:["Length [m]",this.L.toString().replace(/,/g," ")],
-            Beta:["Transconductance parameter [A/(V*V)]",this.Beta.toString().replace(/,/g," ")],
-            Vt:["Zero bias threshold voltage [V]",this.Vt.toString().replace(/,/g," ")],
-            K2:["Bulk threshold parameter",this.K2.toString().replace(/,/g," ")],
-            K5:["Reduction of pinch-off region",this.K5.toString().replace(/,/g," ")],
-            dW:["Narrowing of channel [m]",this.dW.toString().replace(/,/g," ")],
-            dL:["Shortening of channel [m]",this.dL.toString().replace(/,/g," ")],
-            RDS:["Drain-Source-Resistance [Ohm]",this.RDS.toString().replace(/,/g," ")],
+            W:["Width [m]",this.W],
+            L:["Length [m]",this.L],
+            Beta:["Transconductance parameter [A/(V*V)]",this.Beta],
+            Vt:["Zero bias threshold voltage [V]",this.Vt],
+            K2:["Bulk threshold parameter",this.K2],
+            K5:["Reduction of pinch-off region",this.K5],
+            dW:["Narrowing of channel [m]",this.dW],
+            dL:["Shortening of channel [m]",this.dL],
+            RDS:["Drain-Source-Resistance [Ohm]",this.RDS],
         }
         return options
     }
 NMOS.prototype.set = function NMOS() {
-    this.W = inverse(arguments[0]["W"])
-    this.L = inverse(arguments[0]["L"])
-    this.Beta = inverse(arguments[0]["Beta"])
-    this.Vt = inverse(arguments[0]["Vt"])
-    this.K2 = inverse(arguments[0]["K2"])
-    this.K5 = inverse(arguments[0]["K5"])
-    this.dW = inverse(arguments[0]["dW"])
-    this.dL = inverse(arguments[0]["dL"])
-    this.RDS = inverse(arguments[0]["RDS"])
-    this.x.model.equations.parameters = list(new ScilabString(["W"], ["L"], ["Beta"], ["Vt"], ["K2"], ["K5"], ["dW"], ["dL"], ["RDS"]), new ScilabDouble([this.W], [this.L], [this.Beta], [this.Vt], [this.K2], [this.K5], [this.dW], [this.dL], [this.RDS]));
+    this.W = arguments[0]["W"]
+    this.L = arguments[0]["L"]
+    this.Beta = arguments[0]["Beta"]
+    this.Vt = arguments[0]["Vt"]
+    this.K2 = arguments[0]["K2"]
+    this.K5 = arguments[0]["K5"]
+    this.dW = arguments[0]["dW"]
+    this.dL = arguments[0]["dL"]
+    this.RDS =arguments[0]["RDS"]
+    this.x.model.equations.parameters = list(new ScilabString(["W"], ["L"], ["Beta"], ["Vt"], ["K2"], ["K5"], ["dW"], ["dL"], ["RDS"]), list(new ScilabDouble([this.W]),new ScilabDouble([this.L]),new ScilabDouble([this.Beta]),new ScilabDouble([this.Vt]),new ScilabDouble([this.K2]), new ScilabDouble([this.K5]),new ScilabDouble([this.dW]),new ScilabDouble([this.dL]),new ScilabDouble([this.RDS])));
     var exprs = new ScilabString([this.W.toString().replace(/,/g, " ")],[this.L.toString().replace(/,/g, " ")],[this.Beta.toString().replace(/,/g, " ")],[this.Vt.toString().replace(/,/g, " ")],[this.K2.toString().replace(/,/g, " ")],[this.K5.toString().replace(/,/g, " ")],[this.dW.toString().replace(/,/g, " ")],[this.dL.toString().replace(/,/g, " ")],[this.RDS.toString().replace(/,/g, " ")])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
@@ -16309,7 +16311,7 @@ function PMOS() {
         mo.model = new ScilabString(["PMOS"]);
         mo.outputs = new ScilabString(["D"], ["B"], ["S"]);
         mo.inputs = new ScilabString(["G"]);
-        mo.parameters = list(new ScilabString(["W"], ["L"], ["Beta"], ["Vt"], ["K2"], ["K5"], ["dW"], ["dL"], ["RDS"]), new ScilabDouble([this.W], [this.L], [this.Beta], [this.Vt], [this.K2], [this.K5], [this.dW], [this.dL], [this.RDS]));
+        mo.parameters = list(new ScilabString(["W"], ["L"], ["Beta"], ["Vt"], ["K2"], ["K5"], ["dW"], ["dL"], ["RDS"]), list(new ScilabDouble([this.W]),new ScilabDouble([this.L]),new ScilabDouble([this.Beta]),new ScilabDouble([this.Vt]),new ScilabDouble([this.K2]), new ScilabDouble([this.K5]),new ScilabDouble([this.dW]),new ScilabDouble([this.dL]),new ScilabDouble([this.RDS])));
         model.equations = mo;
         model.in = new ScilabDouble(...ones(size(getData(mo.inputs), "*"), 1));
         model.out = new ScilabDouble(...ones(size(getData(mo.outputs), "*"), 1));
@@ -16327,40 +16329,42 @@ function PMOS() {
     }
     PMOS.prototype.get = function PMOS() {
         var options={
-            W:["Width [m]",this.W.toString().replace(/,/g," ")],
-            L:["Length [m]",this.L.toString().replace(/,/g," ")],
-            Beta:["Transconductance parameter [A/(V*V)]",this.Beta.toString().replace(/,/g," ")],
-            Vt:["Zero bias threshold voltage [V]",this.Vt.toString().replace(/,/g," ")],
-            K2:["Bulk threshold parameter",this.K2.toString().replace(/,/g," ")],
-            K5:["Reduction of pinch-off region",this.K5.toString().replace(/,/g," ")],
-            dW:["Narrowing of channel [m]",this.dW.toString().replace(/,/g," ")],
-            dL:["Shortening of channel [m]",this.dL.toString().replace(/,/g," ")],
-            RDS:["Drain-Source-Resistance [Ohm]",this.RDS.toString().replace(/,/g," ")],
+            W:["Width [m]",this.W],
+            L:["Length [m]",this.L],
+            Beta:["Transconductance parameter [A/(V*V)]",this.Beta],
+            Vt:["Zero bias threshold voltage [V]",this.Vt],
+            K2:["Bulk threshold parameter",this.K2],
+            K5:["Reduction of pinch-off region",this.K5],
+            dW:["Narrowing of channel [m]",this.dW],
+            dL:["Shortening of channel [m]",this.dL],
+            //RDS:["Drain-Source-Resistance [Ohm]",this.RDS.toString().replace(/,/g," ")],
+            RDS:["Drain-Source-Resistance [Ohm]",this.RDS],
         }
         return options
     }
 	PMOS.prototype.set = function PMOS() {
-	    this.W = inverse(arguments[0]["W"])
-	    this.L = inverse(arguments[0]["L"])
-	    this.Beta = inverse(arguments[0]["Beta"])
-	    this.Vt = inverse(arguments[0]["Vt"])
-	    this.K2 = inverse(arguments[0]["K2"])
-	    this.K5 = inverse(arguments[0]["K5"])
-	    this.dW = inverse(arguments[0]["dW"])
-	    this.dL = inverse(arguments[0]["dL"])
-	    this.RDS = inverse(arguments[0]["RDS"])
-	    this.x.model.equations.parameters = list(new ScilabString(["W"], ["L"], ["Beta"], ["Vt"], ["K2"], ["K5"], ["dW"], ["dL"], ["RDS"]), new ScilabDouble([this.W], [this.L], [this.Beta], [this.Vt], [this.K2], [this.K5], [this.dW], [this.dL], [this.RDS]));
+	    this.W = arguments[0]["W"]
+	    this.L = arguments[0]["L"]
+	    this.Beta = arguments[0]["Beta"]
+	    this.Vt = arguments[0]["Vt"]
+	    this.K2 = arguments[0]["K2"]
+	    this.K5 = arguments[0]["K5"]
+	    this.dW = arguments[0]["dW"]
+	    this.dL = arguments[0]["dL"]
+	    this.RDS =arguments[0]["RDS"]
+	    this.x.model.equations.parameters = list(new ScilabString(["W"], ["L"], ["Beta"], ["Vt"], ["K2"], ["K5"], ["dW"], ["dL"], ["RDS"]), list(new ScilabDouble([this.W]),new ScilabDouble([this.L]),new ScilabDouble([this.Beta]),new ScilabDouble([this.Vt]),new ScilabDouble([this.K2]), new ScilabDouble([this.K5]),new ScilabDouble([this.dW]),new ScilabDouble([this.dL]),new ScilabDouble([this.RDS])));
 	    var exprs = new ScilabString([this.W.toString().replace(/,/g, " ")],[this.L.toString().replace(/,/g, " ")],[this.Beta.toString().replace(/,/g, " ")],[this.Vt.toString().replace(/,/g, " ")],[this.K2.toString().replace(/,/g, " ")],[this.K5.toString().replace(/,/g, " ")],[this.dW.toString().replace(/,/g, " ")],[this.dL.toString().replace(/,/g, " ")],[this.RDS.toString().replace(/,/g, " ")])
 	    this.x.graphics.exprs=exprs
 	    return new BasicBlock(this.x)
 	    }
 }
 
+
 function NPN() {
 
     NPN.prototype.define = function NPN() {
         this.ModelName = "NPN";
-        this.PrametersValue = [[50], [0.1], [0], [0.02], [1.200e-10], [5.000e-09], [1.000e-12], [4.000e-13], [5.000e-13], [0.8], [0.4], [0.8], [0.333], [1.000e-15], [1.000e-15], [0.02585], [40]];
+        this.PrametersValue = [[50], [0.1], [0], [0.02], [1.2E-10], [5.0E-09], [1.0E-12], [4.0E-13], [5.0E-13], [0.8], [0.4], [0.8], [0.333], [1.0E-15], [1.0E-15], [0.02585], [40]];
         this.ParametersName = [["Bf"], ["Br"], ["Is"], ["Vak"], ["Tauf"], ["Taur"], ["Ccs"], ["Cje"], ["Cjc"], ["Phie"], ["Me"], ["Phic"], ["Mc"], ["Gbc"], ["Gbe"], ["Vt"], ["EMinMax"]];
         this.model = scicos_model();
         this.Typein = [];
@@ -16452,8 +16456,8 @@ NPN.prototype.set = function NPN() {
     this.Vt = parseFloat((arguments[0]["Vt"]))
     this.EMinMax = parseFloat((arguments[0]["EMinMax"]))
     this.ParametersName = [["Bf"], ["Br"], ["Is"], ["Vak"], ["Tauf"], ["Taur"], ["Ccs"], ["Cje"], ["Cjc"], ["Phie"], ["Me"], ["Phic"], ["Mc"], ["Gbc"], ["Gbe"], ["Vt"], ["EMinMax"]];
-    this.ParametersValue = new ScilabDouble([this.Bf],[this.Br],[this.Is],[this.Vak],[this.Tauf],[this.Taur],[this.Ccs],[this.Cje],[this.Cjc],[this.Phie],[this.Me],[this.Phic],[this.Mc],[this.Gbc],[this.Gbe],[this.Vt],[this.EMinMax])
-    this.x.model.equations.parameters = list(new ScilabString(...this.ParametersName), new ScilabDouble(...this.PrametersValue), new ScilabDouble(...this.PrametersValue), new ScilabDouble(...zeros(this.ParametersName)))
+    //this.ParametersValue = list(new ScilabDouble([this.Bf]),new ScilabDouble([this.Br]),new ScilabDouble([this.Is]),new ScilabDouble([this.Vak]),new ScilabDouble([this.Tauf]),new ScilabDouble([this.Taur]),new ScilabDouble([this.Ccs]),new ScilabDouble([this.Cje]),new ScilabDouble([this.Cjc]),new ScilabDouble([this.Phie]),new ScilabDouble([this.Me]),new ScilabDouble([this.Phic]),new ScilabDouble([this.Mc]),new ScilabDouble([this.Gbc]),new ScilabDouble([this.Gbe]),new ScilabDouble([this.Vt]),new ScilabDouble([this.EMinMax]))
+    this.x.model.equations.parameters = list(new ScilabString(...this.ParametersName),this.ParametersValue = list(new ScilabDouble([this.Bf]),new ScilabDouble([this.Br]),new ScilabDouble([this.Is]),new ScilabDouble([this.Vak]),new ScilabDouble([this.Tauf]),new ScilabDouble([this.Taur]),new ScilabDouble([this.Ccs]),new ScilabDouble([this.Cje]),new ScilabDouble([this.Cjc]),new ScilabDouble([this.Phie]),new ScilabDouble([this.Me]),new ScilabDouble([this.Phic]),new ScilabDouble([this.Mc]),new ScilabDouble([this.Gbc]),new ScilabDouble([this.Gbe]),new ScilabDouble([this.Vt]),new ScilabDouble([this.EMinMax])), new ScilabDouble(...zeros(this.ParametersName)))
     var exprs = new ScilabString([this.Bf],[this.Br],[this.Is],[this.Vak],[this.Tauf],[this.Taur],[this.Ccs],[this.Cje],[this.Cjc],[this.Phie],[this.Me],[this.Phic],[this.Mc],[this.Gbc],[this.Gbe],[this.Vt],[this.EMinMax])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
@@ -17535,10 +17539,11 @@ PNP.prototype.set = function PNP() {
     this.Vt = parseFloat((arguments[0]["Vt"]))
     this.EMinMax = parseFloat((arguments[0]["EMinMax"]))
     this.ParametersName = [["Bf"],["Br"],["Is"],["Vak"],["Tauf"],["Taur"],["Ccs"],["Cje"],["Cjc"],["Phie"],["Me"],["Phic"],["Mc"],["Gbc"],["Gbe"],["Vt"],["EMinMax"]];
-    this.ParametersValue = new ScilabDouble([this.Bf],[this.Br],[this.Is],[this.Vak],[this.Tauf],[this.Taur],[this.Ccs],[this.Cje],[this.Cjc],[this.Phie],[this.Me],[this.Phic],[this.Mc],[this.Gbc],[this.Gbe],[this.Vt],[this.EMinMax])
+    //this.ParametersValue = new ScilabDouble([this.Bf],[this.Br],[this.Is],[this.Vak],[this.Tauf],[this.Taur],[this.Ccs],[this.Cje],[this.Cjc],[this.Phie],[this.Me],[this.Phic],[this.Mc],[this.Gbc],[this.Gbe],[this.Vt],[this.EMinMax])
     var arr = [];
     arr.push(zeros(getData(this.ParametersName)));
-    this.x.model.equations.parameters = list(new ScilabString(...this.ParametersName), new ScilabDouble(...this.PrametersValue), new ScilabDouble(...math.transpose(arr)));
+    this.x.model.equations.parameters = list(new ScilabString(...this.ParametersName),this.ParametersValue = list(new ScilabDouble([this.Bf]),new ScilabDouble([this.Br]),new ScilabDouble([this.Is]),new ScilabDouble([this.Vak]),new ScilabDouble([this.Tauf]),new ScilabDouble([this.Taur]),new ScilabDouble([this.Ccs]),new ScilabDouble([this.Cje]),new ScilabDouble([this.Cjc]),new ScilabDouble([this.Phie]),new ScilabDouble([this.Me]),new ScilabDouble([this.Phic]),new ScilabDouble([this.Mc]),new ScilabDouble([this.Gbc]),new ScilabDouble([this.Gbe]),new ScilabDouble([this.Vt]),new ScilabDouble([this.EMinMax])), new ScilabDouble(...zeros(this.ParametersName)))
+   // this.x.model.equations.parameters = list(new ScilabString(...this.ParametersName), new ScilabDouble(...this.PrametersValue), new ScilabDouble(...math.transpose(arr)));
     var exprs = new ScilabString([this.Bf],[this.Br],[this.Is],[this.Vak],[this.Tauf],[this.Taur],[this.Ccs],[this.Cje],[this.Cjc],[this.Phie],[this.Me],[this.Phic],[this.Mc],[this.Gbc],[this.Gbe],[this.Vt],[this.EMinMax])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
@@ -20103,7 +20108,7 @@ function SineVoltage() {
 
         var exprs = new ScilabString([this.V], [this.ph], [this.frq], [this.offset], [this.start]);
 	var n =this.V.toString();
-        this.displayParameter=[n];
+        this.displayParameter=[this.V];
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"SineVoltage\",sz(1),sz(2));"]);
         this.x = new standard_define(new ScilabDouble([2, 2]), model, exprs, gr_i);
         this.x.graphics.in_implicit = new ScilabString(["I"]);
@@ -20132,6 +20137,7 @@ SineVoltage.prototype.set = function SineVoltage() {
     this.start = parseFloat((arguments[0]["start"]))
     this.x.model.rpar = new ScilabDouble([this.V],[this.ph],[this.frq],[this.offset],[this.start])
     this.x.model.equations.parameters = list(new ScilabString(["V"], ["phase"], ["freqHz"], ["offset"], ["startTime"]), list(new ScilabDouble([this.V]), new ScilabDouble([this.ph]), new ScilabDouble([this.frq]), new ScilabDouble([this.offset]), new ScilabDouble([this.start])));
+    this.displayParameter = [this.V];
     var exprs = new ScilabString([this.V],[this.ph],[this.frq],[this.offset],[this.start])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
@@ -21689,12 +21695,12 @@ function Switch() {
         var model = scicos_model();
 
         this.Ron = "0.01";
-        this.Roff = "1e5";
+        this.Roff = "100000";
         this.S = [["Ron"], ["Roff"]];
 
         var scope = {
             Ron:"0.01",
-            Roff: "1e5"
+            Roff: "100000"
         }
         this.Z = math.eval('[ Ron ; Roff ]', scope)._data;
 
@@ -21734,7 +21740,12 @@ function Switch() {
    Switch.prototype.set = function Switch() {
 	    this.Ron = (arguments[0]["Ron"])
 	    this.Roff = (arguments[0]["Roff"])
-	    this.x.model.equations.parameters = list(new ScilabString(...this.S), new ScilabDouble([this.Ron],[this.Roff]));
+	    var scope = {
+            Ron:this.Ron,
+            Roff:this.Roff
+        }
+        this.Z = math.eval('[ Ron ; Roff ]', scope)._data;
+	    this.x.model.equations.parameters = list(new ScilabString(...this.S), list(new ScilabDouble([this.Ron]), new ScilabDouble([this.Roff])));
 	    var exprs = new ScilabString(...this.Z)
 	    var model = scicos_model();
 	    this.x.graphics.exprs=exprs
@@ -22584,6 +22595,9 @@ VsourceAC.prototype.set = function VsourceAC() {
     this.FR = inverse(arguments[0]["FR"])
     this.x.model.rpar = new ScilabDouble([this.VA],[this.FR])
     this.x.model.equations.parameters = list(new ScilabString(["VA"], ["f"]), list(new ScilabDouble(...this.VA), new ScilabDouble(...this.FR)));
+    var n =this.VA.toString();
+    var k= this.FR.toString();
+    this.displayParameter=[[n],[k]];
     var exprs = new ScilabString([this.VA.toString().replace(/,/g, " ")],[this.FR.toString().replace(/,/g, " ")])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
@@ -22592,13 +22606,14 @@ VsourceAC.prototype.set = function VsourceAC() {
 function VVsourceAC() {
 
     VVsourceAC.prototype.define = function VVsourceAC() {
+        this.VA = 220;
+        this.FR = 50;
         var model = scicos_model();
 
         model.in = new ScilabDouble([1], [1]);
         model.out = new ScilabDouble([1]);
 
-        this.VA = 220;
-        this.FR = 50;
+        
 
         model.rpar = new ScilabDouble([this.FR]);
         model.sim = new ScilabString(["VVsourceAC"]);
@@ -22631,9 +22646,15 @@ VVsourceAC.prototype.get = function VVsourceAC() {
         return options
     }
 VVsourceAC.prototype.set = function VVsourceAC() {
-    this.FR = parseFloat((arguments[0]["FR"]))
+    this.FR = arguments[0]["FR"]
+    //var model = scicos_model();
+    this.x.model.rpar = new ScilabDouble([this.FR]);
+    //var mo = modelica_function();
+    this.x.model.equations.parameters = list(new ScilabString(["f"]), list(new ScilabDouble([this.FR])));
     var exprs = new ScilabString([this.FR]);
     this.x.graphics.exprs=exprs
+    var n =this.FR.toString();
+    this.displayParameter=[n];
     return new BasicBlock(this.x)
     }
     VVsourceAC.prototype.details = function VVsourceAC() {
