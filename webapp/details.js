@@ -382,7 +382,8 @@ function modelica_function() {
     this.model = [];
     this.inputs = [];
     this.outputs = [];
-    this.parameters = list([], list());
+   // this.parameters = list([], list());
+   this.parameters = list(new ScilabDouble(), list());
     var mo = tlist(modelica_type, this.modelica, this.model, this.inputs, this.outputs, this.parameters);
     return mo;
 }
