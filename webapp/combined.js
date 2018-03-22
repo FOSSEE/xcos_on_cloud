@@ -3800,7 +3800,7 @@ function CONST_m() {
 			this.x.model.rpar = new ScilabDouble();
 			this.x.model.out = new ScilabDouble([this.nout]);
 			exprs = new ScilabString([sci2exp(this.c)]);
-			this.x.model.opar = list(new ScilabDouble([this.c]));
+			this.x.model.opar = list(new ScilabDouble(...this.c));
 
 		}
 
