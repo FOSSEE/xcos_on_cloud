@@ -1178,14 +1178,16 @@ function sign(){
  * This function is used in const_m and const block for passing string function value like parameters and return actual
  * compute value
  */
- function getValueOfImaginaryInput(inputvalue){
+  function getValueOfImaginaryInput(inputvalue){
          var actualDoubleValue=null;
          if(inputvalue.includes("pi")){
-                 actualDoubleValue=Math.PI;
+		 inputvalue=inputvalue.replace("%pi", Math.PI);
+		 actualDoubleValue=math.eval(inputvalue);
+         }else if(inputvalue.includes("e")){
+                 inputvalue=inputvalue.replace("%e", Math.E);
+		 actualDoubleValue=math.eval(inputvalue);
          }else{
-         actualDoubleValue=math.eval(inputvalue);
-
-        }
-
+		 actualDoubleValue=math.eval(inputvalue);
+	 }
          return actualDoubleValue;
  }
