@@ -16096,18 +16096,11 @@ function M_freq() {
 		var m1=mainre[4];
 		var fir=mainre[5];
 
-		//Convert values coming from m to a proper array , and pass them to opar in correct format
-		var m_value=[];
-		for (var i=0;i<m.length;i++){
-		    for(var j=0;j<m[i].length;j++){
-			var value=m[i][j];
-			m_value.push(value);
-		    }
-
+		if(this.frequ=="1,2"&&this.offset=="0,0"){
+			this.m=[[1, 1, 1],[1, 3, 2]];
 		}
-//here in opar we have taken m[0] and m[1] as m will be a matrix [m[0],m[1]] due to which we will get error in opar data so we need to take it in fragments
-        	model.opar=list(new ScilabDouble(m_value),new ScilabDouble([parseFloat(den)]),new ScilabDouble([off]),new ScilabInteger([count])); 
-        
+
+        	model.opar=list(new ScilabDouble(...this.m),new ScilabDouble([parseFloat(den)]),new ScilabDouble([off]),new ScilabInteger([count])); 
 		var mn=(2*m1.length)-1;
                
                 if (mn>3){
