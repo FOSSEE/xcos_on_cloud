@@ -3752,9 +3752,17 @@ function CONST_m() {
 		var options = "";
 		var str = this.c.toString();
 		if (!str.match(/[a-z()+\-*/.^{}]/i)) {
+			if(str.match(/\[[0-9]+\]/)){
+
 			options = {
+				vec: ["Constant Value", this.c]
+			};			
+
+			}else{
+				options = {
 				vec: ["Constant Value", sci2exp(this.c)]
-			};
+			      };
+			}
 
 		} else {
 			options = {
@@ -3774,6 +3782,7 @@ function CONST_m() {
 			if (value == "null") {
 				m.get();
 			} else {
+				
 				exprs = new ScilabString([str]);
 				this.x.model.opar = list(new ScilabDouble([value]));
 				this.displayParameter = [str];
@@ -3790,18 +3799,30 @@ function CONST_m() {
 
 
 		} else {
+
 			this.c = MatrixInverse(arguments[0]["vec"]);
 			this.nout = size(this.c, "*")
 			if (this.nout == 0) {
 				alert("Wrong size for 'Constant Value' parameter" + "\nConstant value must have at least one element.");
 				CONST_m.get();
 			}
-			this.displayParameter = [sci2exp(this.c)];
 			this.x.model.rpar = new ScilabDouble();
 			this.x.model.out = new ScilabDouble([this.nout]);
-			exprs = new ScilabString([sci2exp(this.c)]);
 			this.x.model.opar = list(new ScilabDouble(...this.c));
 
+			if(arguments[0]["vec"].match(/\[[0-9]+\]/)){
+			
+				this.displayParameter = ["["+this.c+"]"];//[sci2exp(this.c)];
+				exprs = new ScilabString(["["+this.c+"]"]);
+				this.c=["["+this.c+"]"];
+
+			}else{
+			
+				this.displayParameter = [sci2exp(this.c)];
+				exprs = new ScilabString([sci2exp(this.c)]);
+			
+			}
+			
 		}
 
 
