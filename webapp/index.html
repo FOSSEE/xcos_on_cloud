@@ -406,19 +406,19 @@
                                     } else if (edgeSource.value == "ExplicitInputPort" && target.value != "ExplicitOutputPort") {
                                         alert("Explicit data input port must be connected to explicit data output port");
                                         return null;
-                                    } else if (edgeSource.value == "ImplicitOutputPort" && target.value != "ImplicitInputPort") {
-                                        alert("Implicit data output port must be connected to implicit data input port");
-                                        return null;
-                                    } else if (edgeSource.value == "ImplicitInputPort" && target.value != "ImplicitOutputPort") {
-                                        alert("Implicit data input port must be connected to implicit data output port");
-                                        return null;
-                                    } else if (edgeSource.value == "CommandPort" && target.value != "ControlPort") {
-                                        alert("Command port must be connected to control port");
-                                        return null;
-                                    } else if (edgeSource.value == "ControlPort" && target.value != "CommandPort") {
-                                        alert("Control port must be connected to command port");
-                                        return null;
-                                    }
+                                    } //else if (edgeSource.value == "ImplicitOutputPort" && target.value != "ImplicitInputPort") {
+                                       // alert("Implicit data output port must be connected to implicit data input port");
+                                       // return null;
+                                    //} else if (edgeSource.value == "ImplicitInputPort" && target.value != "ImplicitOutputPort") {
+                                        //alert("Implicit data input port must be connected to implicit data output port");
+                                        //return null;
+                                    //} else if (edgeSource.value == "CommandPort" && target.value != "ControlPort") {
+                                       // alert("Command port must be connected to control port");
+                                       // return null;
+                                    //} else if (edgeSource.value == "ControlPort" && target.value != "CommandPort") {
+                                    //    alert("Control port must be connected to command port");
+                                    //    return null;
+                                    //}
          
                                     // Create the splitBlock
                                     // (x-5, y-5.5) is the offset to correct the position of split-block
@@ -548,19 +548,19 @@
                                     } else if (source.value == "ExplicitInputPort" && edgeSource.value != "ExplicitOutputPort") {
                                         alert("Explicit data input port must be connected to explicit data output port");
                                         return null;
-                                    } else if (source.value == "ImplicitOutputPort" && edgeSource.value != "ImplicitInputPort") {
-                                        alert("Implicit data output port must be connected to implicit data input port");
-                                        return null;
-                                    } else if (source.value == "ImplicitInputPort" && edgeSource.value != "ImplicitOutputPort") {
-                                        alert("Implicit data input port must be connected to implicit data output port");
-                                        return null;
-                                    } else if (source.value == "CommandPort" && edgeSource.value != "ControlPort") {
-                                        alert("Command port must be connected to control port");
-                                        return null;
-                                    } else if (source.value == "ControlPort" && edgeSource.value != "CommandPort") {
-                                        alert("Control port must be connected to command port");
-                                        return null;
-                                    }
+                                    }// else if (source.value == "ImplicitOutputPort" && edgeSource.value != "ImplicitInputPort") {
+                                       // alert("Implicit data output port must be connected to implicit data input port");
+                                       // return null;
+                                    //} else if (source.value == "ImplicitInputPort" && edgeSource.value != "ImplicitOutputPort") {
+                                       // alert("Implicit data input port must be connected to implicit data output port");
+                                       // return null;
+                                   // } else if (source.value == "CommandPort" && edgeSource.value != "ControlPort") {
+                                       // alert("Command port must be connected to control port");
+                                       // return null;
+                                    //} else if (source.value == "ControlPort" && edgeSource.value != "CommandPort") {
+                                       // alert("Control port must be connected to command port");
+                                      //  return null;
+                                   // }
          
                                     // Create the splitBlock
                                     // (x-5, y-5.5) is the offset to correct the position of split-block
@@ -685,15 +685,16 @@
                                 alert("Explicit data output port must be connected to explicit data input port");
                             } else if (edgeSource.value == "ExplicitInputPort" && target.value != "ExplicitOutputPort") {
                                 alert("Explicit data input port must be connected to explicit data output port");
-                            } else if (edgeSource.value == "ImplicitOutputPort" && target.value != "ImplicitInputPort") {
-                                alert("Implicit data output port must be connected to implicit data input port");
-                            } else if (edgeSource.value == "ImplicitInputPort" && target.value != "ImplicitOutputPort") {
-                                alert("Implicit data input port must be connected to implicit data output port");
-                            } else if (edgeSource.value == "CommandPort" && target.value != "ControlPort") {
-                                alert("Command port must be connected to control port");
-                            } else if (edgeSource.value == "ControlPort" && target.value != "CommandPort") {
-                                alert("Control port must be connected to command port");
-                            } else {
+                            } //else if (edgeSource.value == "ImplicitOutputPort" && target.value != "ImplicitInputPort") {
+                              //  alert("Implicit data output port must be connected to implicit data input port");
+                            //} else if (edgeSource.value == "ImplicitInputPort" && target.value != "ImplicitOutputPort") {
+                             //   alert("Implicit data input port must be connected to implicit data output port");
+                           // } else if (edgeSource.value == "CommandPort" && target.value != "ControlPort") {
+                            //    alert("Command port must be connected to control port");
+                            //} else if (edgeSource.value == "ControlPort" && target.value != "CommandPort") {
+                            //    alert("Control port must be connected to command port");
+                            //} 
+                            else {
          
                                 /*
                                  * For reverse edges, (that is, edges from input port to outport) :
