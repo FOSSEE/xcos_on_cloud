@@ -22,6 +22,11 @@ An online demo can be found over here:
 ## Developers and Testers 
 
 * Dipti Ghosalkar, FOSSEE IIT Bombay
+* Rinki Ranjan Nag, FOSSEE IIT Bombay
+* Mit Katwala, FOSSEE IIT Bombay
+
+Interns (Year 2017):
+
 * Jayaprakash A, Indian Institute of Technology, Palakkad
 * Shashank Bhalotia, Shri Ramdeobaba College of Engineering and Management, Nagpur
 * Ritveeka Vashistha, IIT Guwahati, Guwahati
