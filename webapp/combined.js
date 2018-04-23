@@ -3752,9 +3752,17 @@ function CONST_m() {
 		var options = "";
 		var str = this.c.toString();
 		if (!str.match(/[a-z()+\-*/.^{}]/i)) {
+			if(str.match(/\[[0-9]+\]/)){
+
 			options = {
+				vec: ["Constant Value", this.c]
+			};			
+
+			}else{
+				options = {
 				vec: ["Constant Value", sci2exp(this.c)]
-			};
+			      };
+			}
 
 		} else {
 			options = {
@@ -3774,6 +3782,7 @@ function CONST_m() {
 			if (value == "null") {
 				m.get();
 			} else {
+				
 				exprs = new ScilabString([str]);
 				this.x.model.opar = list(new ScilabDouble([value]));
 				this.displayParameter = [str];
@@ -3790,18 +3799,30 @@ function CONST_m() {
 
 
 		} else {
+
 			this.c = MatrixInverse(arguments[0]["vec"]);
 			this.nout = size(this.c, "*")
 			if (this.nout == 0) {
 				alert("Wrong size for 'Constant Value' parameter" + "\nConstant value must have at least one element.");
 				CONST_m.get();
 			}
-			this.displayParameter = [sci2exp(this.c)];
 			this.x.model.rpar = new ScilabDouble();
 			this.x.model.out = new ScilabDouble([this.nout]);
-			exprs = new ScilabString([sci2exp(this.c)]);
-			this.x.model.opar = list(new ScilabDouble([this.c]));
+			this.x.model.opar = list(new ScilabDouble(...this.c));
 
+			if(arguments[0]["vec"].match(/\[[0-9]+\]/)){
+			
+				this.displayParameter = ["["+this.c+"]"];//[sci2exp(this.c)];
+				exprs = new ScilabString(["["+this.c+"]"]);
+				this.c=["["+this.c+"]"];
+
+			}else{
+			
+				this.displayParameter = [sci2exp(this.c)];
+				exprs = new ScilabString([sci2exp(this.c)]);
+			
+			}
+			
 		}
 
 
@@ -14127,7 +14148,6 @@ function MATCATV() {
         return new BasicBlock(this.x)
     }
 }
-
 function MATDET() {
 
     MATDET.prototype.define = function MATDET() {
@@ -16097,18 +16117,11 @@ function M_freq() {
 		var m1=mainre[4];
 		var fir=mainre[5];
 
-		//Convert values coming from m to a proper array , and pass them to opar in correct format
-		var m_value=[];
-		for (var i=0;i<m.length;i++){
-		    for(var j=0;j<m[i].length;j++){
-			var value=m[i][j];
-			m_value.push(value);
-		    }
-
+		if(this.frequ=="1,2"&&this.offset=="0,0"){
+			this.m=[[1, 1, 1],[1, 3, 2]];
 		}
-//here in opar we have taken m[0] and m[1] as m will be a matrix [m[0],m[1]] due to which we will get error in opar data so we need to take it in fragments
-        	model.opar=list(new ScilabDouble(m_value),new ScilabDouble([parseFloat(den)]),new ScilabDouble([off]),new ScilabInteger([count])); 
-        
+
+        	model.opar=list(new ScilabDouble(...this.m),new ScilabDouble([parseFloat(den)]),new ScilabDouble([off]),new ScilabInteger([count])); 
 		var mn=(2*m1.length)-1;
                
                 if (mn>3){
@@ -21186,19 +21199,20 @@ function STEP_FUNCTION() {
 	this.step= 1;
 	this.initial= 0;
 	this.final=1;
-        var scs_m_1 = scicos_diagram();
-        scs_m_1.objs.push(new STEP().internal());
+	
+	var scs_m_1 = scicos_diagram();
+        scs_m_1.objs.push(new STEP().internal(this.step,this.initial,this.final));
         scs_m_1.objs.push(new OUT_f().internal());
         scs_m_1.objs.push(scicos_link({}));
         scs_m_1.objs.push(scicos_link({}));
 
         var blk = scs_m_1.objs[0];
         var graphics = blk.graphics;
-
         var model = blk.model;
-        graphics.orig = new ScilabDouble([0, 0]);
+        graphics.orig = new ScilabDouble([20, -60]);
         graphics.sz = new ScilabDouble([40, 40]);
         graphics.flip = new ScilabBoolean([true]);
+	graphics.exprs = new ScilabString([this.step],[sci2exp(this.initial)],[sci2exp(this.final)]);
         graphics.pein = new ScilabDouble([4]);
         graphics.peout = new ScilabDouble([4]);
         graphics.pout = new ScilabDouble([3]);
@@ -21218,7 +21232,7 @@ function STEP_FUNCTION() {
         blk = scs_m_1.objs[1];
         graphics = blk.graphics;
         model = blk.model;
-        graphics.orig = new ScilabDouble([80, 10]);
+        graphics.orig = new ScilabDouble([120, -70]); 
         graphics.sz = new ScilabDouble([20, 20]);
         graphics.flip = new ScilabBoolean([true]);
         graphics.exprs = new ScilabString(["1"]);
@@ -21239,8 +21253,8 @@ function STEP_FUNCTION() {
         scs_m_1.objs[2] = lnk;
 
         lnk = scs_m_1.objs[3];
-        lnk.xx = new ScilabDouble([0], [20], [-20], [-20], [20], [1]);
-        lnk.yy = new ScilabDouble([0], [-20], [-20], [60], [60], [1]);
+        lnk.xx = new ScilabDouble([80], [80], [40], [40], [80], [80]);
+        lnk.yy = new ScilabDouble([-64], [-120], [-120], [-40], [-40], [-16]);
         lnk.ct = new ScilabDouble([5, -1]);
         lnk.from = new ScilabDouble([1, 1, 0]);
         lnk.to = new ScilabDouble([1, 1, 1]);
@@ -21254,7 +21268,7 @@ function STEP_FUNCTION() {
         model.rpar = scs_m_1;
 
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"STEP_FUNCTION\",sz(1),sz(2));"]);
-        this.x = new standard_define(new ScilabDouble([2, 2]), model, new ScilabString(), gr_i);
+        this.x = new standard_define(new ScilabDouble([2, 2]), model, new ScilabDouble(), gr_i); 
         return new BasicBlock(this.x);
     }
     STEP_FUNCTION.prototype.get = function STEP_FUNCTION() {
@@ -21267,9 +21281,115 @@ function STEP_FUNCTION() {
     }
     STEP_FUNCTION.prototype.set = function STEP_FUNCTION() {
         this.step = arguments[0]["step"]
-        this.initial = arguments[0]["initial"]
-	this.final = arguments[0]["final"]
-        return new BasicBlock(this.x)
+        this.initial = MatrixInverse(arguments[0]["initial"])
+	this.final = MatrixInverse(arguments[0]["final"])
+	
+	//define code (STEP_FUNCTION.SCI)
+	var scs_m_1 = scicos_diagram();
+        scs_m_1.objs.push(new STEP().internal(this.step,this.initial,this.final));
+        scs_m_1.objs.push(new OUT_f().internal());
+        scs_m_1.objs.push(scicos_link({}));
+        scs_m_1.objs.push(scicos_link({}));
+
+        var blk = scs_m_1.objs[0];
+        var graphics = blk.graphics;
+        var model = blk.model;
+        graphics.orig = new ScilabDouble([20, -60]);
+        graphics.sz = new ScilabDouble([40, 40]);
+        graphics.flip = new ScilabBoolean([true]);
+	graphics.exprs = new ScilabString([this.step],[sci2exp(this.initial)],[sci2exp(this.final)]);
+        graphics.pein = new ScilabDouble([4]);
+        graphics.peout = new ScilabDouble([4]);
+        graphics.pout = new ScilabDouble([3]);
+        graphics.out_implicit = new ScilabString(["E"]);
+        graphics.in_style = new ScilabDouble();
+        graphics.out_style = new ScilabString(["ExplicitOutputPort;align=right;verticalAlign=middle;spacing=10.0;rotation=0"]);
+        graphics.in_label = new ScilabDouble();
+        graphics.out_label = new ScilabString([""]);
+        model.evtin = new ScilabDouble([-1]);
+        model.evtout = new ScilabDouble([-1]);
+        model.uid = new ScilabString([count]);
+        blk.graphics = graphics;
+        blk.model = model;
+        blk.doc = list(new ScilabString([count++]));
+        scs_m_1.objs[0] = blk;
+
+        blk = scs_m_1.objs[1];
+        graphics = blk.graphics;
+        model = blk.model;
+        graphics.orig = new ScilabDouble([120, -70]); 
+        graphics.sz = new ScilabDouble([20, 20]);
+        graphics.flip = new ScilabBoolean([true]);
+        graphics.exprs = new ScilabString(["1"]);
+        model.ipar = new ScilabDouble([1]);
+        graphics.pin = new ScilabDouble([3]);
+        model.outtyp = new ScilabDouble();
+        model.uid = new ScilabString([count]);
+        blk.doc = list(new ScilabString([count++]));
+        blk.graphics = graphics;
+        blk.model = model;
+        scs_m_1.objs[1] = blk;
+
+        var lnk = scs_m_1.objs[2];
+        lnk.xx = new ScilabDouble([104], [136]);
+        lnk.yy = new ScilabDouble([-40], [-60]);
+        lnk.from = new ScilabDouble([1, 1, 0]);
+        lnk.to = new ScilabDouble([2, 1, 1]);
+        scs_m_1.objs[2] = lnk;
+
+        lnk = scs_m_1.objs[3];
+        lnk.xx = new ScilabDouble([80], [80], [40], [40], [80], [80]);
+        lnk.yy = new ScilabDouble([-64], [-120], [-120], [-40], [-40], [-16]);
+        lnk.ct = new ScilabDouble([5, -1]);
+        lnk.from = new ScilabDouble([1, 1, 0]);
+        lnk.to = new ScilabDouble([1, 1, 1]);
+        scs_m_1.objs[3] = lnk;
+
+        model = scicos_model();
+        model.sim = new ScilabString(["csuper"]);
+        model.out = new ScilabDouble([1]);
+        model.out2 = new ScilabDouble([1]);
+        model.outtyp = new ScilabDouble([1]);
+        model.rpar = scs_m_1;
+	//define code ends (STEP_FUNCTION.SCI)
+
+
+	//new set code (STEP.SCI)
+	this.initial = colon_operator(this.initial)
+	this.final = colon_operator(this.final)
+	
+	if (size(this.initial,"*")!=size(this.final,"*")){
+		if(size(this.initial,"*")==1)
+			this.initial = this.inital*ones(this.final);
+		else if(size(this.final,"*")==1)
+			this.final = this.final*ones(this.initial);
+		else{
+			alert("Initial and Final Value have incompatible sizes");
+			STEP_FUNCTION.get();			
+		    }
+	}
+	
+	model.out2 = new ScilabDouble([1])
+	model.outtyp = new ScilabDouble([1])
+	var io = check_io(this.x.model,this.x.graphics,[],size(this.final,"*"),1,1)
+	model.firing = new ScilabDouble([this.step])
+	if (this.step==0){
+		var rpar = [[this.final],[this.final]]
+
+	}
+	else {
+
+		var rpar = [[this.initial],[this.final]]
+	}
+
+	this.x.model.rpar = rpar
+	var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"STEP\",sz(1),sz(2));"]);
+	this.x = new standard_define(new ScilabDouble([2,2]),model,new ScilabDouble(),gr_i);	
+	//var exprs = new ScilabString(["1"],...rpar);	
+	//this.x.graphics.exprs=exprs
+	return new BasicBlock(this.x)
+
+	//set code ends (STEP.SCI)
     }
 
     STEP_FUNCTION.prototype.details = function STEP_FUNCTION() {
