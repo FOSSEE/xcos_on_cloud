@@ -1,5 +1,6 @@
 from __future__ import print_function
 from xml.dom import minidom
+from xml.dom.minidom import parse
 import gevent
 import fileinput
 import time
@@ -15,7 +16,7 @@ from flask import Flask, request, Response, render_template, send_from_directory
 # Added send_file to ease download
 from werkzeug import secure_filename
 from os.path import exists
-
+import re
 monkey.patch_all(aggressive=False)
 
 import subprocess32 as subprocess
@@ -43,7 +44,7 @@ NOLINE = -1
 BLOCK_IDENTIFICATION = -2
 
 # Scilab dir, can't run absolute paths
-SCI = "../scilab_for_xcos_on_cloud/"
+SCI = "../scilab_for_xcos-master/"
 
 # List to store figure IDs
 figure_list = []
@@ -209,7 +210,7 @@ def event_stream(xcos_file_id):
         append=workspace_dict[xcos_file_id]
         command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);deletefile('"+workspace+"');save('"+workspace+"') ;quit()"]
     elif (workspace_counter ==4):     # added for affich_m
-        command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);exec('" + xcos_affich_function_file_dir + "affichm.sci" + "');"+str(write_cmd)+"deletefile('"+workspace+"');save('"+workspace+"') ;quit()"]
+        command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);');deletefile('"+workspace+"');save('"+workspace+"') ;quit()"]
     elif (workspace_counter ==2 and exists(workspace)):
         command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "load('"+workspace+"');loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);deletefile('"+workspace+"') ;quit()"]
     else:
@@ -498,10 +499,6 @@ def stopDetailsThread():
     for filename in glob.glob("values/"+Details.uid+"*"):
             # deletes all files created under the 'uid' name
         os.remove(filename)
-
-            
-
-
 # Route that will process the file upload
 @app.route('/upload', methods=['POST'])
 def upload():
@@ -510,6 +507,8 @@ def upload():
     # flags to check if both TOWS_c and FROMWSB are present
     flag1=0
     flag2=0
+    list1=[]
+    list2=[]
     # Check if the file is not null
     if file:
         # Make the filename safe, remove unsupported chars
@@ -523,7 +522,127 @@ def upload():
         workspace_counter=0
         blocks = new_xml.getElementsByTagName("BasicBlock")
         Details.tk_is_present = False
-
+	pattern = re.compile("<SplitBlock")
+	for i, line in enumerate(open(temp_file_xml_name)):
+    		for match in re.finditer(pattern, line):
+        		list1.append(i+1)
+	pattern1 = re.compile("<ControlPort")
+	for i, line in enumerate(open(temp_file_xml_name)):
+    		for match in re.finditer(pattern1, line):
+        		list2.append(i+1)
+	pattern2 = re.compile("<ImplicitInputPort")
+	count1=0
+	for i, line in enumerate(open(temp_file_xml_name)):
+    		for match in re.finditer(pattern2, line):
+        		count1+=1
+	if count1>=1:
+		splitline=[]
+		count=0;
+		for i in range(len(list1)):
+    			for j in range(len(list2)):
+        			if list2[j]==list1[i]+3:
+            				count+=1
+            				splitline.append(list1[i])
+		blocksplit = new_xml.getElementsByTagName("SplitBlock")
+		block_ids=[]#this stores the id of split blocks
+		for block in blocksplit:
+            		if block.getAttribute("style") == "SPLIT_f":
+                		block_ids.append(int(block.getAttribute("id")))
+		compsplit=[]
+		for i in range(len(splitline)):
+    			for j in range(len(list1)):
+        			if splitline[i]==list1[j]:
+            				compsplit.append(j)
+	
+		finalsplit=[]
+		for i in range(len(compsplit)):
+    			finalsplit.append(block_ids[compsplit[i]])
+	
+		blockcontrol = new_xml.getElementsByTagName("ControlPort")
+		for block in blockcontrol:
+    			for i in range(len(finalsplit)):
+            			if block.getAttribute("parent") == str(finalsplit[i]):#match the lines with the parent of our spliblocks which we need to change
+                   			block.setAttribute('id', '-1')               
+		blockcommand = new_xml.getElementsByTagName("CommandPort")
+		for block in blockcommand:
+    			for i in range(len(finalsplit)):
+            			if block.getAttribute("parent") == str(finalsplit[i]):
+                   
+                   			block.setAttribute('id', '-1')
+		finalchangeid=[]#here we take the ids of command controllink which we will search and change
+		for i in range(len(finalsplit)):
+			finalchangeid.append(finalsplit[i]+4)
+			finalchangeid.append(finalsplit[i]+5) 
+			
+		with open(temp_file_xml_name,'w') as f:#here we save the contents
+            		f.write(new_xml.toxml())
+		
+		with open(temp_file_xml_name,"r") as f:
+			newline=[]
+			i=0
+			for word in f.readlines():
+				
+				if "<CommandControlLink id=" in word:
+					temp_word=""
+					for i in range(len(finalchangeid)):
+						if "<CommandControlLink id=\""+str(finalchangeid[i])+"\"" in word:
+							temp_word=word.replace("<CommandControlLink id=\""+str(finalchangeid[i])+"\"","<ImplicitLink id=\""+str(finalchangeid[i])+"\"") 
+							i=i+1
+					if temp_word!="":
+						newline.append(temp_word)
+					else:
+						newline.append(word)
+				else:
+					newline.append(word)
+		with open(temp_file_xml_name,"w") as f:
+			for line in newline:
+				f.writelines(line)
+		with open(temp_file_xml_name,"r") as in_file:
+			buf = in_file.readlines()
+		#length=len(finalsplit)
+		#return finalsplit
+		#print finalsplit1
+		with open(temp_file_xml_name,"w") as out_file:
+			for line in buf:
+				for i in range (len(finalsplit)):
+					if '<ControlPort connectable=\"0\" dataType=\"UNKNOW_TYPE\" id=\"-1\" ordering=\"1\" parent="'+str(finalsplit[i])+"\"" in line:
+						line="	    <ImplicitInputPort connectable=\"0\" dataType=\"UNKNOW_TYPE\" id=\""+str(finalsplit[i]+1)+"\""+" ordering=\"1\" parent=\""+str(finalsplit[i])+"\""+" style=\"ImplicitInputPort\">\n		<mxGeometry as=\"geometry\" height=\"10\" relative=\"1\" width=\"10\" y=\"0.5000\">\n		</mxGeometry>\n	    </ImplicitInputPort>\n	    <ImplicitOutputPort connectable=\"0\" dataType=\"UNKNOW_TYPE\" id=\""+str(finalsplit[i]+2)+"\""+" ordering=\"1\" parent=\""+str(finalsplit[i])+"\""+" style=\"ImplicitOutputPort\">\n		<mxGeometry as=\"geometry\" height=\"10\" relative=\"1\" width=\"10\" y=\"0.5000\">\n		</mxGeometry>\n	    </ImplicitOutputPort>\n	    <ImplicitOutputPort connectable=\"0\" dataType=\"UNKNOW_TYPE\" id=\""+str(finalsplit[i]+3)+"\""+" ordering=\"1\" parent=\""+str(finalsplit[i])+"\""+" style=\"ImplicitOutputPort\">\n		<mxGeometry as=\"geometry\" height=\"10\" relative=\"1\" width=\"10\" y=\"0.5000\">\n		</mxGeometry>\n	    </ImplicitOutputPort>\n"+line
+						
+				out_file.write(line)
+		list3=[]
+		implitdetect=[]
+		#return temp_file_xml_name
+		for i in range(len(finalsplit)):
+			implitdetect.append(finalsplit[i]+5)
+			implitdetect.append(finalsplit[i]+6)
+		for i in range(len(implitdetect)):
+			pattern3 = re.compile("<ImplicitLink id=\""+str(implitdetect[i])+"\"")
+			for i, line in enumerate(open(temp_file_xml_name)):
+				for match in re.finditer(pattern3, line):
+					list3.append(i-1)
+		with open(temp_file_xml_name,'r+') as f:
+			data = f.read().splitlines()
+			replace = list3
+			for i in replace:
+				data[i] = '	    </ImplicitLink>'
+			f.seek(0)
+			f.write('\n'.join(data))
+			f.truncate()		
+		base_filename = os.path.splitext(temp_file_xml_name)[0]
+        	os.rename(temp_file_xml_name, base_filename + ".xcos")
+        	source_folder = os.getcwd()
+        	destination_folder = source_folder + "/uploads/"
+        	folder_file_content = filter(os.path.isfile, os.listdir( os.curdir ) )
+        	for file in folder_file_content:
+            		if file.endswith(".xcos"):
+                		shutil.copy(file, destination_folder)
+                		os.remove(file)# After moving to the required folder deleting the xcos file.
+        	temp_file_xml_name = base_filename + ".xcos"
+        	xcos_file_list.append(temp_file_xml_name)
+        	workspace_list.append(workspace_counter)
+        	return str(client_id)
+	
+	
 	# List to contain all affich blocks
 	blockaffich = new_xml.getElementsByTagName("AfficheBlock")  
     	block_ida = []
