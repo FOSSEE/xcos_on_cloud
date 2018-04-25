@@ -1,7 +1,7 @@
 
                 <ScilabDouble as="realParameters" height="0" width="0"/>
                 <ScilabDouble as="integerParameters" height="3" width="1">
-                    <data column="0" line="0" realPart="128.0"/>
+                    <data column="0" line="0" realPart="1.0"/>
                     <data column="0" line="1" realPart="1.0"/>
                     <data column="0" line="2" realPart="66.0"/>
                 </ScilabDouble>
