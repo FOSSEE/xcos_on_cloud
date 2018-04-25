@@ -44,7 +44,7 @@ NOLINE = -1
 BLOCK_IDENTIFICATION = -2
 
 # Scilab dir, can't run absolute paths
-SCI = "../scilab_for_xcos-master/"
+SCI = "../scilab_for_xcos_on_cloud/"
 
 # List to store figure IDs
 figure_list = []
@@ -60,7 +60,6 @@ log_name = ''
 workspace_variable_list = []
 # For keeping count of affich_m blocks fro replacing with TOWS_c in diagram and also for assigning variable name for TOWS_c workspace variable
 affich_count = 0
-variable_alpha=['A','B','C','D','E','F','G','H','I','J'] 
 
 
 class line_and_state:
@@ -181,25 +180,16 @@ def event_stream(xcos_file_id):
     # name of worspace file the session
     workspace="workspace"+session+".dat"
     workspace_counter=workspace_list[xcos_file_id]
-    ############################################################################################################
-    #write_cmd="affichm('scilab-log-12345'";
-    #variablename="";
-    #affich_count=2;
-    #if (workspace_counter==4):
-	#for i in range(affich_count):
-	 #   variable_name=variable_alpha[i]
-	  #  variablename=variablename+","+variable_name
-    #write_cmd=write_cmd+variablename+");";
-
-    workspace_variable_list
-    write_cmd="affichm('scilab-log-12345'";
-    variablename="";
-    #affich_count=2;
-    if (workspace_counter==4):
-	for i in range(len(workspace_variable_list)):
-	    variable_name=workspace_variable_list[i]
-	    variablename=variablename+","+variable_name
-    write_cmd=write_cmd+variablename+");";
+    #For affich_m block
+    variablename=""; # Stores all workspace variable name in format (var1,var2,var3)
+    if (workspace_counter==4): # To check affich_m block presence
+	for i in range(len(workspace_variable_list)):    # to get count of affich replace with tows_c block and to use to iterate their name
+	   variable_name=workspace_variable_list[i]      # workspace_variable_list contains name of workspace variable
+           if(i==(len(workspace_variable_list)-1)):      # if last element in list then it should not be concatenate with ,
+	      variablename=variablename+variable_name+""   
+           else:
+              variablename=variablename+variable_name+","
+    #print("...."+variablename)
     ############################################################################################################
     # commands for ruuning of scilab based on existence of TOWS_c and FROMWSB
     # 3 means both exists,2 FROMWSB exists,1 TOWS_c exists,0 none exists meaning normal set of commands 
@@ -210,7 +200,8 @@ def event_stream(xcos_file_id):
         append=workspace_dict[xcos_file_id]
         command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);deletefile('"+workspace+"');save('"+workspace+"') ;quit()"]
     elif (workspace_counter ==4):     # added for affich_m
-        command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);');deletefile('"+workspace+"');save('"+workspace+"') ;quit()"]
+        workspace_variable_list[:] = []
+        command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);exec('" + xcos_affich_function_file_dir + "affichm.sci"+"');affichm("+variablename+");deletefile('"+workspace+"');save('"+workspace+"') ;quit()"]
     elif (workspace_counter ==2 and exists(workspace)):
         command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "load('"+workspace+"');loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);deletefile('"+workspace+"') ;quit()"]
     else:
@@ -738,15 +729,15 @@ def upload():
 
 	         print("\" interfaceFunctionName=\"TOWS_c\" parent=\"1\" simulationFunctionName=\"tows_c\" simulationFunctionType=\"C_OR_FORTRAN\" style=\"TOWS_c\">")
 		 print("<ScilabString as=\"exprs\" height=\"3\" width=\"1\">")
-                 print("<data column=\"0\" line=\"0\" value=\"128\"/>")
+                 print("<data column=\"0\" line=\"0\" value=\"1\"/>")
                  #For workspace variable name
+		 aff_count = aff_count + 1
                  print("<data column=\"0\" line=\"1\" value=\"", end = '')
-		 print(variable_alpha[aff_count], end ='')
-		 workspace_variable_list.append(variable_alpha[aff_count])
+		 print("var"+str(aff_count), end ='')
+		 workspace_variable_list.append("var"+str(aff_count))
 		 print("\"/>")
 		 print("<data column=\"0\" line=\"2\" value=\"0\"/>")
                  print("</ScilabString>")
-                 aff_count = aff_count + 1
 		 affich_count = aff_count
 		 read_file = open("Read_tows_c.txt", "r")
                  for line_content in read_file:
