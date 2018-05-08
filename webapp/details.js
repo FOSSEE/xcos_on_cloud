@@ -1035,6 +1035,7 @@ function colon_operator() {
 /*
 date - 16 june 2017
 author - Ritveeka Vashistha
+edited - Mit Katwala (To make it more generalised and scalable)
 */
 function linspace(){
     var a = parseFloat(arguments[0]);
@@ -1043,7 +1044,7 @@ function linspace(){
     var d = (b-a)/(n-1);
     var result = [];
     result[0] = a;
-    result[24] = b;
+    result[n-1] = b;
     for (var i = 1; i < n-1; i++) {
         result[i] = result[i-1] + d;
     }
@@ -1155,6 +1156,23 @@ function jetcolormap(){
     }
     return y;
 }
+
+function multiply(a, b) {
+  var aNumRows = a.length, aNumCols = a[0].length,
+      bNumRows = b.length, bNumCols = b[0].length,
+      m = new Array(aNumRows);  // initialize array of rows
+  for (var r = 0; r < aNumRows; ++r) {
+    m[r] = new Array(bNumCols); // initialize the current row
+    for (var c = 0; c < bNumCols; ++c) {
+      m[r][c] = 0;             // initialize the current cell
+      for (var i = 0; i < aNumCols; ++i) {
+        m[r][c] += a[r][i] * b[i][c];
+      }
+    }
+  }
+  return m;
+}
+
 /*
 date - 26 june 2017
 author - Ritveeka Vashistha
