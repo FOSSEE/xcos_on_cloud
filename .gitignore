@@ -9,3 +9,7 @@ test/*
 **/Thumbs.db
 nbactions.xml
 nb-configuration.xml
+/scilab-log-*.txt
+/uploads/*
+/values/*
+/workspace*.dat
