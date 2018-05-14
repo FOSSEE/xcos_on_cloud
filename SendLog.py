@@ -27,7 +27,7 @@ app = Flask(__name__, static_folder='webapp/')
 app.config['UPLOAD_FOLDER'] = 'uploads/'
 app.config['VALUES_FOLDER'] = 'values/'
 
-# Make the upload directory and values direectory if not available
+# Make the upload directory and values directory if not available
 subprocess.Popen('mkdir -p ' + app.config['UPLOAD_FOLDER'], shell = True)
 subprocess.Popen('mkdir -p ' + app.config['VALUES_FOLDER'], shell = True)
 
@@ -383,7 +383,7 @@ class Details:
     print("user_id:"+uid)
     names = {}
 
-# function which will check and make initialization of every required fles.   
+# function which will check and make initialization of every required files.
 def findFile():     
     r = open("values/"+Details.uid+"_val.txt","r") 
     line = r.readline() 
