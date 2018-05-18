@@ -1852,8 +1852,13 @@
          			alert("Empty Canvas");		//  it implies Empty Canvas
          			wnd.destroy();			// destroy the simulation window
          		}
+         		
          		for (var i=0;i<Bblock_tag.length;i++) 
          		{
+         			if(Bblock_tag[i].attributes.blockElementName.value == "TRASH_f")		 // if block is Trash_f
+         			{
+         				wnd.setVisible(false);
+         			}
          			if(Bblock_tag[i].attributes.blockElementName.value == "TKSCALE")		// if block is TKSCALE
          			{
          				tkid[m++] = parseInt(Bblock_tag[i].attributes.id.value); 		// a.store tk ids
@@ -1872,7 +1877,7 @@
          				valArr[row][1]=parseFloat(Realpart_tag[1].attributes.realPart.value);	// max value
          				valArr[row][2]=parseFloat(Realpart_tag[2].attributes.realPart.value);  	// norm value
          				row++;	
-         			}
+         			}//here is ValArr they are storing all the values of tkscale
          			if(Bblock_tag[i].attributes.blockElementName.value == "CSCOPE") 		// finding total cscopes used
          				cscount++;
          
