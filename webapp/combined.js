@@ -499,7 +499,7 @@ Bache.prototype.set = function Bache() {
     this.T0 = parseFloat(arguments[0]["T0"])
     this.p_rho = parseFloat(arguments[0]["p_rho"])
     this.x.model.rpar = new ScilabDouble([this.Patm],[this.A],[this.ze1],[this.ze2],[this.zs1],[this.zs2],[this.z0],[this.T0],[this.p_rho])
-    this.x.model.equations.parameters= list(new ScilabString(["Patm"], ["A"], ["ze1"], ["ze2"], ["zs1"], ["zs2"], ["z0"], ["T0"], ["p_rho"]), new ScilabDouble([this.Patm], [this.A], [this.ze1], [this.ze2], [this.zs1], [this.zs2], [this.z0], [this.T0], [this.p_rho]));
+    this.x.model.equations.parameters= list(new ScilabString(["Patm"], ["A"], ["ze1"], ["ze2"], ["zs1"], ["zs2"], ["z0"], ["T0"], ["p_rho"]), list(new ScilabDouble([this.Patm]),new ScilabDouble([this.A]),new ScilabDouble([this.ze1]), new ScilabDouble([this.ze2]), new ScilabDouble([this.zs1]), new ScilabDouble([this.zs2]), new ScilabDouble([this.z0]), new ScilabDouble([this.T0]), new ScilabDouble([this.p_rho])));
     var exprs = new ScilabString([this.Patm.toString().replace(/,/g, " ")],[this.A.toString().replace(/,/g, " ")],[this.ze1.toString().replace(/,/g, " ")],[this.ze2.toString().replace(/,/g, " ")],[this.zs1.toString().replace(/,/g, " ")],[this.zs2.toString().replace(/,/g, " ")],[this.z0.toString().replace(/,/g, " ")],[this.T0.toString().replace(/,/g, " ")],[this.p_rho.toString().replace(/,/g, " ")])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
@@ -3240,7 +3240,8 @@ CMAT3D.prototype.details = function CMAT3D() {
 function CMATVIEW () {
 
     CMATVIEW.prototype.define = function CMATVIEW() {
-        this.cmin = 0;
+	//Commented code was previously present before I made my changes         
+	this.cmin = 0;
         this.cmax = 100;
         this.size_c = 25;
         this.colormap = jetcolormap(this.size_c)
@@ -3253,10 +3254,11 @@ function CMATVIEW () {
         model.intyp = new ScilabDouble([1]);
         model.evtin = new ScilabDouble([1]);
         model.ipar = new ScilabDouble([this.cmin], [this.cmax], [this.size_c])
-        model.rpar = new ScilabDouble([this.alpha_c], [this.beta_c], ...this.colormap)
+        model.rpar = new ScilabDouble([this.alpha_c], [this.beta_c], ...colon_operator(this.colormap))
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean(true, false)
-        var exprs = new ScilabString([this.size_c],[this.cmin],[this.cmax]);
+	var exprs = new ScilabString(["jetcolormap("+this.size_c+")"],[this.cmin],[this.cmax]);        
+	//var exprs = new ScilabString([this.size_c],[this.cmin],[this.cmax]);
         var gr_i = list(new ScilabString(["xstringb(orig(1),orig(2),\"CMATVIEW\",sz(1),sz(2));"]), new ScilabDouble([8]));
         this.x = new standard_define(new ScilabDouble([80, 80]),model,exprs,gr_i)
         this.x.graphics.style = new ScilabString(["CMATVIEW"]);
@@ -3265,28 +3267,43 @@ function CMATVIEW () {
 
     CMATVIEW.prototype.get = function CMATVIEW() {
         var options={
-            colormap:["size of ColorMap",[this.size_c]],
+            size_c:["size of ColorMap",[this.size_c]], //colormap:["size of ColorMap",[this.size_c]]
             cmin:["Minimum level range",this.cmin],
             cmax:["Maximum level range",this.cmax]
         }
         return options
     }
 
-    CMATVIEW.prototype.set = function CMATVIEW() {
-        this.colormap = jetcolormap(parseFloat(arguments[0]["colormap"]));
+    CMATVIEW.prototype.set = function CMATVIEW() {       
+	this.size_c = parseFloat(arguments[0]["size_c"]);	
+	this.colormap = jetcolormap(this.size_c); 
+	//this.colormap = jetcolormap(parseFloat(arguments[0]["colormap"]));
+	// We are giving jetcolormap by default but it should give options to user to use hotcolormap() and graycolormap(). The same needs to be reflected in exprs variable in define and set function code. Functions for hotcolormap() and graycolormap() needs to be written in details.js       
+	
         this.cmin= parseFloat(arguments[0]["cmin"]);
         this.cmax= parseFloat(arguments[0]["cmax"]);
         if(this.cmax<=this.cmin){
                 alert("Error with minimum and maximum value");
                 CMATVIEW.get();
         }
-        this.alpha_c = 0.24;
-        this.beta_c = 1;
-        var ipar = new ScilabDouble([this.cmax],[this.cmin],[this.size_c])
-        var rpar = new ScilabDouble([this.alpha_c],[this.beta_c],...colon_operator(this.colormap))
-        this.x.model.ipar = ipar
+	//New code till line break reflects the .sci file of cmatview. Alpha and Beta can have varying values.
+	//this.alpha_c = 0.24;
+        //this.beta_c = 1;
+	//var ipar = new ScilabDouble([this.cmax],[this.cmin],[this.size_c])
+        //var rpar = new ScilabDouble([this.alpha_c],[this.beta_c],...colon_operator(this.colormap))	
+	this.totalcolors = size(colon_operator(this.colormap),1)
+	this.sol = [[this.cmin,1],[this.cmax,1]];
+	this.b = [[1],[(this.totalcolors/3)]];
+	this.sol = multiply(math.inv(this.sol),this.b); //new function has been written in details.js
+        this.alpha_c = this.sol[0];
+        this.beta_c = this.sol[1];
+        var ipar = new ScilabDouble([this.cmin],[this.cmax],[this.totalcolors])
+        var rpar = new ScilabDouble(this.alpha_c,this.beta_c,...colon_operator(this.colormap))
+        
+	this.x.model.ipar = ipar
         this.x.model.rpar = rpar
-        var exprs = new ScilabString([this.size_c],[this.cmin],[this.cmax]);
+	var exprs = new ScilabString(["jetcolormap("+this.size_c+")"],[this.cmin],[this.cmax]);        
+	//var exprs = new ScilabString([this.size_c],[this.cmin],[this.cmax]);
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
     }
@@ -3294,6 +3311,7 @@ function CMATVIEW () {
         return this.x;
     }
 }
+
 function CMSCOPE() {
     CMSCOPE.prototype.get = function CMSCOPE() {
         // if(this.wpos == undefined || this.wpos == null)
@@ -3808,7 +3826,7 @@ function CONST_m() {
 			}
 			this.x.model.rpar = new ScilabDouble();
 			this.x.model.out = new ScilabDouble([this.nout]);
-			this.x.model.opar = list(new ScilabDouble(...this.c));
+			this.x.model.opar = list(new ScilabDouble([this.c][0]));
 
 			if(arguments[0]["vec"].match(/\[[0-9]+\]/)){
 			
@@ -11379,21 +11397,22 @@ function Flowmeter() {
         return this.x;
     }
     Flowmeter.prototype.get = function Flowmeter() {
-        if(this.Qini == undefined || this.Qini == null){
+       /* if(this.Qini == undefined || this.Qini == null){
             this.Qini = "1"
         }
         var options={
             Qini:["Qini",this.Qini]
         }
-        return options
+        return options*/
+        alert("parameters can not be changed")
     }
-Flowmeter.prototype.set = function Flowmeter() {
+/*Flowmeter.prototype.set = function Flowmeter() {
     this.Qini = parseFloat((arguments[0]["Qini"]))
     this.x.model.equations.parameters = list(new ScilabString("Qini"), new ScilabDouble([this.Qini]), new ScilabDouble(zeros(this.Qini)));
     var exprs = new ScilabString([this.Qini])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
-    }
+    }*/
 }
 function fortran_block() {
 
@@ -16783,7 +16802,7 @@ PerteDP.prototype.set = function PerteDP() {
     this.z2 = inverse(arguments[0]["z2"])
     this.p_rho = inverse(arguments[0]["p_rho"])
     this.x.model.rpar = new ScilabDouble(...this.L,...this.D,...this.lambda,...this.z1,...this.z2,...this.p_rho)
-    this.x.model.equations.parameters = list(new ScilabString(["L"], ["D"], ["lambda"], ["z1"], ["z2"], ["p_rho"]), new ScilabDouble(...this.L,...this.D,...this.lambda,...this.z1,...this.z2,...this.p_rho));
+    this.x.model.equations.parameters = list(new ScilabString(["L"], ["D"], ["lambda"], ["z1"], ["z2"], ["p_rho"]), list(new ScilabDouble([this.L]),new ScilabDouble(...this.D),new ScilabDouble(...this.lambda),new ScilabDouble([this.z1]),new ScilabDouble([this.z2]),new ScilabDouble([this.p_rho])));
     var exprs = new ScilabString([this.L.toString().replace(/,/g, " ")],[this.D.toString().replace(/,/g, " ")],[this.lambda.toString().replace(/,/g, " ")],[this.z1.toString().replace(/,/g, " ")],[this.z2.toString().replace(/,/g, " ")],[this.p_rho.toString().replace(/,/g, " ")])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
@@ -17826,7 +17845,7 @@ PuitsP.prototype.set = function PuitsP() {
     this.H0 = inverse(arguments[0]["H0"])
     this.option_temperature = inverse(arguments[0]["option_temperature"])
     this.x.model.rpar = new ScilabDouble(...this.P0,...this.T0,...this.H0,...this.option_temperature)
-    this.x.model.equations.parameters = list(new ScilabString(["P0"], ["T0"], ["H0"], ["option_temperature"]), new ScilabDouble(...this.P0,...this.T0,...this.H0,...this.option_temperature));
+    this.x.model.equations.parameters = list(new ScilabString(["P0"], ["T0"], ["H0"], ["option_temperature"]), list(new ScilabDouble([this.P0]),new ScilabDouble([this.T0]),new ScilabDouble([this.H0]),new ScilabDouble([this.option_temperature])));
     var exprs = new ScilabString([this.P0.toString().replace(/,/g, " ")],[this.T0.toString().replace(/,/g, " ")],[this.H0.toString().replace(/,/g, " ")],[this.option_temperature.toString().replace(/,/g, " ")])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
@@ -20249,7 +20268,7 @@ SourceP.prototype.set = function SourceP() {
     this.H0 = inverse(arguments[0]["H0"])
     this.option_temperature = inverse(arguments[0]["option_temperature"])
     this.x.model.rpar = new ScilabDouble(...this.P0,...this.T0,...this.H0,...this.option_temperature)
-    this.x.model.equations.parameters = list(new ScilabString(["P0"], ["T0"], ["H0"], ["option_temperature"]), new ScilabDouble(...this.P0,...this.T0,...this.H0,...this.option_temperature));
+    this.x.model.equations.parameters = list(new ScilabString(["P0"], ["T0"], ["H0"], ["option_temperature"]), list(new ScilabDouble([this.P0]),new ScilabDouble([this.T0]),new ScilabDouble([this.H0]),new ScilabDouble([this.option_temperature])));
     var exprs = new ScilabString([this.P0.toString().replace(/,/g, " ")],[this.T0.toString().replace(/,/g, " ")],[this.H0.toString().replace(/,/g, " ")],[this.option_temperature.toString().replace(/,/g, " ")])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
@@ -22514,7 +22533,7 @@ VanneReglante.prototype.set = function VanneReglante() {
     this.Cvmax = inverse(arguments[0]["Cvmax"])
     this.p_rho = inverse(arguments[0]["p_rho"])
     this.x.model.rpar = new ScilabDouble(...this.Cvmax,...this.p_rho)
-    this.x.model.equations.parameters = list(new ScilabString(["Cvmax"], ["p_rho"]),new ScilabDouble(...this.Cvmax,...this.p_rho));
+    this.x.model.equations.parameters = list(new ScilabString(["Cvmax"], ["p_rho"]),list(new ScilabDouble(...this.Cvmax),new ScilabDouble([this.p_rho])));
     var exprs = new ScilabString([this.Cvmax.toString().replace(/,/g, " ")],[this.p_rho.toString().replace(/,/g, " ")])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
