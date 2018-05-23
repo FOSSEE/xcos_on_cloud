@@ -523,6 +523,7 @@ def upload():
         		list2.append(i+1)
 	pattern2 = re.compile("<ImplicitInputPort")
 	count1=0
+	
 	for i, line in enumerate(open(temp_file_xml_name)):
     		for match in re.finditer(pattern2, line):
         		count1+=1
@@ -743,7 +744,49 @@ def upload():
                  for line_content in read_file:
                      print(line_content,end= '')
             print(line,end = '')
-
+	block_idint=[]#this stores the id of intmul blocks
+	for block in blocks:
+		if block.getAttribute("style") == "INTMUL":
+			block_idint.append(int(block.getAttribute("id")))
+	with open(temp_file_xml_name,"r") as f:
+			newline=[]
+			i=0
+			for word in f.readlines():
+				
+				if "<ExplicitInputPort dataType=\"REAL_MATRIX\"" in word:
+					temp_word=""
+					for i in range(len(block_idint)):
+						if "<ExplicitInputPort dataType=\"REAL_MATRIX\" id=\""+str(block_idint[i]+2)+"\"" in word:
+							temp_word=word.replace("<ExplicitInputPort dataType=\"REAL_MATRIX\" id=\""+str(block_idint[i]+2)+"\"","<ExplicitInputPort dataColumns=\"-3\" dataLines=\"-2\" dataType=\"REAL_MATRIX\" id=\""+str(block_idint[i]+2)+"\"") 
+							i=i+1
+					if temp_word!="":
+						newline.append(temp_word)
+					else:
+						newline.append(word)
+				else:
+					newline.append(word)
+	with open(temp_file_xml_name,"w") as f:
+		for line in newline:
+			f.writelines(line)				
+	with open(temp_file_xml_name,"r") as f:
+			newline=[]
+			i=0
+			for word in f.readlines():
+				if "<ExplicitOutputPort dataType=\"REAL_MATRIX\"" in word:
+					temp_word=""
+					for i in range(len(block_idint)):
+						if "<ExplicitOutputPort dataType=\"REAL_MATRIX\" id=\""+str(block_idint[i]+3)+"\"" in word:
+							temp_word=word.replace("<ExplicitOutputPort dataType=\"REAL_MATRIX\" id=\""+str(block_idint[i]+3)+"\"","<ExplicitOutputPort dataColumns=\"-3\" dataType=\"REAL_MATRIX\" id=\""+str(block_idint[i]+3)+"\"") 
+							i=i+1
+					if temp_word!="":
+						newline.append(temp_word)
+					else:
+						newline.append(word)
+				else:
+					newline.append(word)
+	with open(temp_file_xml_name,"w") as f:
+		for line in newline:
+			f.writelines(line)
         # Changing the file extension from xml to xcos
         base_filename = os.path.splitext(temp_file_xml_name)[0]
         os.rename(temp_file_xml_name, base_filename + ".xcos")
