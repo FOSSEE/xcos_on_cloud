@@ -21528,6 +21528,7 @@ SUBMAT.prototype.set = function SUBMAT() {
     this.x.model.ipar = new ScilabDouble([this.a],[this.b],[this.c],[this.d])
     this.x.model.sim = list(new ScilabString([this.function_name]), new ScilabDouble([4]))
     this.x.graphics.exprs = label
+    
     var exprs = new ScilabString([this.typ],[this.a],[this.b],[this.c],[this.d],[sci2exp(this.inp)])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
