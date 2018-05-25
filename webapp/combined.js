@@ -3082,7 +3082,8 @@ function CLR() {
         //var exprs = new ScilabString(this.num,this.den)
         //this.x.graphics.exprs=exprs
 	var str="("+this.num+")/("+this.den+")";
-	var value=math.eval(str);
+	//var value=math.eval(str);
+	var value=[[0],[-1],[1],[-1],[0],[1],[1],[2],[0]];
 	var model = scicos_model();
         model.sim = list(new ScilabString(["csslti4"]), new ScilabDouble([4]));
         model.in = new ScilabDouble([1]);
@@ -21473,7 +21474,7 @@ function SUBMAT() {
             b:["Ending Row Index",this.b],
             c:["Starting Column Index",this.c],
             d:["Ending Column Index",this.d],
-            inp:["Input Dimensions",this.inp.toString().replace(/,/g, " ")],
+            inp:["Input Dimensions",sci2exp(this.inp)],//.toString().replace(/,/g, " ")],
         }
         return options
     }
@@ -21483,7 +21484,7 @@ SUBMAT.prototype.set = function SUBMAT() {
     this.b = parseFloat((arguments[0]["b"]))
     this.c = parseFloat((arguments[0]["c"]))
     this.d = parseFloat((arguments[0]["d"]))
-    this.inp = inverse((arguments[0]["inp"]))
+    this.inp = MatrixInverse((arguments[0]["inp"]))
     if(this.typ == 1){
         this.function_name = "submat"
         this.ot = 1
@@ -21527,7 +21528,8 @@ SUBMAT.prototype.set = function SUBMAT() {
     this.x.model.ipar = new ScilabDouble([this.a],[this.b],[this.c],[this.d])
     this.x.model.sim = list(new ScilabString([this.function_name]), new ScilabDouble([4]))
     this.x.graphics.exprs = label
-    var exprs = new ScilabString([this.typ],[this.a],[this.b],[this.c],[this.d],...this.inp)
+    
+    var exprs = new ScilabString([this.typ],[this.a],[this.b],[this.c],[this.d],[sci2exp(this.inp)])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
