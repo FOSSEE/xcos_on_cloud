@@ -44,12 +44,13 @@ var create_new_chart = function(id, no_of_graph,ymin,ymax,xmin,xmax,type_chart,t
 		// disable line by putting thickness as 0
 		thickness = 0
 	}
-        else if(title_text.substring(0,7)=="CANIMXY"){
-                 //disable line by putting thickness as 0
-                 console.log("check");
-                 thickness= 0
+    else if(title_text.substring(0,7)=="CANIMXY"){
+        //disable line by putting thickness as 0
+        console.log("check");
+        thickness= 0
 
-        }else if(title_text.substring(0,7)=="CEVSCPE"){ //To manipulate the graph width of ceventscope
+    }
+    else if(title_text.substring(0,7)=="CEVSCPE"){ //To manipulate the graph width of ceventscope
 		pointWidthvalue=2;
 		pointplacementvalue=0;
 		pointRangevalue = 0.05;
@@ -233,6 +234,103 @@ var create_new_chart_3d = function(id, no_of_graph,xmin,xmax,ymin,ymax,zmin,zmax
 	points_list.push(new Queue());
 	series_list.push([]);
 }
+
+// Function to create a chart with responsive points
+var create_draggable_points_chart = function(graphPoints,pointsHistory,xmin,xmax,ymin,ymax)
+{
+	pointsHistory.push(graphPoints.slice());
+	myGraph = Highcharts.chart('drag_chart', {
+
+		chart: {
+			alignTicks: false,
+			animation: false,
+			events: {
+				click: function (e) {
+					this.series[0].addPoint([e.xAxis[0].value,e.yAxis[0].value]);
+					pointsHistory.push(graphPoints.slice());
+				}
+			}
+		},
+
+	    title: {
+	        text: ''
+	    },
+
+	    yAxis: {
+	        title: {
+	            text: ''
+	        },
+	        min: Number(ymin),
+	        max: Number(ymax),
+	        gridLineWidth: 1,
+	        gridLineDashStyle: 'dash',
+	        tickinterval: 0.2,
+	        //minorTickInterval: 0.1
+	    },
+
+	    xAxis: {
+	    	min: Number(xmin),
+	    	max: Number(xmax),
+	        gridLineWidth: 1,
+	        gridLineDashStyle: 'dash',
+	        tickinterval: 0.5,
+	        //minorTickInterval: 0.1
+	    },
+
+	    plotOptions: {
+		    series: {
+		        point: {
+		            events: {
+
+		                drag: function (e) {
+
+		                    if(e.y >= 1.2)
+		                    	{
+		                    		this.y = 1.2;
+		                    		return false;
+		                    	}
+		                    if(e.y <= -1.2)
+		                    	{
+		                    		this.y = -1.2;
+		                    		return false;
+		                    	}
+		                    if(e.x >= 2.5)
+		                    	{
+		                    		this.x = 2.5;
+		                    		return false;
+		                    	}
+		                    if(e.x <= -2.5)
+		                    	{
+		                    		this.x = -2.5;
+		                    		return false;
+		                    	}
+		                	},
+		                drop: function (e) {
+		                	pointsHistory.push(graphPoints.slice());
+		                }
+		        	},
+		        stickyTracking: false
+		    	},
+		    column: {
+		        stacking: 'normal'
+		    }
+	    }
+	},
+
+	    tooltip: {
+	    	enabled: true
+	    },
+
+	    series: [{
+	    	showInLegend: false,
+	    	pointStart: -2.5,
+	    	pointInterval: 0.5,
+	        data: graphPoints,
+	        draggableX: true,
+        	draggableY: true
+	    	}]
+	});
+};
 
 
 
