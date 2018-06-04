@@ -219,3 +219,43 @@ td.mxPopupMenuIcon {
 .underlineButton {
 	text-decoration: underline;
 }
+
+/*Draggable Graph Popup CSS*/
+#graphMenuBar {
+  background-color: #808080;
+  height:20px;
+}
+
+.menu {
+	padding: 3.5px;
+	float:left;
+}
+
+.menu:hover {
+	cursor: pointer;
+	background-color: black;
+	color:white;
+}
+
+.menuDropdown {
+	background-color: #808080;
+	width:60px;
+	position: absolute;
+	z-index: 1;
+}
+
+.optionsDropdown {
+	text-align: center;
+	padding: 5px;
+	list-style-type: none;
+}
+
+.optionsDropdown:hover {
+	background-color: black;
+	color: white;
+	cursor: pointer;
+}
+
+.displayNone {
+	display: none;
+}

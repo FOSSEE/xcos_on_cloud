@@ -1209,3 +1209,19 @@ function sign(){
 	 }
          return actualDoubleValue;
  }
+
+// To convert graph points to array which have been converted
+// to objects because of dragging the points
+function objToArrayList(graphPoints) {
+    var tempPoints=[];
+    for (var i=0;i< graphPoints.length; i++)
+    {
+        if(graphPoints[i].x) {
+                tempPoints.push([graphPoints[i].x,graphPoints[i].y]);
+            }
+        else    {
+            tempPoints.push(graphPoints[i]);
+        }
+    }
+    return tempPoints;
+}
