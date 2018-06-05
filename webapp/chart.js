@@ -236,13 +236,19 @@ var create_new_chart_3d = function(id, no_of_graph,xmin,xmax,ymin,ymax,zmin,zmax
 }
 
 // Function to create a chart with responsive points
-var create_draggable_points_chart = function(graphPoints,pointsHistory,xmin,xmax,ymin,ymax)
+var create_draggable_points_chart = function(graphPoints, pointsHistory, xmin, xmax, ymin, ymax)
 {
+	// convert String values to desired datatype
+	xmin = parseFloat(xmin);
+	xmax = parseFloat(xmax);
+	ymin = parseFloat(ymin);
+	ymax = parseFloat(ymax);
+
 	pointsHistory.push(graphPoints.slice());
+
 	myGraph = Highcharts.chart('drag_chart', {
 
 		chart: {
-			alignTicks: false,
 			animation: false,
 			events: {
 				click: function (e) {
@@ -260,21 +266,17 @@ var create_draggable_points_chart = function(graphPoints,pointsHistory,xmin,xmax
 	        title: {
 	            text: ''
 	        },
-	        min: Number(ymin),
-	        max: Number(ymax),
+	        min: ymin,
+	        max: ymax,
 	        gridLineWidth: 1,
-	        gridLineDashStyle: 'dash',
-	        tickinterval: 0.2,
-	        //minorTickInterval: 0.1
+	        gridLineDashStyle: 'dash'
 	    },
 
 	    xAxis: {
-	    	min: Number(xmin),
-	    	max: Number(xmax),
+	    	min: xmin,
+	    	max: xmax,
 	        gridLineWidth: 1,
-	        gridLineDashStyle: 'dash',
-	        tickinterval: 0.5,
-	        //minorTickInterval: 0.1
+	        gridLineDashStyle: 'dash'
 	    },
 
 	    plotOptions: {
@@ -284,24 +286,24 @@ var create_draggable_points_chart = function(graphPoints,pointsHistory,xmin,xmax
 
 		                drag: function (e) {
 
-		                    if(e.y >= 1.2)
+		                    if(e.y >= ymax)
 		                    	{
-		                    		this.y = 1.2;
+		                    		this.y = ymax;
 		                    		return false;
 		                    	}
-		                    if(e.y <= -1.2)
+		                    if(e.y <= ymin)
 		                    	{
-		                    		this.y = -1.2;
+		                    		this.y = ymin;
 		                    		return false;
 		                    	}
-		                    if(e.x >= 2.5)
+		                    if(e.x >= xmax)
 		                    	{
-		                    		this.x = 2.5;
+		                    		this.x = xmax;
 		                    		return false;
 		                    	}
-		                    if(e.x <= -2.5)
+		                    if(e.x <= xmin)
 		                    	{
-		                    		this.x = -2.5;
+		                    		this.x = xmin;
 		                    		return false;
 		                    	}
 		                	},
