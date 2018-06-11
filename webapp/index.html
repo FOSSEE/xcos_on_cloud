@@ -273,7 +273,7 @@
          
                                 } else {
                                     menu.addItem('Block Parameters...', 'images/gear.gif', function() {
-                                        showPropertiesWindow(graph, cell);
+                                        showPropertiesWindow(graph, cell,diagRoot);
                                     });
          
                                     menu.addItem('Cut', 'images/cut.png', function() {
@@ -751,7 +751,7 @@
                                     showModalWindow(this, 'Properties', content, 400, 300);
                                     */
                                     if (cell.isVertex() == true) {
-                                        showPropertiesWindow(graph, cell);
+                                        showPropertiesWindow(graph, cell, diagRoot);
                                     }
                                 }
                             }
@@ -1176,8 +1176,10 @@
                             textarea.style.height = '400px';
          
                             var enc = new mxCodec(mxUtils.createXmlDocument());
+                    
                             var node = enc.encode(diagRoot);
-         
+                            
+
                             var str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + mxUtils.getPrettyXml(node);
          
                             textarea.value = str;
@@ -1380,8 +1382,7 @@
                                 r.onload = function(e) {
          		 
          		    
-                                    var contents = e.target.result;
-         		    
+                                    var contents = e.target.result;         		    
                                     /*
                                         Maverick
                                         The following regular expressions are used to format the imported Xcos XML
@@ -1397,8 +1398,7 @@
                                     //RegEx to replace all the XML comments.
                                     xmlDocument = xmlDocument.replace(/<!--[\s\S]*?-->/g, '');
          
-                                   // textArea.value = xmlDocument;
-         
+                                   // textArea.value = xmlDocument;         
                                 }
          
                                 r.readAsText(f);
@@ -1437,9 +1437,10 @@
                                 try {
                                     var parent = graph.getDefaultParent();
                                     var doc = mxUtils.parseXml(xmlDocument);
+
                                     var codec = new mxCodec(doc);
                                     var rootNode = doc.documentElement;
-         		    console.log(rootNode);
+                                    //console.log(rootNode);
                                     /*
                                         Maverick
                                         Extracting 'Setup Window' values from Xcos diagram and setting the same 
@@ -1458,13 +1459,14 @@
                                             diagRoot[defaultProperties[key][1]] = rootNode.getAttribute(defaultProperties[key][1]);
                                         }
                                     }
-         
+                                    //console.log(propertiesObject); 
+                                    //console.log(diagRoot);        
                                     setup("set", propertiesObject);
          
          			
          
                                     while (rootNode.nodeName != 'root') {
-         				console.log("rootnode.nodeName = "+rootNode.nodeName);
+         				//console.log("rootnode.nodeName = "+rootNode.nodeName);
                                         /*
                                             Maverick
                                             Extracting 'Set Context' values from Xcos diagram and setting the same 
@@ -1488,17 +1490,20 @@
                                         } else {
          
                                             rootNode = rootNode.firstChild;
-         				console.log("rootnode.nodeName = "+rootNode.nodeName);
+         				                   //console.log("rootnode.nodeName = "+rootNode.nodeName);
                                         }
          
                                     }
          
                                     var cells = [];
                                     var currentNode = rootNode.firstChild;
+                                    //console.log(currentNode);
                                     while (currentNode != null) {
                                         var curNodeName = currentNode.nodeName;
          
                                         var cell = codec.decode(currentNode);
+                                        //console.log(currentNode);
+                                        //console.log(cell);
          
                                         var curId = currentNode.getAttribute('id');
          
@@ -1507,16 +1512,24 @@
                                             Finding the mxGeometry node for all the nodes.
                                         */
                                         var geometryNode = currentNode.firstChild;
+                                        //console.log(geometryNode);
                                         var geometryCell = null;
          
                                         if (geometryNode != null) {
                                             while (geometryNode != null && geometryNode.nodeName != 'mxGeometry') {
+                                                //console.log(geometryNode);
+                                                //console.log(geometryNode.nodeName);
+                                                // if(codec.decode(geometryNode) == null)
+                                                //     console.log(codec.decode(geometryNode.firstChild));
                                                 geometryNode = geometryNode.nextSibling;
                                             }
                                             if (geometryNode != null) {
                                                 geometryCell = codec.decode(geometryNode);
+                                                //console.log(geometryCell);
                                             }
                                         }
+                                        //console.log(geometryNode);
+                                        //console.log(geometryCell);
                                         /*
                                             Maverick
                                             Adding the blocks.
@@ -1551,14 +1564,19 @@
          
                                             var details_instance=null
                                             if (ifaceFuncName != null) {
+                                                //console.log(ifaceFuncName);
                                                 details_instance = new window[ifaceFuncName]();
                                             }
          
-                                            
+                                            //console.log(details_instance);
                                             if (details_instance != null) {
                                                 var details = details_instance.define();
+                                                //console.log(details);
+                                                                        // var he = ifaceFuncName.blockInstance.instance.define();
+                                                                        // console.log(he);
                                                 var enc = new mxCodec(mxUtils.createXmlDocument());
                                                 var node = enc.encode(details);
+                                                //console.log(node);
                                                 var temp = enc.encode(parent);
                                                 var stylesheet = graph.getStylesheet();
                                                 var styleName = currentNode.getAttribute('style');
@@ -2521,8 +2539,8 @@
                     var wind = showModalWindow(graph, 'Set Context', content, 450, 350);
                 };
          
-                function showPropertiesWindow(graph, cell) {
-         
+                function showPropertiesWindow(graph, cell, diagRoot) {
+
                     var name = cell.getAttribute('blockElementName');
 		    if(name!="LOOKUP_f" && name!="CURV_f") {
                     var defaultProperties = cell.blockInstance.instance.get(); //window[name]("get");
@@ -2767,7 +2785,7 @@
                     var wind = showModalWindow(graph, 'Properties', content, 450, height);
 
 		   }else{
-                showGraphWindow(graph,cell);
+                showGraphWindow(graph,cell,diagRoot);
 			/*
 			//alert("lookup_f block ");
 			// Create basic structure for the form
@@ -2794,7 +2812,7 @@
                  *              target -> destination object for the edge
                  *              points -> waypoints to be inserted in the geometry
                  */
-                 function showGraphWindow(graph,cell){
+                 function showGraphWindow(graph, cell, diagRoot){
                     var name = cell.getAttribute('blockElementName');
                     var myGraph;
                     var graphParameters = cell.blockInstance.instance.get();
@@ -2963,6 +2981,13 @@
                         drag_chart = create_draggable_points_chart(graphParameters.graphPoints, pointsHistory, graphParameters.xmin, graphParameters.xmax, graphParameters.ymin, graphParameters.ymax);
                     };
                     editMenuOptions[3].onclick = function() {               //To Submit
+                        
+                        var enc1 = new mxCodec(mxUtils.createXmlDocument());
+                        var node1 = enc1.encode(diagRoot);
+                        var str1 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + mxUtils.getPrettyXml(node1);
+                        var xmlCode1 = str1;
+                        console.log(xmlCode1);
+                        
                         editMenu.style.display = 'none';
                         var parent = graph.getDefaultParent();
                         var model = graph.getModel();
@@ -2974,8 +2999,11 @@
                             var x=geometry.x;
                             var y=geometry.y;
                             var details_instance = new window[name]();
+                            //console.log(details_instance);       
+                            
                             graphParameters.graphPoints= objToArrayList(graphParameters.graphPoints);
-                            var details = cell.blockInstance.instance.set(graphParameters);         
+                            var details = cell.blockInstance.instance.set(graphParameters);  
+                            //console.log(details);       
                             //window[name]("set",cell.value,propertiesObject);
                 
                             editor.execute('deleteBlock',(editor, cell));
