@@ -4411,6 +4411,7 @@ CSCOPE.prototype.set = function CSCOPE() {
 
     this.clrs = inverse((arguments[0]["clrs"]))
     this.win = parseFloat((arguments[0]["win"]))
+    console.log(arguments[0]["wpos"]);
     this.wpos = inverse(arguments[0]["wpos"])
     this.wdim = inverse(arguments[0]["wdim"])
     this.ymin = parseFloat((arguments[0]["ymin"]))
@@ -12239,7 +12240,7 @@ function GENSIN_f() {
         model.sim = new ScilabString(["gensin"]);
         model.in = new ScilabDouble();
         model.out = new ScilabDouble([1]);
-        model.out2 = new ScilabDouble([1]);
+        model.out2 = new ScilabDouble       ([1]);
         model.outtyp = new ScilabDouble([1]);
         model.rpar = new ScilabDouble([1], [1], [0]);
         model.blocktype = new ScilabString(["c"]);
