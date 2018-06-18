@@ -21,6 +21,7 @@
     <script type="text/javascript" src="highcharts/highcharts.js"></script> <!-- Used for producing 2d-highcharts -->
     <script type="text/javascript" src="highcharts/highcharts-3d.js"></script> <!-- Used for producing 3d-highcharts in output if required --> 
     <script type="text/javascript" src="highcharts/exporting.js"></script> <!-- Used for the exporting feature of highcharts -->
+    <script type="text/javascript" src="highcharts/draggable-points.js"></script><!-- Used for dragging graph points -->
 
 
       <script src="Queue.js" type="text/javascript"></script>
@@ -272,7 +273,7 @@
          
                                 } else {
                                     menu.addItem('Block Parameters...', 'images/gear.gif', function() {
-                                        showPropertiesWindow(graph, cell);
+                                        showPropertiesWindow(graph, cell,diagRoot);
                                     });
          
                                     menu.addItem('Cut', 'images/cut.png', function() {
@@ -750,7 +751,7 @@
                                     showModalWindow(this, 'Properties', content, 400, 300);
                                     */
                                     if (cell.isVertex() == true) {
-                                        showPropertiesWindow(graph, cell);
+                                        showPropertiesWindow(graph, cell, diagRoot);
                                     }
                                 }
                             }
@@ -1175,8 +1176,10 @@
                             textarea.style.height = '400px';
          
                             var enc = new mxCodec(mxUtils.createXmlDocument());
+                    
                             var node = enc.encode(diagRoot);
-         
+                            
+
                             var str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + mxUtils.getPrettyXml(node);
          
                             textarea.value = str;
@@ -1379,8 +1382,7 @@
                                 r.onload = function(e) {
          		 
          		    
-                                    var contents = e.target.result;
-         		    
+                                    var contents = e.target.result;         		    
                                     /*
                                         Maverick
                                         The following regular expressions are used to format the imported Xcos XML
@@ -1396,8 +1398,7 @@
                                     //RegEx to replace all the XML comments.
                                     xmlDocument = xmlDocument.replace(/<!--[\s\S]*?-->/g, '');
          
-                                   // textArea.value = xmlDocument;
-         
+                                   // textArea.value = xmlDocument;         
                                 }
          
                                 r.readAsText(f);
@@ -1436,9 +1437,10 @@
                                 try {
                                     var parent = graph.getDefaultParent();
                                     var doc = mxUtils.parseXml(xmlDocument);
+
                                     var codec = new mxCodec(doc);
                                     var rootNode = doc.documentElement;
-         		    console.log(rootNode);
+                                    //console.log(rootNode);
                                     /*
                                         Maverick
                                         Extracting 'Setup Window' values from Xcos diagram and setting the same 
@@ -1457,13 +1459,14 @@
                                             diagRoot[defaultProperties[key][1]] = rootNode.getAttribute(defaultProperties[key][1]);
                                         }
                                     }
-         
+                                    //console.log(propertiesObject); 
+                                    //console.log(diagRoot);        
                                     setup("set", propertiesObject);
          
          			
          
                                     while (rootNode.nodeName != 'root') {
-         				console.log("rootnode.nodeName = "+rootNode.nodeName);
+         				//console.log("rootnode.nodeName = "+rootNode.nodeName);
                                         /*
                                             Maverick
                                             Extracting 'Set Context' values from Xcos diagram and setting the same 
@@ -1487,17 +1490,20 @@
                                         } else {
          
                                             rootNode = rootNode.firstChild;
-         				console.log("rootnode.nodeName = "+rootNode.nodeName);
+         				                   //console.log("rootnode.nodeName = "+rootNode.nodeName);
                                         }
          
                                     }
          
                                     var cells = [];
                                     var currentNode = rootNode.firstChild;
+                                    //console.log(currentNode);
                                     while (currentNode != null) {
                                         var curNodeName = currentNode.nodeName;
          
                                         var cell = codec.decode(currentNode);
+                                        //console.log(currentNode);
+                                        //console.log(cell);
          
                                         var curId = currentNode.getAttribute('id');
          
@@ -1506,16 +1512,24 @@
                                             Finding the mxGeometry node for all the nodes.
                                         */
                                         var geometryNode = currentNode.firstChild;
+                                        //console.log(geometryNode);
                                         var geometryCell = null;
          
                                         if (geometryNode != null) {
                                             while (geometryNode != null && geometryNode.nodeName != 'mxGeometry') {
+                                                //console.log(geometryNode);
+                                                //console.log(geometryNode.nodeName);
+                                                // if(codec.decode(geometryNode) == null)
+                                                //     console.log(codec.decode(geometryNode.firstChild));
                                                 geometryNode = geometryNode.nextSibling;
                                             }
                                             if (geometryNode != null) {
                                                 geometryCell = codec.decode(geometryNode);
+                                                //console.log(geometryCell);
                                             }
                                         }
+                                        //console.log(geometryNode);
+                                        //console.log(geometryCell);
                                         /*
                                             Maverick
                                             Adding the blocks.
@@ -1550,14 +1564,19 @@
          
                                             var details_instance=null
                                             if (ifaceFuncName != null) {
+                                                //console.log(ifaceFuncName);
                                                 details_instance = new window[ifaceFuncName]();
                                             }
          
-                                            
+                                            //console.log(details_instance);
                                             if (details_instance != null) {
                                                 var details = details_instance.define();
+                                                //console.log(details);
+                                                                        // var he = ifaceFuncName.blockInstance.instance.define();
+                                                                        // console.log(he);
                                                 var enc = new mxCodec(mxUtils.createXmlDocument());
                                                 var node = enc.encode(details);
+                                                //console.log(node);
                                                 var temp = enc.encode(parent);
                                                 var stylesheet = graph.getStylesheet();
                                                 var styleName = currentNode.getAttribute('style');
@@ -2520,10 +2539,10 @@
                     var wind = showModalWindow(graph, 'Set Context', content, 450, 350);
                 };
          
-                function showPropertiesWindow(graph, cell) {
-         
+                function showPropertiesWindow(graph, cell, diagRoot) {
+
                     var name = cell.getAttribute('blockElementName');
-		    if(name!="LOOKUP_f"){
+		    if(name!="LOOKUP_f" && name!="CURV_f") {
                     var defaultProperties = cell.blockInstance.instance.get(); //window[name]("get");
                     /*{
                         nbr_curves: ["Number of curves", 1],
@@ -2766,6 +2785,7 @@
                     var wind = showModalWindow(graph, 'Properties', content, 450, height);
 
 		   }else{
+                showGraphWindow(graph,cell,diagRoot);
 			/*
 			//alert("lookup_f block ");
 			// Create basic structure for the form
@@ -2792,6 +2812,415 @@
                  *              target -> destination object for the edge
                  *              points -> waypoints to be inserted in the geometry
                  */
+                 function showGraphWindow(graph, cell, diagRoot){
+                    var name = cell.getAttribute('blockElementName');
+                    var myGraph;
+                    var graphParameters = cell.blockInstance.instance.get();
+                    console.log(graphParameters);
+                    var defaultPoints = graphParameters.graphPoints.slice();
+                    var pointsHistory = [];
+                    var content = document.createElement('div');
+                    var menuBar = document.createElement('div');
+                    menuBar.setAttribute('id','graphMenuBar');
+                    var edit = document.createElement('span');
+                    edit.innerHTML= 'Edit';
+                    edit.setAttribute('class','menu');
+                    menuBar.appendChild(edit);
+                    var data = document.createElement('span');
+                    data.innerHTML= 'Data';
+                    data.setAttribute('class','menu');
+                    menuBar.appendChild(data);
+                    content.appendChild(menuBar);
+                    var editOptions = ['Undo','Size','Replot','Ok','Abort'];
+                    var editMenuOptions=[];
+                    var editMenu = document.createElement('div');
+                    for(var i=0;i<=4;i++)
+                    {
+                        editMenuOptions[i] = document.createElement('li');
+                        editMenuOptions[i].innerHTML = editOptions[i];
+                        editMenuOptions[i].setAttribute('class','optionsDropdown');
+                        editMenu.appendChild(editMenuOptions[i]);
+                    };
+                    editMenu.setAttribute('class','menuDropdown displayNone');
+                    content.appendChild(editMenu);
+                    var dataOptions = ['Read','Save','Clear'];
+                    var dataMenuOptions=[];
+                    var dataMenu = document.createElement('div');
+                    for(var i=0;i<=2;i++)
+                    {
+                        dataMenuOptions[i] = document.createElement('li');
+                        dataMenuOptions[i].innerHTML = dataOptions[i];
+                        dataMenuOptions[i].setAttribute('class','optionsDropdown');
+                        dataMenu.appendChild(dataMenuOptions[i]);
+                    };
+                    dataMenu.setAttribute('class','menuDropdown displayNone');
+                    content.appendChild(dataMenu);
+                    dataMenu.style.display = 'none';
+                    var chart = document.createElement('div');
+                    chart.setAttribute('id','drag_chart');
+                    var fileSelector = document.createElement("input");
+                    fileSelector.setAttribute("type","file");
+                    fileSelector.setAttribute("id","inputFile");
+                    chart.appendChild(fileSelector);
+                    content.appendChild(chart);
+                    var wind = showModalWindow(graph, 'Properties', content, 450, 450);
+                    var drag_chart = create_draggable_points_chart(graphParameters.graphPoints, pointsHistory, graphParameters.xmin, graphParameters.xmax, graphParameters.ymin, graphParameters.ymax);
+                    content.onclick = function() {
+                        dataMenu.style.display = 'none';
+                        editMenu.style.display = 'none';
+                    }
+                    edit.onclick = function(event){
+                        event.stopPropagation();
+                        if(editMenu.style.display == 'none')
+                        {
+                            dataMenu.style.display = 'none';
+                            editMenu.style.display = 'block';
+                        }
+                        else
+                            editMenu.style.display = 'none';
+                    };
+                    data.onclick = function(event){
+                        event.stopPropagation();
+                        if(dataMenu.style.display == 'none')
+                            {
+                                editMenu.style.display = 'none';
+                                dataMenu.style.display = 'block';
+                            }
+                        else
+                            dataMenu.style.display = 'none';
+                    };
+
+                    editMenuOptions[0].onclick = function() {               //Undo Option
+                        if(pointsHistory.length>=2) {
+                            graphParameters.graphPoints = pointsHistory[pointsHistory.length-2].slice();
+                            graphParameters.graphPoints = objToArrayList(graphParameters.graphPoints);
+                            pointsHistory = [];
+                            drag_chart = create_draggable_points_chart(graphParameters.graphPoints, pointsHistory, graphParameters.xmin, graphParameters.xmax, graphParameters.ymin, graphParameters.ymax);
+                        }
+                    };
+
+                    editMenuOptions[1].onclick = function () {              // Size Option
+                        // Create basic structure for the form
+                        var inputSize = document.createElement('div');
+                        inputSize.setAttribute("id", "contentProperties");
+             
+                        // Heading of content
+                        var heading = document.createElement('h2');
+                        heading.innerHTML = "Please input new limits";
+                        heading.id = "headingProperties"
+                        inputSize.appendChild(heading);
+             
+                        // Add Form
+                        var myform = document.createElement("form");
+                        myform.method = "post";
+                        myform.id = "formProperties";
+             
+                        // Line break
+                        var linebreak = document.createElement('br');
+                        myform.appendChild(linebreak);
+             
+                        for(var key in graphParameters)
+                        {
+                            if(key!="graphPoints")
+                            {
+                                //Input Title
+                                var namelabel = document.createElement('label');
+                                namelabel.innerHTML = key;
+                                myform.appendChild(namelabel);
+             
+                                // Input
+                                var input = document.createElement("input");
+                                input.value = graphParameters[key];
+                                input.setAttribute("id", key.toString());
+                                input.setAttribute("class", "fieldInput");
+                                myform.appendChild(input);
+             
+                                // Line break
+                                var linebreak = document.createElement('br');
+                                myform.appendChild(linebreak);
+             
+                                // Line break
+                                var linebreak = document.createElement('br');
+                                myform.appendChild(linebreak);
+                           }
+                        }
+
+                        // Line break
+                        var linebreak = document.createElement('br');
+                        myform.appendChild(linebreak);
+
+                         // Button - Ok
+                        var Ok = document.createElement("button");
+                        Ok.innerHTML = 'Submit';
+                        Ok.onclick = function () { 
+                            for (var key in graphParameters) {
+                                if(key!='graphPoints') {
+                                    graphParameters[key] = document.getElementById(key.toString()).value;
+                                }
+                            }
+                            inputSizeMenu.destroy();
+                            drag_chart = create_draggable_points_chart(graphParameters.graphPoints, pointsHistory, graphParameters.xmin, graphParameters.xmax, graphParameters.ymin, graphParameters.ymax);
+                        }
+                        myform.appendChild(Ok);
+
+                        // Button - Cancel
+                        var Cancel = document.createElement("button");
+                        Cancel.innerHTML = 'Reset';
+                        Cancel.onclick = function() {
+                           inputSizeMenu.destroy();
+                        }
+                        myform.appendChild(Cancel);
+                        inputSize.appendChild(myform);
+                        height = 135 + 26 * 4 + 15;
+                        var inputSizeMenu = showModalWindow(graph, 'Properties', inputSize, 450, height);
+                    };
+
+                    editMenuOptions[2].onclick = function () {              //To Replot
+                        editMenu.style.display = 'none';
+                        graphParameters.graphPoints = defaultPoints.slice();
+                        drag_chart = create_draggable_points_chart(graphParameters.graphPoints, pointsHistory, graphParameters.xmin, graphParameters.xmax, graphParameters.ymin, graphParameters.ymax);
+                    };
+                    editMenuOptions[3].onclick = function() {               //To Submit
+                        
+                        var enc1 = new mxCodec(mxUtils.createXmlDocument());
+                        var node1 = enc1.encode(diagRoot);
+                        var str1 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + mxUtils.getPrettyXml(node1);
+                        var xmlCode1 = str1;
+                        console.log(xmlCode1);
+                        
+                        editMenu.style.display = 'none';
+                        var parent = graph.getDefaultParent();
+                        var model = graph.getModel();
+                        var v1 = null;
+                        var doc = mxUtils.createXmlDocument();
+                        model.beginUpdate();
+                        try {
+                            var geometry = cell.getGeometry();
+                            var x=geometry.x;
+                            var y=geometry.y;
+                            var details_instance = new window[name]();
+                            //console.log(details_instance);       
+                            
+                            graphParameters.graphPoints= objToArrayList(graphParameters.graphPoints);
+                            var details = cell.blockInstance.instance.set(graphParameters);  
+                            //console.log(details);       
+                            //window[name]("set",cell.value,propertiesObject);
+                
+                            editor.execute('deleteBlock',(editor, cell));
+                            var enc = new mxCodec(mxUtils.createXmlDocument());
+                            var node = enc.encode(details);
+                            var temp = enc.encode(parent);
+             
+                            // Get the stylesheet for the graph
+                            var stylesheet = graph.getStylesheet();
+                            // From the stylesheet, get the style of the particular block
+                            var style = stylesheet.styles[name];
+         
+                            
+                             // * When a particular block is loaded for the first time,
+                             // * the image in the style of the block will be a path to the image.
+                             // * Set the label in the style property of the block has a html image,
+                             // * and set the image in the style property as null
+                             // *
+                             // * NOTE: Since the image of any block need not be changed for
+                             // *       for every movement of that block, the image must be
+                             // *       set only once.
+                             
+             
+                            if (style != null && style['image'] != null) {
+         
+                                // Make label as a image html element
+                                var label = '<img src="' + style['image'] + '" height="80" width="80">';
+                                // Set label
+                                style['label'] = label;
+         
+                                style['imagePath'] = style['image'];
+         
+                                // Set image as null
+                                style['image'] = null;
+         
+                                // Add the label as a part of node
+                                node.setAttribute('label', label);
+                            }
+         
+                            /*
+                             * If a particular block with image tag in it's style property
+                             * has been invoked already, the image tag would be null for any
+                             * successive instances of the same block. Hence, set the label
+                             * from the label tag in style which was set when that blockModel
+                             * was invoked on the first time.
+                             */
+                            if (style != null && style['label'] != null) {
+         
+                                // Set label from the label field in the style property
+                                node.setAttribute('label', style['label']);
+                            }
+         
+                            node.setAttribute('parent', temp.getAttribute('id'));
+                            var i, arr = [];
+         
+                            var details_instance=cell.blockInstance.instance;
+            
+                            var blockModel = details_instance.x.model;
+                            var graphics = details_instance.x.graphics;
+         
+                            /* To determine number and type of Port*/
+                            var inputPorts = [],
+                                outputPorts = [],
+                                controlPorts = [],
+                                commandPorts = [];
+                            if (blockModel.in.height != null) {
+                                arr = getData(graphics.in_implicit);
+                                if (arr.length != 0) {
+                                    inputPorts = arr;
+                                } else {
+                                    for (i = 0; i < blockModel.in.height; i++) {
+                                        inputPorts.push("E");
+                                    }
+                                }
+                            }
+                            if (blockModel.out.height != null) {
+                                arr = getData(graphics.out_implicit);
+                                if (arr.length != 0) {
+                                    outputPorts = arr;
+                                } else {
+                                    for (i = 0; i < blockModel.out.height; i++) {
+                                        outputPorts.push("E");
+                                    }
+                                }
+                            }
+                            if (blockModel.evtin.height != null) {
+                                for (i = 0; i < blockModel.evtin.height; i++) {
+                                    controlPorts.push("CONTROL");
+                                }
+                            }
+                            if (blockModel.evtout.height != null) {
+                                for (i = 0; i < blockModel.evtout.height; i++) {
+                                    commandPorts.push("COMMAND");
+                                }
+                            }
+                            v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, name);
+         
+                            // @Chhavi: Additional attribute to store the block's instance
+                            v1.blockInstance = createInstanceTag(details_instance);
+                            v1.currentAngle = 0;
+                            v1.flipX = 1;
+                            v1.flipY = 1;
+                            createPorts(graph, v1, inputPorts, controlPorts, outputPorts, commandPorts);
+                            v1.setConnectable(false);
+                        } finally {
+                            model.endUpdate();
+                        }
+                        graph.setSelectionCell(v1);
+                        graph.refresh();
+                        wind.destroy();
+                    };
+                    editMenuOptions[4].onclick = function() {               //To Abort
+                        editMenu.style.display = 'none';
+                        wind.destroy();
+                    };
+                    dataMenuOptions[0].onclick = function () {              // To Read from file
+                        dataMenu.style.display = 'none';
+                        if ("FileReader" in window) {
+                            fileSelector.click();
+                        } else {
+                            alert("Your browser does not support the HTML5 FileReader.");
+                        }
+                    };
+                    fileSelector.onchange = function(event) 
+                    {
+                        var fileToLoad = event.target.files[0];
+                        if (fileToLoad) {
+                        var reader = new FileReader();
+                        reader.onload = function(fileLoadedEvent)
+                        {
+                            var textFromFileLoaded = fileLoadedEvent.target.result;
+                            var number=["",""];
+                            var coordinatesFromFile=[];
+                            var count=0;
+                            for(var i=0;i<(textFromFileLoaded.length);i++)
+                            {
+                                if(textFromFileLoaded[i]!="\t" && textFromFileLoaded[i]!="\n")
+                                    number[count]=number[count]+textFromFileLoaded[i];
+                                else
+                                    {
+                                        number[count]=Number(number[count]);
+                                        count++;
+                                        if(count==2)
+                                        {
+                                            coordinatesFromFile.push([number[0],number[1]]);
+                                            count=0;
+                                            number=["",""];
+                                        }
+                                    }
+                            }
+                            coordinatesFromFile=coordinatesFromFile.sort(function(a,b) {
+                                return a[0] - b[0];
+                            });
+                            graphParameters.graphPoints = coordinatesFromFile.slice();
+                            drag_chart = create_draggable_points_chart(graphParameters.graphPoints, pointsHistory, graphParameters.xmin, graphParameters.xmax, graphParameters.ymin, graphParameters.ymax);
+                        };
+                        reader.readAsText(fileToLoad, "UTF-8");
+                        }
+                    };
+                    dataMenuOptions[1].onclick = function(){                // To write to file
+                        graphParameters.graphPoints= objToArrayList(graphParameters.graphPoints);
+                        for(var i=0;i<(graphParameters.graphPoints.length-1);i++)
+                            {
+                                if(graphParameters.graphPoints[i+1][0]-graphParameters.graphPoints[i][0] <= 0)
+                                {
+                                    alert("You have not defined a function");
+                                    return;
+                                }
+                            }
+                        dataMenu.style.display = 'none';
+                        if ("Blob" in window)
+                        {
+                            var fileName = "coordinates.xy";
+                            var textToWrite = "";
+                            ;
+                            for(var i=0;i<graphParameters.graphPoints.length;i++)
+                            {
+                                textToWrite = textToWrite + graphParameters.graphPoints[i][0] + "\t" + graphParameters.graphPoints[i][1] + "\r\n";
+                            }
+                            var textFileAsBlob = new Blob([textToWrite], { type: "text/plain" });
+                            if ("msSaveOrOpenBlob" in navigator)
+                            {
+                                navigator.msSaveOrOpenBlob(textFileAsBlob, fileName);
+                            }
+                            else
+                            {
+                                var downloadLink = document.createElement("a");
+                                downloadLink.download = fileName;
+                                downloadLink.innerHTML = "Download File";
+                                if ("webkitURL" in window) {
+                                  // Chrome allows the link to be clicked without actually adding it to the DOM.
+                                  downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+                                } else {
+                                  // Firefox requires the link to be added to the DOM before it can be clicked.
+                                  downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+                                  downloadLink.onclick = destroyClickedElement;
+                                  downloadLink.style.display = "none";
+                                  document.body.appendChild(downloadLink);
+                                }
+                                downloadLink.click();
+                            }
+                        }
+                        else{
+                            alert("Your browser does not support the HTML5 Blob.");
+                        }
+                        console.log("hey");
+                    };
+                    dataMenuOptions[2].onclick = function() {              // To clear the graph window
+                        dataMenu.style.display = 'none';
+                        graphParameters.graphPoints = [];
+                        drag_chart = create_draggable_points_chart(graphParameters.graphPoints, pointsHistory, graphParameters.xmin, graphParameters.xmax, graphParameters.ymin, graphParameters.ymax);
+                    };
+                    function destroyClickedElement(event) {
+                       document.body.removeChild(event.target);
+                    }
+                };
+
                 function createEdgeObject(graph, source, target, points) {
          
                     // Start the update on the graph
