@@ -1136,6 +1136,37 @@ def endBlock(fig_id):
 def page():
     return app.send_static_file('index.html')
 
+@app.route('/getOutput',methods=['POST'])
+def run_scilab_func_request():
+
+    xcos_function_file_dir = os.getcwd() + '/'
+    num =request.form['num']
+    den =request.form['den']
+    alpha="A,B,C,D";
+    #session=Details.uid
+    command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();s=poly(0,'s');exec('" + xcos_function_file_dir + "cont_frm_write.sci"+"');test("+num+","+den+");quit();"] 
+    scilab_proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False);
+    scilab_out = ""
+    scilab_err = ""
+    scilab_out, scilab_err = scilab_proc.communicate()
+    
+    file_name="cont_frm_value.txt";
+    #print(file_name);
+    with open(file_name) as f:
+       data = f.read() # Read the data into a variable
+       file_rows = data.strip().split(' ') # Split the file rows into seperate elements of a list
+       #print(file_rows)
+       list_value="[["
+       for i in range(len(file_rows)):   
+	   value=file_rows[i]      
+           if(i==(len(file_rows)-1)): 
+	      list_value=list_value+value+"]]"   
+           else:
+              list_value=list_value+value+"],["
+  
+       print (list_value)
+    return list_value
+
 
 if __name__ == '__main__':
     # Set server address 127.0.0.1:8001/
