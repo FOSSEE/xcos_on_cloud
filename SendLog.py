@@ -749,6 +749,7 @@ def upload():
 	block_det=[]
 	block_diag=[]
 	block_div=[]
+	block_curl=[]
 	for block in blocks:
 		if block.getAttribute("style") == "INTMUL":
 			block_idint.append(int(block.getAttribute("id")))
@@ -760,6 +761,8 @@ def upload():
 			block_diag.append(int(block.getAttribute("id")))
 		if block.getAttribute("style") == "MATDIV":
 			block_div.append(int(block.getAttribute("id")))
+		if block.getAttribute("style") == "CURV_f":
+			block_curl.append(int(block.getAttribute("id")))
 	if len(block_idint)>=1:	
 		with open(temp_file_xml_name,"r") as f:
 			newline=[]
@@ -872,6 +875,27 @@ def upload():
 					for i in range(len(block_det)):
 						if "<ExplicitOutputPort dataType=\"REAL_MATRIX\" id=\""+str(block_det[i]+2)+"\"" in word:
 							temp_word=word.replace("<ExplicitOutputPort dataType=\"REAL_MATRIX\" id=\""+str(block_det[i]+2)+"\"","<ExplicitOutputPort dataColumns=\"1\" dataLines=\"1\" dataType=\"REAL_MATRIX\" id=\""+str(block_det[i]+2)+"\"") 
+							i=i+1
+					if temp_word!="":
+						newline.append(temp_word)
+					else:
+						newline.append(word)
+				else:
+					newline.append(word)
+		with open(temp_file_xml_name,"w") as f:
+			for line in newline:
+				f.writelines(line)
+	if len(block_curl)>=1:
+		with open(temp_file_xml_name,"r") as f:
+			newline=[]
+			i=0
+			for word in f.readlines():
+				
+				if "<ExplicitOutputPort dataType=\"REAL_MATRIX\"" in word:
+					temp_word=""
+					for i in range(len(block_curl)):
+						if "<ExplicitOutputPort dataType=\"REAL_MATRIX\" id=\""+str(block_curl[i]+4)+"\"" in word:
+							temp_word=word.replace("<ExplicitOutputPort dataType=\"REAL_MATRIX\" id=\""+str(block_curl[i]+4)+"\"","<ExplicitOutputPort dataColumns=\"1\" dataLines=\"1\" dataType=\"REAL_MATRIX\" id=\""+str(block_curl[i]+4)+"\"") 
 							i=i+1
 					if temp_word!="":
 						newline.append(temp_word)
