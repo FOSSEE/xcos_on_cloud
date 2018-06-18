@@ -499,7 +499,7 @@ Bache.prototype.set = function Bache() {
     this.T0 = parseFloat(arguments[0]["T0"])
     this.p_rho = parseFloat(arguments[0]["p_rho"])
     this.x.model.rpar = new ScilabDouble([this.Patm],[this.A],[this.ze1],[this.ze2],[this.zs1],[this.zs2],[this.z0],[this.T0],[this.p_rho])
-    this.x.model.equations.parameters= list(new ScilabString(["Patm"], ["A"], ["ze1"], ["ze2"], ["zs1"], ["zs2"], ["z0"], ["T0"], ["p_rho"]), new ScilabDouble([this.Patm], [this.A], [this.ze1], [this.ze2], [this.zs1], [this.zs2], [this.z0], [this.T0], [this.p_rho]));
+    this.x.model.equations.parameters= list(new ScilabString(["Patm"], ["A"], ["ze1"], ["ze2"], ["zs1"], ["zs2"], ["z0"], ["T0"], ["p_rho"]), list(new ScilabDouble([this.Patm]),new ScilabDouble([this.A]),new ScilabDouble([this.ze1]), new ScilabDouble([this.ze2]), new ScilabDouble([this.zs1]), new ScilabDouble([this.zs2]), new ScilabDouble([this.z0]), new ScilabDouble([this.T0]), new ScilabDouble([this.p_rho])));
     var exprs = new ScilabString([this.Patm.toString().replace(/,/g, " ")],[this.A.toString().replace(/,/g, " ")],[this.ze1.toString().replace(/,/g, " ")],[this.ze2.toString().replace(/,/g, " ")],[this.zs1.toString().replace(/,/g, " ")],[this.zs2.toString().replace(/,/g, " ")],[this.z0.toString().replace(/,/g, " ")],[this.T0.toString().replace(/,/g, " ")],[this.p_rho.toString().replace(/,/g, " ")])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
@@ -3082,7 +3082,8 @@ function CLR() {
         //var exprs = new ScilabString(this.num,this.den)
         //this.x.graphics.exprs=exprs
 	var str="("+this.num+")/("+this.den+")";
-	var value=math.eval(str);
+	//var value=math.eval(str);
+	var value=[[0],[-1],[1],[-1],[0],[1],[1],[2],[0]];
 	var model = scicos_model();
         model.sim = list(new ScilabString(["csslti4"]), new ScilabDouble([4]));
         model.in = new ScilabDouble([1]);
@@ -3826,7 +3827,7 @@ function CONST_m() {
 			}
 			this.x.model.rpar = new ScilabDouble();
 			this.x.model.out = new ScilabDouble([this.nout]);
-			this.x.model.opar = list(new ScilabDouble(...this.c));
+			this.x.model.opar = list(new ScilabDouble([this.c][0]));
 
 			if(arguments[0]["vec"].match(/\[[0-9]+\]/)){
 			
@@ -4410,6 +4411,7 @@ CSCOPE.prototype.set = function CSCOPE() {
 
     this.clrs = inverse((arguments[0]["clrs"]))
     this.win = parseFloat((arguments[0]["win"]))
+    console.log(arguments[0]["wpos"]);
     this.wpos = inverse(arguments[0]["wpos"])
     this.wdim = inverse(arguments[0]["wdim"])
     this.ymin = parseFloat((arguments[0]["ymin"]))
@@ -4862,6 +4864,10 @@ function CURV_f() {
         this.axisdata = [[2],[10],[2],[10]];
         this.ipar = new ScilabDouble([size(this.xx, 1)], ...this.axisdata);
         this.rpar = new ScilabDouble(...this.xx, ...this.yy, this.rect);
+        this.xmin = 0;
+        this.xmax = 2;
+        this.ymin = -6;
+        this.ymax = 6;
 
         var model = scicos_model();
         model.sim = new ScilabString(["intplt"]);
@@ -4875,6 +4881,51 @@ function CURV_f() {
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"CURV_f\",sz(1),sz(2));"]);
         this.x = new standard_define(new ScilabDouble([2, 2]), model, new ScilabDouble(), gr_i);
         return new BasicBlock(this.x);
+    }
+
+    CURV_f.prototype.get = function CURV_f() {
+        var defaultpoints = [];
+        for(var i=0;i<(this.xx.length);i++)
+        {
+            defaultpoints.push([this.xx[i][0],this.yy[i][0]]);
+        }
+        var options = {
+            graphPoints: defaultpoints,
+            xmin:this.xmin,
+            xmax:this.xmax,
+            ymin:this.ymin,   
+            ymax:this.ymax
+        }
+        return options;
+    }
+
+    CURV_f.prototype.set = function CURV_f() {
+
+        //console.log(arguments[0].graphPoints);
+        this.xmin = arguments[0].xmin;
+        this.xmax = arguments[0].xmax;
+        this.ymin = arguments[0].ymin;
+        this.ymax = arguments[0].ymax; 
+        this.xx = [];
+        this.yy = []; 
+
+        for(var i=0;i<(arguments[0].graphPoints.length);i++)
+        {
+            this.xx.push([arguments[0].graphPoints[i][0]]);
+        }
+        for(var i=0;i<(arguments[0].graphPoints.length);i++)
+        {
+           this.yy.push([arguments[0].graphPoints[i][1]]);
+        }
+
+        //console.log(this.xx);
+        //console.log(this.yy);
+        
+        this.x.model.sim = new ScilabString(["intplt"]);
+        this.x.model.rpar = new ScilabDouble(...this.xx, ...this.yy, ...colon_operator([this.rect]));
+        this.x.model.ipar = new ScilabDouble([size(this.xx, '*')], ...this.axisdata);
+        return new BasicBlock(this.x);
+
     }
     CURV_f.prototype.details = function CURV_f() {
         return this.x;
@@ -11397,21 +11448,22 @@ function Flowmeter() {
         return this.x;
     }
     Flowmeter.prototype.get = function Flowmeter() {
-        if(this.Qini == undefined || this.Qini == null){
+       /* if(this.Qini == undefined || this.Qini == null){
             this.Qini = "1"
         }
         var options={
             Qini:["Qini",this.Qini]
         }
-        return options
+        return options*/
+        alert("parameters can not be changed")
     }
-Flowmeter.prototype.set = function Flowmeter() {
+/*Flowmeter.prototype.set = function Flowmeter() {
     this.Qini = parseFloat((arguments[0]["Qini"]))
     this.x.model.equations.parameters = list(new ScilabString("Qini"), new ScilabDouble([this.Qini]), new ScilabDouble(zeros(this.Qini)));
     var exprs = new ScilabString([this.Qini])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
-    }
+    }*/
 }
 function fortran_block() {
 
@@ -12188,7 +12240,7 @@ function GENSIN_f() {
         model.sim = new ScilabString(["gensin"]);
         model.in = new ScilabDouble();
         model.out = new ScilabDouble([1]);
-        model.out2 = new ScilabDouble([1]);
+        model.out2 = new ScilabDouble       ([1]);
         model.outtyp = new ScilabDouble([1]);
         model.rpar = new ScilabDouble([1], [1], [0]);
         model.blocktype = new ScilabString(["c"]);
@@ -13934,6 +13986,12 @@ function LOOKUP_f() {
 
     LOOKUP_f.prototype.define = function LOOKUP_f() {
 
+        this.defaultpoints = [[-2,-1],[-1,1],[1,-1],[2,1]];
+        this.xmin = -2.5;
+        this.xmax = 2.5;
+        this.ymin = -1.2;
+        this.ymax = 1.2;
+
         var model = scicos_model();
         model.sim = new ScilabString(["lookup"]);
         model.in = new ScilabDouble([1]);
@@ -13948,8 +14006,34 @@ function LOOKUP_f() {
     }
     LOOKUP_f.prototype.get = function LOOKUP_f() {
         
-        alert("hello");
-	
+        var options = {
+            graphPoints: this.defaultpoints,
+            xmin:this.xmin,
+            xmax:this.xmax,
+            ymin:this.ymin,   
+            ymax:this.ymax
+        }
+        return options;
+    }
+    LOOKUP_f.prototype.set = function LOOKUP_f() {
+    
+        this.defaultpoints = arguments[0].graphPoints;
+        this.xmin = arguments[0].xmin;
+        this.xmax = arguments[0].xmax;
+        this.ymin = arguments[0].ymin;
+        this.ymax = arguments[0].ymax;  
+
+        var pointListScilabCompatabile=[];
+        for(var i=0;i<(arguments[0].graphPoints.length);i++)
+        {
+            pointListScilabCompatabile.push([arguments[0].graphPoints[i][0]]);
+        }
+        for(var i=0;i<(arguments[0].graphPoints.length);i++)
+        {
+           pointListScilabCompatabile.push([arguments[0].graphPoints[i][1]]);
+        }
+        this.x.model.rpar = new ScilabDouble(...pointListScilabCompatabile);
+        return new BasicBlock(this.x);
     }
     LOOKUP_f.prototype.details = function LOOKUP_f() {
         return this.x;
@@ -16801,7 +16885,7 @@ PerteDP.prototype.set = function PerteDP() {
     this.z2 = inverse(arguments[0]["z2"])
     this.p_rho = inverse(arguments[0]["p_rho"])
     this.x.model.rpar = new ScilabDouble(...this.L,...this.D,...this.lambda,...this.z1,...this.z2,...this.p_rho)
-    this.x.model.equations.parameters = list(new ScilabString(["L"], ["D"], ["lambda"], ["z1"], ["z2"], ["p_rho"]), new ScilabDouble(...this.L,...this.D,...this.lambda,...this.z1,...this.z2,...this.p_rho));
+    this.x.model.equations.parameters = list(new ScilabString(["L"], ["D"], ["lambda"], ["z1"], ["z2"], ["p_rho"]), list(new ScilabDouble([this.L]),new ScilabDouble(...this.D),new ScilabDouble(...this.lambda),new ScilabDouble([this.z1]),new ScilabDouble([this.z2]),new ScilabDouble([this.p_rho])));
     var exprs = new ScilabString([this.L.toString().replace(/,/g, " ")],[this.D.toString().replace(/,/g, " ")],[this.lambda.toString().replace(/,/g, " ")],[this.z1.toString().replace(/,/g, " ")],[this.z2.toString().replace(/,/g, " ")],[this.p_rho.toString().replace(/,/g, " ")])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
@@ -17844,7 +17928,7 @@ PuitsP.prototype.set = function PuitsP() {
     this.H0 = inverse(arguments[0]["H0"])
     this.option_temperature = inverse(arguments[0]["option_temperature"])
     this.x.model.rpar = new ScilabDouble(...this.P0,...this.T0,...this.H0,...this.option_temperature)
-    this.x.model.equations.parameters = list(new ScilabString(["P0"], ["T0"], ["H0"], ["option_temperature"]), new ScilabDouble(...this.P0,...this.T0,...this.H0,...this.option_temperature));
+    this.x.model.equations.parameters = list(new ScilabString(["P0"], ["T0"], ["H0"], ["option_temperature"]), list(new ScilabDouble([this.P0]),new ScilabDouble([this.T0]),new ScilabDouble([this.H0]),new ScilabDouble([this.option_temperature])));
     var exprs = new ScilabString([this.P0.toString().replace(/,/g, " ")],[this.T0.toString().replace(/,/g, " ")],[this.H0.toString().replace(/,/g, " ")],[this.option_temperature.toString().replace(/,/g, " ")])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
@@ -20267,7 +20351,7 @@ SourceP.prototype.set = function SourceP() {
     this.H0 = inverse(arguments[0]["H0"])
     this.option_temperature = inverse(arguments[0]["option_temperature"])
     this.x.model.rpar = new ScilabDouble(...this.P0,...this.T0,...this.H0,...this.option_temperature)
-    this.x.model.equations.parameters = list(new ScilabString(["P0"], ["T0"], ["H0"], ["option_temperature"]), new ScilabDouble(...this.P0,...this.T0,...this.H0,...this.option_temperature));
+    this.x.model.equations.parameters = list(new ScilabString(["P0"], ["T0"], ["H0"], ["option_temperature"]), list(new ScilabDouble([this.P0]),new ScilabDouble([this.T0]),new ScilabDouble([this.H0]),new ScilabDouble([this.option_temperature])));
     var exprs = new ScilabString([this.P0.toString().replace(/,/g, " ")],[this.T0.toString().replace(/,/g, " ")],[this.H0.toString().replace(/,/g, " ")],[this.option_temperature.toString().replace(/,/g, " ")])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
@@ -21472,7 +21556,7 @@ function SUBMAT() {
             b:["Ending Row Index",this.b],
             c:["Starting Column Index",this.c],
             d:["Ending Column Index",this.d],
-            inp:["Input Dimensions",this.inp.toString().replace(/,/g, " ")],
+            inp:["Input Dimensions",sci2exp(this.inp)],//.toString().replace(/,/g, " ")],
         }
         return options
     }
@@ -21482,7 +21566,7 @@ SUBMAT.prototype.set = function SUBMAT() {
     this.b = parseFloat((arguments[0]["b"]))
     this.c = parseFloat((arguments[0]["c"]))
     this.d = parseFloat((arguments[0]["d"]))
-    this.inp = inverse((arguments[0]["inp"]))
+    this.inp = MatrixInverse((arguments[0]["inp"]))
     if(this.typ == 1){
         this.function_name = "submat"
         this.ot = 1
@@ -21526,7 +21610,8 @@ SUBMAT.prototype.set = function SUBMAT() {
     this.x.model.ipar = new ScilabDouble([this.a],[this.b],[this.c],[this.d])
     this.x.model.sim = list(new ScilabString([this.function_name]), new ScilabDouble([4]))
     this.x.graphics.exprs = label
-    var exprs = new ScilabString([this.typ],[this.a],[this.b],[this.c],[this.d],...this.inp)
+    
+    var exprs = new ScilabString([this.typ],[this.a],[this.b],[this.c],[this.d],[sci2exp(this.inp)])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
@@ -22263,7 +22348,7 @@ function TIME_f() {
         model.dep_ut = new ScilabBoolean([false, true]);
 
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"TIME_f\",sz(1),sz(2));"]);
-        this.x = new standard_define(new ScilabDouble([2, 2]), model, new ScilabDouble(), gr_i);
+        this.x = new standard_define(new ScilabDouble([2, 2]), model, [], gr_i);
         return new BasicBlock(this.x);
     }
 
@@ -22532,7 +22617,7 @@ VanneReglante.prototype.set = function VanneReglante() {
     this.Cvmax = inverse(arguments[0]["Cvmax"])
     this.p_rho = inverse(arguments[0]["p_rho"])
     this.x.model.rpar = new ScilabDouble(...this.Cvmax,...this.p_rho)
-    this.x.model.equations.parameters = list(new ScilabString(["Cvmax"], ["p_rho"]),new ScilabDouble(...this.Cvmax,...this.p_rho));
+    this.x.model.equations.parameters = list(new ScilabString(["Cvmax"], ["p_rho"]),list(new ScilabDouble(...this.Cvmax),new ScilabDouble([this.p_rho])));
     var exprs = new ScilabString([this.Cvmax.toString().replace(/,/g, " ")],[this.p_rho.toString().replace(/,/g, " ")])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
