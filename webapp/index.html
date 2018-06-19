@@ -28,6 +28,8 @@
       <script src="chart.js" type="text/javascript"></script>
       <script type="text/javascript">
          var editor ;
+         var referenceModelKeys = []; // Stoers Keys of previous model
+         var modelNextId;             // Stores ID of next Key
           	window.onbeforeunload = function (e) {
              
                     		return "Please click 'Stay on this Page' if you did this unintentionally";
@@ -1206,7 +1208,7 @@
                                 var xml = mxUtils.parseXml(xmlFromExportXML);
          
                                 var xsl = loadXMLDoc("finalmodsheet.xsl");
-         
+                                
                                 xsltProcessor = new XSLTProcessor();
                                 xsltProcessor.importStylesheet(xsl);
                                 resultDocument = xsltProcessor.transformToDocument(xml);
@@ -1382,7 +1384,7 @@
                                 r.onload = function(e) {
          		 
          		    
-                                    var contents = e.target.result;         		    
+                                    var contents = e.target.result;       		    
                                     /*
                                         Maverick
                                         The following regular expressions are used to format the imported Xcos XML
@@ -1440,7 +1442,6 @@
 
                                     var codec = new mxCodec(doc);
                                     var rootNode = doc.documentElement;
-                                    //console.log(rootNode);
                                     /*
                                         Maverick
                                         Extracting 'Setup Window' values from Xcos diagram and setting the same 
@@ -1459,14 +1460,12 @@
                                             diagRoot[defaultProperties[key][1]] = rootNode.getAttribute(defaultProperties[key][1]);
                                         }
                                     }
-                                    //console.log(propertiesObject); 
-                                    //console.log(diagRoot);        
                                     setup("set", propertiesObject);
          
          			
          
                                     while (rootNode.nodeName != 'root') {
-         				//console.log("rootnode.nodeName = "+rootNode.nodeName);
+         				               //console.log("rootnode.nodeName = "+rootNode.nodeName);
                                         /*
                                             Maverick
                                             Extracting 'Set Context' values from Xcos diagram and setting the same 
@@ -2618,8 +2617,48 @@
          
                     // Executes when button 'btn' is clicked
                     btn.onclick = function() {
-         
-         
+                        
+                         // Loading Xml of last graph Configuration
+                        var encPrevXml = new mxCodec(mxUtils.createXmlDocument());
+                        var nodePrevXml = encPrevXml.encode(diagRoot);
+                        var strPrevXml = mxUtils.getPrettyXml(nodePrevXml);
+                        strPrevXml = mxUtils.parseXml(strPrevXml);
+                        var xslPrevXml = trySomething("finalmodsheet.xsl"); 
+                        function trySomething(x) {
+                            if (window.ActiveXObject) {
+                                xhttp = new ActiveXObject("Msxml2.XMLHTTP");
+                            } else {
+                                xhttp = new XMLHttpRequest();
+                            }
+                            xhttp.open("GET", x, false);
+                            try {
+                                xhttp.responseType = "msxml-document"
+                            } catch (err) {}
+                            xhttp.send("");
+                            return xhttp.responseXML;
+                        }
+                        var xsltProcessorPrevXml = new XSLTProcessor();
+                        xsltProcessorPrevXml.importStylesheet(xslPrevXml);
+                        var resultDocumentPrevXml = xsltProcessorPrevXml.transformToDocument(strPrevXml);
+                        /*
+                            Maverick
+                            Using resultDocument.documentElement to remove an additional tag "<#document>" created by the XSLTProcessor.
+                            */
+                        strPrevXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n" + mxUtils.getPrettyXml(resultDocumentPrevXml.documentElement);
+                        strPrevXml = strPrevXml.replace(/\n\n/g, "\n");
+                        strPrevXml = strPrevXml.replace(/\n*/, '');
+                        strPrevXml = strPrevXml.replace(/>\s*</g, '><');
+                        strPrevXml = strPrevXml.replace(/<!--[\s\S]*?-->/g, '');
+                        var docPrevXml = mxUtils.parseXml(strPrevXml);
+                        var codecPrevXml = new mxCodec(docPrevXml);
+                        var rootNode = docPrevXml.documentElement;
+                        while(rootNode.nodeName != 'root')
+                            {
+                                rootNode = rootNode.firstChild;
+                            }
+                        var currentNode = rootNode.firstChild;
+                        
+                        // Updating model
                         var parent = graph.getDefaultParent();
                         var model = graph.getModel();
                         var v1 = null;
@@ -2636,14 +2675,14 @@
                                 propertiesObject[key] = document.getElementById(key.toString()).value;
                             }
                         }
-         var geometry = cell.getGeometry();
-         var x=geometry.x;
-         var y=geometry.y;
+                            var geometry = cell.getGeometry();
+                            var x=geometry.x;
+                            var y=geometry.y;
          
                             var details_instance = new window[name]();
                             var details = cell.blockInstance.instance.set(propertiesObject); //window[name]("set",cell.value,propertiesObject);
          	
-             editor.execute('deleteBlock',(editor, cell));
+                            editor.execute('deleteBlock',(editor, cell));
                             var enc = new mxCodec(mxUtils.createXmlDocument());
                             var node = enc.encode(details);
                             var temp = enc.encode(parent);
@@ -2696,7 +2735,7 @@
                             node.setAttribute('parent', temp.getAttribute('id'));
                             var i, arr = [];
          
-         		  var details_instance=cell.blockInstance.instance;
+                            var details_instance=cell.blockInstance.instance;
          	
                             var blockModel = details_instance.x.model;
                             var graphics = details_instance.x.graphics;
@@ -2748,15 +2787,92 @@
                         } finally {
                             model.endUpdate();
                         }
-                        graph.setSelectionCell(v1);
-         
-         
-         
+
+                        var referenceModelCount = referenceModelKeys.length;
+                        var lastId = 0;
+                        var missingKeys = [];
+                        for (var key in model.cells)
+                        {
+                            if(model.cells.hasOwnProperty(key))
+                            {
+                                if(Number(key) > Number(lastId)){
+                                    lastId = key;
+                                }
+                            }
+                        }
+
+                        for( var i=0;i< referenceModelCount ; i++)
+                        {
+                            var present = false;
+                            for(var key in model.cells)
+                                {
+                                    (model.cells.hasOwnProperty(key))
+                                    {
+                                        if(referenceModelKeys[i] == key)
+                                            {
+                                                present = true;
+                                                break;
+                                            }
+                                    }
+                                }
+                            if(present == false)
+                                missingKeys.push(referenceModelKeys[i]);
+                        }
+                        
+                        for(var i = 0;i<missingKeys.length && modelNextId <=lastId; i++)
+                            {   
+                                model.cells[missingKeys[i]] = model.cells[modelNextId];
+                                model.cells[missingKeys[i]].id = String(missingKeys[i]);
+                                delete model.cells[modelNextId++];
+                            }
+                        referenceModelKeys = [];
+
+                        model.beginUpdate();
+                        try {
+                            // Connecting the Links                            
+                            while(currentNode!=null)
+                            {
+                                var curNodeName = currentNode.nodeName;
+                                if(curNodeName.endsWith('Link'))
+                                   {
+                                       var pointsArray = [];
+                                       var newSourceCell = graph.getModel().getCell(currentNode.getAttribute('source'));
+                                       var newTargetCell = graph.getModel().getCell(currentNode.getAttribute('target'));
+                                           
+                                        if(newSourceCell.getEdgeCount() <=0 && newTargetCell.getEdgeCount()<=0) {
+
+                                           var childNode = currentNode.firstChild;
+                                                if (childNode != null) {
+                                                    if (childNode.nodeName == 'mxGeometry') {
+                                                        var tempNode = childNode.firstChild;
+                                                        if (tempNode != null) {
+                                                            if (tempNode.nodeName == 'mxPoint') {
+                                                                pointsArray.push(new mxPoint(tempNode.getAttribute('x'), tempNode.getAttribute('y')));
+                                                            } else {
+                                                                if (tempNode.nodeName == 'Array') {
+                                                                    var mxPointNode = tempNode.firstChild;
+                                                                    while (mxPointNode != null) {
+                                                                        pointsArray.push(new mxPoint(mxPointNode.getAttribute('x'), mxPointNode.getAttribute('y')));
+                                                                        mxPointNode = mxPointNode.nextSibling;
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+
+                                            createEdgeObject(graph, newSourceCell, newTargetCell, null);
+                                        }
+                                   }
+                                currentNode=currentNode.nextSibling;
+                            } 
+
+                        } finally {
+                            model.endUpdate();
+                        }
+                        graph.setSelectionCell(v1);    
                         graph.refresh();
                         wind.destroy();
-         
-         
-         
                     };
                     myform.appendChild(btn);
          
@@ -2816,7 +2932,6 @@
                     var name = cell.getAttribute('blockElementName');
                     var myGraph;
                     var graphParameters = cell.blockInstance.instance.get();
-                    console.log(graphParameters);
                     var defaultPoints = graphParameters.graphPoints.slice();
                     var pointsHistory = [];
                     var content = document.createElement('div');
@@ -2982,11 +3097,46 @@
                     };
                     editMenuOptions[3].onclick = function() {               //To Submit
                         
-                        var enc1 = new mxCodec(mxUtils.createXmlDocument());
-                        var node1 = enc1.encode(diagRoot);
-                        var str1 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + mxUtils.getPrettyXml(node1);
-                        var xmlCode1 = str1;
-                        console.log(xmlCode1);
+                        // Loading Xml of last graph Configuration
+                        var encPrevXml = new mxCodec(mxUtils.createXmlDocument());
+                        var nodePrevXml = encPrevXml.encode(diagRoot);
+                        var strPrevXml = mxUtils.getPrettyXml(nodePrevXml);
+                        strPrevXml = mxUtils.parseXml(strPrevXml);
+                        var xslPrevXml = trySomething("finalmodsheet.xsl"); 
+                        function trySomething(x) {
+                            if (window.ActiveXObject) {
+                                xhttp = new ActiveXObject("Msxml2.XMLHTTP");
+                            } else {
+                                xhttp = new XMLHttpRequest();
+                            }
+                            xhttp.open("GET", x, false);
+                            try {
+                                xhttp.responseType = "msxml-document"
+                            } catch (err) {}
+                            xhttp.send("");
+                            return xhttp.responseXML;
+                        }
+                        var xsltProcessorPrevXml = new XSLTProcessor();
+                        xsltProcessorPrevXml.importStylesheet(xslPrevXml);
+                        var resultDocumentPrevXml = xsltProcessorPrevXml.transformToDocument(strPrevXml);
+                        /*
+                            Maverick
+                            Using resultDocument.documentElement to remove an additional tag "<#document>" created by the XSLTProcessor.
+                            */
+                        strPrevXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n" + mxUtils.getPrettyXml(resultDocumentPrevXml.documentElement);
+                        strPrevXml = strPrevXml.replace(/\n\n/g, "\n");
+                        strPrevXml = strPrevXml.replace(/\n*/, '');
+                        strPrevXml = strPrevXml.replace(/>\s*</g, '><');
+         			    strPrevXml = strPrevXml.replace(/<!--[\s\S]*?-->/g, '');
+                        var docPrevXml = mxUtils.parseXml(strPrevXml);
+                        var codecPrevXml = new mxCodec(docPrevXml);
+                        var rootNode = docPrevXml.documentElement;
+                        while(rootNode.nodeName != 'root')
+                            {
+                                rootNode = rootNode.firstChild;
+                            }
+                        var currentNode = rootNode.firstChild;
+                               
                         
                         editMenu.style.display = 'none';
                         var parent = graph.getDefaultParent();
@@ -2998,12 +3148,10 @@
                             var geometry = cell.getGeometry();
                             var x=geometry.x;
                             var y=geometry.y;
-                            var details_instance = new window[name]();
-                            //console.log(details_instance);       
+                            var details_instance = new window[name]();       
                             
                             graphParameters.graphPoints= objToArrayList(graphParameters.graphPoints);
                             var details = cell.blockInstance.instance.set(graphParameters);  
-                            //console.log(details);       
                             //window[name]("set",cell.value,propertiesObject);
                 
                             editor.execute('deleteBlock',(editor, cell));
@@ -3108,6 +3256,91 @@
                             v1.flipY = 1;
                             createPorts(graph, v1, inputPorts, controlPorts, outputPorts, commandPorts);
                             v1.setConnectable(false);
+                        
+                        } finally {
+                            model.endUpdate();
+                        }
+
+                       
+                        var referenceModelCount = referenceModelKeys.length;
+                        var lastId = 0;
+                        var missingKeys = [];
+                        for (var key in model.cells)
+                        {
+                            if(model.cells.hasOwnProperty(key))
+                            {
+                                if(Number(key) > Number(lastId)){
+                                    lastId = key;
+                                }
+                            }
+                        }
+
+                        for( var i=0;i< referenceModelCount ; i++)
+                        {
+                            var present = false;
+                            for(var key in model.cells)
+                                {
+                                    (model.cells.hasOwnProperty(key))
+                                    {
+                                        if(referenceModelKeys[i] == key)
+                                            {
+                                                present = true;
+                                                break;
+                                            }
+                                    }
+                                }
+                            if(present == false)
+                                missingKeys.push(referenceModelKeys[i]);
+                        }
+                        
+                        for(var i = 0;i<missingKeys.length && modelNextId <=lastId; i++)
+                            {   
+                                model.cells[missingKeys[i]] = model.cells[modelNextId];
+                                model.cells[missingKeys[i]].id = String(missingKeys[i]);
+                                delete model.cells[modelNextId++];
+                            }
+                        referenceModelKeys = [];
+
+                        model.beginUpdate();
+                        try {
+                            // Connecting the Links                            
+                            while(currentNode!=null)
+                            {
+                                var curNodeName = currentNode.nodeName;
+                                if(curNodeName.endsWith('Link'))
+                                   {
+                                       var pointsArray = [];
+                                       var newSourceCell = graph.getModel().getCell(currentNode.getAttribute('source'));
+                                       var newTargetCell = graph.getModel().getCell(currentNode.getAttribute('target'));
+                                           
+                                        if(newSourceCell.getEdgeCount() <=0 && newTargetCell.getEdgeCount()<=0) {
+
+                                           var childNode = currentNode.firstChild;
+                                                if (childNode != null) {
+                                                    if (childNode.nodeName == 'mxGeometry') {
+                                                        var tempNode = childNode.firstChild;
+                                                        if (tempNode != null) {
+                                                            if (tempNode.nodeName == 'mxPoint') {
+                                                                pointsArray.push(new mxPoint(tempNode.getAttribute('x'), tempNode.getAttribute('y')));
+                                                            } else {
+                                                                if (tempNode.nodeName == 'Array') {
+                                                                    var mxPointNode = tempNode.firstChild;
+                                                                    while (mxPointNode != null) {
+                                                                        pointsArray.push(new mxPoint(mxPointNode.getAttribute('x'), mxPointNode.getAttribute('y')));
+                                                                        mxPointNode = mxPointNode.nextSibling;
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+
+                                            createEdgeObject(graph, newSourceCell, newTargetCell, null);
+                                        }
+                                   }
+                                currentNode=currentNode.nextSibling;
+                            } 
+
                         } finally {
                             model.endUpdate();
                         }
@@ -3225,7 +3458,17 @@
          
                     // Start the update on the graph
                     graph.getModel().beginUpdate();
-         
+
+                    // Update referenceModelKeys everytime any change is made
+                    var referenceModel = graph.getModel();
+                    var element_count = 0;
+                    for (var e in referenceModel.cells)
+                    {
+                        if(referenceModel.cells.hasOwnProperty(e))
+                            referenceModelKeys[element_count++] = e;
+                    }
+                    modelNextId = referenceModel.nextId+1;
+
                     try {
          
                         // Create an edge from the given source object and target object
