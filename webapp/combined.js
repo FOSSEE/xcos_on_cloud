@@ -3077,23 +3077,17 @@ function CLR() {
     CLR.prototype.set = function CLR() {
         this.num = arguments[0]["num"]
         this.den = arguments[0]["den"]
-        //this.x.model.state = new ScilabDouble([this.x0]);
-        //this.x.model.rpar = rpar
-        //var exprs = new ScilabString(this.num,this.den)
-        //this.x.graphics.exprs=exprs
-	var str="("+this.num+")/("+this.den+")";
-	//var value=math.eval(str);
-	var value=[[0],[-1],[1],[-1],[0],[1],[1],[2],[0]];
+	this.value=cont_frm(this.num,this.den);
 	var model = scicos_model();
         model.sim = list(new ScilabString(["csslti4"]), new ScilabDouble([4]));
         model.in = new ScilabDouble([1]);
         model.out = new ScilabDouble([1]);
-        model.state = new ScilabDouble([this.x0]);
-        model.rpar = new ScilabDouble([value]);
+        model.state = new ScilabDouble([this.x0]);        
+        model.rpar = new ScilabDouble(...this.value);
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([false, true]);
         var exprs = new ScilabString([this.num.toString()], [this.den.toString()]);
-        this.displayParameter = [this.num.toString(), this.den.toString()];
+        this.displayParameter = [[this.num], [this.den]];
         var gr_i = [];
         this.x = new standard_define(new ScilabDouble([3, 2]), model, exprs, gr_i);
         return new BasicBlock(this.x);
