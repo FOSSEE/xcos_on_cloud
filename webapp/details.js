@@ -869,7 +869,6 @@ function BasicBlock() {
         if (dep_ut[1] == "true")
             this.dependsOnT = "1";
         this.id = options.id;
-        //console.log(this.id);
         this.interfaceFunctionName = arguments.callee.caller.name;
         this.ordering = options.ordering;
         this.parent = "1"; // modified_shank : earlier : this.parent = options.parent;

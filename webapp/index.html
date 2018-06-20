@@ -1,32 +1,33 @@
 
 
 <html>
-   <head>
-      <meta content="text/html;charset=utf-8" http-equiv="Content-Type"/>
-      <meta content="utf-8" http-equiv="encoding"/>
-      <title>
-         Xcos
-      </title>
-      <!-- Loads and initializes the library -->
-      <script src="jquery/jquery-1.8.2.js" type="text/javascript"></script>
-      <script src="mxClient.min.js" type="text/javascript"></script>
-      <script src="jquery/farbtastic.js" type="text/javascript"></script>
-      <link href="jquery/farbtastic.css" rel="stylesheet" type="text/css"/>
-      <link href="jquery/jquery-ui.css" rel="stylesheet"/>
-      <script src="details.js" type="text/javascript"></script>
-      <script src="setup.js" type="text/javascript"></script>
-      <script src="combined.js" type="text/javascript"></script>
-      <script src="orientation.js" type="text/javascript"></script>
+    <head>
+        <meta content="text/html;charset=utf-8" http-equiv="Content-Type"/>
+        <meta content="utf-8" http-equiv="encoding"/>
+        <title>
+            Xcos
+        </title>
+        <!-- Loads and initializes the library -->
+        <script src="jquery/jquery-1.8.2.js" type="text/javascript"></script>
+        <script src="mxClient.min.js" type="text/javascript"></script>
+        <script src="jquery/farbtastic.js" type="text/javascript"></script>
+        <link href="jquery/farbtastic.css" rel="stylesheet" type="text/css"/>
+        <link href="jquery/jquery-ui.css" rel="stylesheet"/>
+        <script src="details.js" type="text/javascript"></script>
+        <script src="setup.js" type="text/javascript"></script>
+        <script src="combined.js" type="text/javascript"></script>
+        <script src="orientation.js" type="text/javascript"></script>
+        <script src ="importparameters.js" type="text/javascript"></script>
 
-    <script type="text/javascript" src="highcharts/highcharts.js"></script> <!-- Used for producing 2d-highcharts -->
-    <script type="text/javascript" src="highcharts/highcharts-3d.js"></script> <!-- Used for producing 3d-highcharts in output if required --> 
-    <script type="text/javascript" src="highcharts/exporting.js"></script> <!-- Used for the exporting feature of highcharts -->
-    <script type="text/javascript" src="highcharts/draggable-points.js"></script><!-- Used for dragging graph points -->
+        <script type="text/javascript" src="highcharts/highcharts.js"></script> <!-- Used for producing 2d-highcharts -->
+        <script type="text/javascript" src="highcharts/highcharts-3d.js"></script> <!-- Used for producing 3d-highcharts in output if required --> 
+        <script type="text/javascript" src="highcharts/exporting.js"></script> <!-- Used for the exporting feature of highcharts -->
+        <script type="text/javascript" src="highcharts/draggable-points.js"></script><!-- Used for dragging graph points -->
 
 
-      <script src="Queue.js" type="text/javascript"></script>
-      <script src="chart.js" type="text/javascript"></script>
-      <script type="text/javascript">
+        <script src="Queue.js" type="text/javascript"></script>
+        <script src="chart.js" type="text/javascript"></script>
+        <script type="text/javascript">
          var editor ;
          var referenceModelKeys = []; // Stoers Keys of previous model
          var modelNextId;             // Stores ID of next Key
@@ -1346,7 +1347,7 @@
                             div.setAttribute("style", "height:100;width:100");
          
                             
-         	    var fileNode = document.createElement('input');
+                            var fileNode = document.createElement('input');
                             fileNode.type = 'file';
                             fileNode.style = "margin:30px 30px 40px 30px;";
                             if (!(window.File && window.FileReader && window.Blob && window.FileList)) {
@@ -1371,16 +1372,16 @@
          	    
                             fileNode.addEventListener('change', function(evt) {
          
-                                var f = evt.target.files[0];
+                            var f = evt.target.files[0];
          		
-         		if (!f.name.endsWith(".xcos") /*&& !f.name.endsWith(".zcos")*/) {     //Checks if file extension is "xcos" or not
-                                    alert("Choose proper file! Only xcos files can be uploaded!");
-                                    this.value = null;          //This will reset the file type input
-                                    return false;               //This will prevent any further actions if can occur
+                            if (!f.name.endsWith(".xcos") /*&& !f.name.endsWith(".zcos")*/) {     //Checks if file extension is "xcos" or not
+                                alert("Choose proper file! Only xcos files can be uploaded!");
+                                this.value = null;          //This will reset the file type input
+                                return false;               //This will prevent any further actions if can occur
                                 }			
          
-                                var r = new FileReader();
-         		
+                            var r = new FileReader();
+     		
                                 r.onload = function(e) {
          		 
          		    
@@ -1415,9 +1416,9 @@
          	    
                             button.onclick = function (){ xcosToDiagram(xmlDocument); }
          	    
-         		function xcosToDiagram(xmlDocument){   // function which takes the xml code and changes it to the diagram  
+         		            function xcosToDiagram(xmlDocument){   // function which takes the xml code and changes it to the diagram  
          	    	
-         		if (graph.getChildVertices(graph.getDefaultParent()).length != 0) {
+         		                     if (graph.getChildVertices(graph.getDefaultParent()).length != 0) {
                                     //This branch will execute if there are no elements present in the canvas
                                     graph.model.beginUpdate();
                                     try {
@@ -1433,7 +1434,7 @@
          
                                 }                        
          
-         		wind.destroy();
+                         		wind.destroy();
          		
                                 graph.model.beginUpdate();
                                 try {
@@ -1496,14 +1497,20 @@
          
                                     var cells = [];
                                     var currentNode = rootNode.firstChild;
-                                    //console.log(currentNode);
                                     while (currentNode != null) {
                                         var curNodeName = currentNode.nodeName;
          
                                         var cell = codec.decode(currentNode);
-                                        //console.log(currentNode);
-                                        //console.log(cell);
          
+                                        //To Load Xcos Diagram with the changed values 
+                                        var importProperties = {} ; // Stores Changed values of blocks
+                                        if(cell.style)
+                                        { 
+                                            importProperties = importParameters(cell.style, codec, currentNode);
+                                            console.log(importProperties);
+                                        }
+
+
                                         var curId = currentNode.getAttribute('id');
          
                                         /*
@@ -1511,24 +1518,16 @@
                                             Finding the mxGeometry node for all the nodes.
                                         */
                                         var geometryNode = currentNode.firstChild;
-                                        //console.log(geometryNode);
                                         var geometryCell = null;
          
                                         if (geometryNode != null) {
                                             while (geometryNode != null && geometryNode.nodeName != 'mxGeometry') {
-                                                //console.log(geometryNode);
-                                                //console.log(geometryNode.nodeName);
-                                                // if(codec.decode(geometryNode) == null)
-                                                //     console.log(codec.decode(geometryNode.firstChild));
                                                 geometryNode = geometryNode.nextSibling;
                                             }
                                             if (geometryNode != null) {
                                                 geometryCell = codec.decode(geometryNode);
-                                                //console.log(geometryCell);
                                             }
                                         }
-                                        //console.log(geometryNode);
-                                        //console.log(geometryCell);
                                         /*
                                             Maverick
                                             Adding the blocks.
@@ -1537,7 +1536,6 @@
                                         */
                                         if (!(curNodeName.endsWith('Link') || curNodeName.endsWith('Port'))) {
                                             var ifaceFuncName = null;
-         
                                             /*
                                                 Maverick
                                                 The following data structure is used to store the information required for each block
@@ -1563,19 +1561,16 @@
          
                                             var details_instance=null
                                             if (ifaceFuncName != null) {
-                                                //console.log(ifaceFuncName);
                                                 details_instance = new window[ifaceFuncName]();
                                             }
-         
-                                            //console.log(details_instance);
+
                                             if (details_instance != null) {
                                                 var details = details_instance.define();
-                                                //console.log(details);
-                                                                        // var he = ifaceFuncName.blockInstance.instance.define();
-                                                                        // console.log(he);
+                                                if(Object.keys(importProperties).length != 0) {
+                                                    details = details_instance.set(importProperties);
+                                                }                                          
                                                 var enc = new mxCodec(mxUtils.createXmlDocument());
                                                 var node = enc.encode(details);
-                                                //console.log(node);
                                                 var temp = enc.encode(parent);
                                                 var stylesheet = graph.getStylesheet();
                                                 var styleName = currentNode.getAttribute('style');
@@ -1585,7 +1580,6 @@
                                                     }
                                                 }
                                                 var style = stylesheet.styles[styleName];
-         
          
                                                 /*
                                                  * When a particular block is loaded for the first time,
@@ -2618,7 +2612,11 @@
                     // Executes when button 'btn' is clicked
                     btn.onclick = function() {
                         
-                         // Loading Xml of last graph Configuration
+                        /*  
+                            Loading XML of last graph configuration so that all the links
+                            nodes of the previous xml can be copied to the new XML 
+                        */
+
                         var encPrevXml = new mxCodec(mxUtils.createXmlDocument());
                         var nodePrevXml = encPrevXml.encode(diagRoot);
                         var strPrevXml = mxUtils.getPrettyXml(nodePrevXml);
@@ -2788,6 +2786,12 @@
                             model.endUpdate();
                         }
 
+                        /*  The code below is responsible for moving the new (non-links) node created after the set
+                            function is called back to their previous positions as in their previous XML.
+                            This is done to retain the id's so that the Link node of previous XML can be used 
+                            to create connecting wires for the new XML also.
+                        */
+
                         var referenceModelCount = referenceModelKeys.length;
                         var lastId = 0;
                         var missingKeys = [];
@@ -2829,7 +2833,7 @@
 
                         model.beginUpdate();
                         try {
-                            // Connecting the Links                            
+                            // Connecting the blocks by inserting link nodes                          
                             while(currentNode!=null)
                             {
                                 var curNodeName = currentNode.nodeName;
@@ -3097,7 +3101,10 @@
                     };
                     editMenuOptions[3].onclick = function() {               //To Submit
                         
-                        // Loading Xml of last graph Configuration
+                        /*  
+                            Loading XML of last graph configuration so that all the links
+                            nodes of the previous xml can be copied to the new XML 
+                        */
                         var encPrevXml = new mxCodec(mxUtils.createXmlDocument());
                         var nodePrevXml = encPrevXml.encode(diagRoot);
                         var strPrevXml = mxUtils.getPrettyXml(nodePrevXml);
@@ -3261,7 +3268,12 @@
                             model.endUpdate();
                         }
 
-                       
+                        /*  The code below is responsible for moving the new (non-links) node created after the set
+                            function is called back to their previous positions as in their previous XML.
+                            This is done to retain the id's so that the Link node of previous XML can be used 
+                            to create connecting wires for the new XML also.
+                        */
+
                         var referenceModelCount = referenceModelKeys.length;
                         var lastId = 0;
                         var missingKeys = [];
@@ -3303,7 +3315,7 @@
 
                         model.beginUpdate();
                         try {
-                            // Connecting the Links                            
+                            // Connecting the blocks by inserting link nodes                      
                             while(currentNode!=null)
                             {
                                 var curNodeName = currentNode.nodeName;
@@ -3344,6 +3356,7 @@
                         } finally {
                             model.endUpdate();
                         }
+                        console.log(model);
                         graph.setSelectionCell(v1);
                         graph.refresh();
                         wind.destroy();
@@ -3459,7 +3472,8 @@
                     // Start the update on the graph
                     graph.getModel().beginUpdate();
 
-                    // Update referenceModelKeys everytime any change is made
+                    /* referenceModelKeys is used to store the key number (id) of all the nodes.
+                        Everytime any change is made the referenceModelKeys is updated here */
                     var referenceModel = graph.getModel();
                     var element_count = 0;
                     for (var e in referenceModel.cells)
