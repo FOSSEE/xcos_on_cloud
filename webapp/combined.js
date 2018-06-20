@@ -4405,7 +4405,6 @@ CSCOPE.prototype.set = function CSCOPE() {
 
     this.clrs = inverse((arguments[0]["clrs"]))
     this.win = parseFloat((arguments[0]["win"]))
-    console.log(arguments[0]["wpos"]);
     this.wpos = inverse(arguments[0]["wpos"])
     this.wdim = inverse(arguments[0]["wdim"])
     this.ymin = parseFloat((arguments[0]["ymin"]))
