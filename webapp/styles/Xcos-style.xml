@@ -584,7 +584,7 @@
         <add as="displayedLabel" value="N(z,p)&lt;BR&gt;&lt;HR&gt;D(z,p)"/>
     </add>
     <add as="DLR" extend="blockWithLabel">
-        <add as="displayedLabel" value="%s&lt;BR&gt;&lt;HR&gt;%s + &lt;i&gt;z&lt;/i&gt;"/>
+        <add as="displayedLabel" value="%s&lt;BR&gt;&lt;HR&gt;%s"/>
     </add>
     <add as="DLR_f" extend="DLR"/>
     <add as="DLSS" extend="blockWithLabel">

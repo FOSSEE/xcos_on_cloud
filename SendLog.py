@@ -1143,8 +1143,14 @@ def run_scilab_func_request():
     num =request.form['num']
     den =request.form['den']
     alpha="A,B,C,D";
+    
     #session=Details.uid
-    command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();s=poly(0,'s');exec('" + xcos_function_file_dir + "cont_frm_write.sci"+"');test("+num+","+den+");quit();"] 
+    if 'z' in num or 'z' in den:
+    	command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();z=poly(0,'z');exec('" + xcos_function_file_dir + "cont_frm_write.sci"+"');calculate_cont_frm("+num+","+den+");quit();"]
+        
+    else:
+        command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();s=poly(0,'s');exec('" + xcos_function_file_dir + "cont_frm_write.sci"+"');calculate_cont_frm("+num+","+den+");quit();"]
+        
     scilab_proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False);
     scilab_out = ""
     scilab_err = ""
