@@ -7714,8 +7714,7 @@ function DLR() {
         model.dep_ut = new ScilabBoolean([false, false]);
 
         var exprs = new ScilabString(["1"], ["1+z"]);
-        this.displayParameter = [["1"], ["1"]];
-
+        this.displayParameter = [["1"], ["1+z"]];
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"DLR\",sz(1),sz(2));"]);
         this.x = new standard_define(new ScilabDouble([3, 2]), model, exprs, gr_i);
         return new BasicBlock(this.x);
@@ -7823,19 +7822,17 @@ function DLR() {
             alert("Transfer function must be proper");
             DLR.get();
         }
-        //this.H=cont_frm(this.num,this.den);
-        //H=cont_frm(num,den)
-        //[A,B,C,D]=H(2:5);
+        this.value=cont_frm(this.num,this.den);
         var exprs=new ScilabString([this.num.toString()],[this.den.toString()])
         this.x.graphics.exprs=exprs
         var ns=size(this.A,1);
         var ns1=size(this.A,2);
+	this.x.model.rpar = new ScilabDouble(...this.value);
         //if ns1<=ns then
             //x0=x0(1:ns1)
         //else
            // x0(ns1,1)=0
         //end
-        //var rpar = new ScilabDouble(...this.A,...this.B,...this.C,...this.D);
         this.x.model.dstate=new ScilabDouble(this.x0)
         //this.x.model.rpar=rpar
         //if norm(D,1)<>0 then
@@ -7848,6 +7845,7 @@ function DLR() {
         //end
         this.x.model.dep_ut = new ScilabBoolean(false,false)
         this.x.model.firing=[]
+        this.displayParameter = [[this.num], [this.den]];
     	return new BasicBlock(this.x)
     }
 }

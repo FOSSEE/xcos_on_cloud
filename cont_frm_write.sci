@@ -1,4 +1,4 @@
-function test(num,den)
+function calculate_cont_frm(num,den)
 H=cont_frm(num,den);
 [A,B,C,D]=abcd(H);
 cont_frm_write(A,B,C,D);
