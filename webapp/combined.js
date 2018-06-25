@@ -3330,6 +3330,7 @@ function CMSCOPE() {
         return options;
     }
     CMSCOPE.prototype.set = function CMSCOPE() {
+
         this.in1 = inverse(arguments[0]["in1"]);
         this.clrs = inverse(arguments[0]["clrs"]);
         this.win = parseFloat((arguments[0]["win"]));
@@ -3496,6 +3497,7 @@ function CONST() {
 		return options
 	}
 	CONST.prototype.set = function CONST() {
+        console.log(arguments[0]);
 		this.C = (arguments[0]["C"])
 		var exprs;
 
@@ -3789,6 +3791,7 @@ function CONST_m() {
 	}
 	CONST_m.prototype.set = function CONST_m() {
 		var exprs = "";
+        console.log(arguments[0]);
 		var str = arguments[0]["vec"];
 		if (str.match(/[a-z()+\-*/.^{}]/i)) {
 			var value = getValueOfImaginaryInput(str);
@@ -4520,6 +4523,7 @@ function CSCOPXY() {
         return options
     }
 CSCOPXY.prototype.set = function CSCOPXY() {
+    console.log(arguments[0]);
     this.nbr_curves = parseFloat((arguments[0]["nbr_curves"]))
     this.clrs = parseFloat((arguments[0]["clrs"]))
     this.siz = parseFloat((arguments[0]["siz"]))
@@ -4894,7 +4898,6 @@ function CURV_f() {
 
     CURV_f.prototype.set = function CURV_f() {
 
-        //console.log(arguments[0].graphPoints);
         this.xmin = arguments[0].xmin;
         this.xmax = arguments[0].xmax;
         this.ymin = arguments[0].ymin;
@@ -4910,9 +4913,6 @@ function CURV_f() {
         {
            this.yy.push([arguments[0].graphPoints[i][1]]);
         }
-
-        //console.log(this.xx);
-        //console.log(this.yy);
         
         this.x.model.sim = new ScilabString(["intplt"]);
         this.x.model.rpar = new ScilabDouble(...this.xx, ...this.yy, ...colon_operator([this.rect]));
@@ -14007,7 +14007,7 @@ function LOOKUP_f() {
         return options;
     }
     LOOKUP_f.prototype.set = function LOOKUP_f() {
-    
+
         this.defaultpoints = arguments[0].graphPoints;
         this.xmin = arguments[0].xmin;
         this.xmax = arguments[0].xmax;
