@@ -124,5 +124,65 @@ function importParameters ( blockName, codec, currentNode ) {
 	    sgn = codec.decode(currentNodeCopy = currentNodeCopy.firstChild).value.toString().replace(/;/g," ").slice(1,-1);
 	    importProperties = {sgn};
 	}
+	if( blockName.startsWith('CMSCOPE') ) {
+	    var in1, clrs, win, wpos, wdim, ymin, ymax, per, N, heritance, nom;
+	    var currentNodeCopy = currentNode;
+	    currentNodeCopy = currentNodeCopy.firstChild;
+	    currentNodeCopy = currentNodeCopy.firstChild;
+
+	    in1 = codec.decode(currentNodeCopy).value.toString();
+	    clrs = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
+	    win = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
+	    wpos = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
+	    wdim = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
+	    ymin = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
+	    ymax = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
+	    per = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
+	    N =codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
+	    heritance = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
+	    nom = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
+
+	    importProperties = {in1, clrs, win, wpos, wdim, ymin, ymax, per, N, heritance, nom};
+	}
+	if( blockName.startsWith('CONST_m') ) {
+		var currentNodeCopy = currentNode;
+	    currentNodeCopy = currentNodeCopy.firstChild;
+	    currentNodeCopy = currentNodeCopy.firstChild;
+
+	    var vec = codec.decode(currentNodeCopy).value.toString();
+	    importProperties = { vec };
+	}
+	if( blockName.startsWith('CONVERT') ) {
+		var it, ot ,np;
+		var currentNodeCopy = currentNode;
+	    currentNodeCopy = currentNodeCopy.firstChild;
+	    currentNodeCopy = currentNodeCopy.firstChild;
+
+	    it = codec.decode(currentNodeCopy).value.toString();
+	    ot = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
+	    np = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
+	   	
+	   	importProperties = { it, ot, np};
+	}
+	if( blockName.startsWith('CSCOPXY') ) {
+
+		var nbr_curves, clrs, siz, win, wpos, wdim, xmin, xmax, ymin, ymax, N;
+		var currentNodeCopy = currentNode;
+	    currentNodeCopy = currentNodeCopy.firstChild;
+	    currentNodeCopy = currentNodeCopy.firstChild;
+	    nbr_curves = codec.decode(currentNodeCopy).value.toString();
+	    clrs = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
+	    siz = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
+	    win = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
+	    wpos = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
+	    wdim = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString().replace(/;/g," ").slice(1,-1);
+	    xmin = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
+	    xmax = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
+	    ymin = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
+	    ymax = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
+	    N = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
+
+	    importProperties = { nbr_curves, clrs, siz, win, wpos, wdim, xmin, xmax, ymin ,ymax, N};
+	}
 	return importProperties;
 }
