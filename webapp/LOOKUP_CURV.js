@@ -168,12 +168,26 @@ function showGraphWindow(graph, cell, diagRoot) {
     };
     editMenuOptions[3].onclick = function() {               //To Submit
         
+        /*
+            Model is updated below to convert all points that as been convert
+            to object (due to dragging) back to array before xml is created
+        */
+
+        var model = graph.getModel();
+        model.beginUpdate();
+        try {
+            graphParameters.graphPoints= objToArrayList(graphParameters.graphPoints);
+            cell.blockInstance.instance.set(graphParameters);
+            } finally {
+            model.endUpdate();
+        }
+
         /*  
             Loading XML of last graph configuration so that all the links
             nodes of the previous xml can be copied to the new XML 
         */
+        
         var encPrevXml = new mxCodec(mxUtils.createXmlDocument());
-        console.log(diagRoot);
         var nodePrevXml = encPrevXml.encode(diagRoot);
         var strPrevXml = mxUtils.getPrettyXml(nodePrevXml);
         strPrevXml = mxUtils.parseXml(strPrevXml);
