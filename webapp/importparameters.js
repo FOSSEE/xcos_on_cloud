@@ -184,5 +184,149 @@ function importParameters ( blockName, codec, currentNode ) {
 
 	    importProperties = { nbr_curves, clrs, siz, win, wpos, wdim, xmin, xmax, ymin ,ymax, N};
 	}
+	if( blockName.startsWith('DEMUX') ) {
+
+		var currentNodeCopy = currentNode;
+	    currentNodeCopy = currentNodeCopy.firstChild;
+	    currentNodeCopy = currentNodeCopy.firstChild;
+	    
+	    var out = codec.decode(currentNodeCopy).value.toString();
+	    importProperties = { out };
+	}
+	if( blockName.startsWith('DOLLAR_f') ) {
+
+		var currentNodeCopy = currentNode;
+	    currentNodeCopy = currentNodeCopy.firstChild;
+	    currentNodeCopy = currentNodeCopy.firstChild;
+	    
+	    var a = codec.decode(currentNodeCopy).value.toString();
+	    var inh = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
+	    importProperties = { a, inh };
+	}
+	if( blockName.startsWith('INTEGRAL') ) {
+
+		var currentNodeCopy = currentNode;
+	    currentNodeCopy = currentNodeCopy.firstChild;
+	    currentNodeCopy = currentNodeCopy.firstChild;
+	    
+	    var x0 = codec.decode(currentNodeCopy).value.toString();
+	    importProperties = { x0 };
+	}
+	// if( blockName.startsWith('IN_f') ) {
+
+	// 	var prt, otsz, ot;
+	// 	var currentNodeCopy = currentNode;
+	//     currentNodeCopy = currentNodeCopy.firstChild;
+	//     currentNodeCopy = currentNodeCopy.firstChild;
+	    
+	//     prt = codec.decode(currentNodeCopy).value.toString();
+	//     otsz = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
+	//     ot = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
+	//     importProperties = { prt, otsz, ot };
+	//     console.log(importProperties);
+	// }
+	if( blockName.startsWith('LOGICAL_OP') ) {
+
+			var nin, oprt, bit, data;
+			var currentNodeCopy = currentNode;
+		    currentNodeCopy = currentNodeCopy.firstChild;
+		    currentNodeCopy = currentNodeCopy.firstChild;
+		    
+		    nin = codec.decode(currentNodeCopy).value.toString();
+		    oprt = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
+		    data = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
+		    bit = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
+		    importProperties = { nin, oprt, data, bit};
+	}
+	if( blockName.startsWith('MUX') ) {
+
+		var inp;
+		var currentNodeCopy = currentNode;
+	    currentNodeCopy = currentNodeCopy.firstChild;
+	    currentNodeCopy = currentNodeCopy.firstChild;
+	    
+	    inp = codec.decode(currentNodeCopy).value.toString();
+	    importProperties = { inp };
+	}
+	if( blockName.startsWith('NRMSOM_f') ) {
+
+		var nin;
+		var currentNodeCopy = currentNode;
+	    currentNodeCopy = currentNodeCopy.firstChild;
+	    currentNodeCopy = currentNodeCopy.firstChild;
+	    
+	    nin = codec.decode(currentNodeCopy).value.toString();
+	    importProperties = { nin };
+	}
+	// if( blockName.startsWith('OUT_f') ) {
+
+	// 	var prt;
+	// 	var currentNodeCopy = currentNode;
+	//     currentNodeCopy = currentNodeCopy.firstChild;
+	//     currentNodeCopy = currentNodeCopy.firstChild;
+	    
+	//     prt = codec.decode(currentNodeCopy).value.toString();
+	//     importProperties = { prt };
+	// }
+	if( blockName.startsWith('PRODUCT') ) {
+
+		var sgn;
+		var currentNodeCopy = currentNode;
+	    currentNodeCopy = currentNodeCopy.firstChild;
+	    currentNodeCopy = currentNodeCopy.firstChild;
+	    
+	    sgn = codec.decode(currentNodeCopy).value.toString().replace(/;/g," ").slice(1,-1);
+	    importProperties = { sgn };
+	}
+	if( blockName.startsWith('RELATIONALOP') ) {
+
+		var oprt, zcr, data;
+		var currentNodeCopy = currentNode;
+	    currentNodeCopy = currentNodeCopy.firstChild;
+	    currentNodeCopy = currentNodeCopy.firstChild;
+	    
+	    oprt = codec.decode(currentNodeCopy).value.toString();
+	    zcr = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
+	    data = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
+	    
+	    importProperties = { oprt, zcr, data };
+	}
+	if( blockName.startsWith('SATURATION') ) {
+
+		var maxp, minp, zeroc;
+		var currentNodeCopy = currentNode;
+	    currentNodeCopy = currentNodeCopy.firstChild;
+	    currentNodeCopy = currentNodeCopy.firstChild;
+	    
+	    maxp = codec.decode(currentNodeCopy).value.toString();
+	    minp = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
+	    zeroc = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
+	    
+	    importProperties = { maxp, minp, zeroc};
+	}
+	if( blockName.startsWith('SWITCH2_m') ) {
+
+		var ot, rule, thra, nzz;
+		var currentNodeCopy = currentNode;
+	    currentNodeCopy = currentNodeCopy.firstChild;
+	    currentNodeCopy = currentNodeCopy.firstChild;
+	    
+	    ot = codec.decode(currentNodeCopy).value.toString();
+	    rule = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
+	    thra = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
+	    nzz = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
+	    
+	    importProperties = { ot, rule, thra, nzz};
+	}
+	// if( blockName.startsWith('TEXT_f') ) {
+
+	// 	var tag
+	// 	var currentNodeCopy = currentNode;
+	//     currentNodeCopy = currentNodeCopy.firstChild;
+	//     currentNodeCopy = currentNodeCopy.firstChild;
+	    
+	//     tag = codec.decode(currentNodeCopy).value.toString();
+	//     importProperties = { tag };
+	// }
 	return importProperties;
 }

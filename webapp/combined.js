@@ -13546,6 +13546,7 @@ function IN_f () {
         return options
     }
 IN_f.prototype.set = function IN_f() {
+
     this.prt = parseFloat((arguments[0]["prt"]))
     this.otsz = inverse(arguments[0]["otsz"])
     this.ot = parseFloat((arguments[0]["ot"]))
@@ -13843,11 +13844,11 @@ function LOGICAL_OP() {
         this.in1 = [[-1], [-1]];
         this.ipar = 0;
         this.nin = 2;
-	this.label="AND";
-	this.oprt=0;
-	this.bit=0;
-	this.data=1;
-	var arr = [];
+    	this.label="AND";
+    	this.oprt=0;
+    	this.bit=0;
+    	this.data=1;
+    	var arr = [];
         arr.push(math.range(-1, -this.nin, -1, true)._data);
         var model = scicos_model();
         model.sim = list(new ScilabString(["logicalop"]), new ScilabDouble([4]));
@@ -13856,7 +13857,7 @@ function LOGICAL_OP() {
         model.ipar = new ScilabDouble([0]);
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
-	this.displayParameter = [this.label];
+        this.displayParameter = [this.label];
         var exprs = new ScilabString([this.nin],[this.oprt],[this.data],[this.bit]);
 
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"LOGICAL_OP\",sz(1),sz(2));"]);
@@ -13870,15 +13871,16 @@ function LOGICAL_OP() {
         
         var options={
 	    nin:["number of inputs" ,this.nin.toString()],
-            oprt:["Operator: AND (0), OR (1), NAND (2), NOR (3), XOR (4), NOT (5)",this.oprt],
+        oprt:["Operator: AND (0), OR (1), NAND (2), NOR (3), XOR (4), NOT (5)",this.oprt],
 	    bit:["Bitwise Rule(0=No 1=yes)" ,this.bit],
 	    data:["Datatype (1=double 3=int32 ...)" ,this.data],
         }
         return options
     }
    LOGICAL_OP.prototype.set = function LOGICAL_OP() {
+
 	this.nin = inverse((arguments[0]["nin"]))
-        this.oprt = parseInt((arguments[0]["oprt"]))
+    this.oprt = parseInt((arguments[0]["oprt"]))
 	this.bit = parseInt((arguments[0]["bit"]))
 	this.data = parseInt((arguments[0]["data"]))
 	if (this.oprt==5 && this.nin>1){
@@ -16037,7 +16039,7 @@ function MUX() {
         return options
     }
 MUX.prototype.set = function MUX() {
-    this.in = inverse(arguments[0]["in"])
+    this.in = inverse(arguments[0]["in"] || arguments[0]["inp"])        // 'in' is a reserved word therefore inp is used in case of importing
     if(size(this.in,"*")==1 ){
         if(this.in<2||this.in>31){
             alert("Block must have at least two input ports and at most 31");
@@ -16598,13 +16600,14 @@ function NRMSOM_f() {
         return options
     }
 NRMSOM_f.prototype.set = function NRMSOM_f() {
+
     this.nin = parseFloat((arguments[0]["nin"]))
-var model = scicos_model();
-        model.sim = new ScilabString(["junk"]);
-        model.in = new ScilabDouble(...this.in1);
-        model.out = new ScilabDouble([-1]);
-        model.blocktype = new ScilabString(["c"]);
-        model.dep_ut = new ScilabBoolean([true, false]);
+    var model = scicos_model();
+    model.sim = new ScilabString(["junk"]);
+    model.in = new ScilabDouble(...this.in1);
+    model.out = new ScilabDouble([-1]);
+    model.blocktype = new ScilabString(["c"]);
+    model.dep_ut = new ScilabBoolean([true, false]);
     var exprs = new ScilabString([this.nin])
     this.x.graphics.exprs=exprs
  var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"NRMSOM_f\",sz(1),sz(2));"]);
@@ -17798,6 +17801,8 @@ function PRODUCT() {
 		return options
 	}
 	PRODUCT.prototype.set = function PRODUCT() {
+
+        console.log(arguments[0]);
 		this.sgn = inverse(arguments[0]["sgn"])
 		if (size(this.sgn, 1) == 1) {
 			if (this.sgn < 1) {
@@ -18890,14 +18895,15 @@ function RELATIONALOP() {
     RELATIONALOP.prototype.get = function RELATIONALOP() {
         
         var options={
-            oprt:["Operator:==(0),~=(1),<(2),<=(3),>(4),>=(5)",this.oprt],
+        oprt:["Operator:==(0),~=(1),<(2),<=(3),>(4),>=(5)",this.oprt],
 	    zcr:["Use zero crossing (no: 0), (yes: 1)" ,this.zcr],
 	    data:["Datatype (1=double 3=int32 ...)" ,this.data],
         }
         return options
     }
     RELATIONALOP.prototype.set = function RELATIONALOP() {
-        this.oprt = parseInt((arguments[0]["oprt"]))
+    
+    this.oprt = parseInt((arguments[0]["oprt"]))
 	this.zcr = parseInt((arguments[0]["zcr"]))
 	this.data = parseInt((arguments[0]["data"]))
 

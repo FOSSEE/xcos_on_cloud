@@ -1527,7 +1527,6 @@
                                         if(cell.style)
                                         { 
                                             importProperties = importParameters(cell.style, codec, currentNode);
-                                            //console.log(importProperties);
                                         }
 
 
@@ -1814,12 +1813,12 @@
                             
          
          
-         	window.onunload = function (e) {	// when user leaves the page...the process will be stopped 
-            			StopTK();
-         	}
-         	var diagram = getXcosDiagram(editor, cell);
-                            var blob = new Blob([diagram], {
-                                type: 'text/plain'
+                         	window.onunload = function (e) {	// when user leaves the page...the process will be stopped 
+                            			StopTK();
+                         	}
+                         	var diagram = getXcosDiagram(editor, cell);
+                                var blob = new Blob([diagram], {
+                                    type: 'text/plain'
                             });
                  
          	    
@@ -1837,24 +1836,21 @@
          	    
                             wnd = new mxWindow('Simulation', content, (w-600)/2, (h-400)/2, 600, 400, true, true);
                             wnd.setMaximizable(true);              
-              wnd.setMinimizable(true);
-              wnd.setScrollable(true);
-              wnd.setResizable(true);
-              wnd.setClosable(true);
-              wnd.setVisible(true);
+                            wnd.setMinimizable(true);
+                            wnd.setScrollable(true);
+                            wnd.setResizable(true);
+                            wnd.setClosable(true);
+                            wnd.setVisible(true);
                             wnd.addListener(mxEvent.CLOSE, function(e){
                                 chart_reset();
-         		StopTK();  // call this function 
-         		
+                            StopTK();  // call this function 
                             });
          	    
          	
          	
          
-         	//  starting 
+            	//  starting 
          	
-         	
-         
          	   var parser,xmlDoc;
          	   parser = new DOMParser();
          	   xmlDoc=parser.parseFromString(xmlCode,"text/xml");   // coverts string to xmlcode ( in xmlDoc ) 
@@ -1868,7 +1864,7 @@
          	   var row=0,min,max,norm,num=1,cscount=0; // variables to store the values
          	   	var winArr = new Array();
          	   	var Bblock_tag=xmlDoc.getElementsByTagName("BasicBlock"); 	// get all 'BasicBlock' tags from xml code
-                        var Ablock_tag=xmlDoc.getElementsByTagName("AfficheBlock");   // get all 'AfficheBlock' tags from xml code
+                var Ablock_tag=xmlDoc.getElementsByTagName("AfficheBlock");   // get all 'AfficheBlock' tags from xml code
          		var mx_tag = xmlDoc.getElementsByTagName("mxCell"); 	// get all 'mxCell' tags from xml code
          		var tkid  = new Array(); 				// array which stores the main id of each tkblock
          		var clkid = new Array(); 				// array which stores every CLOCK_c ids
@@ -2841,6 +2837,7 @@
 
                         for(var i = 0; i < missingKeys.length; i++)
                             {   
+                                // To find the style(name) of the block with the id = missingKeys[i]
                                 var referenceModelStyle = referenceModelProps.find( function (obj) {
                                     return obj.id == missingKeys[i];
                                 }).style;
