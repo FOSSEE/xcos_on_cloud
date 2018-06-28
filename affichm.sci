@@ -1,6 +1,6 @@
 function affichm(varargin) 
     loop = argn(2); //Counting number of variables
-    filename='scilab-log-'+string(getpid())+''
+    filename='affichm-scilab-log-'+string(getpid())+''
             fileid = strcat([pwd(), "/",filename,".txt"]); //Location of the text file 
             f_temp = mopen(fileid, 'wt');// Creating a text file
             mclose(f_temp); // Closing the text file

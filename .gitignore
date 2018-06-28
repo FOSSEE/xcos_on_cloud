@@ -10,6 +10,7 @@ test/*
 nbactions.xml
 nb-configuration.xml
 /scilab-log-*.txt
+/affichm-scilab-log-*.txt
 /uploads/*
 /values/*
 /workspace*.dat

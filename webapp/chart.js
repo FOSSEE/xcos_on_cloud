@@ -417,11 +417,12 @@ function chart_init(wnd){
 			xhr.open("POST", "/downloadfile", true);
 			xhr.onload = function() {
 				if(this.status==200){
-                                        //blob data type to receive the file
+                    //blob data type to receive the file
 					var blob=this.response;
 					console.log("check");
+					console.log(blob);
 					var url  = window.URL.createObjectURL(blob);
-                                        //popup for download option of the file
+                    //popup for download option of the file
 					window.open(url);
 				}
 			};
