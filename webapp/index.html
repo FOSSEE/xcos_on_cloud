@@ -1526,6 +1526,9 @@
                                         if(cell.style)
                                         { 
                                             importProperties = importParameters(cell.style, codec, currentNode);
+                                            if(cell.style.startsWith("scifunc_block_m")) {
+                                                alert("Double click on scifunc_block_m to choose .sci file and set parameters");
+                                            }
                                         }
 
                                         var curId = currentNode.getAttribute('id');
@@ -2217,6 +2220,10 @@
                         contentType: false,
                         success: function(name){
                             console.log(name);    
+                            if(name == ""){
+                                alert("You have not uploaded a .sci file!\nUpload file to proceed further");
+                                return false;
+                            }
                             display_scifunc_output(name);
                         },
                         error: function(name){
@@ -3002,7 +3009,7 @@
                     //This function is specifically for sciFunc_block_m
                     if(name=="scifunc_block_m")
                     { 
-                        create_scifunc_popups(graph,cell,name);
+                        create_scifunc_popups(graph,cell,name,diagRoot);
                     }
                     else 
                     {

@@ -64,6 +64,7 @@ log_dir = ''
 log_name = ''
 filename = ''
 file_image = ''
+flag = False
 ts_image = 0
 counter = 1
 # For Affich_m
@@ -178,10 +179,12 @@ def uploadsci():
     #if request.method == 'POST':
         file = request.files['file']
         if file and request.method == 'POST':
+            global flag
             global filename 
             ts = datetime.now()
             filename = Details.uid + str(ts) + secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            flag = True
             path = os.getcwd() + '/scifunc_files/'
             read = open(os.path.join(path, filename), "r")  
             command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","loadXcosLibs();exec('"+path + filename+"'),mode(2);quit()"]
@@ -190,23 +193,25 @@ def uploadsci():
             system_commands = re.compile('unix\(.*\)|unix_g\(.*\)|unix_w\(.*\)|''unix_x\(.*\)|unix_s\(.*\)|host|newfun''|execstr|ascii|mputl|dir\(\)')
             match = re.findall(system_commands, open(os.path.join(path, filename), 'r').read()) 
             if('!--error' in out):
-                print(out)
                 error_index = out.index('!')
-                print("hi")
                 msg = out[error_index:-9]
-                print("hello")
                 return msg
             elif(match):
-                msg = "System calls are not allowed in .sci file!please upload another .sci file!!"
+                msg = "System calls are not allowed in .sci file!\n Please upload another .sci file!!"
                 return msg
             else:
-                msg = "File Uploaded Successfully!!"
+                msg = "File is uploaded successfully!!"
                 return msg
 
 @app.route('/requestfilename', methods=['POST'])
 def sendfile():
     global file_image
-    file_image = filename 
+    global flag
+    if(flag == True):
+        file_image = filename
+    else:
+        file_image = ""
+    flag = False
     file_image = file_image[:-4]
     #print(file_image)
     return file_image

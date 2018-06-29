@@ -1,9 +1,9 @@
-function create_scifunc_popups(graph,cell,name){
+function create_scifunc_popups(graph,cell,name,diagRoot){
     /*This is the code for building the file browser which opens just after double click on block*/
     var upload = document.createElement("div");
     upload.id = "file_upload";
     var heading = document.createElement("h3");
-    heading.innerHTML = "xcos-on-cloud:scifunc_block_m";
+    heading.innerHTML = "Scifunc block upload SCI";
     heading.style.cssText = "margin-left: 50px";
     upload.appendChild(heading);
     var instr = document.createElement("h4");
@@ -30,7 +30,7 @@ function create_scifunc_popups(graph,cell,name){
     upload.style.cssText = "border: 1px solid black; position: absolute; margin-left: 400px; margin-top: 35px; margin-right: 480px; margin-bottom: 50px; background: url('../images/window.gif')";
     document.body.appendChild(upload);
 
-    document.getElementById("ok").onmouseover = function() {
+    /*document.getElementById("ok").onmouseover = function() {
         this.style.backgroundColor = "red";
     }
     document.getElementById("ok").onmouseout = function() {
@@ -41,12 +41,14 @@ function create_scifunc_popups(graph,cell,name){
     }
     document.getElementById("cancel").onmouseout = function() {
         this.style.backgroundColor = "#f3e5f5";
-    }
+    }*/
     cancel_btn.onclick = function() {
         alert("Choose a .sci file to proceed!");
+        document.getElementById("file_upload").style.display = "none";
     }
 
     ok_btn.onclick = function() {
+        document.getElementById("file_upload").style.display = "none";
         var file_name = document.getElementById("file").value;
         var ext = file_name.split('.').pop();
         if(file_name == ""){
@@ -71,18 +73,18 @@ function create_scifunc_popups(graph,cell,name){
             contentType: false,
             data:formData,
             success: function(msg){
-                    if(msg == "File Uploaded Successfully!!"){
-                        alert("Execution Successful:\n" + msg);
+                    if(msg == "File is uploaded successfully!!"){
+                        alert("File got executed without any error\n\n" + msg);
                         create_popup1();
                         return true;
                     }
                     else{
-                        if(msg == "System calls are not allowed in .sci file!please upload another .sci file!!"){
+                        if(msg == "System calls are not allowed in .sci file!\nPlease upload another .sci file!!"){
                             alert("Execution Error Found:\n" + msg)
                             return false;
                         }
                         else{
-                            alert("Execution Error Found:\n" + msg);
+                            alert("Error encountered while executing file:\n" + msg);
                             return false;
                         }
                     }
@@ -170,7 +172,7 @@ function create_scifunc_popups(graph,cell,name){
                         }
                         if(key.toString()=="clkin"){
                             var clkin = document.getElementById(key.toString()).value;
-                            var pattern = "\[\]|\[[0-9]{1};[0-9]{1}\]";
+                            var pattern = "\[\]|\[[0-9]{1}|\[[0-9]{1};[0-9]{1}\]";
                             if(clkin != ""){
                                 if(!clkin.match(pattern)||clkin == ""){
                                     alert("Enter input of form [1] or [1;1] in input event port size");
@@ -180,7 +182,7 @@ function create_scifunc_popups(graph,cell,name){
                         }
                         if(key.toString()=="clkout"){
                             var clkout = document.getElementById(key.toString()).value;
-                            var pattern = "\[\]|\[[0-9]{1};[0-9]{1}\]";
+                            var pattern = "\[\]|\[[0-9]{1}|\[[0-9]{1};[0-9]{1}\]";
                             if(clkout != ""){
                                 if(!clkout.match(pattern)){
                                     alert("Enter input of form [1] or [1;1] in output event port size");
@@ -190,7 +192,7 @@ function create_scifunc_popups(graph,cell,name){
                         }
                         if(key.toString()=="x0"){
                             var x0 = document.getElementById(key.toString()).value;
-                            var pattern = "\[\]|\[[0-9]{1};[0-9]{1}\]";
+                            var pattern = "\[\]|\[[0-9]{1}|\[[0-9]{1};[0-9]{1}\]";
                             if(x0 != ""){
                                 if(!x0.match(pattern)){
                                     alert("Enter input of form [1] or [1;1] in initial continuous state");
@@ -200,7 +202,7 @@ function create_scifunc_popups(graph,cell,name){
                         }
                         if(key.toString()=="z0"){
                             var z0 = document.getElementById(key.toString()).value;
-                            var pattern = "\[\]|\[[0-9]{1};[0-9]{1}\]";
+                            var pattern = "\[\]|\[[0-9]{1}|\[[0-9]{1};[0-9]{1}\]";
                             if(z0 != ""){
                                 if(!z0.match(pattern)){
                                     alert("Enter input of form [1] or [1;1] in initial discrete state");
@@ -210,7 +212,7 @@ function create_scifunc_popups(graph,cell,name){
                         }
                         if(key.toString()=="rpar"){
                             var rpar = document.getElementById(key.toString()).value;
-                            var pattern = "\[\]|\[[0-9]{1};[0-9]{1}\]";
+                            var pattern = "\[\]|\[[0-9]{1}|\[[0-9]{1};[0-9]{1}\]";
                             if(rpar != ""){
                                 if(!rpar.match(pattern)){
                                     alert("Enter input of form [1] or [1;1] in system parameters vector");
@@ -220,7 +222,7 @@ function create_scifunc_popups(graph,cell,name){
                         }
                         if(key.toString()=="auto"){
                             var auto = document.getElementById(key.toString()).value;
-                            var pattern = "\[\]|\[[0-9]{1};[0-9]{1}\]";
+                            var pattern = "\[\]|\[[0-9]{1}|\[[0-9]{1};[0-9]{1}\]";
                             if(auto != ""){
                                 if(!auto.match(pattern)){
                                     alert("Enter input of form [1] or [1;1] in initial firing vector");
@@ -565,7 +567,7 @@ function create_scifunc_popups(graph,cell,name){
 
             popup3submit_btn.onclick = function() {
                 var popup3value = document.getElementById("p3input").value;
-                if(popup3value == "xd =" || popup3value == "xd=" || popup3value == "xd= " || popup3value == "xd = "){
+                if(popup3value == "xd =" || popup3value == "xd=" || popup3value == "xd= " || popup3value == "xd = " || popup3value == ""){
                     alert("You did not define xd");
                     return false;
                 }
@@ -1220,6 +1222,50 @@ function create_scifunc_popups(graph,cell,name){
                     propertiesObject["popup8value"] = popup8value;
                 }
 
+                /*  
+                    Loading XML of last graph configuration so that all the links
+                    nodes of the previous xml can be copied to the new XML 
+                */
+                
+                var encPrevXml = new mxCodec(mxUtils.createXmlDocument());
+                var nodePrevXml = encPrevXml.encode(diagRoot);
+                var strPrevXml = mxUtils.getPrettyXml(nodePrevXml);
+                strPrevXml = mxUtils.parseXml(strPrevXml);
+                var xslPrevXml = trySomething("finalmodsheet.xsl"); 
+                function trySomething(x) {
+                    if (window.ActiveXObject) {
+                        xhttp = new ActiveXObject("Msxml2.XMLHTTP");
+                    } else {
+                        xhttp = new XMLHttpRequest();
+                    }
+                    xhttp.open("GET", x, false);
+                    try {
+                        xhttp.responseType = "msxml-document"
+                    } catch (err) {}
+                    xhttp.send("");
+                    return xhttp.responseXML;
+                }
+                var xsltProcessorPrevXml = new XSLTProcessor();
+                xsltProcessorPrevXml.importStylesheet(xslPrevXml);
+                var resultDocumentPrevXml = xsltProcessorPrevXml.transformToDocument(strPrevXml);
+                /*
+                    Maverick
+                    Using resultDocument.documentElement to remove an additional tag "<#document>" created by the XSLTProcessor.
+                */
+                strPrevXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n" + mxUtils.getPrettyXml(resultDocumentPrevXml.documentElement);
+                strPrevXml = strPrevXml.replace(/\n\n/g, "\n");
+                strPrevXml = strPrevXml.replace(/\n*/, '');
+                strPrevXml = strPrevXml.replace(/>\s*</g, '><');
+                strPrevXml = strPrevXml.replace(/<!--[\s\S]*?-->/g, '');
+                var docPrevXml = mxUtils.parseXml(strPrevXml);
+                var codecPrevXml = new mxCodec(docPrevXml);
+                var rootNode = docPrevXml.documentElement;
+                while(rootNode.nodeName != 'root')
+                    {
+                        rootNode = rootNode.firstChild;
+                    }
+                var currentNode = rootNode.firstChild;
+
                 var parent = graph.getDefaultParent();
                 var model = graph.getModel();
                 var v1 = null;
@@ -1344,6 +1390,120 @@ function create_scifunc_popups(graph,cell,name){
                 finally {
                     model.endUpdate();
                 }
+
+                 /*  The code below is responsible for moving the new (non-links) node created after the set
+                    function is called back to their previous positions as in their previous XML.
+                    This is done to retain the id's so that the Link node of previous XML can be used 
+                    to create connecting wires for the new XML also.
+                */
+
+                var referenceModelCount = referenceModelProps.length;
+                var missingKeys = [];
+                var lastId = Math.max(...Object.keys(model.cells));
+
+                for( var i=0;i< referenceModelCount ; i++)
+                {
+                    var present = false;
+                    for(var key in model.cells)
+                        {
+                            (model.cells.hasOwnProperty(key))
+                            {
+                                if(referenceModelProps[i].id == key)
+                                    {
+                                        present = true;
+                                        break;
+                                    }
+                            }
+                        }
+                    if(present == false)
+                        missingKeys.push(referenceModelProps[i].id);
+                }
+
+                var newIDs= [];
+                for(var i=modelNextId;i<=lastId;i++)
+                    newIDs.push(i);
+                var j = 0;
+
+                for(var i = 0; i < missingKeys.length; i++)
+                    {   
+                        var referenceModelStyle = referenceModelProps.find( function (obj) {
+                            return obj.id == missingKeys[i];
+                        }).style;
+                        
+                        if(model.cells[newIDs[j]].style.endsWith('Port')) {
+                            if( referenceModelStyle == model.cells[newIDs[j]].style ) {
+                                model.cells[missingKeys[i]] = model.cells[newIDs[j]];
+                                model.cells[missingKeys[i]].id = String(missingKeys[i]);
+                                delete model.cells[newIDs[j++]];
+                            }
+                            else {
+                                var tempId = j;
+                                while(newIDs[++j] <= lastId )
+                                {
+                                    if(referenceModelStyle == model.cells[newIDs[j]].style) {
+                                        model.cells[missingKeys[i]] = model.cells[newIDs[j]];
+                                        model.cells[missingKeys[i]].id = String(missingKeys[i]);
+                                        delete model.cells[newIDs[j]];
+                                        newIDs.splice(j,1);
+                                        j = tempId;
+                                        break;
+                                    }    
+                                }
+                            } 
+                        }
+                        else if (model.cells[newIDs[j]].style) {
+                            model.cells[missingKeys[i]] = model.cells[newIDs[j]];
+                            model.cells[missingKeys[i]].id = String(missingKeys[i]);
+                            delete model.cells[newIDs[j++]];
+                        }
+                    }
+                referenceModelProps = [];
+                newIDs = [];
+                
+                model.beginUpdate();
+                try {
+                    // Connecting the blocks by inserting link nodes                          
+                    while(currentNode!=null)
+                    {
+                        var curNodeName = currentNode.nodeName;
+                        if(curNodeName.endsWith('Link'))
+                           {
+                               var pointsArray = [];
+                               var newSourceCell = graph.getModel().getCell(currentNode.getAttribute('source'));
+                               var newTargetCell = graph.getModel().getCell(currentNode.getAttribute('target'));
+                                   
+                                if(newSourceCell.getEdgeCount() <=0 && newTargetCell.getEdgeCount()<=0) {
+
+                                   var childNode = currentNode.firstChild;
+                                        if (childNode != null) {
+                                            if (childNode.nodeName == 'mxGeometry') {
+                                                var tempNode = childNode.firstChild;
+                                                if (tempNode != null) {
+                                                    if (tempNode.nodeName == 'mxPoint') {
+                                                        pointsArray.push(new mxPoint(tempNode.getAttribute('x'), tempNode.getAttribute('y')));
+                                                    } else {
+                                                        if (tempNode.nodeName == 'Array') {
+                                                            var mxPointNode = tempNode.firstChild;
+                                                            while (mxPointNode != null) {
+                                                                pointsArray.push(new mxPoint(mxPointNode.getAttribute('x'), mxPointNode.getAttribute('y')));
+                                                                mxPointNode = mxPointNode.nextSibling;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                    createEdgeObject(graph, newSourceCell, newTargetCell, null);
+                                }
+                           }
+                        currentNode=currentNode.nextSibling;
+                    } 
+
+                } finally {
+                    model.endUpdate();
+                }
+
                 graph.setSelectionCell(v1);
 
                 graph.refresh();
