@@ -35,6 +35,11 @@ Interns (Year 2017):
 * SK Mainul Islam, St. Thomas' College of Engineering & Technology, Kolkata
 * RuhiTaj Reddypalli, National Institute of Technology Karnataka, Surathkal
 
+Interns (Year 2018):
+
+* Avinash Agarwal, National Institute of Technology, Durgapur
+* Swanand Pande, Sardar Patel Institute Of Technology, Mumbai
+
 ## Initial and Older version of Xcos on Cloud can accessed on following link 
 
     https://github.com/FOSSEE/xcos-on-web
