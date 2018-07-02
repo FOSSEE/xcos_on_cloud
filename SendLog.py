@@ -6,13 +6,18 @@ import fileinput
 import time
 import shutil
 import os
-import time
+from threading import Timer
+from PIL import Image
+from datetime import date
+from datetime import time
+from datetime import datetime
 import threading
+import urllib2
 from gevent import monkey
 import fileinput
 import bs4
 from gevent.pywsgi import WSGIServer
-from flask import Flask, request, Response, render_template, send_from_directory ,send_file
+from flask import Flask, flash, request, redirect, url_for, Response, render_template, send_from_directory ,send_file
 # Added send_file to ease download
 from werkzeug import secure_filename
 from os.path import exists
@@ -54,13 +59,21 @@ xcos_file_list = []
 workspace_list = []
 # Dictionary to find variable to load or save from workspace
 workspace_dict = {}
+#workspace_counter = 0
 log_dir = ''
 log_name = ''
+filename = ''
+file_image = ''
+flag = False
+ts_image = 0
+counter = 1
 # For Affich_m
 workspace_variable_list = []
 # For keeping count of affich_m blocks fro replacing with TOWS_c in diagram and also for assigning variable name for TOWS_c workspace variable
 affich_count = 0
 
+#path = os.getcwd() + '/scifunc_files/'
+#filename = secure_filename(file.filename)
 
 class line_and_state:
     # Class to store the line and its state
@@ -158,15 +171,68 @@ def get_line_and_state(file, count):
         return (None, ENDING)
     return (line[count], DATA)
 
+
+app.config['UPLOAD_FOLDER'] = 'scifunc_files/'
+
+@app.route('/uploadsci', methods=['POST'])
+def uploadsci():
+    #if request.method == 'POST':
+        file = request.files['file']
+        if file and request.method == 'POST':
+            global flag
+            global filename 
+            ts = datetime.now()
+            filename = Details.uid + str(ts) + secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            flag = True
+            path = os.getcwd() + '/scifunc_files/'
+            read = open(os.path.join(path, filename), "r")  
+            command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","loadXcosLibs();exec('"+path + filename+"'),mode(2);quit()"]
+            output_com = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False,bufsize=1, universal_newlines=True)
+            out = output_com.communicate()[0]
+            system_commands = re.compile('unix\(.*\)|unix_g\(.*\)|unix_w\(.*\)|''unix_x\(.*\)|unix_s\(.*\)|host|newfun''|execstr|ascii|mputl|dir\(\)')
+            match = re.findall(system_commands, open(os.path.join(path, filename), 'r').read()) 
+            if('!--error' in out):
+                error_index = out.index('!')
+                msg = out[error_index:-9]
+                return msg
+            elif(match):
+                msg = "System calls are not allowed in .sci file!\n Please upload another .sci file!!"
+                return msg
+            else:
+                msg = "File is uploaded successfully!!"
+                return msg
+
+@app.route('/requestfilename', methods=['POST'])
+def sendfile():
+    global file_image
+    global flag
+    if(flag == True):
+        file_image = filename
+    else:
+        file_image = ""
+    flag = False
+    file_image = file_image[:-4]
+    #print(file_image)
+    return file_image
+
+
 def event_stream(xcos_file_id):
     global figure_list
     global kill_scilab
+    global filename
+    global ts_image
+    global file_image
+    global counter
     # If no id is sent, return
     if(len(xcos_file_id)==0):
         return
     xcos_file_id = int(xcos_file_id)
     xcos_file_dir = os.getcwd() + '/uploads/'
     xcos_affich_function_file_dir = os.getcwd() + '/'
+    path = os.getcwd() + '/scifunc_files/'
+    #filename = 'Scifunc2.sci'
+    #print(xcos_affich_function_file_dir)
     xcos_file_name = xcos_file_list[xcos_file_id]
     # Get previously running scilab process IDs
     proc = subprocess.Popen("pgrep scilab", stdout=subprocess.PIPE, shell=True)
@@ -177,9 +243,21 @@ def event_stream(xcos_file_id):
     pid = 0
     # id to identify each session for saving workspace 
     session=Details.uid
+    ts = datetime.now()
+    ts_fmt = ts.strftime('%Y-%m-%d %H:%M:%S.%f')
+    ts_image = ts_fmt[:-3]
     # name of worspace file the session
     workspace="workspace"+session+".dat"
+    #ts_image = datetime.now()
+    #filename = Details.uid + ts + filename
+    #print(workspace)
+    #print(len(xcos_file_id))
+    print(path)
+    print(filename)
     workspace_counter=workspace_list[xcos_file_id]
+    print(xcos_file_dir)
+    print(xcos_file_name)
+    print(workspace_counter)
     #For affich_m block
     variablename=""; # Stores all workspace variable name in format (var1,var2,var3)
     if (workspace_counter==4): # To check affich_m block presence
@@ -193,6 +271,8 @@ def event_stream(xcos_file_id):
     ############################################################################################################
     # commands for ruuning of scilab based on existence of TOWS_c and FROMWSB
     # 3 means both exists,2 FROMWSB exists,1 TOWS_c exists,0 none exists meaning normal set of commands 
+    #print(path)
+    #print(filename)
     if (workspace_counter ==3 and exists(workspace)):
         append=workspace_dict[xcos_file_id]
         command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","load('"+workspace+"');loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);deletefile('"+workspace+"');save('"+workspace+"') ;quit()"]
@@ -202,8 +282,17 @@ def event_stream(xcos_file_id):
     elif (workspace_counter ==4):     # added for affich_m
         workspace_variable_list[:] = []
         command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);exec('" + xcos_affich_function_file_dir + "affichm.sci"+"');affichm("+variablename+");deletefile('"+workspace+"');save('"+workspace+"') ;quit()"]
+        #print(xcos_affich_function_file_dir)
     elif (workspace_counter ==2 and exists(workspace)):
         command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "load('"+workspace+"');loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);deletefile('"+workspace+"') ;quit()"]
+    elif (workspace_counter == 7):
+        #append=workspace_dict[xcos_file_id]
+     #  print('HI')
+        command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","loadXcosLibs();exec('" + path + filename +"');importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test"+file_image+".jpg'),mode(2);quit()"]
+        counter = counter + 1
+        print(command)
+        t = Timer(15.0, delete_image)
+        t.start()
     else:
         command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);quit()"] 
     scilab_proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False); 
@@ -262,6 +351,7 @@ def event_stream(xcos_file_id):
         try:
             # For processes taking less than 10 seconds
             scilab_out, scilab_err = scilab_proc.communicate(timeout=4)
+            print(scilab_out)
             # Check for errors in Scilab 
             if "Empty diagram" in scilab_out:
                 yield "event: ERROR\ndata: Empty diagram\n\n"
@@ -369,7 +459,6 @@ def event_stream(xcos_file_id):
 
         # Notify Client
         yield "event: DONE\ndata: None\n\n"
-
         
 # class used to get the user_id and the boolean value is to make run a thread    
 class Details:
@@ -382,6 +471,11 @@ class Details:
     # boolean value to run the thread acc. to it
     print("user_id:"+uid)
     names = {}
+
+def delete_image():
+    global file_image
+    image_path = os.getcwd() + '/webapp/res_imgs/img_test' + file_image + '.jpg'
+    os.remove(image_path)
 
 # function which will check and make initialization of every required files.
 def findFile():     
@@ -654,6 +748,8 @@ def upload():
                 Details.tk_is_present = True
                 # Changed the ID of tkscales to -1 so that virtually the tkscale blocks get disconnected from diagram at the backend
             # Taking workspace_counter 1 for TOWS_c and 2 for FROMWSB
+            if block.getAttribute("interfaceFunctionName")== "scifunc_block_m":
+                workspace_counter = 7
             if block.getAttribute("interfaceFunctionName")== "TOWS_c":
                 workspace_counter=1
                 flag1=1
@@ -1036,7 +1132,7 @@ def UpdateTKfile():
         return ""
     else:
         return "error"
-
+            
 
 @app.route('/importXcos')   
 def importXcos():
