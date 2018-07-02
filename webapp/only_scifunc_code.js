@@ -4,18 +4,18 @@ function create_scifunc_popups(graph,cell,name,diagRoot){
     upload.id = "file_upload";
     var heading = document.createElement("h3");
     heading.innerHTML = "Scifunc block upload SCI";
-    heading.style.cssText = "margin-left: 50px";
+    heading.style.cssText = "margin-left: 80px";
     upload.appendChild(heading);
     var instr = document.createElement("h4");
     instr.innerHTML = "Please choose a .sci file to proceed";
-    instr.style.cssText = "margin-left: 50px";
+    instr.style.cssText = "margin-left: 60px";
     upload.appendChild(instr);
     var input = document.createElement("input");
     input.setAttribute("type", "file");
     input.setAttribute("accept", ".sci");
     input.id = "file";
     input.name = "file";
-    input.style.cssText = "margin-left: 50px; margin-bottom: 20px";
+    //input.style.cssText = "margin-left: 50px; margin-bottom: 20px";
     upload.appendChild(input);
     var ok_btn = document.createElement("button");
     ok_btn.innerHTML = "Submit";
@@ -26,10 +26,10 @@ function create_scifunc_popups(graph,cell,name,diagRoot){
     cancel_btn.id = "cancel";
     upload.appendChild(cancel_btn);
     ok_btn.style.cssText = "float: left; margin-top: 48px; margin-bottom: 10px;margin-left: 15px; border: 1px solid #ffc1e3";
-    cancel_btn.style.cssText = "float: right; margin-bottom: 10px; margin-right: 15px; border: 1px solid #ffc1e3";
-    upload.style.cssText = "border: 1px solid black; position: absolute; margin-left: 400px; margin-top: 35px; margin-right: 480px; margin-bottom: 50px; background: url('../images/window.gif')";
-    document.body.appendChild(upload);
-
+    cancel_btn.style.cssText = "float: right; margin-bottom: 10px; margin-top: 48px; margin-right: 15px; border: 1px solid #ffc1e3";
+    //upload.style.cssText = "border: 1px solid black; position: absolute; margin-left: 400px; margin-top: 35px; margin-right: 480px; margin-bottom: 50px; background: url('../images/window.gif')";
+    //document.body.appendChild(upload);
+    var browser = showModalWindow(graph,"File Browser",upload,350,180);
     /*document.getElementById("ok").onmouseover = function() {
         this.style.backgroundColor = "red";
     }
@@ -44,11 +44,12 @@ function create_scifunc_popups(graph,cell,name,diagRoot){
     }*/
     cancel_btn.onclick = function() {
         alert("Choose a .sci file to proceed!");
-        document.getElementById("file_upload").style.display = "none";
+        browser.destroy();
+        //document.getElementById("file_upload").style.display = "none";
     }
 
     ok_btn.onclick = function() {
-        document.getElementById("file_upload").style.display = "none";
+        //document.getElementById("file_upload").style.display = "none";
         var file_name = document.getElementById("file").value;
         var ext = file_name.split('.').pop();
         if(file_name == ""){
@@ -98,7 +99,8 @@ function create_scifunc_popups(graph,cell,name,diagRoot){
 
         /*code for 1st popup*/
         function create_popup1(){
-            document.getElementById("file_upload").style.display = "none";
+            //document.getElementById("file_upload").style.display = "none";
+            browser.destroy();
             var defaultProperties = cell.blockInstance.instance.get(); 
             var popup1div = document.createElement("div");
             popup1div.id = "sci_div"
