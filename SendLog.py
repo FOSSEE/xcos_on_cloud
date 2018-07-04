@@ -64,7 +64,7 @@ log_dir = ''
 log_name = ''
 filename = ''
 file_image = ''
-flag = False
+flag_sci = False
 ts_image = 0
 counter = 1
 # For Affich_m
@@ -176,15 +176,14 @@ app.config['UPLOAD_FOLDER'] = 'scifunc_files/'
 
 @app.route('/uploadsci', methods=['POST'])
 def uploadsci():
-    #if request.method == 'POST':
         file = request.files['file']
         if file and request.method == 'POST':
-            global flag
+            global flag_sci
             global filename 
             ts = datetime.now()
             filename = Details.uid + str(ts) + secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            flag = True
+            flag_sci = True
             path = os.getcwd() + '/scifunc_files/'
             read = open(os.path.join(path, filename), "r")  
             command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","loadXcosLibs();exec('"+path + filename+"'),mode(2);quit()"]
@@ -206,14 +205,13 @@ def uploadsci():
 @app.route('/requestfilename', methods=['POST'])
 def sendfile():
     global file_image
-    global flag
-    if(flag == True):
+    global flag_sci
+    if(flag_sci == True):
         file_image = filename
+        file_image = file_image[:-4]
     else:
         file_image = ""
-    flag = False
-    file_image = file_image[:-4]
-    #print(file_image)
+    flag_sci = False
     return file_image
 
 
@@ -252,12 +250,7 @@ def event_stream(xcos_file_id):
     #filename = Details.uid + ts + filename
     #print(workspace)
     #print(len(xcos_file_id))
-    print(path)
-    print(filename)
     workspace_counter=workspace_list[xcos_file_id]
-    print(xcos_file_dir)
-    print(xcos_file_name)
-    print(workspace_counter)
     #For affich_m block
     variablename=""; # Stores all workspace variable name in format (var1,var2,var3)
     if (workspace_counter==4): # To check affich_m block presence
@@ -286,13 +279,12 @@ def event_stream(xcos_file_id):
     elif (workspace_counter ==2 and exists(workspace)):
         command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "load('"+workspace+"');loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);deletefile('"+workspace+"') ;quit()"]
     elif (workspace_counter == 7):
-        #append=workspace_dict[xcos_file_id]
-     #  print('HI')
         command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","loadXcosLibs();exec('" + path + filename +"');importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test"+file_image+".jpg'),mode(2);quit()"]
         counter = counter + 1
-        print(command)
         t = Timer(15.0, delete_image)
         t.start()
+        t1 = Timer(10.0, delete_scifile)
+        t1.start()
     else:
         command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);quit()"] 
     scilab_proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False); 
@@ -474,8 +466,17 @@ class Details:
 
 def delete_image():
     global file_image
-    image_path = os.getcwd() + '/webapp/res_imgs/img_test' + file_image + '.jpg'
-    os.remove(image_path)
+    file_uid = file_image[0:36]
+    if(file_uid == Details.uid):
+        image_path = os.getcwd() + '/webapp/res_imgs/img_test' + file_image + '.jpg'
+        os.remove(image_path)
+
+def delete_scifile():
+    global filename
+    scifile_uid = filename[0:36]
+    if(scifile_uid == Details.uid):
+        sci_path = os.getcwd() + '/scifunc_files/' + filename
+        os.remove(sci_path)
 
 # function which will check and make initialization of every required files.
 def findFile():     

@@ -19583,7 +19583,6 @@ function scifunc_block_m() {
         this.auto = [];
         this.rpar = [];
         this.it = 1;
-        //this.dep = 0;
         this.exprs = [];
 
         var model = scicos_model();
@@ -19667,13 +19666,9 @@ function scifunc_block_m() {
         this.rpar = MatrixInverse((arguments[0]["rpar"]))
         this.auto = MatrixInverse((arguments[0]["auto"]))
         this.it = MatrixInverse((arguments[0]["it"]))
-        console.log(arguments[0]["rpar"]);
         if(arguments[0]["out"] != ""){
             this.popup2value = ((arguments[0]["popup2value"]))
             var to_display = this.popup2value[0];
-            console.log(this.popup2value);
-            console.log(this.popup2value[1]);
-            console.log(this.out.length);
 
             if(this.out.length == 2 && this.popup2value.length == 1){
                 this.popup2value_disp = new ScilabString([this.popup2value[0].toString()])
@@ -19747,9 +19742,6 @@ function scifunc_block_m() {
             this.popup5value_disp = new ScilabString([this.null.toString()])
         }
 
-        /*this.x.model.rpar = new ScilabDouble([this.rpar])
-        this.x.model.state = new ScilabDouble([this.x0])
-        this.x.model.dstate = new ScilabDouble([this.z0])*/
 
         this.popup6value = ((arguments[0]["popup6value"]))       
         if(this.popup6value[0] == "" && this.popup6value[1] == ""){
@@ -19779,19 +19771,10 @@ function scifunc_block_m() {
             this.popup7value_disp = new ScilabString([this.popup7value[0].toString()],[this.popup7value[1].toString()])
         }
 
-        //console.log(this.out.length);
         var len = this.out.length;
         this.popup8value = ((arguments[0]["popup8value"]))
-        //console.log(this.popup8value.length);
-        console.log(this.popup8value);
-        console.log(this.popup8value[0]);
-        //console.log(this.out.length)
-        //console.log(out.length);
-        //console.log(this.out);
+
         if(this.popup8value[0] == "" && this.popup8value[1] == ""){
-            /*if(len == 1 && popup8value[3] = undefined){
-                this.popup8value_disp = new ScilabString([this.popup8value[2].toString()])
-            }*/
             if(len == 2){
                 if(this.popup8value.length == 3){
                     this.popup8value_disp = new ScilabString([this.popup8value[0].toString()],[this.popup8value[2].toString()])
@@ -19887,10 +19870,6 @@ function scifunc_block_m() {
             }
         }
 
-        console.log(this.in1);
-        console.log(this.out);
-        console.log(this.it_set);
-        console.log(this.ot);
         if(this.rpar != ""){
             this.x.model.rpar = new ScilabDouble([this.rpar])
         }
@@ -19905,21 +19884,11 @@ function scifunc_block_m() {
         }
         this.it_set = ones(size(this.in1,1),1);
         this.ot = ones(size(this.out,1),1);
-        console.log(this.in1);
-        console.log(this.out);
-        console.log(this.it_set);
-        console.log(this.ot);
 
         var n = to_display;
         this.displayParameter = [n];
-        //console.log(this.out.length);
-        //console.log(this.in1.length);
-        //console.log(list(...this.out,...this.ot));
-        //console.log(list(...this.in1,...this.it_set));
         var io = set_io(this.x.model,this.x.graphics,list(this.in1,...this.it_set),list(this.out,...this.ot),this.clkin,this.clkout);
-        //var io = set_io(this.x.model,this.x.graphics,list(...this.in1, ...this.out),this.clkin,this.clkout);
-        this.x.model.opar = list(this.popup2value_disp, new ScilabString([this.popup3value.toString()]), this.popup4value_disp, this.popup5value_disp, this.popup6value_disp, this.popup7value_disp, this.popup8value_disp)
-        //var io = set_io(this.x.model,this.x.graphics,list(...this.in1,...this.it_set),list(...this.out,...this.ot),this.clkin,this.clkout);       
+        this.x.model.opar = list(this.popup2value_disp, new ScilabString([this.popup3value.toString()]), this.popup4value_disp, this.popup5value_disp, this.popup6value_disp, this.popup7value_disp, this.popup8value_disp)       
         var exprs = list(new ScilabString([sci2exp(this.in1)], [sci2exp(this.out)], [sci2exp(this.clkin)], [sci2exp(this.clkout)], [sci2exp(this.x0)], [sci2exp(this.z0)], [sci2exp(this.rpar)], [sci2exp(this.auto)], [sci2exp(this.it)]), list(this.popup2value_disp, new ScilabString([this.popup3value.toString()]), this.popup4value_disp, this.popup5value_disp, this.popup6value_disp, this.popup7value_disp, this.popup8value_disp))
         this.x.graphics.exprs = exprs
         return new BasicBlock(this.x)
