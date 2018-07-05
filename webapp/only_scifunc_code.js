@@ -4,18 +4,17 @@ function create_scifunc_popups(graph,cell,name,diagRoot){
     upload.id = "file_upload";
     var heading = document.createElement("h3");
     heading.innerHTML = "Scifunc block upload SCI";
-    heading.style.cssText = "margin-left: 50px";
+    heading.style.cssText = "margin-left: 80px";
     upload.appendChild(heading);
     var instr = document.createElement("h4");
     instr.innerHTML = "Please choose a .sci file to proceed";
-    instr.style.cssText = "margin-left: 50px";
+    instr.style.cssText = "margin-left: 60px";
     upload.appendChild(instr);
     var input = document.createElement("input");
     input.setAttribute("type", "file");
     input.setAttribute("accept", ".sci");
     input.id = "file";
     input.name = "file";
-    input.style.cssText = "margin-left: 50px; margin-bottom: 20px";
     upload.appendChild(input);
     var ok_btn = document.createElement("button");
     ok_btn.innerHTML = "Submit";
@@ -26,29 +25,15 @@ function create_scifunc_popups(graph,cell,name,diagRoot){
     cancel_btn.id = "cancel";
     upload.appendChild(cancel_btn);
     ok_btn.style.cssText = "float: left; margin-top: 48px; margin-bottom: 10px;margin-left: 15px; border: 1px solid #ffc1e3";
-    cancel_btn.style.cssText = "float: right; margin-bottom: 10px; margin-right: 15px; border: 1px solid #ffc1e3";
-    upload.style.cssText = "border: 1px solid black; position: absolute; margin-left: 400px; margin-top: 35px; margin-right: 480px; margin-bottom: 50px; background: url('../images/window.gif')";
-    document.body.appendChild(upload);
-
-    /*document.getElementById("ok").onmouseover = function() {
-        this.style.backgroundColor = "red";
-    }
-    document.getElementById("ok").onmouseout = function() {
-        this.style.backgroundColor = "#f3e5f5";
-    }
-    document.getElementById("cancel").onmouseover = function() {
-        this.style.backgroundColor = "red";
-    }
-    document.getElementById("cancel").onmouseout = function() {
-        this.style.backgroundColor = "#f3e5f5";
-    }*/
+    cancel_btn.style.cssText = "float: right; margin-bottom: 10px; margin-top: 48px; margin-right: 15px; border: 1px solid #ffc1e3";
+    var browser = showModalWindow(graph,"File Browser",upload,350,180);
+    
     cancel_btn.onclick = function() {
         alert("Choose a .sci file to proceed!");
-        document.getElementById("file_upload").style.display = "none";
+        browser.destroy();
     }
 
     ok_btn.onclick = function() {
-        document.getElementById("file_upload").style.display = "none";
         var file_name = document.getElementById("file").value;
         var ext = file_name.split('.').pop();
         if(file_name == ""){
@@ -98,7 +83,7 @@ function create_scifunc_popups(graph,cell,name,diagRoot){
 
         /*code for 1st popup*/
         function create_popup1(){
-            document.getElementById("file_upload").style.display = "none";
+            browser.destroy();
             var defaultProperties = cell.blockInstance.instance.get(); 
             var popup1div = document.createElement("div");
             popup1div.id = "sci_div"
@@ -273,7 +258,6 @@ function create_scifunc_popups(graph,cell,name,diagRoot){
             // Reset
                 for (var key in defaultProperties) {
                     if (defaultProperties.hasOwnProperty(key)) {
-                        console.log(document.getElementById(key.toString()));
                         var element = document.getElementById(key.toString());
                         element.value = defaultProperties[key][1];
                     }
@@ -1278,7 +1262,6 @@ function create_scifunc_popups(graph,cell,name,diagRoot){
 
                     var details_instance = new window[name]();
                     var details = cell.blockInstance.instance.set(propertiesObject); //window[name]("set",cell.value,propertiesObject);
-                    //pass_c(c);
             
                     editor.execute('deleteBlock',(editor, cell));
                     var enc = new mxCodec(mxUtils.createXmlDocument());
@@ -1324,15 +1307,12 @@ function create_scifunc_popups(graph,cell,name,diagRoot){
                      * from the label tag in style which was set when that blockModel
                      * was invoked on the first time.
                      */
-                    //console.log(node);
                     if (style != null && style['label'] != null) {
          
                         // Set label from the label field in the style property
                         node.setAttribute('label', style['label']);
                     }
-                    //console.log(temp.getAttribute("id"));
                     node.setAttribute("parent", temp.getAttribute("id"));
-                    //node.parent = temp.getAttribute("id");
                     var i, arr = [];
          
                     var details_instance=cell.blockInstance.instance;
