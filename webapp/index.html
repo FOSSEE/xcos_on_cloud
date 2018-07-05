@@ -1890,25 +1890,14 @@
                     var req_block = new Array();
                     var names = new Array();
                     names[i] = Bblock_tag[i].attributes.blockElementName.value;
-                    //console.log(names);
                     if(names.includes("scifunc_block_m")){
-                        console.log("sci");
                         req_block.push("scifunc_block_m");
                         var flag1 = true;
-                        //console.log(names);
                     }
                     if(names.includes("CSCOPE")){
-                        console.log("cscope");
                         req_block.push("CSCOPE");
-                        console.log(names);
                         var flag2 = true;
                     }
-                    //console.log(Bblock_tag.length);
-                        //console.log(received_file);
-                        //console.log("entering");
-                        console.log(flag1);
-                        console.log(flag2);
-
 
                     if(Bblock_tag[i].attributes.blockElementName.value == "TKSCALE")		// if block is TKSCALE
          			{
@@ -2209,6 +2198,28 @@
          	   
          	    }
 
+                if(flag1 == true && flag2 == true){
+                    $.ajax({
+                        type:"post",
+                        url: "/requestfilename",
+                        async: true,
+                        cache: false,
+                        processData: false,
+                        contentType: false,
+                        success: function(name){
+                            if(name == ""){
+                                wnd.destroy();
+                                alert("You have not uploaded a .sci file!\nUpload file to proceed further");
+                                return false;
+                            }
+                        },
+                        error: function(name){
+                            alert("An error occured!!");
+                            return false;
+                        }
+                    });
+                }
+
                 if(flag1 == true && flag2 == undefined){
                     wnd.destroy();
                     $.ajax({
@@ -2219,7 +2230,6 @@
                         processData: false,
                         contentType: false,
                         success: function(name){
-                            console.log(name);    
                             if(name == ""){
                                 alert("You have not uploaded a .sci file!\nUpload file to proceed further");
                                 return false;
@@ -2241,10 +2251,8 @@
                         var img_disp = document.createElement('img');
                         img_disp.id = 'img';
                         img_disp.src = '/res_imgs/img_test' + name + '.jpg';
-                        //url = img_disp.src;
                         content.appendChild(img_disp);
                         var wind = showModalWindow(graph, "Output", content, 610, 480);
-                        //window.open(url, "outputWindow", "width=700,height=500,left=400;top=300");
                     }
                 }
 
