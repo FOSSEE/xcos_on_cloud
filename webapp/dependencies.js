@@ -2087,66 +2087,6 @@ function conmat(v, v1) {
   return result;
 }
 ///////////////end of mfreq code/////////////////////
-////////////cont_frm function for CLR block///////////////////////////////////////////////////////////////////////////////////////////////
-function cont_frm(num, den) {
-	//we have to pass num and den values in array form e.g.[s^4+s^6+1]
-	var lhs = 0;
-	var rhs = 0;
-	if (den.length != 1) {
-		console.log('Wrong type for input argument \nPolynomial expected');
-	}
-	ne = 1; //as clr doesnot takes 2 dim values in both num and den derived conclusion after checking in scilab console
-	ns = 1; //as clr doesnot takes 2 dim values in both num and den checked in scilab
-	var tnum = 0; //type of numerator
-	var tden = 0; //type of denominator
-	if (/[a-zA-Z]/.test(den)) {
-		//test whether it is polynomial or simple number 0:for simple number and 1:for polynomial
-		tden += 1;
-	}
-	if (/[a-zA-Z]/.test(num)) {
-		tnum += 1;
-	}
-	if (tnum == 0) {
-		if (tden == 0) {
-			sl = [[], [], [], [], parseInt(num) / parseInt(den), []];
-			return sl;
-		}
-	}
-
-	var nd = parseInt(degree(den, tden));
-	//console.log(nd)
-	var dnd = parseInt(coeff(den[0], nd));
-	console.log(dnd);
-
-	//return sl return of cont_frm function at end of function
-}
-function degree(den, tden) {
-	//function to find degree of polynomial the input equation should be string
-	if (tden >= 1) {
-		var r = /[a-z](\^\d)?/g;
-		var t = den[0];
-		//console.log(t)
-		var order = t.match(r).reduce((m, d) => {
-			var ex = d.split('^')[1];
-			if (ex && ex > m) {
-				return ex;
-			}
-			return m;
-		}, 0);
-	}
-	return order;
-}
-function coeff(polynomial, degree) {
-	let x = polynomial.split('^' + degree)[0];
-
-	if (x.length == 1) {
-		return 1;
-	}
-
-	let y = x.split('+');
-
-	return x[x.length - 1].length == 1 ? 1 : x[x.length - 1].split('*')[0];
-}
 // for calling post method using ajax for calling poly() of scilab
 function cont_frm(num,den){
    var return_value;
@@ -2165,3 +2105,24 @@ function cont_frm(num,den){
    return_value = JSON.parse(xhr.responseText.trim());
    return return_value;
 }
+/*
+ function to handle input for vector/array
+case 1: Handle multiple space between two numbers.
+case 2: Replace that space with comma so that javascript can parse it further
+case 3: In case user enter 1 2 3 as value it will be converted as [1,2,3] 
+*/
+
+function convertInputVectorFormat(inputValue){
+
+var removeSpace=inputValue.replace(/ +(?= )/g,''); //removed multiple space with single space
+var replaceWithcomma=removeSpace.replace(/\s+/g, ',');//replace single space with comma
+
+	if(replaceWithcomma.includes("[") && replaceWithcomma.indexOf("[")==0 && replaceWithcomma.includes("]")){
+		replaceWithcomma=replaceWithcomma;
+	}
+	else{
+		replaceWithcomma="["+replaceWithcomma+"]";
+	}
+return replaceWithcomma;
+}
+
