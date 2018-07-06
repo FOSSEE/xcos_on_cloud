@@ -3498,7 +3498,7 @@ function CONST() {
 	}
 	CONST.prototype.set = function CONST() {
         console.log(arguments[0]);
-		this.C = (arguments[0]["C"])
+		this.C = (arguments[0]["C"]);
 		var exprs;
 
 		if (this.C.match(/[a-z()+\-*/.^{}]/i)) {
@@ -3535,9 +3535,9 @@ function CONST() {
 		}
 
 
-		this.x.model.out = new ScilabDouble([this.nout])
+		this.x.model.out = new ScilabDouble([this.nout]);
 
-		this.x.graphics.exprs = exprs
+		this.x.graphics.exprs = exprs;
 		return new BasicBlock(this.x)
 	}
 }
@@ -3791,8 +3791,9 @@ function CONST_m() {
 	}
 	CONST_m.prototype.set = function CONST_m() {
 		var exprs = "";
-        console.log(arguments[0]);
+                
 		var str = arguments[0]["vec"];
+		str=convertInputVectorFormat(str);
 		if (str.match(/[a-z()+\-*/.^{}]/i)) {
 			var value = getValueOfImaginaryInput(str);
 			if (value == "null") {
@@ -3801,7 +3802,7 @@ function CONST_m() {
 				
 				exprs = new ScilabString([str]);
 				this.x.model.opar = list(new ScilabDouble([value]));
-				this.displayParameter = [str];
+				this.displayParameter = [arguments[0]["vec"]];
 				this.nout = size(value, "*")
 				if (this.nout == 0) {
 					alert("Wrong size for 'Constant Value' parameter" + "\nConstant value must have at least one element.");
@@ -3815,8 +3816,9 @@ function CONST_m() {
 
 
 		} else {
-
-			this.c = MatrixInverse(arguments[0]["vec"]);
+			var str = arguments[0]["vec"];
+		        str=convertInputVectorFormat(str);
+			this.c = MatrixInverse(str);
 			this.nout = size(this.c, "*")
 			if (this.nout == 0) {
 				alert("Wrong size for 'Constant Value' parameter" + "\nConstant value must have at least one element.");
@@ -3826,22 +3828,20 @@ function CONST_m() {
 			this.x.model.out = new ScilabDouble([this.nout]);
 			this.x.model.opar = list(new ScilabDouble([this.c][0]));
 
-			if(arguments[0]["vec"].match(/\[[0-9]+\]/)){
-			
-				this.displayParameter = ["["+this.c+"]"];//[sci2exp(this.c)];
+			if(str.match(/\[[0-9]+\]/)){
+				this.displayParameter = [arguments[0]["vec"]];//[sci2exp(this.c)];
 				exprs = new ScilabString(["["+this.c+"]"]);
 				this.c=["["+this.c+"]"];
 
 			}else{
-			
-				this.displayParameter = [sci2exp(this.c)];
+				this.displayParameter = [arguments[0]["vec"]];
 				exprs = new ScilabString([sci2exp(this.c)]);
 			
 			}
 			
 		}
 
-
+		
 		this.x.graphics.exprs = exprs
 		return new BasicBlock(this.x)
 	}
