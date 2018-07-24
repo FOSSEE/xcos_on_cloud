@@ -66,6 +66,7 @@ workspace_dict = {}
 #workspace_counter = 0
 log_dir = ''
 log_name = ''
+affich_log_name = ''
 filename = ''
 file_image = ''
 flag_sci = False
@@ -159,6 +160,7 @@ def get_line_and_state(file, count):
 
     parse_result = parse_line(line[count])
     figure_id = parse_result[0]
+    print(figure_id)
     state = parse_result[1]
     if state == INITIALIZATION:
         # New figure created
@@ -269,16 +271,6 @@ def event_stream(xcos_file_id):
     #print(workspace)
     #print(len(xcos_file_id))
     workspace_counter=workspace_list[xcos_file_id]
-    #For affich_m block
-    variablename=""; # Stores all workspace variable name in format (var1,var2,var3)
-    if (workspace_counter==4): # To check affich_m block presence
-	for i in range(len(workspace_variable_list)):    # to get count of affich replace with tows_c block and to use to iterate their name
-	   variable_name=workspace_variable_list[i]      # workspace_variable_list contains name of workspace variable
-           if(i==(len(workspace_variable_list)-1)):      # if last element in list then it should not be concatenate with ,
-	      variablename=variablename+variable_name+""   
-           else:
-              variablename=variablename+variable_name+","
-    #print("...."+variablename)
     ############################################################################################################
     # commands for ruuning of scilab based on existence of TOWS_c and FROMWSB
     # 3 means both exists,2 FROMWSB exists,1 TOWS_c exists,0 none exists meaning normal set of commands 
@@ -291,9 +283,7 @@ def event_stream(xcos_file_id):
         append=workspace_dict[xcos_file_id]
         command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);deletefile('"+workspace+"');save('"+workspace+"') ;quit()"]
     elif (workspace_counter ==4):     # added for affich_m
-        workspace_variable_list[:] = []
-        command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);exec('" + xcos_affich_function_file_dir + "affichm.sci"+"');affichm("+variablename+");deletefile('"+workspace+"');save('"+workspace+"') ;quit()"]
-        #print(xcos_affich_function_file_dir)
+        command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);quit()"]
     elif (workspace_counter ==2 and exists(workspace)):
         command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "load('"+workspace+"');loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);deletefile('"+workspace+"') ;quit()"]
     elif (workspace_counter == 7):
@@ -305,6 +295,7 @@ def event_stream(xcos_file_id):
         t1.start()
     else:
         command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);quit()"] 
+<<<<<<< d9557a1da46f5d83ee237a862e998bf40051a675
 
     # Put the process in its own process group using os.setpgrp. For a new
     # group, the process group id is always equal to the process id. All the
@@ -344,6 +335,8 @@ def event_stream(xcos_file_id):
     log_dir = "" 
     # Log file name
     log_name = "scilab-log-"+pid+".txt"
+    # Affich Log File
+    affich_log_name = "aff-scilab-log-"+pid+".txt"
 
     # Initialise output and error variables for subprocess
     scilab_out = ""
@@ -414,6 +407,7 @@ def event_stream(xcos_file_id):
                 # The first line ID 
                 if(line_count == 1):
                     line_id = line_contents[7]
+                #print("event: block\ndata: "+logLine+"\n\n")
                 yield "event: block\ndata: "+logLine+"\n\n"
 
             elif line.get_state() != DATA:
@@ -433,6 +427,7 @@ def event_stream(xcos_file_id):
                 # The first line ID 
                 if(line_count == 1):
                     line_id = line_contents[7]
+                #print("event: log\ndata: "+logLine+ "\n\n")
                 yield "event: log\ndata: "+logLine+ "\n\n"
 
 
@@ -448,25 +443,50 @@ def event_stream(xcos_file_id):
         yield "event: DONE\ndata: None\n\n"
 
     else:
-        # Open the log file
-        if not (os.path.isfile(log_name)):
-            return
-        log_file = open(log_dir + log_name, "r")
+        if(workspace_counter!=4):
+            # Open the log file
+            if not (os.path.isfile(log_name)):
+                return
+            log_file = open(log_dir + log_name, "r")
     
-        # Start sending log
-        line = line_and_state(None, NOLINE)
-        while (line.set(get_line_and_state_modified(log_file)) or len(figure_list) > 0):
-            # Get the line and loop until the state is ENDING and figure_list empty
-            # Determine if we get block id and give it to chart.js
-            if line.get_state()== BLOCK_IDENTIFICATION:
-                yield "event: block\ndata: "+line.get_line()+"\n\n"
-            elif line.get_state() != DATA:
-                gevent.sleep(LOOK_DELAY)      
-            else:
-                yield "event: log\ndata: "+line.get_line()+"\n\n"
-            # Reset line, so server won't send same line twice
+            # Start sending log
             line = line_and_state(None, NOLINE)
-
+            while (line.set(get_line_and_state_modified(log_file)) or len(figure_list) > 0):
+                # Get the line and loop until the state is ENDING and figure_list empty
+                # Determine if we get block id and give it to chart.js
+                if line.get_state()== BLOCK_IDENTIFICATION:
+                    #print("event: block\ndata: "+line.get_line()+"\n\n")
+                    yield "event: block\ndata: "+line.get_line()+"\n\n"
+ 
+                elif line.get_state() != DATA:
+                    gevent.sleep(LOOK_DELAY)      
+                else:
+                    #print("event: log\ndata: "+line.get_line()+"\n\n")
+                    yield "event: log\ndata: "+line.get_line()+"\n\n"
+                # Reset line, so server won't send same line twice
+                line = line_and_state(None, NOLINE)
+        else:
+            if not (os.path.isfile(affich_log_name)):
+                return
+	    yield "event: ONLYAFFICH\ndata: None\n\n"
+            log_file = open(log_dir + affich_log_name, "r")
+            # Start sending log
+            line = line_and_state(None, NOLINE)
+            while (line.set(get_line_and_state_modified(log_file)) or len(figure_list) > 0):
+                # Get the line and loop until the state is ENDING and figure_list empty
+                # Determine if we get block id and give it to chart.js
+                if line.get_state()== BLOCK_IDENTIFICATION:
+                    #print("event: block\ndata: "+line.get_line()+"\n\n")
+                    yield "event: block\ndata: "+line.get_line()+"\n\n"
+ 
+                elif line.get_state() != DATA:
+                    gevent.sleep(LOOK_DELAY)      
+                else:
+                    #print("event: log\ndata: "+line.get_line()+"\n\n")
+                    yield "event: log\ndata: "+line.get_line()+"\n\n"
+                # Reset line, so server won't send same line twice
+                line = line_and_state(None, NOLINE)
+        
         # Finished Sending Log
         kill_scilab()
 
@@ -756,10 +776,10 @@ def upload():
     	block_ida = []
     	for block in blockaffich:
             if block.getAttribute("interfaceFunctionName") == "AFFICH_m":
-               block_ida.append(block.getAttribute("id"))
-               block.setAttribute('id', '-1') 
+               #block_ida.append(block.getAttribute("id"))
+               #block.setAttribute('id', '-1') 
                workspace_counter=4
-               flag1=1
+               #flag1=1
 
         # List to contain all the block IDs of tkscales so that we can create read blocks with these IDs
         block_id = []
@@ -835,32 +855,6 @@ def upload():
                 read_file = open("Read_Content.txt", "r")
                 for line_content in read_file:
                     print(line_content,end= '')
-            print(line,end = '')
-
-	aff_count = 0
-	
-	for line in fileinput.input(temp_file_xml_name, inplace=1):# if the keyword argument inplace=1 is passed to fileinput.input() or to the FileInput constructor, the file is moved to a backup file and standard output is directed to the input file
-            
-            
-	    if 'interfaceFunctionName=\"AFFICH_m\"' in line:
-		 print("<BasicBlock blockType=\"d\" dependsOnU=\"1\" id=\"", end ='')
-		 print(block_ida[aff_count], end = '')
-
-	         print("\" interfaceFunctionName=\"TOWS_c\" parent=\"1\" simulationFunctionName=\"tows_c\" simulationFunctionType=\"C_OR_FORTRAN\" style=\"TOWS_c\">")
-		 print("<ScilabString as=\"exprs\" height=\"3\" width=\"1\">")
-                 print("<data column=\"0\" line=\"0\" value=\"1\"/>")
-                 #For workspace variable name
-		 aff_count = aff_count + 1
-                 print("<data column=\"0\" line=\"1\" value=\"", end = '')
-		 print("var"+str(aff_count), end ='')
-		 workspace_variable_list.append("var"+str(aff_count))
-		 print("\"/>")
-		 print("<data column=\"0\" line=\"2\" value=\"0\"/>")
-                 print("</ScilabString>")
-		 affich_count = aff_count
-		 read_file = open("Read_tows_c.txt", "r")
-                 for line_content in read_file:
-                     print(line_content,end= '')
             print(line,end = '')
 	block_idint=[]
 	block_idmatblsk=[]

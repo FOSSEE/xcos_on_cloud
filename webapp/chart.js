@@ -15,7 +15,6 @@ var isDone = false;
 // fig_id, l_id - figure_id and line_id of blocks,   
 // pnts - Points list of the blocks
 var fig_id, l_id, pnts = [];
-
 // Function to create a new chart
 var create_new_chart = function(id, no_of_graph,ymin,ymax,xmin,xmax,type_chart,title_text){
 	/* id - container id for graph(chart), no_of_graph - number of graphs in output of a block,
@@ -338,7 +337,7 @@ var create_draggable_points_chart = function(graphPoints, pointsHistory, xmin, x
 
 
 function chart_init(wnd){
-
+       
 	var block;
 	// define buffer for CANIMXY3D
 	var buffer;
@@ -349,12 +348,12 @@ function chart_init(wnd){
 
 	// Start listening to server
 	chart_reset();
+        
 	eventSource = new EventSource("/SendLog?id="+clientID);
         
 	eventSource.addEventListener("block", function(event){
 		var data = event.data.split(' ');
 		block = parseInt(data[4]);
-
 		// For BARXY 
 		if(block == 11){
 
@@ -402,9 +401,10 @@ function chart_init(wnd){
 	eventSource.addEventListener("log", function(event){
 
 		var data = event.data.split(' ');
+		
 		// store block info. from the data line
 		block = parseInt(data[0]);
-
+		//console.log(data);
 		// handle writec_f and writeau_f
 		if(block==21||block==22){
 
@@ -513,6 +513,27 @@ function chart_init(wnd){
 			// store block number for chart creation
 			block_list[index] = block; 
 
+		}else if(block == 20){
+			//Process data for Affich_m block
+			var length_of_data = data.length;
+			var block_id = data[3];
+			var rows = data[10];
+			var columns = data[11];
+			var p="";
+			var count=1;
+			for(var k=12; k<(length_of_data-1); k++){
+				p+=data[k];
+			   if((count % columns)==0){
+				p+="<br> ";
+			    }else{
+			    	p+="<tab>";
+                            }
+			    count++;
+				
+			}
+
+			console.log(p);
+			
 		}
 
 
@@ -569,7 +590,9 @@ function chart_init(wnd){
 		isDone = true;
 	}, false);
 	
-
+        eventSource.addEventListener("ONLYAFFICH", function(event){
+		wnd.destroy();
+	}, false);
 
 	interval = setInterval(function(){
 
