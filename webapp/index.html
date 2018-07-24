@@ -1875,7 +1875,8 @@
          	   	var Bblock_tag=xmlDoc.getElementsByTagName("BasicBlock"); 	// get all 'BasicBlock' tags from xml code
                 var Ablock_tag=xmlDoc.getElementsByTagName("AfficheBlock");   // get all 'AfficheBlock' tags from xml code
          		var mx_tag = xmlDoc.getElementsByTagName("mxCell"); 	// get all 'mxCell' tags from xml code
-         		var tkid  = new Array(); 				// array which stores the main id of each tkblock
+         		var tkid  = new Array();				// array which stores the main id of each tkblock
+			var affichmid  = new Array();
          		var clkid = new Array(); 				// array which stores every CLOCK_c ids
          		var clkdetails = new Array();				// array which stores the parameters of clock ('Period', 'initialisation time')
          		var tkarr = new Array(); 				// array which stores the port ids of every tk block ('control port', 'explicit port')
@@ -1964,7 +1965,7 @@
                 {
                     if(Ablock_tag[i].attributes.blockElementName.value == "AFFICH_m")        // if block is AFFICH_m
                     {
-                        tkid[m++] = parseInt(Ablock_tag[i].attributes.id.value);        // a.store tk ids
+                        affichmid[m++] = parseInt(Ablock_tag[i].attributes.id.value);        // a.store tk ids
                 
                         var Sdouble_tag=Ablock_tag[i].getElementsByTagName("ScilabDouble");     // b. under scilab double tag in real parameters attributes take the input size,font number,font size,color,total number of digits,number of rational part digits,block inherits values
                         var Realpart_tag=Sdouble_tag[1].getElementsByTagName("data");   
@@ -2318,8 +2319,8 @@
          			myAjaxreq("Start", "/UpdateTKfile");
          			CreateSlider();  // if tkblocks are <=10 then create slider else not    
          		     }
-         		    
                                     chart_init(wnd);
+
                                 }else{
                                     alert("Error");
                                 }
@@ -3034,6 +3035,7 @@
                         Function is present inside LOOKUP_CURV.js
                         */            
                         showGraphWindow(graph,cell,diagRoot);
+			
                     }
                 }    
 			/*
