@@ -39,6 +39,10 @@ ABS_VALUE.prototype.set = function ABS_VALUE() {
 ABS_VALUE.prototype.details = function ABS_VALUE() {
     return this.x
     }
+ABS_VALUE.prototype.get_popup_title = function ABS_VALUE() {
+        var set_param_popup_title="Set block parameters";
+        return set_param_popup_title
+    }
 }
 function AFFICH_m() {
 
@@ -127,6 +131,10 @@ function AFFICH_m() {
     }
     AFFICH_m.prototype.details = function AFFICH_m() {
         return this.x;
+    }
+    AFFICH_m.prototype.get_popup_title = function AFFICH_m() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
     }
 }
 function ANDBLK() {
@@ -262,6 +270,11 @@ function ANDBLK() {
         return this.x;
     }
 
+    ANDBLK.prototype.get_popup_title = function ANDBLK() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
+    }
+
 }
 function ANDLOG_f() {
 
@@ -313,6 +326,10 @@ function ANDLOG_f() {
 
     ANDLOG_f.prototype.details = function ANDLOG() {
         return this.x;
+    }
+    ANDLOG_f.prototype.get_popup_title = function ANDLOG_f() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
     }
 }
 function AUTOMAT() {
@@ -421,6 +438,12 @@ function AUTOMAT() {
         this.x.model.rpar=rpar;
         return new BasicBlock(this.x);
     }
+
+    AUTOMAT.prototype.get_popup_title = function AUTOMAT() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
+    }
+
 }
 function transpose(a) {
     return Object.keys(a[0]).map(function (c) {
@@ -504,6 +527,12 @@ Bache.prototype.set = function Bache() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+    Bache.prototype.get_popup_title = function Bache() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
+    }
+
 }
 function BACKLASH() {
     BACKLASH.prototype.define = function BACKLASH() {
@@ -548,6 +577,10 @@ function BACKLASH() {
         var exprs = new ScilabString([this.ini],[this.gap],[this.zcr])
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
+    }
+    BACKLASH.prototype.get_popup_title = function BACKLASH() {
+        var set_param_popup_title="Set backlash parameters";
+        return set_param_popup_title
     }
 }
 function BARXY() {
@@ -617,6 +650,11 @@ function BARXY() {
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
     }
+    BARXY.prototype.get_popup_title = function BARXY() {
+        var set_param_popup_title="Set Scope parameters";
+        return set_param_popup_title
+    }
+
 }
 function BIGSOM_f() {
 
@@ -658,6 +696,10 @@ function BIGSOM_f() {
         var exprs = new ScilabString([sci2exp(this.sgn)])
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
+    }
+    BIGSOM_f.prototype.get_popup_title = function BIGSOM_f() {
+        var set_param_popup_title="Set sum block parameters";
+        return set_param_popup_title
     }
 }
 function BITCLEAR() {
@@ -757,6 +799,11 @@ function BITCLEAR() {
         return new BasicBlock(this.x)
 
     }
+    BITCLEAR.prototype.get_popup_title = function BITCLEAR() {
+        var set_param_popup_title="Set BITCLEAR block parameters <br> Clear a bit";
+        return set_param_popup_title
+    }
+	
 }
 function BITSET() {
 
@@ -856,6 +903,12 @@ function BITSET() {
 	BITSET.prototype.details = function BITSET() {
    	 return this.x
     }
+
+        BITSET.prototype.get_popup_title = function BITSET() {
+        var set_param_popup_title="Set BITSET block parameters <br> Set a bit";
+        return set_param_popup_title
+    }
+
 }
 function BOUNCE() {
 
@@ -955,6 +1008,11 @@ function BOUNCE() {
     BOUNCE.prototype.details = function BOUNCE() {
 
         return this.x;
+    }
+
+    BOUNCE.prototype.get_popup_title = function BOUNCE() {
+        var set_param_popup_title="Set BOUNCE Block";
+        return set_param_popup_title
     }
 }
 function BOUNCEXY() {
@@ -1061,6 +1119,12 @@ BOUNCEXY.prototype.set = function BOUNCEXY() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+BOUNCEXY.prototype.get_popup_title = function BOUNCEXY() {
+        var set_param_popup_title="Set Scope parameters";
+        return set_param_popup_title
+    }
+
 }
 function BPLATFORM() {
 
@@ -1132,6 +1196,12 @@ BPLATFORM.prototype.set = function BPLATFORM() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+    BPLATFORM.prototype.get_popup_title = function BPLATFORM() {
+        var set_param_popup_title="Set Scope parameters";
+        return set_param_popup_title
+    }
+
 }
 function CANIMXY() {
 
@@ -1253,6 +1323,12 @@ CANIMXY.prototype.set = function CANIMXY() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+CANIMXY.prototype.get_popup_title = function CANIMXY() {
+        var set_param_popup_title="Set Scope parameters";
+        return set_param_popup_title
+    }
+
 }
 
 function CANIMXY3D() {
@@ -1392,6 +1468,11 @@ CANIMXY3D.prototype.set = function CANIMXY3D() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+   
+    CANIMXY3D.prototype.get_popup_title = function CANIMXY3D() {
+        var set_param_popup_title="Set Scope parameters";
+        return set_param_popup_title
+    }
 }
 function Capacitor() {
 
@@ -1439,6 +1520,10 @@ Capacitor.prototype.set = function Capacitor() {
     var exprs = new ScilabString([this.C],[this.v])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
+    }
+Capacitor.prototype.get_popup_title = function Capacitor() {
+        var set_param_popup_title="Set Capacitor block parameter";
+        return set_param_popup_title
     }
 }
 
@@ -1532,6 +1617,12 @@ function CBLOCK() {
 
         return this.x;
     }
+
+    CBLOCK.prototype.get_popup_title = function CBLOCK() {
+        var set_param_popup_title="Set C-Block2 block parameters";
+        return set_param_popup_title
+    }
+
 }
 function CBLOCK4() {
 
@@ -1637,7 +1728,13 @@ function CBLOCK4() {
 //     this.x.graphics.exprs=exprs
 //     return new BasicBlock(this.x)
 //     }
+
+       CBLOCK4.prototype.get_popup_title = function CBLOCK4() {
+        var set_param_popup_title="Set C-Block4 block parameters";
+        return set_param_popup_title
+    }
 }
+
 function CCS() {
     CCS.prototype.get = function CCS() {
         alert("parameters can not be changed")
@@ -1698,6 +1795,12 @@ function CCS() {
     CCS.prototype.details = function CCS() {
         return this.x;
     }
+
+    CCS.prototype.get_popup_title = function CCS() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
+    }
+
 }
 function CEVENTSCOPE() {
 
@@ -1791,6 +1894,10 @@ function CEVENTSCOPE() {
 	    var exprs = new ScilabString([sci2exp([this.nclock])],[this.clrs.toString().replace(/,/g," ")],[this.win],["[]"],[sci2exp(this.wdim)],[this.per]);
 	    this.x.graphics.exprs=exprs
 	    return new BasicBlock(this.x)
+    }
+    CEVENTSCOPE.prototype.get_popup_title = function CEVENTSCOPE() {
+        var set_param_popup_title="Set Scope parameters";
+        return set_param_popup_title
     }
 }
 
@@ -1891,6 +1998,11 @@ function CFSCOPE() {
     CFSCOPE.prototype.details = function CFSCOPE() {
         return this.x;
     }
+
+    CFSCOPE.prototype.get_popup_title = function CFSCOPE() {
+        var set_param_popup_title="Set Scope parameters";
+        return set_param_popup_title
+    }
 }
 
 function CLINDUMMY_f() {
@@ -1915,6 +2027,12 @@ function CLINDUMMY_f() {
     CLINDUMMY_f.prototype.details = function CLINDUMMY_f() {
         return this.x;
     }
+
+    CLINDUMMY_f.prototype.get_popup_title = function CLINDUMMY_f() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
+    }
+
 }
 function CLKFROM() {
     CLKFROM.prototype.get = function CLKFROM() {
@@ -1952,7 +2070,14 @@ function CLKFROM() {
     CLKFROM.prototype.details = function CLKFROM() {
         return this.x;
     }
-}function CLKGOTO() {
+    CLKFROM.prototype.get_popup_title = function CLKFROM() {
+        var set_param_popup_title="Set block parameters";
+        return set_param_popup_title
+    }
+
+}
+
+function CLKGOTO() {
 
     CLKGOTO.prototype.define = function CLKGOTO() {
         var model = scicos_model();
@@ -2000,6 +2125,10 @@ CLKGOTO.prototype.set = function CLKGOTO() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+    CLKGOTO.prototype.get_popup_title = function CLKGOTO() {
+        var set_param_popup_title="Set block parameters";
+        return set_param_popup_title
+    }
 }
 function CLKGotoTagVisibility() {
 
@@ -2045,6 +2174,11 @@ CLKGotoTagVisibility.prototype.set = function CLKGotoTagVisibility() {
     this.displayParameter = [this.tag];
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
+    }
+
+CLKGotoTagVisibility.prototype.get_popup_title = function CLKGotoTagVisibility() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
     }
 
 }
@@ -2109,6 +2243,12 @@ CLKINV_f.prototype.set = function CLKINV_f() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+CLKINV_f.prototype.get_popup_title = function CLKINV_f() {
+        var set_param_popup_title="Set CLKINV_f block parameters";
+        return set_param_popup_title
+    }
+
 }
 function CLKOUTV_f() {
 
@@ -2172,6 +2312,12 @@ CLKOUTV_f.prototype.set = function CLKOUTV_f() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+    CLKOUTV_f.prototype.get_popup_title = function CLKOUTV_f() {
+        var set_param_popup_title="Set CLKOUTV_f block parameters";
+        return set_param_popup_title
+    }
+
 }
 function CLKSOMV_f() {
     CLKSOMV_f.prototype.get = function CLKSOMV_f() {
@@ -2208,6 +2354,12 @@ function CLKSOMV_f() {
     CLKSOMV_f.prototype.details = function CLKSOMV_f() {
         return this.x;
     }
+
+    CLKSOMV_f.prototype.get_popup_title = function CLKSOMV_f() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
+    }    
+ 
 }
 function CLKSOM_f() {
 
@@ -2227,6 +2379,11 @@ function CLKSOM_f() {
         block.graphics.style = new ScilabString(["CLKSOM_f"])
         return block;
     }
+
+    CLKSOM_f.prototype.get_popup_title = function CLKSOM_f() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
+    }  
 }
 function CLOCK_c() {
 
@@ -2325,6 +2482,10 @@ function CLOCK_c() {
     }
     CLOCK_c.prototype.details = function CLOCK_c() {
         return this.x;
+    }
+    CLOCK_c.prototype.get_popup_title = function CLOCK_c() {
+        var set_param_popup_title="Set CLOCK_c block parameters <br> Event clock generator <br> Do not start if \"Initialisation Time\" is negative";
+        return set_param_popup_title
     }
 }
 
@@ -3035,6 +3196,11 @@ var model = scicos_model();
     {
         alert("parameters can not be changed");
     }
+
+    DLATCH.prototype.get_popup_title = function DLATCH() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
+    } 
 }
 
 
@@ -3095,6 +3261,10 @@ function CLR() {
     }
     CLR.prototype.details = function CLR() {
         return this.x;
+    }
+    CLR.prototype.get_popup_title = function CLR() {
+        var set_param_popup_title="Set continuous SISO transfer parameters";
+        return set_param_popup_title
     }
 }
 function CLSS () {
@@ -3159,6 +3329,11 @@ function CLSS () {
 
 CLSS.prototype.details = function CLSS() {
     return this.x
+    }
+
+CLSS.prototype.get_popup_title = function CLSS() {
+        var set_param_popup_title="Set continuous linear system parameters";
+        return set_param_popup_title
     }
 }
 
@@ -3230,6 +3405,12 @@ CMAT3D.prototype.set = function CMAT3D() {
 CMAT3D.prototype.details = function CMAT3D() {
     return this.x
     }
+
+CMAT3D.prototype.get_popup_title = function CMAT3D() {
+        var set_param_popup_title="Set Scope parameters";
+        return set_param_popup_title
+    } 
+
 }
 
 function CMATVIEW () {
@@ -3304,6 +3485,11 @@ function CMATVIEW () {
     }
     CMATVIEW.prototype.details = function CMATVIEW() {
         return this.x;
+    }
+
+    CMATVIEW.prototype.get_popup_title = function CMATVIEW() {
+        var set_param_popup_title="Set Scope parameters";
+        return set_param_popup_title
     }
 }
 
@@ -3461,6 +3647,12 @@ function CMSCOPE() {
     CMSCOPE.prototype.details = function CMSCOPE() {
         return this.x;
     }
+
+    CMSCOPE.prototype.get_popup_title = function CMSCOPE() {
+        var set_param_popup_title="Set Scope parameters";
+        return set_param_popup_title
+    }
+
 }
 
 
@@ -3540,7 +3732,13 @@ function CONST() {
 		this.x.graphics.exprs = exprs;
 		return new BasicBlock(this.x)
 	}
+        CONST.prototype.get_popup_title = function CONST() {
+        var set_param_popup_title="Set Contant Block";
+        return set_param_popup_title
+        }  
+
 }
+
 function ConstantVoltage() {
 
     ConstantVoltage.prototype.define = function ConstantVoltage() {
@@ -3585,6 +3783,10 @@ ConstantVoltage.prototype.set = function ConstantVoltage() {
     var exprs = new ScilabString([this.V])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
+    }
+ConstantVoltage.prototype.get_popup_title = function ConstantVoltage() {
+        var set_param_popup_title="Set ConstantVoltage block parameter";
+        return set_param_popup_title
     }
 }
 function CONSTRAINT2_c() {
@@ -3660,6 +3862,11 @@ CONSTRAINT2_c.prototype.set = function CONSTRAINT2_c() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+ 
+    CONSTRAINT2_c.prototype.get_popup_title = function CONSTRAINT2_c() {
+        var set_param_popup_title="Set Constraint block parameters";
+        return set_param_popup_title
+    }
 }
 
 function CONSTRAINT_c() {
@@ -3714,6 +3921,11 @@ CONSTRAINT_c.prototype.set = function CONSTRAINT_c() {
     return new BasicBlock(this.x)
     }
 
+    CONSTRAINT_c.prototype.get_popup_title = function CONSTRAINT_c() {
+        var set_param_popup_title="Set Constraint block parameters";
+        return set_param_popup_title
+    }
+
 }
 function CONST_f() {
 
@@ -3760,6 +3972,12 @@ CONST_f.prototype.set = function CONST_f() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+    CONST_f.prototype.get_popup_title = function CONST_f() {
+        var set_param_popup_title="Set Contant Block";
+        return set_param_popup_title
+    }
+
 }
 function CONST_m() {
 	CONST_m.prototype.get = function CONST_m() {
@@ -3888,6 +4106,12 @@ function CONST_m() {
 		return this.x;
 
 	}
+
+        CONST_m.prototype.get_popup_title = function CONST_m() {
+        var set_param_popup_title="Set CONST_m block parameters <br> Constant value generator<br>";
+        return set_param_popup_title
+    	}
+
 }
 function CONVERT() {
 
@@ -4271,6 +4495,10 @@ function CONVERT() {
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
     }
+    CONVERT.prototype.get_popup_title = function CONVERT() {
+        var set_param_popup_title="Set CONVERT block parameters <br> Type conversion";
+        return set_param_popup_title
+    }
 
 }
 function COSBLK_f() {
@@ -4295,7 +4523,14 @@ function COSBLK_f() {
     COSBLK_f.prototype.details = function COSBLK_f() {
         return this.x;
     }
-}function Counter() {
+
+    COSBLK_f.prototype.get_popup_title = function COSBLK_f() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
+    }
+}
+
+function Counter() {
 
     Counter.prototype.define = function Counter() {
         this.minim = 0;
@@ -4350,6 +4585,11 @@ Counter.prototype.set = function Counter() {
     this.displayParameter=[[this.minim],[this.maxim]];
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
+    }
+
+    Counter.prototype.get_popup_title = function Counter() {
+        var set_param_popup_title="Set Counter block parameters<br> Integer counter generator<br>";
+        return set_param_popup_title
     }
 }
 function CSCOPE() {
@@ -4469,6 +4709,12 @@ CSCOPE.prototype.set = function CSCOPE() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+    CSCOPE.prototype.get_popup_title = function CSCOPE() {
+        var set_param_popup_title="Set Scope parameters";
+        return set_param_popup_title
+    }
+
 }
 function CSCOPXY() {
 
@@ -4581,6 +4827,12 @@ CSCOPXY.prototype.set = function CSCOPXY() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+    CSCOPXY.prototype.get_popup_title = function CSCOPXY() {
+        var set_param_popup_title="Set Scope parameters";
+        return set_param_popup_title
+    }
+
 }
 
 function CSCOPXY3D() {
@@ -4716,6 +4968,12 @@ function CSCOPXY3D() {
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
     }
+   
+    CSCOPXY3D.prototype.get_popup_title = function CSCOPXY3D() {
+        var set_param_popup_title="Set Scope parameters";
+        return set_param_popup_title
+    }
+
 }
 function CUMSUM() {
 
@@ -4820,6 +5078,12 @@ CUMSUM.prototype.set = function CUMSUM() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+    CUMSUM.prototype.get_popup_title = function CUMSUM() {
+        var set_param_popup_title="Set CUMSUM block parameters";
+        return set_param_popup_title
+    }
+
 }
 function CurrentSensor() {
     CurrentSensor.prototype.get = function CurrentSensor() {
@@ -4851,6 +5115,12 @@ function CurrentSensor() {
     CurrentSensor.prototype.details = function CurrentSensor() {
         return this.x;
     }
+
+    CurrentSensor.prototype.get_popup_title = function CurrentSensor() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
+    }
+
 }
 function CURV_f() {
 
@@ -4923,6 +5193,12 @@ function CURV_f() {
     CURV_f.prototype.details = function CURV_f() {
         return this.x;
     }
+
+    CURV_f.prototype.get_popup_title = function CURV_f() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
+    }
+
 }
 function CVS() {
     CVS.prototype.get = function CVS() {
@@ -4984,6 +5260,11 @@ function CVS() {
     CVS.prototype.details = function CVS() {
         return this.x;
     }
+
+    CVS.prototype.get_popup_title = function CVS() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
+    }
 }
 function c_block() {
 
@@ -5018,6 +5299,12 @@ function c_block() {
     c_block.prototype.details = function c_block() {
         return this.x;
     }
+
+    c_block.prototype.get_popup_title = function c_block() {
+        var set_param_popup_title="Set C_block parameters";
+        return set_param_popup_title
+    }
+
 }
 function DEADBAND() {
 
@@ -5075,6 +5362,11 @@ DEADBAND.prototype.set = function DEADBAND() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+DEADBAND.prototype.get_popup_title = function DEADBAND() {
+        var set_param_popup_title="Set Deadband parameters";
+        return set_param_popup_title
+    }
+
 }
 function DEBUG() {
 
@@ -5107,6 +5399,10 @@ function DEBUG() {
     }
     DEBUG.prototype.details = function DEBUG() {
         return this.x;
+    }
+    DEBUG.prototype.get_popup_title = function DEBUG() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
     }
 }
 
@@ -5179,6 +5475,10 @@ function DELAYV_f() {
 		this.x.graphics.exprs = exprs
 		return new BasicBlock(this.x)
 	}
+	DELAYV_f.prototype.get_popup_title = function DELAYV_f() {
+        var set_param_popup_title="Set delay parameters";
+        return set_param_popup_title
+        }
 
 }
 
@@ -5379,6 +5679,11 @@ function DELAY_f() {
 		return new BasicBlock(this.x)
 	}
 
+        DELAY_f.prototype.get_popup_title = function DELAY_f() {
+        var set_param_popup_title="This block implements as a discretized delay<br> it is consist of a shift register and a clock<br> value of the delay is given by<br> the discretization time step multiplied by the<br> number-1 of state of the register<br>";
+        return set_param_popup_title
+    }
+
 }
 
 function DEMUX() {
@@ -5450,6 +5755,11 @@ var model = scicos_model();
         return this.x;
     }
 
+    DEMUX.prototype.get_popup_title = function DEMUX() {
+        var set_param_popup_title="Set DEMUX block parameters";
+        return set_param_popup_title
+    } 
+
 }
 function DEMUX_f() {
 
@@ -5515,6 +5825,10 @@ function DEMUX_f() {
     DEMUX_f.prototype.details = function DEMUX_f() {
         return this.x;
     }
+    DEMUX_f.prototype.get_popup_title = function DEMUX_f() {
+        var set_param_popup_title="Set DEMUX block parameters";
+        return set_param_popup_title
+    }
 }
 
 function DERIV() {
@@ -5538,6 +5852,11 @@ function DERIV() {
     }
     DERIV.prototype.details = function DERIV() {
         return this.x;
+    }
+
+    DERIV.prototype.get_popup_title = function DERIV() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
     }
 }
 function DFLIPFLOP() {
@@ -7590,6 +7909,10 @@ function DFLIPFLOP() {
     DFLIPFLOP.prototype.details = function DFLIPFLOP() {
         return this.x;
     }
+    DFLIPFLOP.prototype.get_popup_title = function DFLIPFLOP() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
+    }
 }
 function DIFF_f() {
 
@@ -7635,6 +7958,12 @@ DIFF_f.prototype.set = function DIFF_f() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+DIFF_f.prototype.get_popup_title = function DIFF_f() {
+        var set_param_popup_title="Set continuous linear system parameters";
+        return set_param_popup_title
+    }
+
 }
 
 function Diode() {
@@ -7691,6 +8020,10 @@ function Diode() {
         var exprs = new ScilabString([this.Ids],[this.Vt],[this.Maxexp],[this.R])
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
+    }
+    Diode.prototype.get_popup_title = function Diode() {
+        var set_param_popup_title="Set Diode block parameter";
+        return set_param_popup_title
     }
 }
 function DLR() {
@@ -7848,6 +8181,10 @@ function DLR() {
         this.displayParameter = [[this.num], [this.den]];
     	return new BasicBlock(this.x)
     }
+    DLR.prototype.get_popup_title = function DLR() {
+        var set_param_popup_title="Set discrete SISO transfer parameters";
+        return set_param_popup_title
+    }
 }
 
 function DLRADAPT_f() {
@@ -7994,6 +8331,11 @@ function DLRADAPT_f() {
     DLRADAPT_f.prototype.details = function DLRADAPT_f() {
         return this.x;
     }
+
+    DLRADAPT_f.prototype.get_popup_title = function DLRADAPT_f() {
+        var set_param_popup_title="Set block parameters";
+        return set_param_popup_title
+    }
 }
 function DLSS() {
 
@@ -8072,6 +8414,10 @@ DLSS.prototype.set = function DLSS() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+    DLSS.prototype.get_popup_title = function DLSS() {
+        var set_param_popup_title="Set discrete linear system parameters";
+        return set_param_popup_title
+    }
 }
 
 function DOLLAR() {
@@ -8133,6 +8479,11 @@ function DOLLAR() {
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
     }
+    DOLLAR.prototype.get_popup_title = function DOLLAR() {
+        var set_param_popup_title="Set 1/z block parameters";
+        return set_param_popup_title
+    }
+    
 }
 
 function DOLLAR_f() {
@@ -8160,7 +8511,7 @@ function DOLLAR_f() {
     DOLLAR_f.prototype.details = function DOLLAR_f() {
         return this.x;
     }
-DOLLAR_f.prototype.get = function DOLLAR_f() {
+    DOLLAR_f.prototype.get = function DOLLAR_f() {
     if(this.a == undefined || this.a == null){
         this.a = "0"
     }
@@ -8170,7 +8521,7 @@ DOLLAR_f.prototype.get = function DOLLAR_f() {
         }
         return options
     }
-DOLLAR_f.prototype.set = function DOLLAR_f() {
+    DOLLAR_f.prototype.set = function DOLLAR_f() {
     this.a = inverse(arguments[0]["a"])
     this.inh = inverse(arguments[0]["inh"])
     this.out = size(this.a,"*")
@@ -8190,6 +8541,10 @@ DOLLAR_f.prototype.set = function DOLLAR_f() {
     var exprs = new ScilabString([this.a.toString().replace(/,/g, " ")],[this.inh.toString().replace(/,/g, " ")])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
+    }
+    DOLLAR_f.prototype.get_popup_title = function DOLLAR_f() {
+        var set_param_popup_title="Set 1/z block parameters";
+        return set_param_popup_title
     }
 }
 
@@ -8253,6 +8608,10 @@ DOLLAR_m.prototype.set = function DOLLAR_m() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+    DOLLAR_m.prototype.get_popup_title = function DOLLAR_m() {
+        var set_param_popup_title="Set 1/z block parameters";
+        return set_param_popup_title
+    }
 }
 
 function EDGETRIGGER() {
@@ -8311,6 +8670,12 @@ EDGETRIGGER.prototype.set = function EDGETRIGGER() {
 EDGETRIGGER.prototype.details = function EDGETRIGGER() {
     return this.x
     }
+
+EDGETRIGGER.prototype.get_popup_title = function EDGETRIGGER() {
+        var set_param_popup_title="Set edge trigger block parameters";
+        return set_param_popup_title
+    }
+
 }
 function EDGE_TRIGGER() {
 
@@ -8438,6 +8803,10 @@ function EDGE_TRIGGER() {
     }
     EDGE_TRIGGER.prototype.details = function EDGE_TRIGGER() {
         return this.x;
+    }
+    EDGE_TRIGGER.prototype.get_popup_title = function EDGE_TRIGGER() {
+        var set_param_popup_title="Set edge trigger block parameters";
+        return set_param_popup_title
     }
 }
 function ENDBLK() {
@@ -8659,6 +9028,10 @@ function ENDBLK() {
 	 ENDBLK.prototype.details = function ENDBLK() {
 		return this.x;
 	}
+        ENDBLK.prototype.get_popup_title = function CLSS() {
+        var set_param_popup_title="Set final simulation time";
+        return set_param_popup_title
+        }
 }
 function END_c() {
 
@@ -8694,6 +9067,10 @@ END_c.prototype.set = function END_c() {
     var exprs = new ScilabString([this.tf])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
+    }
+    END_c.prototype.get_popup_title = function END_c() {
+        var set_param_popup_title="Set final simulation time";
+        return set_param_popup_title
     }
 }
 
@@ -8767,6 +9144,11 @@ ESELECT_f.prototype.set = function ESELECT_f() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+    ESELECT_f.prototype.get_popup_title = function ESELECT_f() {
+        var set_param_popup_title="Set ESELECT block parameters";
+        return set_param_popup_title
+    }
+    
 }
 function EVTDLY_c() {
 
@@ -8839,6 +9221,11 @@ EVTDLY_c.prototype.set = function EVTDLY_c() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+    EVTDLY_c.prototype.get_popup_title = function EVTDLY_c() {
+        var set_param_popup_title="Set Event Delay block parameters <br>Delay  is the delay between an input event <br> and the generated output event <br>Block may initially generate an output event before  <br>any input event. \"Date of initial output event\" <br>gives the date of this event. Set a negative value <br>to disable any output event.";
+        return set_param_popup_title
+    }
+
 }
 function EVTDLY_f() {
 
@@ -8862,7 +9249,14 @@ function EVTDLY_f() {
         block.graphics.style = new ScilabString(["EVTDLY_f"]);
         return block;
     }
-}function EVTGEN_f() {
+
+    EVTDLY_f.prototype.get_popup_title = function EVTDLY_f() {
+        var set_param_popup_title="Set edge trigger block parameters";
+        return set_param_popup_title
+    }
+
+}
+function EVTGEN_f() {
 
     EVTGEN_f.prototype.define = function EVTGEN_f() {
         this.tt = 0;
@@ -8897,6 +9291,10 @@ EVTGEN_f.prototype.set = function EVTGEN_f() {
     this.displayParameter = [this.tt];
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
+    }
+EVTGEN_f.prototype.get_popup_title = function EVTGEN_f() {
+        var set_param_popup_title="Set Event time";
+        return set_param_popup_title
     }
 }
 function EVTVARDLY() {
@@ -8937,6 +9335,10 @@ EVTVARDLY.prototype.set = function EVTVARDLY() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+EVTVARDLY.prototype.get_popup_title = function EVTVARDLY() {
+        var set_param_popup_title="Set parameter of variable event delay";
+        return set_param_popup_title
+    }
 }
 
 function EXPBLK_m() {
@@ -8966,7 +9368,7 @@ function EXPBLK_m() {
     EXPBLK_m.prototype.details = function EXPBLK_m() {
         return this.x;
     }
-EXPBLK_m.prototype.get = function EXPBLK_m() {
+    EXPBLK_m.prototype.get = function EXPBLK_m() {
     if(this.a == undefined || this.a == null){
         this.a = Math.E
     }
@@ -8975,7 +9377,7 @@ EXPBLK_m.prototype.get = function EXPBLK_m() {
         }
         return options
     }
-EXPBLK_m.prototype.set = function EXPBLK_m() {
+    EXPBLK_m.prototype.set = function EXPBLK_m() {
     this.a = parseFloat((arguments[0]["a"]))
     if(this.a<=0){
         alert("a^u : a must be positive");
@@ -8984,6 +9386,10 @@ EXPBLK_m.prototype.set = function EXPBLK_m() {
     var exprs = new ScilabString([this.a])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
+    }
+    EXPBLK_m.prototype.get_popup_title = function EXPBLK_m() {
+        var set_param_popup_title="Set a^u  block parameters";
+        return set_param_popup_title
     }
 }
 function EXTRACT() {
@@ -9081,6 +9487,12 @@ function EXTRACT() {
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
     }
+
+    EXTRACT.prototype.get_popup_title = function EXTRACT() {
+        var set_param_popup_title="Set EXTRACT Block";
+        return set_param_popup_title
+    }
+
 }
      function JKFLIPFLOP() {
     JKFLIPFLOP.prototype.define = function JKFLIPFLOP() {
@@ -10876,6 +11288,11 @@ JKFLIPFLOP.prototype.set = function JKFLIPFLOP() {
     JKFLIPFLOP.prototype.details = function JKFLIPFLOP() {
         return this.x;
     }
+
+    JKFLIPFLOP.prototype.get_popup_title = function JKFLIPFLOP() {
+        var set_param_popup_title="Set JKFLIPFLOP block parameters <br> JK flip-flop <br> The \"Initial Value\" must be 0 or 1 of type int8 <br> - Negative values are considered as int8(0) <br> - Positive values are considered as int8(1)";
+        return set_param_popup_title
+    }
 }
 
 function EXTRACTBITS() {
@@ -11108,6 +11525,12 @@ function EXTRACTBITS() {
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
     }
+
+    EXTRACTBITS.prototype.get_popup_title = function EXTRACTBITS() {
+        var set_param_popup_title="Set EXTRACTBITS block parameters <br> Bits Extraction <br> - Bits to Extract: <br> 1 Upper Half <br> 2 Lower Half <br> 3 Range from MSB <br> 4 Range to LSB <br> 5 Range of Bits <br> - Number of Bits or Index of bit : Index 0 is LSB. <br> If \"Bits to Extract\" is set to \"Range of bits\": [Start, End]";
+        return set_param_popup_title
+    }
+
 }
 function EXTRACTOR() {
 
@@ -11146,6 +11569,11 @@ EXTRACTOR.prototype.set = function EXTRACTOR() {
     var exprs = new ScilabString([sci2exp(this.ind)])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
+    }
+
+    EXTRACTOR.prototype.get_popup_title = function EXTRACTOR() {
+        var set_param_popup_title="Set block parameters";
+        return set_param_popup_title
     }
 }
 
@@ -11280,6 +11708,11 @@ function Extract_Activation() {
     Extract_Activation.prototype.details = function Extract_Activation() {
         return this.x;
     }
+
+    Extract_Activation.prototype.get_popup_title = function Extract_Activation() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
+    }
 }
 function EXTTRI() {
 
@@ -11376,6 +11809,12 @@ EXTTRI.prototype.set = function EXTTRI() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+    EXTTRI.prototype.get_popup_title = function EXTTRI() {
+        var set_param_popup_title="Set EXTTRI block parameters";
+        return set_param_popup_title
+    }
+
 }
 
 function Flowmeter() {
@@ -11455,6 +11894,12 @@ function Flowmeter() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }*/
+
+    Flowmeter.prototype.get_popup_title = function Flowmeter() {
+        var set_param_popup_title="Set Flowmeter block parameters:<br>";
+        return set_param_popup_title
+    }
+
 }
 function fortran_block() {
 
@@ -11484,6 +11929,11 @@ function fortran_block() {
     }
     fortran_block.prototype.details = function fortran_block() {
         return this.x;
+    }
+
+    fortran_block.prototype.get_popup_title = function fortran_block() {
+        var set_param_popup_title="Set fortran_block parameters <br>";
+        return set_param_popup_title
     }
 }
 function freq_div() {
@@ -11645,6 +12095,11 @@ function freq_div() {
     freq_div.prototype.details = function freq_div() {
         return this.x;
     }
+    freq_div.prototype.get_popup_title = function freq_div() {
+        var set_param_popup_title="Set frequency division block parameters";
+        return set_param_popup_title
+    }
+    
 }
 function FROM() {
 
@@ -11691,6 +12146,12 @@ FROM.prototype.set = function FROM() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+FROM.prototype.get_popup_title = function FROM() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
+    }
+
 }
 
 function FROMMO() {
@@ -11741,6 +12202,11 @@ FROMMO.prototype.set = function FROMMO() {
     this.displayParameter = [this.tag];
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
+    }
+
+FROMMO.prototype.get_popup_title = function FROMMO() {
+        var set_param_popup_title="Set parameters <br>";
+        return set_param_popup_title
     }
 }
 
@@ -11943,6 +12409,11 @@ function FROMWSB() {
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x);
     }
+
+    FROMWSB.prototype.get_popup_title = function FROMWSB(){
+        var set_param_popup_title="Set From_Workspace block parameters <br>";
+        return set_param_popup_title
+    }
 }
 
 function GAINBLK() {
@@ -12018,6 +12489,11 @@ GAINBLK.prototype.set = function GAINBLK() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+    GAINBLK.prototype.get_popup_title = function GAINBLK() {
+        var set_param_popup_title="Set gain block parameters";
+        return set_param_popup_title
+    }
+
 
 }
 
@@ -12069,6 +12545,10 @@ function GAINBLK_f() {
 		this.x.graphics.exprs = exprs
 		return new BasicBlock(this.x)
 	}
+	GAINBLK_f.prototype.get_popup_title = function GAINBLK_f() {
+        var set_param_popup_title="Set gain block parameters";
+        return set_param_popup_title
+        }
 }
 
 function GAIN_f() {
@@ -12120,6 +12600,10 @@ function GAIN_f() {
         this.x.model.rpar = new ScilabDouble(...this.gain)
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
+    }
+    GAIN_f.prototype.get_popup_title = function GAIN_f() {
+        var set_param_popup_title="Set gain block parameters";
+        return set_param_popup_title
     }
 }
 
@@ -12195,6 +12679,10 @@ GENERAL_f.prototype.get = function GENERAL_f() {
     GENERAL_f.prototype.details = function GENERAL_f() {
         return this.x;
     }
+    GENERAL_f.prototype.get_popup_title = function GENERAL_f() {
+        var set_param_popup_title="Set General Zero-Crossing parameters";
+        return set_param_popup_title
+    }
 }
 function generic_block3() {
 
@@ -12220,6 +12708,11 @@ function generic_block3() {
     }
     generic_block3.prototype.details = function generic_block3() {
         return this.x;
+    }
+
+    generic_block3.prototype.get_popup_title = function generic_block3() {
+        var set_param_popup_title="Set Generic block parameters";
+        return set_param_popup_title
     }
 }
 function GENSIN_f() {
@@ -12280,6 +12773,10 @@ GENSIN_f.prototype.set = function GENSIN_f() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+    GENSIN_f.prototype.get_popup_title = function GENSIN_f() {
+        var set_param_popup_title="Set GENSIN_f block parameters <br> Sine wave generator<br>";
+        return set_param_popup_title
+    }
 }
 
 function GENSQR_f () {
@@ -12324,6 +12821,11 @@ GENSQR_f.prototype.set = function GENSQR_f() {
     }
     GENSQR_f.prototype.details = function GENSQR_f() {
         return this.x;
+    }
+
+    GENSQR_f.prototype.get_popup_title = function GENSQR_f() {
+        var set_param_popup_title="Set Square generator block parameters";
+        return set_param_popup_title
     }
 }
 
@@ -12381,6 +12883,10 @@ function GOTO() {
 	this.displayParameter = [this.tag];
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
+    }
+    GOTO.prototype.get_popup_title = function GOTO() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
     }
 }
 function GOTOMO() {
@@ -12442,6 +12948,12 @@ GOTOMO.prototype.set = function GOTOMO() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+GOTOMO.prototype.get_popup_title = function GOTOMO() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
+    }
+  
 }
 
 function GotoTagVisibility() {
@@ -12492,6 +13004,12 @@ var n =this.tag;
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+GotoTagVisibility.prototype.get_popup_title = function GotoTagVisibility() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
+    }
+
 }
 function GotoTagVisibilityMO() {
 
@@ -12539,6 +13057,12 @@ GotoTagVisibilityMO.prototype.set = function GotoTagVisibilityMO() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+GotoTagVisibilityMO.prototype.get_popup_title = function GotoTagVisibilityMO() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
+    }
+
 }
 
 function Ground() {
@@ -12572,6 +13096,11 @@ function Ground() {
 
     Ground.prototype.details = function Ground() {
         return this.x;
+    }
+
+    Ground.prototype.get_popup_title = function Ground() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
     }
 }
 function Gyrator() {
@@ -12651,6 +13180,10 @@ Gyrator.prototype.set = function Gyrator() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+Gyrator.prototype.get_popup_title = function Gyrator() {
+        var set_param_popup_title="Set Gyrator block parameters: <br> G1: Gyration conductance <br> G2: Gyration conductance";
+        return set_param_popup_title
+    }
 }
 function HALT_f() {
 
@@ -12687,6 +13220,10 @@ HALT_f.prototype.set = function HALT_f() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+HALT_f.prototype.get_popup_title = function HALT_f() {
+        var set_param_popup_title="Set Halt block parameters";
+        return set_param_popup_title
+    }
 }
 
 function HYSTHERESIS() {
@@ -12716,7 +13253,7 @@ function HYSTHERESIS() {
     HYSTHERESIS.prototype.details = function HYSTHERESIS() {
         return this.x;
     }
-HYSTHERESIS.prototype.get = function HYSTHERESIS() {
+    HYSTHERESIS.prototype.get = function HYSTHERESIS() {
         var options={
             high_lim:["switch on at","1"],
             low_lim:["switch off at","0"],
@@ -12726,7 +13263,7 @@ HYSTHERESIS.prototype.get = function HYSTHERESIS() {
         }
         return options
     }
-HYSTHERESIS.prototype.set = function HYSTHERESIS() {
+    HYSTHERESIS.prototype.set = function HYSTHERESIS() {
     this.high_lim = parseFloat((arguments[0]["high_lim"]))
     this.low_lim = parseFloat((arguments[0]["low_lim"]))
     if(this.low_lim>this.high_lim){
@@ -12742,6 +13279,10 @@ HYSTHERESIS.prototype.set = function HYSTHERESIS() {
     var exprs = new ScilabString([this.high_lim],[this.low_lim],[this.out_high],[this.out_low],[this.nzz])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
+    }
+    HYSTHERESIS.prototype.get_popup_title = function HYSTHERESIS() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
     }
 }
 
@@ -12817,6 +13358,10 @@ IdealTransformer.prototype.set = function IdealTransformer() {
     var exprs = new ScilabString([this.N])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
+    }
+IdealTransformer.prototype.get_popup_title = function IdealTransformer() {
+        var set_param_popup_title="Set Transformer block parameters: <br> N: Turn ratio (N1/N2)";
+        return set_param_popup_title
     }
 
 }
@@ -12909,6 +13454,10 @@ IFTHEL_f.prototype.set = function IFTHEL_f() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+    IFTHEL_f.prototype.get_popup_title = function IFTHEL_f() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
+    }
 }
 function Inductor() {
 
@@ -12955,6 +13504,10 @@ Inductor.prototype.set = function Inductor() {
     var exprs = new ScilabString([this.L])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
+    }
+Inductor.prototype.get_popup_title = function Inductor() {
+        var set_param_popup_title="Set Inductor block parameter";
+        return set_param_popup_title
     }
 }
 
@@ -13009,6 +13562,12 @@ INIMPL_f.prototype.set = function INIMPL_f() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+INIMPL_f.prototype.get_popup_title = function INIMPL_f() {
+        var set_param_popup_title="Set INIMPL_f block parameters";
+        return set_param_popup_title
+    }
+
 }
 function INTEGRAL_f() {
 
@@ -13045,6 +13604,10 @@ function INTEGRAL_f() {
         var exprs = new ScilabString([sci2exp(this.x0)])
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
+    }
+    INTEGRAL_f.prototype.get_popup_title = function INTEGRAL_f() {
+        var set_param_popup_title="Set continuous linear system parameters";
+        return set_param_popup_title
     }
 }
 
@@ -13166,6 +13729,11 @@ function INTEGRAL_m() {
     }
     INTEGRAL_m.prototype.details = function INTEGRAL_m() {
         return this.x;
+    }
+
+    INTEGRAL_m.prototype.get_popup_title = function INTEGRAL_m() {
+        var set_param_popup_title="Set Integral block parameters";
+        return set_param_popup_title
     }
 }
 
@@ -13293,6 +13861,12 @@ INTMUL.prototype.set = function INTMUL() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+    INTMUL.prototype.get_popup_title = function INTMUL() {
+        var set_param_popup_title="Set INTMUL block parameters <br> Integer matrix multiplication";
+        return set_param_popup_title
+    }
+
 }
 
 function INTRP2BLK_f() {
@@ -13373,6 +13947,11 @@ INTRP2BLK_f.prototype.set = function INTRP2BLK_f() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+    INTRP2BLK_f.prototype.get_popup_title = function INTRP2BLK_f() {
+        var set_param_popup_title="Set Interpolation block parameters";
+        return set_param_popup_title
+    }
+
 }
 function INTRPLBLK_f() {
 
@@ -13449,6 +14028,11 @@ INTRPLBLK_f.prototype.set = function INTRPLBLK_f() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+    INTRPLBLK_f.prototype.get_popup_title = function INTRPLBLK_f() {
+        var set_param_popup_title="Set Interpolation block parameters";
+        return set_param_popup_title
+    }
+
 }
 function INVBLK() {
 
@@ -13473,6 +14057,11 @@ function INVBLK() {
     }
     INVBLK.prototype.get = function INVBLK() {
         alert("parameters can not be changed")
+    }
+
+    INVBLK.prototype.get_popup_title = function INVBLK() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
     }
 }
 
@@ -13574,6 +14163,12 @@ IN_f.prototype.set = function IN_f() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+IN_f.prototype.get_popup_title = function IN_f() {
+        var set_param_popup_title="Set Input block parameters";
+        return set_param_popup_title
+    }
+
 }
 function ISELECT_m() {
 
@@ -13638,6 +14233,11 @@ function ISELECT_m() {
         }
         return new BasicBlock(this.x)
     }
+    ISELECT_m.prototype.get_popup_title = function ISELECT_m() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
+    }
+    
 }
 
 function LOGBLK_f() {
@@ -13683,6 +14283,10 @@ LOGBLK_f.prototype.set = function LOGBLK_f() {
     var exprs = new ScilabString([this.a])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
+    }
+LOGBLK_f.prototype.get_popup_title = function LOGBLK_f() {
+        var set_param_popup_title="Set log block parameters";
+        return set_param_popup_title
     }
 }
 
@@ -13798,6 +14402,12 @@ LOGIC.prototype.set = function LOGIC() {
     this.x = new standard_define(new ScilabDouble([2, 2]), model, exprs, gr_i);
     return new BasicBlock(this.x)
     }
+
+LOGIC.prototype.get_popup_title = function LOGIC() {
+        var set_param_popup_title="Set LOGIC block parameters <br> Combinatorial logic <br> Rows of the matrix are the output values<br> Number of rows must be a power of two. <br> Number of columns gives the number of outputs.<br>";
+        return set_param_popup_title
+    }
+
 }
 /*function LOGICAL_OP() {
 
@@ -13974,6 +14584,10 @@ function LOGICAL_OP() {
         this.x = new standard_define(new ScilabDouble([2, 2]), model, exprs, gr_i);
         return new BasicBlock(this.x);
 }
+        LOGICAL_OP.prototype.get_popup_title = function LOGICAL_OP() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
+    }
 }
 function LOOKUP_f() {
 
@@ -14030,6 +14644,10 @@ function LOOKUP_f() {
     }
     LOOKUP_f.prototype.details = function LOOKUP_f() {
         return this.x;
+    }
+    LOOKUP_f.prototype.get_popup_title = function LOOKUP_f() {
+        var set_param_popup_title="Set block parameters";
+        return set_param_popup_title
     }
     
 }
@@ -14098,6 +14716,10 @@ function MATBKSL() {
         var exprs = new ScilabString([this.typ])
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
+    }
+    MATBKSL.prototype.get_popup_title = function MATBKSL() {
+        var set_param_popup_title="Set MATBKSL block";
+        return set_param_popup_title
     }
 }
 
@@ -14171,6 +14793,10 @@ function MATCATH() {
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
     }
+    MATCATH.prototype.get_popup_title = function MATCATH() {
+        var set_param_popup_title="Set MATCATH block parameters";
+        return set_param_popup_title
+    }
 }
 
 function MATCATV() {
@@ -14242,6 +14868,11 @@ function MATCATV() {
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
     }
+
+    MATCATV.prototype.get_popup_title = function MATCATV() {
+        var set_param_popup_title="Set MATCATV block parameters";
+        return set_param_popup_title
+    }
 }
 function MATDET() {
 
@@ -14309,6 +14940,12 @@ MATDET.prototype.set = function MATDET() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+    MATDET.prototype.get_popup_title = function MATDET() {
+        var set_param_popup_title="Set MATDET block";
+        return set_param_popup_title
+    }
+
 }
 function MATDIAG() {
 
@@ -14373,6 +15010,11 @@ function MATDIAG() {
         var exprs = new ScilabString([this.typ])
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
+    }
+
+    MATDIAG.prototype.get_popup_title = function MATDIAG() {
+        var set_param_popup_title="Set MATDIAG block";
+        return set_param_popup_title
     }
 }
 
@@ -14441,6 +15083,11 @@ function MATDIV() {
         var exprs = new ScilabString([this.typ])
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
+    }
+
+    MATDIV.prototype.get_popup_title = function MATDIV() {
+        var set_param_popup_title="Set MATDIV block";
+        return set_param_popup_title
     }
 
 }
@@ -14540,6 +15187,11 @@ MATEIG.prototype.set = function MATEIG() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+    MATEIG.prototype.get_popup_title = function MATEIG() {
+        var set_param_popup_title="Set MATEIG block parameters";
+        return set_param_popup_title
+    }
 }
 
 function MATEXPM() {
@@ -14599,6 +15251,11 @@ MATEXPM.prototype.set = function MATEXPM() {
     var exprs = new ScilabString([this.typ])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
+    }
+
+MATEXPM.prototype.get_popup_title = function MATEXPM() {
+        var set_param_popup_title="Set EXPM Block";
+        return set_param_popup_title
     }
 }
 
@@ -14667,6 +15324,11 @@ MATINV.prototype.set = function MATINV() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+    MATINV.prototype.get_popup_title = function MATINV() {
+        var set_param_popup_title="Set MATINV Block";
+        return set_param_popup_title
+    }
 }
 
 function MATLU() {
@@ -14732,6 +15394,10 @@ function MATLU() {
         var exprs = new ScilabString([this.typ])
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
+    }
+    MATLU.prototype.get_popup_title = function MATLU() {
+        var set_param_popup_title="Set MATLU block parameters";
+        return set_param_popup_title
     }
 }
 
@@ -14802,6 +15468,11 @@ MATMAGPHI.prototype.set = function MATMAGPHI() {
     var exprs = new ScilabString([this.decomptyp])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
+    }
+
+    MATMAGPHI.prototype.get_popup_title = function MATMAGPHI() {
+        var set_param_popup_title="Set MATMAGPHI block parameters";
+        return set_param_popup_title
     }
 }
 
@@ -14953,6 +15624,11 @@ function MATMUL() {
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
     }
+
+    MATMUL.prototype.get_popup_title = function MATMUL() {
+        var set_param_popup_title="Set MATMUL block parameters";
+        return set_param_popup_title
+    }
 }
 
 function MATPINV() {
@@ -15022,6 +15698,12 @@ MATPINV.prototype.set = function MATPINV() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+    MATPINV.prototype.get_popup_title = function MATPINV() {
+        var set_param_popup_title="Set MATPINV block";
+        return set_param_popup_title
+    }
+
 }
 
 function MATRESH() {
@@ -15127,6 +15809,12 @@ MATRESH.prototype.set = function MATRESH() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+    MATRESH.prototype.get_popup_title = function MATRESH() {
+        var set_param_popup_title="Set MATRESH block parameters";
+        return set_param_popup_title
+    }
+
 }
 
 function MATSING() {
@@ -15233,6 +15921,12 @@ MATSING.prototype.set = function MATSING() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+    MATSING.prototype.get_popup_title = function MATSING() {
+        var set_param_popup_title="Set MATSVD block parameters";
+        return set_param_popup_title
+    }
+
 }
 function MATSUM() {
 
@@ -15337,6 +16031,12 @@ MATSUM.prototype.set = function MATSUM() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+    MATSUM.prototype.get_popup_title = function MATSUM() {
+        var set_param_popup_title="Set MATSUM block parameters";
+        return set_param_popup_title
+    }
+
 }
 
 function MATTRAN() {
@@ -15399,6 +16099,12 @@ MATTRAN.prototype.set = function MATTRAN() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+MATTRAN.prototype.get_popup_title = function MATTRAN() {
+        var set_param_popup_title="Set MATTRAN block";
+        return set_param_popup_title
+    }
+
 }
 
 function MATZCONJ() {
@@ -15436,6 +16142,11 @@ function MATZCONJ() {
     }
     MATZCONJ.prototype.details = function MATZCONJ() {
         return this.x;
+    }
+
+    MATZCONJ.prototype.get_popup_title = function MATTRAN() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
     }
 }
 
@@ -15508,10 +16219,13 @@ MATZREIM.prototype.set = function MATZREIM() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
-}
-function
 
-MAXMIN() {
+    MATZREIM.prototype.get_popup_title = function MATTRAN() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
+    }
+}
+function MAXMIN() {
 
     MAXMIN.prototype.define = function MAXMIN() {
         var model = scicos_model();
@@ -15584,6 +16298,12 @@ MAXMIN.prototype.set = function MAXMIN() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+MAXMIN.prototype.get_popup_title = function MAXMIN() {
+        var set_param_popup_title="Set Max/Min block parameters";
+        return set_param_popup_title
+    }
+
 }
 function MAX_f() {
 
@@ -15630,6 +16350,10 @@ function MAX_f() {
     MAX_f.prototype.details = function MAX_f() {
         return this.x;
     }
+    MAX_f.prototype.get_popup_title = function MAX_f() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
+    }
 }
 function MBLOCK() {
 
@@ -15674,6 +16398,10 @@ function MBLOCK() {
 
     MBLOCK.prototype.details = function MBLOCK() {
         return this.x;
+    }
+    MBLOCK.prototype.get_popup_title = function MBLOCK() {
+        var set_param_popup_title="Set Modelica generic block parameters";
+        return set_param_popup_title
     }
 }
 function MCLOCK_f() {
@@ -15843,6 +16571,10 @@ function MCLOCK_f() {
     MCLOCK_f.prototype.details = function MCLOCK_f() {
         return this.x;
     }
+    MCLOCK_f.prototype.get_popup_title = function MCLOCK_f() {
+        var set_param_popup_title="Set Multifrequency clock parameters";
+        return set_param_popup_title
+    }
 }
 function MFCLCK_f() {
 
@@ -15909,6 +16641,10 @@ function MFCLCK_f() {
     MFCLCK_f.prototype.details = function MFCLCK_f() {
         return this.x;
     }
+    MFCLCK_f.prototype.get_popup_title = function MFCLCK_f() {
+        var set_param_popup_title="Set Multifrequency clock parameters";
+        return set_param_popup_title
+    }
 }
 function MIN_f() {
     MIN_f.prototype.get = function MIN_f() {
@@ -15933,6 +16669,10 @@ function MIN_f() {
     }
     MIN_f.prototype.details = function MIN_f() {
         return this.x;
+    }
+    MIN_f.prototype.get_popup_title = function MIN_f() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
     }
 }
 
@@ -16007,6 +16747,12 @@ Modulo_Count.prototype.set = function Modulo_Count() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+    Modulo_Count.prototype.get_popup_title = function Modulo_Count() {
+        var set_param_popup_title="Set Modulo_Count block parameters <br> Modulo counter (0 to N counter)<br>";
+        return set_param_popup_title
+    }
+
 }
 function MUX() {
 
@@ -16070,6 +16816,10 @@ MUX.prototype.set = function MUX() {
     this.x.graphics.exprs = exprs
     return new BasicBlock(this.x)
 }
+MUX.prototype.get_popup_title = function MUX() {
+        var set_param_popup_title="Set MUX block parameters";
+        return set_param_popup_title
+    }
 }
 
 function MUX_f() {
@@ -16134,6 +16884,12 @@ function MUX_f() {
     MUX_f.prototype.details = function MUX_f() {
         return this.x;
     }
+
+    MUX_f.prototype.get_popup_title = function MUX_f() {
+        var set_param_popup_title="Set MUX block parameters";
+        return set_param_popup_title
+    }
+
 }
 
 
@@ -16234,6 +16990,11 @@ function M_freq() {
  		var io =set_io(this.x.model,this.x.graphics,[],[],[1],ones(mn,1));
          return new BasicBlock(this.x)
      }
+
+     M_freq.prototype.get_popup_title = function M_freq() {
+        var set_param_popup_title="Set block parameters";
+        return set_param_popup_title
+    }
 }
 
 function M_SWITCH() {
@@ -16299,6 +17060,10 @@ M_SWITCH.prototype.set = function M_SWITCH() {
     
     return new BasicBlock(this.x)
     }
+    M_SWITCH.prototype.get_popup_title = function M_SWITCH() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
+    }
 }
 
 function NEGTOPOS_f() {
@@ -16325,6 +17090,11 @@ function NEGTOPOS_f() {
     NEGTOPOS_f.prototype.get=function NEGTOPOS_f()
     {
         alert("parameters can not be changed");
+    }
+
+    NEGTOPOS_f.prototype.get_popup_title = function NEGTOPOS_f() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
     }
 }
 function NMOS() {
@@ -16394,6 +17164,11 @@ NMOS.prototype.set = function NMOS() {
     var exprs = new ScilabString([this.W.toString().replace(/,/g, " ")],[this.L.toString().replace(/,/g, " ")],[this.Beta.toString().replace(/,/g, " ")],[this.Vt.toString().replace(/,/g, " ")],[this.K2.toString().replace(/,/g, " ")],[this.K5.toString().replace(/,/g, " ")],[this.dW.toString().replace(/,/g, " ")],[this.dL.toString().replace(/,/g, " ")],[this.RDS.toString().replace(/,/g, " ")])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
+    }
+
+    NMOS.prototype.get_popup_title = function NMOS() {
+        var set_param_popup_title="Set NMOS Transistor block parameters";
+        return set_param_popup_title
     }
 }
 function PMOS() {
@@ -16465,6 +17240,12 @@ function PMOS() {
 	    this.x.graphics.exprs=exprs
 	    return new BasicBlock(this.x)
 	    }
+
+      PMOS.prototype.get_popup_title = function PMOS() {
+        var set_param_popup_title="Set PMOS Transistor parameters";
+        return set_param_popup_title
+    }
+
 }
 
 
@@ -16570,6 +17351,11 @@ NPN.prototype.set = function NPN() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+    NPN.prototype.get_popup_title = function NPN() {
+        var set_param_popup_title="Set NPN block parameters:";
+        return set_param_popup_title
+    }
 }
 function NRMSOM_f() {
 
@@ -16613,6 +17399,11 @@ NRMSOM_f.prototype.set = function NRMSOM_f() {
  var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"NRMSOM_f\",sz(1),sz(2));"]);
         this.x = new standard_define(new ScilabDouble([.2, 2]), model, exprs, gr_i);
     return new BasicBlock(this.x)
+    }
+
+    NRMSOM_f.prototype.get_popup_title = function NRMSOM_f() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
     }
 }
 
@@ -16672,6 +17463,11 @@ function OpAmp() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }*/
+
+    OpAmp.prototype.get_popup_title = function OpAmp() {
+        var set_param_popup_title="Set block parameters:";
+        return set_param_popup_title
+    }
 }
 
 function OUTIMPL_f() {
@@ -16725,6 +17521,11 @@ OUTIMPL_f.prototype.set = function OUTIMPL_f() {
     var exprs = new ScilabString([this.prt])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
+    }
+
+    OUTIMPL_f.prototype.get_popup_title = function OUTIMPL_f() {
+        var set_param_popup_title="Set OUTIMPL_f block parameters:";
+        return set_param_popup_title
     }
 }
 function OUT_f () {
@@ -16796,6 +17597,11 @@ OUT_f.prototype.set = function OUT_f() {
     this.displayParameter = [this.prt];
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
+    }
+
+    OUT_f.prototype.get_popup_title = function OUT_f() {
+        var set_param_popup_title="Set OUT_f block parameters:";
+        return set_param_popup_title
     }
 }
 function PDE() {
@@ -16883,6 +17689,11 @@ PerteDP.prototype.set = function PerteDP() {
     var exprs = new ScilabString([this.L.toString().replace(/,/g, " ")],[this.D.toString().replace(/,/g, " ")],[this.lambda.toString().replace(/,/g, " ")],[this.z1.toString().replace(/,/g, " ")],[this.z2.toString().replace(/,/g, " ")],[this.p_rho.toString().replace(/,/g, " ")])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
+    }
+
+    PerteDP.prototype.get_popup_title = function PerteDP() {
+        var set_param_popup_title="Set block parameters:";
+        return set_param_popup_title
     }
 
 }
@@ -17544,6 +18355,10 @@ function PID() {
     PID.prototype.details = function PID() {
         return this.x;
     }
+    PID.prototype.get_popup_title = function PID() {
+        var set_param_popup_title="Set PID parameters:";
+        return set_param_popup_title
+    }
 }
 function PNP() {
 
@@ -17657,6 +18472,11 @@ PNP.prototype.set = function PNP() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+    PNP.prototype.get_popup_title = function PNP() {
+        var set_param_popup_title="Set PNP block parameters";
+        return set_param_popup_title
+    }
 }
 function POSTONEG_f() {
 
@@ -17682,6 +18502,11 @@ function POSTONEG_f() {
     }
     POSTONEG_f.prototype.get=function POSTONEG_f(){
         alert("parameters can not be changed");
+    }
+
+    POSTONEG_f.prototype.get_popup_title = function POSTONEG_f() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
     }
 }
 
@@ -17716,6 +18541,10 @@ function PotentialSensor() {
     }
     PotentialSensor.prototype.details = function PotentialSensor() {
         return this.x;
+    }
+    PotentialSensor.prototype.get_popup_title = function PotentialSensor() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
     }
 }
 
@@ -17766,6 +18595,10 @@ POWBLK_f.prototype.set = function POWBLK_f() {
     var exprs = new ScilabString([this.a])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
+    }
+POWBLK_f.prototype.get_popup_title = function POWBLK_f() {
+        var set_param_popup_title="Set u^a block parameters";
+        return set_param_popup_title
     }
 }
 
@@ -17840,6 +18673,10 @@ function PRODUCT() {
 		this.x.graphics.exprs = exprs
 		return new BasicBlock(this.x)
 	}
+        PRODUCT.prototype.get_popup_title = function PRODUCT() {
+        var set_param_popup_title="Set multiplication block parameters<br>(multiplication is set with + 1, division with -1)<br>";
+        return set_param_popup_title
+    }
 }
 function PROD_f() {
 
@@ -17874,6 +18711,10 @@ PROD_f.prototype.set = function PROD_f() {
     }
     PROD_f.prototype.details = function PROD_f() {
         return this.x;
+    }
+    PROD_f.prototype.get_popup_title = function PROD_f() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
     }
 }
 
@@ -17928,6 +18769,11 @@ PuitsP.prototype.set = function PuitsP() {
     var exprs = new ScilabString([this.P0.toString().replace(/,/g, " ")],[this.T0.toString().replace(/,/g, " ")],[this.H0.toString().replace(/,/g, " ")],[this.option_temperature.toString().replace(/,/g, " ")])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
+    }
+
+   PuitsP.prototype.get_popup_title = function PuitsP() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
     }
 }
  function PULSE_SC() {
@@ -18334,6 +19180,10 @@ PuitsP.prototype.set = function PuitsP() {
     PULSE_SC.prototype.details = function PULSE_SC() {
         return this.x;
     }
+    PULSE_SC.prototype.get_popup_title = function PULSE_SC() {
+        var set_param_popup_title="Set Pulse Generator parameters";
+        return set_param_popup_title
+    }
 }
 function QUANT_f() {
 
@@ -18393,6 +19243,10 @@ function QUANT_f() {
         this.x.graphics.exprs = exprs
         return new BasicBlock(this.x)
     }
+    QUANT_f.prototype.get_popup_title = function QUANT_f() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
+    }
 }
 
 function RAMP() {
@@ -18443,6 +19297,13 @@ RAMP.prototype.set = function RAMP() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+    RAMP.prototype.get_popup_title = function RAMP() {
+        var set_param_popup_title="Set RAMP block parameters <br> Ramp function <br>";
+        return set_param_popup_title
+    }
+
+
 }
 
 function RAND_m() {
@@ -18536,6 +19397,12 @@ RAND_m.prototype.set = function RAND_m() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+    RAND_m.prototype.get_popup_title = function RAND_m() {
+        var set_param_popup_title="Set Random generator block parameters<br>     flag = 0 : Uniform distribution A is min and A+B max <br>     flag = 1 : Normal distribution A is mean and B deviation <br> <br>    A and B must be matrix with equal sizes <br>";
+        return set_param_popup_title
+    }
+
 }
 
 function RATELIMITER() {
@@ -18562,14 +19429,14 @@ function RATELIMITER() {
     RATELIMITER.prototype.details = function RATELIMITER() {
         return this.x;
     }
-RATELIMITER.prototype.get = function RATELIMITER() {
+    RATELIMITER.prototype.get = function RATELIMITER() {
         var options={
             maxp:["max slope",this.maxp],
             minp:["min slope",this.minp],
         }
         return options
     }
-RATELIMITER.prototype.set = function RATELIMITER() {
+    RATELIMITER.prototype.set = function RATELIMITER() {
     this.maxp = parseFloat((arguments[0]["maxp"]))
     this.minp = parseFloat((arguments[0]["minp"]))
     if((this.maxp<=this.minp)||(this.maxp<=0)||(this.minp>=0)){
@@ -18581,6 +19448,10 @@ RATELIMITER.prototype.set = function RATELIMITER() {
     var exprs = new ScilabString([this.maxp],[this.minp])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
+    }
+    RATELIMITER.prototype.get_popup_title = function RATELIMITER() {
+        var set_param_popup_title="Set rate limiter parameters";
+        return set_param_popup_title
     }
 }
 
@@ -18664,6 +19535,11 @@ function READAU_f() {
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
     }
+
+    READAU_f.prototype.get_popup_title = function READAU_f() {
+        var set_param_popup_title="Set READAU_f block parameters <br>(Read Audio File)<br>Read is done on a binary '.au' file";
+        return set_param_popup_title
+    }
 }
 function READC_f() {
 
@@ -18736,6 +19612,11 @@ var model = scicos_model();
          this.x.graphics.exprs=exprs
          return new BasicBlock(this.x)
      }
+
+     READC_f.prototype.get_popup_title = function READC_f() {
+        var set_param_popup_title="Set READC_f block parameters <br>Read from C binary file";
+        return set_param_popup_title
+    }
 
 }
 function REGISTER() {
@@ -18837,6 +19718,10 @@ z0:["Register initial condition",this.z0],
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
     }
+    REGISTER.prototype.get_popup_title = function REGISTER() {
+        var set_param_popup_title="Set delay parameters";
+        return set_param_popup_title
+    }
 }
 function REGISTER_f () {
 
@@ -18864,6 +19749,11 @@ function REGISTER_f () {
         block.graphics.in_label = new ScilabString([""]);
         block.graphics.out_label = new ScilabString([""]);
         return block;
+    }
+
+    REGISTER_f.prototype.get_popup_title = function REGISTER_f() {
+        var set_param_popup_title="Set delay parameters";
+        return set_param_popup_title
     }
 }
 function RELATIONALOP() {
@@ -18972,6 +19862,10 @@ function RELATIONALOP() {
         this.x.graphics.style = new ScilabString(["fontSize=13;fontStyle=1;displayedLabel=" + label]);
         return new BasicBlock(this.x);
 }
+       RELATIONALOP.prototype.get_popup_title = function RELATIONALOP() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
+    }
 
 }
 
@@ -19022,6 +19916,10 @@ function RELAY_f() {
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
     }
+    RELAY_f.prototype.get_popup_title = function RELAY_f() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
+    }
 }
 
 function Resistor() {
@@ -19068,6 +19966,10 @@ Resistor.prototype.set = function Resistor() {
     var exprs = new ScilabString([this.R])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
+    }
+Resistor.prototype.get_popup_title = function Resistor() {
+        var set_param_popup_title="Set Resistor block parameter";
+        return set_param_popup_title
     }
 }
 
@@ -19205,6 +20107,11 @@ RFILE_f.prototype.set = function RFILE_f() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+    RFILE_f.prototype.get_popup_title = function RFILE_f() {
+        var set_param_popup_title="Set RFILE_f block parameters<br><br>Read is done on: <br>- A binary file if no format given<br>- A formatted text file if a  format (fortran type) is given";
+        return set_param_popup_title
+    }
 }
 function RICC() {
 
@@ -19260,6 +20167,11 @@ RICC.prototype.set = function RICC() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+RICC.prototype.get_popup_title = function RICC() {
+        var set_param_popup_title="Set RICC block";
+        return set_param_popup_title
+    }
+
 
 }
 
@@ -19334,6 +20246,11 @@ ROOTCOEF.prototype.set = function ROOTCOEF() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+     ROOTCOEF.prototype.get_popup_title = function ROOTCOEF() {
+        var set_param_popup_title="Set ROOTCOEF block";
+        return set_param_popup_title
+    }
 }
 
 function SAMPHOLD_m() {
@@ -19384,6 +20301,10 @@ SAMPHOLD_m.prototype.set = function SAMPHOLD_m() {
     var exprs = new ScilabString([this.it])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
+    }
+    SAMPHOLD_m.prototype.get_popup_title = function SAMPHOLD_m() {
+        var set_param_popup_title="Set parameters Block";
+        return set_param_popup_title
     }
 }
 function SampleCLK() {
@@ -19437,6 +20358,10 @@ SampleCLK.prototype.set = function SampleCLK() {
     var exprs = new ScilabString([this.frequ],[this.offset])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
+    }
+    SampleCLK.prototype.get_popup_title = function SampleCLK() {
+        var set_param_popup_title="Set block parameters";
+        return set_param_popup_title
     }
 }
 
@@ -19500,6 +20425,10 @@ function SATURATION() {
 		this.x.graphics.exprs = exprs
 		return new BasicBlock(this.x)
 	}
+	SATURATION.prototype.get_popup_title = function SATURATION() {
+        var set_param_popup_title="Set Saturation parameters";
+        return set_param_popup_title
+        }
 }
 
 
@@ -19527,6 +20456,11 @@ function SAWTOOTH_f() {
 
     SAWTOOTH_f.prototype.details = function SAWTOOTH_f() {
         return this.x;
+    }
+
+    SAWTOOTH_f.prototype.get_popup_title = function SAWTOOTH_f() {
+        var set_param_popup_title="Set SAWTOOTH_f block";
+        return set_param_popup_title
     }
 }
 function SCALAR2VECTOR() {
@@ -19567,6 +20501,11 @@ SCALAR2VECTOR.prototype.set = function SCALAR2VECTOR() {
     var exprs = new ScilabString([this.nout])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
+    }
+
+    SCALAR2VECTOR.prototype.get_popup_title = function SCALAR2VECTOR() {
+        var set_param_popup_title="Set block parameters";
+        return set_param_popup_title
     }
 }
 
@@ -19893,6 +20832,11 @@ function scifunc_block_m() {
         this.x.graphics.exprs = exprs
         return new BasicBlock(this.x)
     }
+
+    scifunc_block_m.prototype.get_popup_title = function scifunc_block_m() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
+    }
 }
         
 
@@ -19948,6 +20892,10 @@ SELECT_m.prototype.set = function SELECT_m() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+    SELECT_m.prototype.get_popup_title = function SELECT_m() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
+    }
 }
 
 function SELF_SWITCH() {
@@ -19985,6 +20933,11 @@ function SELF_SWITCH() {
     SELF_SWITCH.prototype.set=function SELF_SWITCH(){
        this.x.graphics.style = new ScilabString(["SELF_SWITCH;SELF_SWITCH_ON"]);
 	return new BasicBlock(this.x);
+    }
+
+    SELF_SWITCH.prototype.get_popup_title = function SELF_SWITCH() {
+        var set_param_popup_title="Set block parameters";
+        return set_param_popup_title
     }
 }
 function SHIFT() {
@@ -20104,6 +21057,13 @@ function SHIFT() {
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
     }
+
+    SHIFT.prototype.get_popup_title = function SHIFT() {
+        var set_param_popup_title="Set SHIFT block parameters <br> Shift/Rotates bits <br>";
+        return set_param_popup_title
+    }
+
+
 }
 function Sigbuilder() {
 
@@ -20402,6 +21362,12 @@ function Sigbuilder() {
     Sigbuilder.prototype.details = function Sigbuilder() {
         return this.x;
     }
+
+    Sigbuilder.prototype.get_popup_title = function Sigbuilder() {
+        var set_param_popup_title="Spline data";
+        return set_param_popup_title
+    }
+
 }
 function SIGNUM() {
 
@@ -20449,6 +21415,10 @@ SIGNUM.prototype.set = function SIGNUM() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+SIGNUM.prototype.get_popup_title = function SIGNUM() {
+        var set_param_popup_title="Set block parameters";
+        return set_param_popup_title
+    }
 }
 
 function SINBLK_f() {
@@ -20473,6 +21443,11 @@ function SINBLK_f() {
     }
     SINBLK_f.prototype.details = function SINBLK_f() {
         return this.x;
+    }
+
+    SINBLK_f.prototype.get_popup_title = function SINBLK_f() {
+        var set_param_popup_title="Set Parameters";
+        return set_param_popup_title
     }
 }
 
@@ -20537,6 +21512,10 @@ SineVoltage.prototype.set = function SineVoltage() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+    SineVoltage.prototype.get_popup_title = function SineVoltage() {
+        var set_param_popup_title="Set voltage source parameter";
+        return set_param_popup_title
+    }
 }
 function SOM_f() {
     SOM_f.prototype.get = function SOM_f() {
@@ -20579,6 +21558,11 @@ function SOM_f() {
     }
     SOM_f.prototype.details = function SOM_f() {
         return this.x;
+    }
+
+    SOM_f.prototype.get_popup_title = function SOM_f() {
+        var set_param_popup_title="Set Parameters";
+        return set_param_popup_title
     }
 }
 function SourceP() {
@@ -20636,6 +21620,12 @@ SourceP.prototype.set = function SourceP() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+  SourceP.prototype.get_popup_title = function SourceP() {
+        var set_param_popup_title="Set Parameters";
+        return set_param_popup_title
+    }
+
 }
 function SQRT() {
 
@@ -20690,6 +21680,10 @@ SQRT.prototype.set = function SQRT() {
     var exprs = new ScilabString([this.typ])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
+    }
+SQRT.prototype.get_popup_title = function SQRT() {
+        var set_param_popup_title="Set SQRT Block";
+        return set_param_popup_title
     }
 }
 function SRFLIPFLOP() {
@@ -21574,6 +22568,13 @@ this.initialvalue="int8(0)";
     SRFLIPFLOP.prototype.details = function SRFLIPFLOP() {
         return this.x;
     }
+
+    SRFLIPFLOP.prototype.get_popup_title = function SRFLIPFLOP() {
+        var set_param_popup_title="Set SRFLIPFLOP block parameters <br> SR flip-flop<br> The \"Initial Value\" must be 0 or 1 of type int8 <br> - Negative values are considered as int8(0) <br> - Positive values are considered as int8(1) <br>";
+        return set_param_popup_title
+    }
+
+
 }
 function STEP_FUNCTION() {
 
@@ -21777,6 +22778,10 @@ function STEP_FUNCTION() {
     STEP_FUNCTION.prototype.details = function STEP_FUNCTION() {
         return this.x;
     }
+    STEP_FUNCTION.prototype.get_popup_title = function STEP_FUNCTION() {
+        var set_param_popup_title="Set STEP_FUNCTION block parameters<br><br> Step function";
+        return set_param_popup_title
+    }
 }
 function SUBMAT() {
 
@@ -21895,6 +22900,12 @@ SUBMAT.prototype.set = function SUBMAT() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+SUBMAT.prototype.get_popup_title = function SUBMAT() {
+        var set_param_popup_title="Set SUBMAT Block";
+        return set_param_popup_title
+    }
+
+
 }
 function SUMMATION() {
 
@@ -22102,6 +23113,10 @@ function SUMMATION() {
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
     }
+    SUMMATION.prototype.get_popup_title = function SUMMATION() {
+        var set_param_popup_title="Set sum block parameters";
+        return set_param_popup_title
+    }
 }
 function SUM_f() {
     SUM_f.prototype.get = function SUM_f() {
@@ -22147,6 +23162,10 @@ SUM_f.prototype.set = function SUM_f() {
         return this.x;
 
     }
+    SUM_f.prototype.get_popup_title = function SUM_f() {
+        var set_param_popup_title="Set Parameters";
+        return set_param_popup_title
+    }
 }
 function SUPER_f() {
     SUPER_f.prototype.get = function SUPER_f() {
@@ -22191,6 +23210,11 @@ function SUPER_f() {
 
     SUPER_f.prototype.details = function SUPER_f() {
         return this.x;
+    }
+
+    SUPER_f.prototype.get_popup_title = function SUPER_f() {
+        var set_param_popup_title="Set Parameters";
+        return set_param_popup_title
     }
 }
 function Switch() {
@@ -22255,6 +23279,10 @@ function Switch() {
 	    this.x.graphics.exprs=exprs
 	    return new BasicBlock(this.x)
 	 }
+   Switch.prototype.get_popup_title = function Switch() {
+        var set_param_popup_title="Set non-ideal electrical switch parameters";
+        return set_param_popup_title
+    }
 }
 function SWITCH2_m() {
 
@@ -22341,6 +23369,13 @@ SWITCH2_m.prototype.set = function SWITCH2_m() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+    SWITCH2_m.prototype.get_popup_title = function SWITCH2_m() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
+    }
+
+
 }
 function SWITCH_f() {
 
@@ -22411,6 +23446,12 @@ SWITCH_f.prototype.set = function SWITCH_f() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+SWITCH_f.prototype.get_popup_title = function SWITCH_f() {
+        var set_param_popup_title="Set switch parameters";
+        return set_param_popup_title
+    }
+
 }
 function TANBLK_f() {
     TANBLK_f.prototype.get = function TANBLK_f() {
@@ -22435,6 +23476,11 @@ function TANBLK_f() {
 
     TANBLK_f.prototype.details = function TANBLK_f() {
         return this.x;
+    }
+
+    TANBLK_f.prototype.get_popup_title = function TANBLK_f() {
+        var set_param_popup_title="Set Parameters";
+        return set_param_popup_title
     }
 }
 function TCLSS() {
@@ -22510,6 +23556,10 @@ function TCLSS() {
             this.x.model.sim = list(new ScilabString(["tcsltj4"]), new ScilabDouble([4]));
         return new BasicBlock(this.x)
     }
+    TCLSS.prototype.get_popup_title = function TCLSS() {
+        var set_param_popup_title="Set continuous linear system parameters";
+        return set_param_popup_title
+    }
 
 }
 function TEXT_f() {
@@ -22557,6 +23607,12 @@ TEXT_f.prototype.set = function TEXT_f() {
     TEXT_f.prototype.details = function TEXT_f() {
         return this.x;
     }
+
+    TEXT_f.prototype.get_popup_title = function TEXT_f() {
+        var set_param_popup_title="Set Text block parameters";
+        return set_param_popup_title
+    }
+
 }
 function TIME_DELAY() {
 
@@ -22615,6 +23671,11 @@ TIME_DELAY.prototype.set = function TIME_DELAY() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+TIME_DELAY.prototype.get_popup_title = function TIME_DELAY() {
+        var set_param_popup_title="Set delay parameters";
+        return set_param_popup_title
+    }
+
 }
 function TIME_f() {
     TIME_f.prototype.get = function TIME_f() {
@@ -22635,6 +23696,11 @@ function TIME_f() {
 
     TIME_f.prototype.details = function TIME_f() {
         return this.x;
+    }
+
+    TIME_f.prototype.get_popup_title = function TIME_f() {
+        var set_param_popup_title="Set Parameters";
+        return set_param_popup_title
     }
 }
 function TKSCALE() {
@@ -22678,6 +23744,10 @@ TKSCALE.prototype.set = function TKSCALE() {
     var exprs = new ScilabString([sci2exp(this.a)], [sci2exp(this.b)], [sci2exp(this.f)])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
+    }
+    TKSCALE.prototype.get_popup_title = function TKSCALE() {
+        var set_param_popup_title="Set scale block parameters";
+        return set_param_popup_title
     }
 }
 function TOWS_c() {
@@ -22744,6 +23814,11 @@ function TOWS_c() {
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
         }
+
+        TOWS_c.prototype.get_popup_title = function TOWS_c() {
+        var set_param_popup_title="Set Xcos Buffer Block";
+        return set_param_popup_title
+    }
     }
 
 //TOWS_c.prototype.set = function TOWS_c() {
@@ -22808,6 +23883,10 @@ function TRASH_f() {
     TRASH_f.prototype.details = function TRASH_f() {
         return this.x;
     }
+    TRASH_f.prototype.get_popup_title = function TRASH_f() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
+    }
 }
 function TrigFun() {
 
@@ -22849,6 +23928,10 @@ TrigFun.prototype.set = function TrigFun() {
     var exprs = new ScilabString([this.fun])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
+    }
+TrigFun.prototype.get_popup_title = function TrigFun() {
+        var set_param_popup_title="Choose among sin, cos, tan, asin<br>             acos, atan, sinh, cosh, tanh, asinh, acosh, atanh";
+        return set_param_popup_title
     }
 }
 function VanneReglante() {
@@ -22903,6 +23986,11 @@ VanneReglante.prototype.set = function VanneReglante() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+
+    VanneReglante.prototype.get_popup_title = function VanneReglante() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
+    }
 }
 function VariableResistor() {
 
@@ -22935,6 +24023,10 @@ function VariableResistor() {
     VariableResistor.prototype.get=function VariableResistor()
     {
         alert("parameters can not be changed");
+    }
+    VariableResistor.prototype.get_popup_title = function VariableResistor() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
     }
 }
 function VARIABLE_DELAY() {
@@ -22991,6 +24083,10 @@ function VARIABLE_DELAY() {
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
     }
+    VARIABLE_DELAY.prototype.get_popup_title = function VARIABLE_DELAY() {
+        var set_param_popup_title="Set delay parameters";
+        return set_param_popup_title
+    }
 }
 function VirtualCLK0() {
     VirtualCLK0.prototype.get = function VirtualCLK0() {
@@ -23014,6 +24110,11 @@ function VirtualCLK0() {
 
     VirtualCLK0.prototype.details = function VirtualCLK0() {
         return this.x;
+    }
+
+    VirtualCLK0.prototype.get_popup_title = function VirtualCLK0() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
     }
 
 }
@@ -23047,6 +24148,11 @@ function VoltageSensor() {
 
     VoltageSensor.prototype.details = function VoltageSensor() {
         return this.x;
+    }
+
+    VoltageSensor.prototype.get_popup_title = function VoltageSensor() {
+        var set_param_popup_title="Set parameters";
+        return set_param_popup_title
     }
 }
 function VsourceAC() {
@@ -23106,6 +24212,10 @@ VsourceAC.prototype.set = function VsourceAC() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
+VsourceAC.prototype.get_popup_title = function VsourceAC() {
+        var set_param_popup_title="Set voltage source parameter";
+        return set_param_popup_title
+    }
 }
 function VVsourceAC() {
 
@@ -23163,6 +24273,10 @@ VVsourceAC.prototype.set = function VVsourceAC() {
     }
     VVsourceAC.prototype.details = function VVsourceAC() {
         return this.x;
+    }
+    VVsourceAC.prototype.get_popup_title = function VVsourceAC() {
+        var set_param_popup_title="Set voltage source parameter";
+        return set_param_popup_title
     }
 }
 //updated on 8/6/17 --ritveeka
@@ -23222,6 +24336,11 @@ function WRITEAU_f() {
         this.x.model.ipar = new ScilabDouble([this.fname.length], ..._str2code(this.frmt), [this.N], [this.swap], ..._str2code(this.fname));
         this.x.graphics.exprs = new ScilabString([this.N], [this.swap]);
         return new BasicBlock(this.x);
+    }
+
+    WRITEAU_f.prototype.get_popup_title = function WRITEAU_f() {
+        var set_param_popup_title="Set WRITEAU_f block parameters";
+        return set_param_popup_title
     }
 }
 
@@ -23293,6 +24412,11 @@ function WRITEC_f () {
         this.x.graphics.exprs = exprs;
         return new BasicBlock(this.x);
     }
+
+    WRITEC_f.prototype.get_popup_title = function WRITEC_f() {
+        var set_param_popup_title="Set WRITEC_f block parameters";
+        return set_param_popup_title
+    }
 }
 
 
@@ -23351,5 +24475,10 @@ function ZCROSS_f() {
         var exprs = new ScilabString([this.in])
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
+    }
+
+    ZCROSS_f.prototype.get_popup_title = function ZCROSS_f() {
+        var set_param_popup_title="Set Zero-Crossing parameters <br>All surfaces must cross together";
+        return set_param_popup_title
     }
 }

@@ -1156,8 +1156,8 @@
                         addToolbarButton(editor, toolbar, 'redo', '', 'images/redo.png');
                         toolbar.appendChild(spacer.cloneNode(true));
          
-                        addToolbarButton(editor, toolbar, 'show', 'Show', 'images/camera.png');
-                        addToolbarButton(editor, toolbar, 'print', 'Print', 'images/printer.png');
+                        //addToolbarButton(editor, toolbar, 'show', 'Show', 'images/camera.png');
+                        addToolbarButton(editor, toolbar, 'print', 'Print Xcos', 'images/printer.png');
          
                         toolbar.appendChild(spacer.cloneNode(true));
          
@@ -1806,7 +1806,7 @@
          	editor.addAction('importXcos', importxcos = function(editor, cell) {xeditor = editor; xcell = cell;IMPORTxcos(xeditor,xcell) } );
          
                         addToolbarButton(editor, toolbar, 'importXcos', 'Import Xcos', 'images/export1.png');
-                        addToolbarButton(editor, toolbar, 'exportXML', 'Export XML', 'images/export1.png');
+                        //addToolbarButton(editor, toolbar, 'exportXML', 'Export XML', 'images/export1.png');
                         addToolbarButton(editor, toolbar, 'exportXcos', 'Export Xcos', 'images/export1.png');
                         toolbar.appendChild(spacer.cloneNode(true));
          
@@ -2642,8 +2642,8 @@
                     content.setAttribute("id", "contentProperties");
          
                     // Heading of content
-                    var heading = document.createElement('h2');
-                    heading.innerHTML = "Set Scope Parameters";
+                    var heading = document.createElement('h3');
+                    heading.innerHTML = cell.blockInstance.instance.get_popup_title();
                     heading.id = "headingProperties"
                     content.appendChild(heading);
          
