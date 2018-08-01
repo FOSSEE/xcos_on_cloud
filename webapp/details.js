@@ -245,6 +245,13 @@ function ScilabString() {
     }
 }
 
+ScilabString.prototype.push = function() {
+    var e = arguments[0];
+    var i = e.line || 0;
+    var j = e.column || 0;
+    this["data" + i + j] = e;
+}
+
 function ScilabBoolean() {
     var i = 0,
         j = 0;
@@ -263,7 +270,12 @@ function ScilabBoolean() {
     }
 }
 
-
+ScilabBoolean.prototype.push = function() {
+    var e = arguments[0];
+    var i = e.line || 0;
+    var j = e.column || 0;
+    this["data" + i + j] = e;
+}
 
 function ScilabDouble() {
     var i = 0,
@@ -288,6 +300,16 @@ function ScilabDouble() {
     }
 }
 
+ScilabDouble.prototype.push = function() {
+    var e = arguments[0];
+    if (typeof e.realPart === 'number' && e.realPart % 1 == 0) {
+        e.realPart = e.realPart.toFixed(1);
+    }
+    var i = e.line || 0;
+    var j = e.column || 0;
+    this["data" + i + j] = e;
+}
+
 function ScilabInteger() {
     var i = 0,
         j = 0;
@@ -304,6 +326,13 @@ function ScilabInteger() {
             }
         }
     }
+}
+
+ScilabInteger.prototype.push = function() {
+    var e = arguments[0];
+    var i = e.line || 0;
+    var j = e.column || 0;
+    this["data" + i + j] = e;
 }
 
 function int32() {
@@ -361,7 +390,7 @@ function getData() {
     var key;
     var dataArray = [];
     for (key in dataObject) {
-        if (key != "height" && key != "width") {
+        if (/^data/.test(key)) {
             if (typeof dataObject[key].value === "undefined") {
                 dataArray.push(dataObject[key].realPart);
             } else {
