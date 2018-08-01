@@ -1273,7 +1273,7 @@
                             fileInputField.id = "ExportFilenameInput";
                             fileInputField.maxlength = "128";
                             fileInputField.autofocus = true;
-                            fileInputField.onkeydown = function () {
+                            fileInputField.onkeydown = function (event) {
                                 if (event.which == 13) {
                                     document.getElementById("downloadLinkForExportXcos").click();  //This simulates click on download link if enter key is pressed while entering filename
                                 }
@@ -1522,10 +1522,8 @@
                                         var cell = codec.decode(currentNode);
          
                                         //To Load Xcos Diagram with the changed values 
-                                        var importProperties = {} ; // Stores Changed values of blocks
                                         if(cell.style)
                                         { 
-                                            importProperties = importParameters(cell.style, codec, currentNode);
                                             if(cell.style.startsWith("scifunc_block_m")) {
                                                 alert("Double click on scifunc_block_m to choose .sci file and set parameters");
                                             }
@@ -1586,10 +1584,7 @@
                                             }
 
                                             if (details_instance != null) {
-                                                var details = details_instance.define();
-                                                if(Object.keys(importProperties).length != 0) {
-                                                    details = details_instance.set(importProperties);
-                                                }                                          
+                                                var details = importBlock(currentNode, cell, details_instance);
 
                                                 var enc = new mxCodec(mxUtils.createXmlDocument());
                                                 var node = enc.encode(details);
