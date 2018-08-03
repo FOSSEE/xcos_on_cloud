@@ -245,6 +245,14 @@ function ScilabString() {
     }
 }
 
+ScilabString.prototype.push = function() {
+    var i = this.lastheight || 0;
+    this["data" + i + 0] = arguments[0];
+    this.lastheight = i + 1;
+    if (this.lastheight == this.height)
+        delete this.lastheight;
+}
+
 function ScilabBoolean() {
     var i = 0,
         j = 0;
@@ -263,7 +271,13 @@ function ScilabBoolean() {
     }
 }
 
-
+ScilabBoolean.prototype.push = function() {
+    var i = this.lastheight || 0;
+    this["data" + i + 0] = arguments[0];
+    this.lastheight = i + 1;
+    if (this.lastheight == this.height)
+        delete this.lastheight;
+}
 
 function ScilabDouble() {
     var i = 0,
@@ -288,6 +302,14 @@ function ScilabDouble() {
     }
 }
 
+ScilabDouble.prototype.push = function() {
+    var i = this.lastheight || 0;
+    this["data" + i + 0] = arguments[0];
+    this.lastheight = i + 1;
+    if (this.lastheight == this.height)
+        delete this.lastheight;
+}
+
 function ScilabInteger() {
     var i = 0,
         j = 0;
@@ -304,6 +326,14 @@ function ScilabInteger() {
             }
         }
     }
+}
+
+ScilabInteger.prototype.push = function() {
+    var i = this.lastheight || 0;
+    this["data" + i + 0] = arguments[0];
+    this.lastheight = i + 1;
+    if (this.lastheight == this.height)
+        delete this.lastheight;
 }
 
 function int32() {
