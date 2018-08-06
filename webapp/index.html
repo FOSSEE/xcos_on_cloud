@@ -1273,7 +1273,7 @@
                             fileInputField.id = "ExportFilenameInput";
                             fileInputField.maxlength = "128";
                             fileInputField.autofocus = true;
-                            fileInputField.onkeydown = function () {
+                            fileInputField.onkeydown = function (event) {
                                 if (event.which == 13) {
                                     document.getElementById("downloadLinkForExportXcos").click();  //This simulates click on download link if enter key is pressed while entering filename
                                 }
@@ -1515,8 +1515,9 @@
                                     }
          
                                     var cells = [];
-                                    var currentNode = rootNode.firstChild;
-                                    while (currentNode != null) {
+                                    for (var currentNode = rootNode.firstChild;
+                                            currentNode != null;
+                                            currentNode = currentNode.nextSibling) {
                                         var curNodeName = currentNode.nodeName;
          
                                         var cell = codec.decode(currentNode);
@@ -1537,15 +1538,13 @@
                                             Maverick
                                             Finding the mxGeometry node for all the nodes.
                                         */
-                                        var geometryNode = currentNode.firstChild;
                                         var geometryCell = null;
-         
-                                        if (geometryNode != null) {
-                                            while (geometryNode != null && geometryNode.nodeName != 'mxGeometry') {
-                                                geometryNode = geometryNode.nextSibling;
-                                            }
-                                            if (geometryNode != null) {
+                                        for (var geometryNode = currentNode.firstChild;
+                                                geometryNode != null;
+                                                geometryNode = geometryNode.nextSibling) {
+                                            if (geometryNode.nodeName == 'mxGeometry') {
                                                 geometryCell = codec.decode(geometryNode);
+                                                break;
                                             }
                                         }
                                         /*
@@ -1597,8 +1596,9 @@
                                                 var stylesheet = graph.getStylesheet();
                                                 var styleName = currentNode.getAttribute('style');
                                                 if(styleName!=null){
-                                                    if (styleName.indexOf(';') != -1) {
-                                                        styleName = styleName.substring(0, styleName.indexOf(';'));
+                                                    var idx = styleName.indexOf(';');
+                                                    if (idx != -1) {
+                                                        styleName = styleName.substring(0, idx);
                                                     }
                                                 }
                                                 var style = stylesheet.styles[styleName];
@@ -1642,10 +1642,6 @@
                                                 }
                                                 node.setAttribute('parent', temp.getAttribute('id'));
          
-                                                var blockModel = details_instance.x.model;
-                                                var graphics = details_instance.x.graphics;
-         
-         
                                                 var v1 = graph.insertVertex(graph.getDefaultParent(), null, node, geometryCell.x, geometryCell.y, 80, 80, ifaceFuncName);
                                                 // @Chhavi: Additional attribute to store the block's instance
                                                 v1.blockInstance = createInstanceTag(details_instance);
@@ -1670,51 +1666,46 @@
                                                 nodeDataObject[curId] = temporaryMapObject;
                                                 v1.setConnectable(false);
                                             }
-                                        }
-         
-                                        if (curNodeName.endsWith('Port')) {
-         
+                                        } else if (curNodeName.endsWith('Port')) {
                                             var oldParentId = currentNode.getAttribute('parent');
                                             var newParentObj = nodeDataObject[oldParentId];
-                                            var newParentId = newParentObj.newId;
          
-                                            var newParentCell = graph.getModel().getCell(newParentId);
-                                            if (curNodeName == 'ExplicitInputPort') {
+                                            switch (curNodeName) {
+                                                case 'ExplicitInputPort':
                                                 newParentObj.inputArray.push('E');
                                                 newParentObj.inputIds.push(curId);
-                                            }
-                                            if (curNodeName == 'ImplicitInputPort') {
+                                                break;
+                                                case 'ImplicitInputPort':
                                                 newParentObj.inputArray.push('I');
                                                 newParentObj.inputIds.push(curId);
-                                            }
-                                            if (curNodeName == 'ExplicitOutputPort') {
+                                                break;
+                                                case 'ExplicitOutputPort':
                                                 newParentObj.outputArray.push('E');
                                                 newParentObj.outputIds.push(curId);
-                                            }
-                                            if (curNodeName == 'ImplicitOutputPort') {
+                                                break;
+                                                case 'ImplicitOutputPort':
                                                 newParentObj.outputArray.push('I');
                                                 newParentObj.outputIds.push(curId);
-                                            }
-                                            if (curNodeName == 'CommandPort') {
+                                                break;
+                                                case 'CommandPort':
                                                 newParentObj.commandArray.push('COMMAND');
                                                 newParentObj.commandIds.push(curId);
-                                            }
-                                            if (curNodeName == 'ControlPort') {
+                                                break;
+                                                case 'ControlPort':
                                                 newParentObj.controlArray.push('CONTROL');
                                                 newParentObj.controlIds.push(curId);
+                                                break;
                                             }
                                         }
-         
-                                        //To continue traversal of all the nodes.
-                                        currentNode = currentNode.nextSibling;
                                     }
          
                                     /*
                                         Maverick
                                         Adding the ports.
                                     */
-                                    currentNode = rootNode.firstChild;
-                                    while (currentNode != null) {
+                                    for (var currentNode = rootNode.firstChild;
+                                            currentNode != null;
+                                            currentNode = currentNode.nextSibling) {
                                         var curNodeName = currentNode.nodeName;
                                         /*
                                             Maverick
@@ -1730,7 +1721,6 @@
                                                 createPorts(graph, newParentCell, newParentObj.inputArray, newParentObj.controlArray, newParentObj.outputArray, newParentObj.commandArray, newParentObj, nodeDataObject);
                                             }
                                         }
-                                        currentNode = currentNode.nextSibling;
                                     }
          
                                     /*
@@ -1738,8 +1728,9 @@
                                         Connecting the links. 
                                     */
          
-                                    currentNode = rootNode.firstChild;
-                                    while (currentNode != null) {
+                                    for (var currentNode = rootNode.firstChild;
+                                            currentNode != null;
+                                            currentNode = currentNode.nextSibling) {
                                         var curNodeName = currentNode.nodeName;
                                         if (curNodeName.endsWith('Link')) {
          
@@ -1757,12 +1748,12 @@
                                                     if (tempNode != null) {
                                                         if (tempNode.nodeName == 'mxPoint') {
                                                             pointsArray.push(new mxPoint(tempNode.getAttribute('x'), tempNode.getAttribute('y')));
-                                                        } else {
-                                                            if (tempNode.nodeName == 'Array') {
-                                                                var mxPointNode = tempNode.firstChild;
-                                                                while (mxPointNode != null) {
+                                                        } else if (tempNode.nodeName == 'Array') {
+                                                            for (var mxPointNode = tempNode.firstChild;
+                                                                    mxPointNode != null;
+                                                                    mxPointNode = mxPointNode.nextSibling) {
+                                                                if (mxPointNode.nodeName == 'mxPoint') {
                                                                     pointsArray.push(new mxPoint(mxPointNode.getAttribute('x'), mxPointNode.getAttribute('y')));
-                                                                    mxPointNode = mxPointNode.nextSibling;
                                                                 }
                                                             }
                                                         }
@@ -1772,7 +1763,6 @@
          
                                             createEdgeObject(graph, newSourceCell, newTargetCell, null);
                                         }
-                                        currentNode = currentNode.nextSibling;
                                     }
          
                                 } finally {
