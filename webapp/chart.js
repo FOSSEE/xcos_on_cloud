@@ -527,7 +527,7 @@ function chart_init(wnd,affichwnd){
 			var block_id = data[3];
 			var rows = data[10];
 			var columns = data[11];
-			var p="<table style='width:100%'><tr>";
+			var p="<b>Value of Block : AFFICH_m-"+block_id+"</b> (Refer to label on block)<br><br><table style='width:100%'><tr>";
 			var count=1;
 			for(var k=12; k<(length_of_data-1); k++){
                                 p+="<td>";
@@ -541,7 +541,6 @@ function chart_init(wnd,affichwnd){
 				
 			}
 			p+="</table>";
-			console.log(p+"::::"+block_id);
                         create_affich_displaytext(p,block_id);
 		}
 
