@@ -29,6 +29,7 @@
         <script type="text/javascript">
 
          var editor ;
+         var listofAffichCell = [];
 
          /*
             referenceModelProp is an array of objects used for saving ids and names of all nodes present in the xml (once properties window is opened) so that
@@ -1539,11 +1540,16 @@
                                         /* parse only Block and Port nodes now */
 
                                         var cell = codec.decode(currentNode);
-         
+         				
                                         //To Load Xcos Diagram with the changed values 
                                         var importProperties = {} ; // Stores Changed values of blocks
                                         if(cell.style)
                                         { 
+                                            if(cell.style.startsWith("AFFICH_m")){
+							
+                                                  //listofAffichCell.push(cell);
+						  //console.log("Cell::::"+cell.toSource());
+                                            }
                                             importProperties = importParameters(cell.style, codec, currentNode);
                                             if(cell.style.startsWith("scifunc_block_m")) {
                                                 alert("Double click on scifunc_block_m to choose .sci file and set parameters");
@@ -1823,7 +1829,7 @@
                         
                         editor.addAction('simulate', function(editor, cell) {
                             
-         
+         			//console.log("cell:::::"+cell);
                          	window.onunload = function (e) {	// when user leaves the page...the process will be stopped 
                             	StopTK();
                          	}
@@ -1854,9 +1860,35 @@
                                 chart_reset();
                             StopTK();  // call this function 
                             });
+         	
+		// Create mxWindow for affich
+                            var affichwin = '<div id="affich_div" style="text-align:left;"><div id="img_loader"><center><img id="loader" style="position: absolute; top:50%; transform: translate(-50%, -50%);" src="images/loading.gif"/></center></div></div>';
+                            var affichcontent = document.createElement('div');
+                            affichcontent.style.padding="1%";
+                            affichcontent.innerHTML = affichwin;
+                            // Center the mxWindow  
+                            var affichw = document.body.clientWidth;
+                            var affichh = (document.body.clientHeight || document.documentElement.clientHeight);
+         
          	    
-         	
-         	
+         	            
+                            affichwnd = new mxWindow('Affich_m Values', affichcontent, (affichw-800)/2, (affichh-400)/2, 300, 500, true, true);
+			    console.log("Getx and Gety of affichwnd:::"+affichwnd.getX()+"::::"+affichwnd.getY());
+                            //affichwnd.setLocation(600,100);
+                            affichwnd.setMaximizable(true);              
+                            affichwnd.setMinimizable(true);
+                            affichwnd.setScrollable(true);
+                            affichwnd.setResizable(true);
+                            affichwnd.setClosable(true);
+                            //affichwnd.setVisible(true);
+                            affichwnd.addListener(mxEvent.CLOSE, function(e){
+                                //chart_reset();
+                            //StopTK();  // call this function 
+                            });
+         	    
+
+
+
          
             	//  starting 
          	
@@ -1987,6 +2019,15 @@
                         row++;  
                     }   
                 }
+
+		console.log("affich ID array :::"+affichmid);
+                if(affichmid.length!=0){
+			affichwnd.setVisible(true);
+                        for(var i=0;i<affichmid.length;i++){
+                        $('#affich_div').append("<div id='affichdata-"+affichmid[i]+"' style='padding-bottom: 50px;'></div>");
+                        }
+                        wnd.setVisible(false);
+		    }
          		
          		 // finding splits from every link, TKSCALE parameter values
          		
@@ -2319,7 +2360,10 @@
          			myAjaxreq("Start", "/UpdateTKfile");
          			CreateSlider();  // if tkblocks are <=10 then create slider else not    
          		     }
-                                    chart_init(wnd);
+                                    //console.log(listofAffichCell);
+                                    //storeAffichCells(listofAffichCell,graph,diagRoot);
+                                    chart_init(wnd,affichwnd);
+                                    
 
                                 }else{
                                     alert("Error");
@@ -2774,7 +2818,10 @@
          
                             var details_instance = new window[name]();
                             var details = cell.blockInstance.instance.set(propertiesObject); //window[name]("set",cell.value,propertiesObject);
-         	
+         	            if(cell.style.startsWith("AFFICH_m")){
+				//listofAffichCell.push(cell);
+				//console.log(cell.toSource());
+                             }
                             editor.execute('deleteBlock',(editor, cell));
                             var enc = new mxCodec(mxUtils.createXmlDocument());
                             var node = enc.encode(details);
@@ -2819,13 +2866,13 @@
                              * from the label tag in style which was set when that blockModel
                              * was invoked on the first time.
                              */
-                             console.log(node);
+                             //console.log(node);
                             if (style != null && style['label'] != null) {
          
                                 // Set label from the label field in the style property
                                 node.setAttribute('label', style['label']);
                             }
-                            console.log(temp.getAttribute("id"));
+                            //console.log(temp.getAttribute("id"));
                             node.setAttribute('parent', temp.getAttribute('id'));
                             var i, arr = [];
                             var details_instance=cell.blockInstance.instance;         	
