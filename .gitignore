@@ -16,3 +16,4 @@ nb-configuration.xml
 /workspace*.dat
 combined.js
 combined-*.js
+hs_err_*.log

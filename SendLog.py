@@ -1,4 +1,7 @@
+#!/usr/bin/python
+
 from __future__ import print_function
+import json
 from xml.dom import minidom
 from xml.dom.minidom import parse
 import gevent
@@ -1105,6 +1108,13 @@ def upload():
     else:
         return "error"
 
+@app.route('/filenames.php', methods=['POST'])
+def filenames():
+    url = request.form['url']
+    if url == '' or '.' in url or url[0] != '/' or url[-1] != '/':
+        return "error"
+    filelist = [url + f for f in os.listdir('webapp' + url)]
+    return Response(json.dumps(filelist), mimetype='application/json')
 
 @app.route('/UpdateTKfile', methods=['POST'])    
 def UpdateTKfile():
