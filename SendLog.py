@@ -295,7 +295,6 @@ def event_stream(xcos_file_id):
         t1.start()
     else:
         command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);quit()"] 
-<<<<<<< d9557a1da46f5d83ee237a862e998bf40051a675
 
     # Put the process in its own process group using os.setpgrp. For a new
     # group, the process group id is always equal to the process id. All the
