@@ -1288,19 +1288,19 @@
                             downloadLink.id = "downloadLinkForExportXcos";
                             downloadLink.href = "data:application/x-scilab-xcos;charset=ascii," + encodeURIComponent(getXcosDiagram(editor, cell));
                             downloadLink.innerHTML = "Save as Xcos File";
-                            downloadLink.style = "text-decoration: none;padding: 2px 6px 2px 6px;border-top: 4px solid rgb(212, 209, 209);border-right: 4px solid #656464;border-bottom: 4px solid #656464;border-left: 4px solid rgb(212, 209, 209);box-sizing:border-box;border-radius:2px;margin:0px 80px 30px 80px;";
+                            downloadLink.style = "text-decoration: none;padding: 2px 6px 2px 6px;border-top: 4px solid rgb(212, 209, 209);border-right: 4px solid #656464;border-bottom: 4px solid #656464;border-left: 4px solid rgb(212, 209, 209);box-sizing:border-box;border-radius:2px;margin:0px 80px 30px 80px;white-space: nowrap;";
                             downloadLink.onclick = function () {
-                                if (document.getElementById("ExportFilenameInput").value === "") {
+                                var exportFilename = document.getElementById("ExportFilenameInput").value;
+                                if (exportFilename === "") {
                                     alert("Enter filename!");
                                     return false;
                                 }
                                 else {
-                                    //var checkpat = new RegExp(/^[0-9a-zA-Z ... ]+$/);  //This RegExp is for a valid filename
                                     var checkpat = new RegExp("^[^<>:\"/\|\\?*]+$");  //This RegExp is for a valid filename
          
-                                    if (checkpat.test(document.getElementById("ExportFilenameInput").value)) {
+                                    if (checkpat.test(exportFilename)) {
                                         //This branch will execute if filename is valid
-                                        downloadLink.download = document.getElementById("ExportFilenameInput").value + ".xcos";
+                                        downloadLink.download = exportFilename + ".xcos";
                                         wind.destroy();
                                         return true;
                                     }
@@ -1368,6 +1368,7 @@
                             
                             var fileNode = document.createElement('input');
                             fileNode.type = 'file';
+                            fileNode.accept = '.xcos'
                             fileNode.style = "margin:30px 30px 40px 30px;";
                             if (!(window.File && window.FileReader && window.Blob && window.FileList)) {
                                 alert('This browser doesn\'t support this feature.');
@@ -1393,7 +1394,7 @@
          
                             var f = evt.target.files[0];
          		
-                            if (!f.name.endsWith(".xcos") /*&& !f.name.endsWith(".zcos")*/) {     //Checks if file extension is "xcos" or not
+                            if (!f.name.endsWith(".xcos")) {     //Checks if file extension is "xcos" or not
                                 alert("Choose proper file! Only xcos files can be uploaded!");
                                 this.value = null;          //This will reset the file type input
                                 return false;               //This will prevent any further actions if can occur
@@ -1437,6 +1438,11 @@
          	    
          		            function xcosToDiagram(xmlDocument){   // function which takes the xml code and changes it to the diagram  
          	    	
+                                        if (xmlDocument == "") {
+                                            alert("Enter filename!");
+                                            return false;
+                                        }
+
          		                     if (graph.getChildVertices(graph.getDefaultParent()).length != 0) {
                                     //This branch will execute if there are no elements present in the canvas
                                     graph.model.beginUpdate();
@@ -1520,6 +1526,18 @@
                                             currentNode = currentNode.nextSibling) {
                                         var curNodeName = currentNode.nodeName;
          
+                                        if (curNodeName == 'mxCell') {
+                                            /* mxCell nodes are not parsed */
+                                            continue;
+                                        }
+
+                                        if (curNodeName.endsWith('Link')) {
+                                            /* Link nodes are parsed later */
+                                            continue;
+                                        }
+
+                                        /* parse only Block and Port nodes now */
+
                                         var cell = codec.decode(currentNode);
          
                                         //To Load Xcos Diagram with the changed values 
@@ -1707,19 +1725,21 @@
                                             currentNode != null;
                                             currentNode = currentNode.nextSibling) {
                                         var curNodeName = currentNode.nodeName;
+                                        if (curNodeName == 'mxCell' || curNodeName.endsWith('Port') || curNodeName.endsWith('Link')) {
+                                            continue;
+                                        }
+
                                         /*
                                             Maverick
                                             Handling all the ports of a given block collectively.
                                         */
-                                        if (!(curNodeName.endsWith('Port') || curNodeName.endsWith('Link'))) {
-                                            var curId = currentNode.getAttribute('id');
-                                            var newParentObj = nodeDataObject[curId];
-                                            if (newParentObj != null) {
-                                                var newParentId = newParentObj.newId;
-         
-                                                var newParentCell = graph.getModel().getCell(newParentId);
-                                                createPorts(graph, newParentCell, newParentObj.inputArray, newParentObj.controlArray, newParentObj.outputArray, newParentObj.commandArray, newParentObj, nodeDataObject);
-                                            }
+                                        var curId = currentNode.getAttribute('id');
+                                        var newParentObj = nodeDataObject[curId];
+                                        if (newParentObj != null) {
+                                            var newParentId = newParentObj.newId;
+
+                                            var newParentCell = graph.getModel().getCell(newParentId);
+                                            createPorts(graph, newParentCell, newParentObj.inputArray, newParentObj.controlArray, newParentObj.outputArray, newParentObj.commandArray, newParentObj, nodeDataObject);
                                         }
                                     }
          
@@ -1732,37 +1752,36 @@
                                             currentNode != null;
                                             currentNode = currentNode.nextSibling) {
                                         var curNodeName = currentNode.nodeName;
-                                        if (curNodeName.endsWith('Link')) {
-         
-                                            var pointsArray = [];
-                                            var newSourceObj = nodeDataObject[currentNode.getAttribute('source')];
-                                            var newTargetObj = nodeDataObject[currentNode.getAttribute('target')];
-         
-                                            var newSourceCell = graph.getModel().getCell(newSourceObj.newId);
-                                            var newTargetCell = graph.getModel().getCell(newTargetObj.newId);
-         
-                                            var childNode = currentNode.firstChild;
-                                            if (childNode != null) {
-                                                if (childNode.nodeName == 'mxGeometry') {
-                                                    var tempNode = childNode.firstChild;
-                                                    if (tempNode != null) {
-                                                        if (tempNode.nodeName == 'mxPoint') {
-                                                            pointsArray.push(new mxPoint(tempNode.getAttribute('x'), tempNode.getAttribute('y')));
-                                                        } else if (tempNode.nodeName == 'Array') {
-                                                            for (var mxPointNode = tempNode.firstChild;
-                                                                    mxPointNode != null;
-                                                                    mxPointNode = mxPointNode.nextSibling) {
-                                                                if (mxPointNode.nodeName == 'mxPoint') {
-                                                                    pointsArray.push(new mxPoint(mxPointNode.getAttribute('x'), mxPointNode.getAttribute('y')));
-                                                                }
-                                                            }
-                                                        }
+                                        if (!curNodeName.endsWith('Link')) {
+                                            continue;
+                                        }
+
+                                        var pointsArray = [];
+                                        var newSourceObj = nodeDataObject[currentNode.getAttribute('source')];
+                                        var newTargetObj = nodeDataObject[currentNode.getAttribute('target')];
+
+                                        var newSourceCell = graph.getModel().getCell(newSourceObj.newId);
+                                        var newTargetCell = graph.getModel().getCell(newTargetObj.newId);
+
+                                        var childNode = currentNode.firstChild;
+                                        if (childNode != null && childNode.nodeName == 'mxGeometry') {
+                                            var tempNode = childNode.firstChild;
+                                            if (tempNode == null) {
+                                                ;
+                                            } else if (tempNode.nodeName == 'mxPoint') {
+                                                pointsArray.push(new mxPoint(tempNode.getAttribute('x'), tempNode.getAttribute('y')));
+                                            } else if (tempNode.nodeName == 'Array') {
+                                                for (var mxPointNode = tempNode.firstChild;
+                                                        mxPointNode != null;
+                                                        mxPointNode = mxPointNode.nextSibling) {
+                                                    if (mxPointNode.nodeName == 'mxPoint') {
+                                                        pointsArray.push(new mxPoint(mxPointNode.getAttribute('x'), mxPointNode.getAttribute('y')));
                                                     }
                                                 }
                                             }
-         
-                                            createEdgeObject(graph, newSourceCell, newTargetCell, null);
                                         }
+
+                                        createEdgeObject(graph, newSourceCell, newTargetCell, null);
                                     }
          
                                 } finally {
