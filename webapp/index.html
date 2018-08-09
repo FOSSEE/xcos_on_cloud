@@ -1864,14 +1864,14 @@
                             wnd.setScrollable(true);
                             wnd.setResizable(true);
                             wnd.setClosable(true);
-                            wnd.setVisible(true);
+                            //wnd.setVisible(true);
                             wnd.addListener(mxEvent.CLOSE, function(e){
                                 chart_reset();
                             StopTK();  // call this function 
                             });
          	
 		// Create mxWindow for affich
-                            var affichwin = '<div id="affich_div" style="text-align:left;"><div id="img_loader"><center><img id="loader" style="position: absolute; top:50%; transform: translate(-50%, -50%);" src="images/loading.gif"/></center></div></div>';
+                            var affichwin = '<div id="affich_div"><div id="img_loader" align="center" style="height:30px;"><img id="loader" src="images/loading.gif"/></div></div>';
                             var affichcontent = document.createElement('div');
                             affichcontent.style.padding="1%";
                             affichcontent.innerHTML = affichwin;
@@ -1941,6 +1941,14 @@
                     var req_block = new Array();
                     var names = new Array();
                     names[i] = Bblock_tag[i].attributes.blockElementName.value;
+
+                    //Condition to show wnd ie set visible in case
+                    if(names.includes("BARXY")||names.includes("CANIMXY")||names.includes("CANIMXY3D")||names.includes("CFSCOPE")||names.includes("CLKOUTV_f")||names.includes("CMAT3D")||names.includes("CMATVIEW")||names.includes("CMSCOPE")||names.includes("CSCOPE")||names.includes("CSCOPXY")||names.includes("CSOPXY3D")||names.includes("OUTIMPL_f")||names.includes("OUT_f")){
+
+			wnd.setVisible(true);		
+
+                    }
+
                     if(names.includes("scifunc_block_m")){
                         req_block.push("scifunc_block_m");
                         var flag1 = true;
@@ -2030,11 +2038,12 @@
                 }
 
                 if(affichmid.length!=0){
+                        //$('#img_loader').html("");
 			affichwnd.setVisible(true);
                         for(var i=0;i<affichmid.length;i++){
                         $('#affich_div').append("<div id='affichdata-"+affichmid[i]+"' style='padding-bottom: 20px;'></div>");
                         }
-                        wnd.setVisible(false);
+                        //wnd.setVisible(false);
 		    }
          		
          		 // finding splits from every link, TKSCALE parameter values

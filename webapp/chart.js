@@ -351,12 +351,13 @@ function chart_init(wnd,affichwnd){
 	var buffer;
         // buffer for CANIMXY
         var buffer_canimxy;
+        
 	// Initialise variable for entry condition of creating chart for BARXY and AFFICH_m
 	var block_entry_BARXY = 1, block_entry_AFFICH = 1;
-
+        
 	// Start listening to server
 	chart_reset();
-        
+        $('#img_loader').html("");
 	eventSource = new EventSource("/SendLog?id="+clientID);
         
 	eventSource.addEventListener("block", function(event){
@@ -451,7 +452,7 @@ function chart_init(wnd,affichwnd){
 
 		if(block < 5 ||block ==9 ||block ==23){ //added new condition for ceventscope
 			// process data for 2D-SCOPE blocks
-
+                        //console.log(data.toSource());
 			var figure_id = parseInt(data[5]),
 			line_id = parseInt(data[7]),
 			x  = parseFloat(data[9]),
@@ -523,6 +524,7 @@ function chart_init(wnd,affichwnd){
 
 		}else if(block == 20){
 			//Process data for Affich_m block
+                        //console.log(data.toSource());
 			var length_of_data = data.length;
 			var block_id = data[3];
 			var rows = data[10];
@@ -541,6 +543,7 @@ function chart_init(wnd,affichwnd){
 				
 			}
 			p+="</table>";
+                        //console.log("affich called::::::"+p);
                         create_affich_displaytext(p,block_id);
 		}
 
@@ -593,16 +596,14 @@ function chart_init(wnd,affichwnd){
 
 
 	eventSource.addEventListener("DONE", function(event){
-		console.log("Done");
+
 		eventSource.close(); 	// Close connection
+		console.log("Done");
                 chart_reset();
                 $('#img_loader').html("");
 		isDone = true;
 	}, false);
 	
-        eventSource.addEventListener("ONLYAFFICH", function(event){
-		wnd.destroy();
-	}, false);
 
 	interval = setInterval(function(){
 
@@ -801,288 +802,3 @@ function chart_reset(){
 
 }
 
-
-
-function showAffichmValue(graph, cell, diagRoot, setProp) {
-
-        /*  
-            Loading XML of last graph configuration so that all the links
-            nodes of the previous xml can be copied to the new XML 
-        */
-        console.log("testing");
-        var encPrevXml = new mxCodec(mxUtils.createXmlDocument());
-        var nodePrevXml = encPrevXml.encode(diagRoot);
-        var strPrevXml = mxUtils.getPrettyXml(nodePrevXml);
-        strPrevXml = mxUtils.parseXml(strPrevXml);
-        var xslPrevXml = trySomething("finalmodsheet.xsl"); 
-        function trySomething(x) {
-            if (window.ActiveXObject) {
-                xhttp = new ActiveXObject("Msxml2.XMLHTTP");
-            } else {
-                xhttp = new XMLHttpRequest();
-            }
-            xhttp.open("GET", x, false);
-            try {
-                xhttp.responseType = "msxml-document"
-            } catch (err) {}
-            xhttp.send("");
-            return xhttp.responseXML;
-        }
-        var xsltProcessorPrevXml = new XSLTProcessor();
-        xsltProcessorPrevXml.importStylesheet(xslPrevXml);
-        var resultDocumentPrevXml = xsltProcessorPrevXml.transformToDocument(strPrevXml);
-        /*
-            Maverick
-            Using resultDocument.documentElement to remove an additional tag "<#document>" created by the XSLTProcessor.
-        */
-        strPrevXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n" + mxUtils.getPrettyXml(resultDocumentPrevXml.documentElement);
-        strPrevXml = strPrevXml.replace(/\n\n/g, "\n");
-        strPrevXml = strPrevXml.replace(/\n*/, '');
-        strPrevXml = strPrevXml.replace(/>\s*</g, '><');
-		strPrevXml = strPrevXml.replace(/<!--[\s\S]*?-->/g, '');
-        var docPrevXml = mxUtils.parseXml(strPrevXml);
-        var codecPrevXml = new mxCodec(docPrevXml);
-        var rootNode = docPrevXml.documentElement;
-        while(rootNode.nodeName != 'root')
-            {
-                rootNode = rootNode.firstChild;
-            }
-        var currentNode = rootNode.firstChild;
-               
-        var parent = graph.getDefaultParent();
-        var model = graph.getModel();
-        var v1 = null;
-        var doc = mxUtils.createXmlDocument();
-        model.beginUpdate();
-        try {
-            var geometry = cell.getGeometry();
-            var x=geometry.x;
-            var y=geometry.y;
-	    var name = cell.value.getAttribute('blockElementName');
-            var details_instance = new window[name](); // name is used here to refer to the block      
-            var details = cell.blockInstance.instance.set(setProp);  
-            //window[name]("set",cell.value,propertiesObject);
-
-            editor.execute('deleteBlock',(editor, cell));
-            var enc = new mxCodec(mxUtils.createXmlDocument());
-            var node = enc.encode(details);
-            var temp = enc.encode(parent);
-
-            // Get the stylesheet for the graph
-            var stylesheet = graph.getStylesheet();
-            // From the stylesheet, get the style of the particular block
-            var style = stylesheet.styles[name];
-
-            
-             // * When a particular block is loaded for the first time,
-             // * the image in the style of the block will be a path to the image.
-             // * Set the label in the style property of the block has a html image,
-             // * and set the image in the style property as null
-             // *
-             // * NOTE: Since the image of any block need not be changed for
-             // *       for every movement of that block, the image must be
-             // *       set only once.
-             
-
-            if (style != null && style['image'] != null) {
-
-                // Make label as a image html element
-                var label = '<img src="' + style['image'] + '" height="80" width="80">';
-                // Set label
-                style['label'] = label;
-
-                style['imagePath'] = style['image'];
-
-                // Set image as null
-                style['image'] = null;
-
-                // Add the label as a part of node
-                node.setAttribute('label', label);
-            }
-
-            /*
-             * If a particular block with image tag in it's style property
-             * has been invoked already, the image tag would be null for any
-             * successive instances of the same block. Hence, set the label
-             * from the label tag in style which was set when that blockModel
-             * was invoked on the first time.
-             */
-            if (style != null && style['label'] != null) {
-
-                // Set label from the label field in the style property
-                node.setAttribute('label', style['label']);
-            }
-
-            node.setAttribute('parent', temp.getAttribute('id'));
-            var i, arr = [];
-
-            var details_instance=cell.blockInstance.instance;
-
-            var blockModel = details_instance.x.model;
-            var graphics = details_instance.x.graphics;
-
-            /* To determine number and type of Port*/
-            var inputPorts = [],
-                outputPorts = [],
-                controlPorts = [],
-                commandPorts = [];
-            if (blockModel.in.height != null) {
-                arr = getData(graphics.in_implicit);
-                if (arr.length != 0) {
-                    inputPorts = arr;
-                } else {
-                    for (i = 0; i < blockModel.in.height; i++) {
-                        inputPorts.push("E");
-                    }
-                }
-            }
-            if (blockModel.out.height != null) {
-                arr = getData(graphics.out_implicit);
-                if (arr.length != 0) {
-                    outputPorts = arr;
-                } else {
-                    for (i = 0; i < blockModel.out.height; i++) {
-                        outputPorts.push("E");
-                    }
-                }
-            }
-            if (blockModel.evtin.height != null) {
-                for (i = 0; i < blockModel.evtin.height; i++) {
-                    controlPorts.push("CONTROL");
-                }
-            }
-            if (blockModel.evtout.height != null) {
-                for (i = 0; i < blockModel.evtout.height; i++) {
-                    commandPorts.push("COMMAND");
-                }
-            }
-            v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, name);
-
-            // @Chhavi: Additional attribute to store the block's instance
-            v1.blockInstance = createInstanceTag(details_instance);
-            v1.currentAngle = 0;
-            v1.flipX = 1;
-            v1.flipY = 1;
-            createPorts(graph, v1, inputPorts, controlPorts, outputPorts, commandPorts);
-            v1.setConnectable(false);
-        
-        } finally {
-            model.endUpdate();
-        }
-
-        /*  The code below is responsible for moving the new (non-links) node created after the set
-            function is called back to their previous positions as in their previous XML.
-            This is done to retain the id's so that the Link node of previous XML can be used 
-            to create connecting wires for the new XML also.
-        */
-
-        var referenceModelCount = referenceModelProps.length;
-        var missingKeys = [];
-        var lastId = Math.max(...Object.keys(model.cells));
-
-        for( var i=0;i< referenceModelCount ; i++)
-        {
-            var present = false;
-            for(var key in model.cells)
-                {
-                    (model.cells.hasOwnProperty(key))
-                    {
-                        if(referenceModelProps[i].id == key)
-                            {
-                                present = true;
-                                break;
-                            }
-                    }
-                }
-            if(present == false)
-                missingKeys.push(referenceModelProps[i].id);
-        }
-
-        var newIDs= [];
-        for(var i=modelNextId;i<=lastId;i++)
-            newIDs.push(i);
-        var j = 0;
-
-        for(var i = 0; i < missingKeys.length; i++)
-            {   
-                var referenceModelStyle = referenceModelProps.find( function (obj) {
-                    return obj.id == missingKeys[i];
-                }).style;
-                
-                if(model.cells[newIDs[j]].style.endsWith('Port')) {
-                    if( referenceModelStyle == model.cells[newIDs[j]].style ) {
-                        model.cells[missingKeys[i]] = model.cells[newIDs[j]];
-                        model.cells[missingKeys[i]].id = String(missingKeys[i]);
-                        delete model.cells[newIDs[j++]];
-                    }
-                    else {
-                        var tempId = j;
-                        while(newIDs[++j] <= lastId )
-                        {
-                            if(referenceModelStyle == model.cells[newIDs[j]].style) {
-                                model.cells[missingKeys[i]] = model.cells[newIDs[j]];
-                                model.cells[missingKeys[i]].id = String(missingKeys[i]);
-                                delete model.cells[newIDs[j]];
-                                newIDs.splice(j,1);
-                                j = tempId;
-                                break;
-                            }    
-                        }
-                    } 
-                }
-                else if (model.cells[newIDs[j]].style) {
-                    model.cells[missingKeys[i]] = model.cells[newIDs[j]];
-                    model.cells[missingKeys[i]].id = String(missingKeys[i]);
-                    delete model.cells[newIDs[j++]];
-                }
-            }
-        referenceModelProps = [];
-        newIDs = [];
-        
-        model.beginUpdate();
-        try {
-            // Connecting the blocks by inserting link nodes                          
-            while(currentNode!=null)
-            {
-                var curNodeName = currentNode.nodeName;
-                if(curNodeName.endsWith('Link'))
-                   {
-                       var pointsArray = [];
-                       var newSourceCell = graph.getModel().getCell(currentNode.getAttribute('source'));
-                       var newTargetCell = graph.getModel().getCell(currentNode.getAttribute('target'));
-                           
-                        if(newSourceCell.getEdgeCount() <=0 && newTargetCell.getEdgeCount()<=0) {
-
-                           var childNode = currentNode.firstChild;
-                                if (childNode != null) {
-                                    if (childNode.nodeName == 'mxGeometry') {
-                                        var tempNode = childNode.firstChild;
-                                        if (tempNode != null) {
-                                            if (tempNode.nodeName == 'mxPoint') {
-                                                pointsArray.push(new mxPoint(tempNode.getAttribute('x'), tempNode.getAttribute('y')));
-                                            } else {
-                                                if (tempNode.nodeName == 'Array') {
-                                                    var mxPointNode = tempNode.firstChild;
-                                                    while (mxPointNode != null) {
-                                                        pointsArray.push(new mxPoint(mxPointNode.getAttribute('x'), mxPointNode.getAttribute('y')));
-                                                        mxPointNode = mxPointNode.nextSibling;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-
-                            createEdgeObject(graph, newSourceCell, newTargetCell, null);
-                        }
-                   }
-                currentNode=currentNode.nextSibling;
-            } 
-
-        } finally {
-            model.endUpdate();
-        }
-        graph.setSelectionCell(v1);
-        graph.refresh();
-        wind.destroy();
-};

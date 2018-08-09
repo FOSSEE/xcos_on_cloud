@@ -160,7 +160,6 @@ def get_line_and_state(file, count):
 
     parse_result = parse_line(line[count])
     figure_id = parse_result[0]
-    print(figure_id)
     state = parse_result[1]
     if state == INITIALIZATION:
         # New figure created
@@ -335,7 +334,7 @@ def event_stream(xcos_file_id):
     # Log file name
     log_name = "scilab-log-"+pid+".txt"
     # Affich Log File
-    affich_log_name = "aff-scilab-log-"+pid+".txt"
+    #affich_log_name = "aff-scilab-log-"+pid+".txt"
 
     # Initialise output and error variables for subprocess
     scilab_out = ""
@@ -345,7 +344,14 @@ def event_stream(xcos_file_id):
     line = line_and_state(None, NOLINE)
     # Checks if such a file exists
     while not (os.path.isfile(log_name)):
+<<<<<<< 06a034088291c82178a7f2afc730567cf726600d
         gevent.sleep(LOOK_DELAY)
+=======
+        pass
+    # Checks if such a file exists
+    #while not (os.path.isfile(affich_log_name)):
+    #    pass
+>>>>>>> Conditions for affich with other scope block
     # This variable is for running the sleep command
  
     # Start sending log
@@ -356,7 +362,7 @@ def event_stream(xcos_file_id):
         try:
             # For processes taking less than 10 seconds
             scilab_out, scilab_err = scilab_proc.communicate(timeout=4)
-            print(scilab_out)
+            #print(scilab_out)
             # Check for errors in Scilab 
             if "Empty diagram" in scilab_out:
                 yield "event: ERROR\ndata: Empty diagram\n\n"
@@ -406,7 +412,7 @@ def event_stream(xcos_file_id):
                 # The first line ID 
                 if(line_count == 1):
                     line_id = line_contents[7]
-                #print("event: block\ndata: "+logLine+"\n\n")
+                #print("event: block data:::1 "+logLine+"")
                 yield "event: block\ndata: "+logLine+"\n\n"
 
             elif line.get_state() != DATA:
@@ -426,7 +432,7 @@ def event_stream(xcos_file_id):
                 # The first line ID 
                 if(line_count == 1):
                     line_id = line_contents[7]
-                #print("event: log\ndata: "+logLine+ "\n\n")
+                #print("event: log data:::2 "+logLine+"")
                 yield "event: log\ndata: "+logLine+ "\n\n"
 
 
@@ -442,54 +448,32 @@ def event_stream(xcos_file_id):
         yield "event: DONE\ndata: None\n\n"
 
     else:
-        if(workspace_counter!=4):
-            # Open the log file
-            if not (os.path.isfile(log_name)):
-                return
-            log_file = open(log_dir + log_name, "r")
+        # Open the log file
+        if not (os.path.isfile(log_name)):
+            return
+        log_file = open(log_dir + log_name, "r")
     
-            # Start sending log
+        # Start sending log
+        line = line_and_state(None, NOLINE)
+        while (line.set(get_line_and_state_modified(log_file)) or len(figure_list) > 0):
+            # Get the line and loop until the state is ENDING and figure_list empty
+            # Determine if we get block id and give it to chart.js
+            if line.get_state()== BLOCK_IDENTIFICATION:
+                #print("event: block data:::3 "+line.get_line()+"")
+                yield "event: block\ndata: "+line.get_line()+"\n\n"
+            elif line.get_state() != DATA:
+                gevent.sleep(LOOK_DELAY)
+            else:
+                #print("event: log data:::4 "+line.get_line()+"")
+                yield "event: log\ndata: "+line.get_line()+"\n\n"
+            # Reset line, so server won't send same line twice
             line = line_and_state(None, NOLINE)
-            while (line.set(get_line_and_state_modified(log_file)) or len(figure_list) > 0):
-                # Get the line and loop until the state is ENDING and figure_list empty
-                # Determine if we get block id and give it to chart.js
-                if line.get_state()== BLOCK_IDENTIFICATION:
-                    #print("event: block\ndata: "+line.get_line()+"\n\n")
-                    yield "event: block\ndata: "+line.get_line()+"\n\n"
- 
-                elif line.get_state() != DATA:
-                    gevent.sleep(LOOK_DELAY)      
-                else:
-                    #print("event: log\ndata: "+line.get_line()+"\n\n")
-                    yield "event: log\ndata: "+line.get_line()+"\n\n"
-                # Reset line, so server won't send same line twice
-                line = line_and_state(None, NOLINE)
-        else:
-            if not (os.path.isfile(affich_log_name)):
-                return
-	    yield "event: ONLYAFFICH\ndata: None\n\n"
-            log_file = open(log_dir + affich_log_name, "r")
-            # Start sending log
-            line = line_and_state(None, NOLINE)
-            while (line.set(get_line_and_state_modified(log_file)) or len(figure_list) > 0):
-                # Get the line and loop until the state is ENDING and figure_list empty
-                # Determine if we get block id and give it to chart.js
-                if line.get_state()== BLOCK_IDENTIFICATION:
-                    #print("event: block\ndata: "+line.get_line()+"\n\n")
-                    yield "event: block\ndata: "+line.get_line()+"\n\n"
- 
-                elif line.get_state() != DATA:
-                    gevent.sleep(LOOK_DELAY)      
-                else:
-                    #print("event: log\ndata: "+line.get_line()+"\n\n")
-                    yield "event: log\ndata: "+line.get_line()+"\n\n"
-                # Reset line, so server won't send same line twice
-                line = line_and_state(None, NOLINE)
-        
+
         # Finished Sending Log
         kill_scilab()
 
         # Notify Client
+        #print("event: DONE data: None")
         yield "event: DONE\ndata: None\n\n"
         
 # class used to get the user_id and the boolean value is to make run a thread    
@@ -1286,7 +1270,7 @@ def run_scilab_func_request():
            else:
               list_value=list_value+value+"],["
   
-       print (list_value)
+       #print (list_value)
     return list_value
 
 
