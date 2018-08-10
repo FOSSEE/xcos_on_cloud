@@ -351,13 +351,13 @@ function chart_init(wnd,affichwnd){
 	var buffer;
         // buffer for CANIMXY
         var buffer_canimxy;
-        
+        $('#img_loader').html("");
 	// Initialise variable for entry condition of creating chart for BARXY and AFFICH_m
 	var block_entry_BARXY = 1, block_entry_AFFICH = 1;
         
 	// Start listening to server
 	chart_reset();
-        $('#img_loader').html("");
+        //$('#img_loader').html("");
 	eventSource = new EventSource("/SendLog?id="+clientID);
         
 	eventSource.addEventListener("block", function(event){
@@ -543,8 +543,8 @@ function chart_init(wnd,affichwnd){
 				
 			}
 			p+="</table>";
-                        //console.log("affich called::::::"+p);
                         create_affich_displaytext(p,block_id);
+                        //console.log("affich called::::::"+p);
 		}
 
 
@@ -579,8 +579,19 @@ function chart_init(wnd,affichwnd){
 	    var xhr = new XMLHttpRequest();
 	    xhr.open("GET", "/stop", true);
 	 	chart_reset();
+                affichwnd.destroy();
 	 	xhr.send();
 	});  
+         // stop scilab process on closing of window
+	affichwnd.addListener(mxEvent.CLOSE,function()
+	{
+	    var xhr = new XMLHttpRequest();
+	    xhr.open("GET", "/stop", true);
+	 	chart_reset();
+                wnd.destroy();
+	 	xhr.send();
+	});  
+
 
 
 	// Error	
@@ -590,6 +601,7 @@ function chart_init(wnd,affichwnd){
 		if(event.data=="Empty diagram") alert(event.data);
 		else alert("Some Error occured!");
 		wnd.destroy();
+                affichwnd.destroy();
 		isDone = true;
 	}, false);
 	// Stop listening
