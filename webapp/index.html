@@ -1871,7 +1871,7 @@
                             });
          	
 		// Create mxWindow for affich
-                            var affichwin = '<div id="affich_div"><div id="img_loader" align="center" style="height:30px;"><img id="loader" src="images/loading.gif"/></div></div>';
+                            var affichwin = '<div id="affich_div"><div id="img_loader" align="center" style="height:30px;"><img  src="images/loading.gif"/></div></div>';
                             var affichcontent = document.createElement('div');
                             affichcontent.style.padding="1%";
                             affichcontent.innerHTML = affichwin;
@@ -2038,7 +2038,7 @@
                 }
 
                 if(affichmid.length!=0){
-                        //$('#img_loader').html("");
+                        
 			affichwnd.setVisible(true);
                         for(var i=0;i<affichmid.length;i++){
                         $('#affich_div').append("<div id='affichdata-"+affichmid[i]+"' style='padding-bottom: 20px;'></div>");
