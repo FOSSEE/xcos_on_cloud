@@ -468,12 +468,13 @@ def event_stream(xcos_file_id):
                 yield "event: log\ndata: "+line.get_line()+"\n\n"
             # Reset line, so server won't send same line twice
             line = line_and_state(None, NOLINE)
-
+        
+        log_file.close()   
         # Finished Sending Log
         kill_scilab()
 
         # Notify Client
-        #print("event: DONE data: None")
+        print("event: DONE data: None")
         yield "event: DONE\ndata: None\n\n"
         
 # class used to get the user_id and the boolean value is to make run a thread    
@@ -1223,7 +1224,7 @@ def static_file(path):
 @app.route('/stop')
 def stop():
     kill_scilab()
-
+    print("called")
     return "done"
 
 
