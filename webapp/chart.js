@@ -9,6 +9,7 @@ var RANGE = [];
 var eventSource;
 var clientID;
 var interval;
+var interval2;
 var isDone = false;
 // define variables for block event
 // fig_id, l_id - figure_id and line_id of blocks,   
@@ -722,7 +723,7 @@ function chart_init(wnd){
 
 
 	// Processing 'block' events
-	setInterval(function(){
+	interval2 = setInterval(function(){
 		// display the points for BARXY block
 		if(pnts.length>0){
 
@@ -747,7 +748,14 @@ function chart_init(wnd){
 
 function chart_reset(){
 
-	clearInterval(interval);
+        if (interval != null) {
+	    clearInterval(interval);
+            interval = null;
+        }
+        if (interval2 != null) {
+            clearInterval(interval2);
+            interval2 = null;
+        }
 	chart_id_list = [];
 	points_list = [];
 	series_list = [];

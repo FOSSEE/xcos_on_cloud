@@ -36,8 +36,8 @@ app.config['UPLOAD_FOLDER'] = 'uploads/'
 app.config['VALUES_FOLDER'] = 'values/'
 
 # Make the upload directory and values directory if not available
-subprocess.Popen('mkdir -p ' + app.config['UPLOAD_FOLDER'], shell = True)
-subprocess.Popen('mkdir -p ' + app.config['VALUES_FOLDER'], shell = True)
+subprocess.call(['mkdir', '-p', app.config['UPLOAD_FOLDER']])
+subprocess.call(['mkdir', '-p', app.config['VALUES_FOLDER']])
 
 # These are the extension that we are accepting to be uploaded
 app.config['ALLOWED_EXTENSIONS'] = set(['zcos', 'xcos', 'txt'])
@@ -192,7 +192,7 @@ def uploadsci():
             command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","loadXcosLibs();exec('"+path + filename+"'),mode(2);quit()"]
             output_com = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False,bufsize=1, universal_newlines=True)
             out = output_com.communicate()[0]
-            system_commands = re.compile('unix\(.*\)|unix_g\(.*\)|unix_w\(.*\)|''unix_x\(.*\)|unix_s\(.*\)|host|newfun''|execstr|ascii|mputl|dir\(\)')
+            system_commands = re.compile(r'unix\(.*\)|unix_g\(.*\)|unix_w\(.*\)|unix_x\(.*\)|unix_s\(.*\)|host|newfun|execstr|ascii|mputl|dir\(\)')
             match = re.findall(system_commands, open(os.path.join(path, filename), 'r').read()) 
             if('!--error' in out):
                 error_index = out.index('!')
@@ -217,6 +217,10 @@ def sendfile():
     flag_sci = False
     return file_image
 
+def default_kill_scilab():
+    pass
+
+kill_scilab = default_kill_scilab
 
 def event_stream(xcos_file_id):
     global figure_list
@@ -232,16 +236,13 @@ def event_stream(xcos_file_id):
     xcos_file_dir = os.getcwd() + '/uploads/'
     xcos_affich_function_file_dir = os.getcwd() + '/'
     path = os.getcwd() + '/scifunc_files/'
-    #filename = 'Scifunc2.sci'
-    #print(xcos_affich_function_file_dir)
+    if xcos_file_id >= len(xcos_file_list):
+        yield "event: ERROR\ndata: No such event\n\n"
+        return
     xcos_file_name = xcos_file_list[xcos_file_id]
-    # Get previously running scilab process IDs
-    proc = subprocess.Popen("pgrep scilab", stdout=subprocess.PIPE, shell=True)
-    # out will contain output of command, the list of process IDs of scilab
-    (out, err) = proc.communicate()
-    _l = len(out)
-    # Initialise pid
-    pid = 0
+    if xcos_file_name is None:
+        yield "event: ERROR\ndata: No such event\n\n"
+        return
     # id to identify each session for saving workspace 
     session=Details.uid
     ts = datetime.now()
@@ -292,40 +293,30 @@ def event_stream(xcos_file_id):
         command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);quit()"] 
     scilab_proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False); 
 
-    # Wait till xcos is launched
-    while len(out) == _l:
-        # If length of out equals _l, 
-        #    it means scilab hasn't launched yet
-        # Wait
-        gevent.sleep(LOOK_DELAY)
-        # Get process IDs of scilab instances
-        proc = subprocess.Popen("pgrep scilab", stdout=subprocess.PIPE, shell=True)
-        # out will contain output of command, the list of process IDs of scilab
-        (out, err) = proc.communicate() 
-                  
-    # out will contain output of command, the list of process IDs of scilab
-    # Get the latest process ID of scilab
-    pid = out.split()[-1]
-        
-
     # Define function to kill scilab(if still running) and remove files
     def kill_scilab():
-        # Kill scilab by it's pid
-        subprocess.Popen(["kill", "-9", pid])   
+        global kill_scilab
+
+        # Kill scilab
+        scilab_proc.kill()
+        scilab_proc.wait()
 
         # Remove log file
-        subprocess.Popen(["rm", "-f", log_dir+log_name], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
+        subprocess.call(["rm", "-f", log_dir+log_name])
         # Remove xcos file
-        subprocess.Popen(["rm", "-f", xcos_file_dir+xcos_file_name], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False) 
-        scilab_proc.kill()
+        subprocess.call(["rm", "-f", xcos_file_dir+xcos_file_name])
         line_count = 0
+        xcos_file_list[xcos_file_id] = None
+
+        # reset the implementation of kill_scilab
+        kill_scilab = default_kill_scilab
                
     # Log file directory
     # As the scilab process is spawned by this script,
     # the log directory is same as that of this script
     log_dir = "" 
     # Log file name
-    log_name = "scilab-log-"+pid+".txt"
+    log_name = "scilab-log-"+str(scilab_proc.pid)+".txt"
 
     # Initialise output and error variables for subprocess
     scilab_out = ""
@@ -335,7 +326,7 @@ def event_stream(xcos_file_id):
     line = line_and_state(None, NOLINE)
     # Checks if such a file exists
     while not (os.path.isfile(log_name)):
-        pass
+        gevent.sleep(LOOK_DELAY)
     # This variable is for running the sleep command
  
     # Start sending log
@@ -611,15 +602,15 @@ def upload():
         workspace_counter=0
         blocks = new_xml.getElementsByTagName("BasicBlock")
         Details.tk_is_present = False
-	pattern = re.compile("<SplitBlock")
+	pattern = re.compile(r"<SplitBlock")
 	for i, line in enumerate(open(temp_file_xml_name)):
     		for match in re.finditer(pattern, line):
         		list1.append(i+1)
-	pattern1 = re.compile("<ControlPort")
+	pattern1 = re.compile(r"<ControlPort")
 	for i, line in enumerate(open(temp_file_xml_name)):
     		for match in re.finditer(pattern1, line):
         		list2.append(i+1)
-	pattern2 = re.compile("<ImplicitInputPort")
+	pattern2 = re.compile(r"<ImplicitInputPort")
 	count1=0
 	
 	for i, line in enumerate(open(temp_file_xml_name)):
@@ -1284,5 +1275,9 @@ def run_scilab_func_request():
 if __name__ == '__main__':
     # Set server address 127.0.0.1:8001/
     http_server = WSGIServer(('127.0.0.1', 8001), app)
-    http_server.serve_forever()
+    try:
+        http_server.serve_forever()
+    except KeyboardInterrupt:
+        kill_scilab()
+        print('exiting')
 
