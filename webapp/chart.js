@@ -9,6 +9,7 @@ var RANGE = [];
 var eventSource;
 var clientID;
 var interval;
+var interval2;
 var isDone = false;
 // define variables for block event
 // fig_id, l_id - figure_id and line_id of blocks,   
@@ -552,7 +553,6 @@ function chart_init(wnd){
 
 	// Error	
 	eventSource.addEventListener("ERROR", function(event){
-		eventSource.close(); 	// Close connection
 		console.log("Error: "+event.data);
 		chart_reset();
 		if(event.data=="Empty diagram") alert(event.data);
@@ -564,9 +564,8 @@ function chart_init(wnd){
 
 
 	eventSource.addEventListener("DONE", function(event){
-		eventSource.close(); 	// Close connection
-
 		console.log("Done");
+                chart_reset();
 		isDone = true;
 	}, false);
 	
@@ -722,7 +721,7 @@ function chart_init(wnd){
 
 
 	// Processing 'block' events
-	setInterval(function(){
+	interval2 = setInterval(function(){
 		// display the points for BARXY block
 		if(pnts.length>0){
 
@@ -747,7 +746,18 @@ function chart_init(wnd){
 
 function chart_reset(){
 
-	clearInterval(interval);
+        if (interval != null) {
+            clearInterval(interval);
+            interval = null;
+        }
+        if (interval2 != null) {
+            clearInterval(interval2);
+            interval2 = null;
+        }
+        if (eventSource != null) {
+            eventSource.close();
+            eventSource = null;
+        }
 	chart_id_list = [];
 	points_list = [];
 	series_list = [];
