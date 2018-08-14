@@ -17,3 +17,4 @@ nb-configuration.xml
 combined.js
 combined-*.js
 hs_err_*.log
+/webapp/res_imgs/*.jpg
