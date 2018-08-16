@@ -344,14 +344,7 @@ def event_stream(xcos_file_id):
     line = line_and_state(None, NOLINE)
     # Checks if such a file exists
     while not (os.path.isfile(log_name)):
-<<<<<<< 06a034088291c82178a7f2afc730567cf726600d
         gevent.sleep(LOOK_DELAY)
-=======
-        pass
-    # Checks if such a file exists
-    #while not (os.path.isfile(affich_log_name)):
-    #    pass
->>>>>>> Conditions for affich with other scope block
     # This variable is for running the sleep command
  
     # Start sending log
