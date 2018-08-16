@@ -9,6 +9,7 @@ import fileinput
 import time
 import shutil
 import os
+import signal
 from threading import Timer
 from PIL import Image
 from datetime import date
@@ -36,8 +37,8 @@ app.config['UPLOAD_FOLDER'] = 'uploads/'
 app.config['VALUES_FOLDER'] = 'values/'
 
 # Make the upload directory and values directory if not available
-subprocess.Popen('mkdir -p ' + app.config['UPLOAD_FOLDER'], shell = True)
-subprocess.Popen('mkdir -p ' + app.config['VALUES_FOLDER'], shell = True)
+subprocess.call(['mkdir', '-p', app.config['UPLOAD_FOLDER']])
+subprocess.call(['mkdir', '-p', app.config['VALUES_FOLDER']])
 
 # These are the extension that we are accepting to be uploaded
 app.config['ALLOWED_EXTENSIONS'] = set(['zcos', 'xcos', 'txt'])
@@ -190,9 +191,9 @@ def uploadsci():
             path = os.getcwd() + '/scifunc_files/'
             read = open(os.path.join(path, filename), "r")  
             command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","loadXcosLibs();exec('"+path + filename+"'),mode(2);quit()"]
-            output_com = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False,bufsize=1, universal_newlines=True)
+            output_com = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=os.setpgrp, bufsize=1, universal_newlines=True)
             out = output_com.communicate()[0]
-            system_commands = re.compile('unix\(.*\)|unix_g\(.*\)|unix_w\(.*\)|''unix_x\(.*\)|unix_s\(.*\)|host|newfun''|execstr|ascii|mputl|dir\(\)')
+            system_commands = re.compile(r'unix\(.*\)|unix_g\(.*\)|unix_w\(.*\)|unix_x\(.*\)|unix_s\(.*\)|host|newfun|execstr|ascii|mputl|dir\(\)')
             match = re.findall(system_commands, open(os.path.join(path, filename), 'r').read()) 
             if('!--error' in out):
                 error_index = out.index('!')
@@ -217,6 +218,17 @@ def sendfile():
     flag_sci = False
     return file_image
 
+def kill_scilab_with(proc, sgnl):
+    '''
+    function to kill a process group with a signal. wait for maximum 2 seconds
+    for process to exit. return True on exit, False otherwise
+    '''
+    os.killpg(proc.pid, sgnl)
+    for i in range(0, 20):
+        gevent.sleep(LOOK_DELAY)
+        if proc.poll() is not None:
+            return True
+    return False
 
 def event_stream(xcos_file_id):
     global figure_list
@@ -290,34 +302,37 @@ def event_stream(xcos_file_id):
         t1.start()
     else:
         command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);quit()"] 
-    scilab_proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False); 
+
+    # Put the process in its own process group using os.setpgrp. For a new
+    # group, the process group id is always equal to the process id. All the
+    # children of that process will have the same process group id. Later, we
+    # stop those processes together with os.killpg(scilab_proc.pid).
+    scilab_proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=os.setpgrp)
 
     # Wait till xcos is launched
     while len(out) == _l:
-        # If length of out equals _l, 
+        # If length of out equals _l,
         #    it means scilab hasn't launched yet
         # Wait
         gevent.sleep(LOOK_DELAY)
         # Get process IDs of scilab instances
         proc = subprocess.Popen("pgrep scilab", stdout=subprocess.PIPE, shell=True)
         # out will contain output of command, the list of process IDs of scilab
-        (out, err) = proc.communicate() 
-                  
+        (out, err) = proc.communicate()
+
     # out will contain output of command, the list of process IDs of scilab
     # Get the latest process ID of scilab
     pid = out.split()[-1]
-        
 
     # Define function to kill scilab(if still running) and remove files
     def kill_scilab():
-        # Kill scilab by it's pid
-        subprocess.Popen(["kill", "-9", pid])   
+        if not kill_scilab_with(scilab_proc, signal.SIGTERM):
+            kill_scilab_with(scilab_proc, signal.SIGKILL)
 
         # Remove log file
-        subprocess.Popen(["rm", "-f", log_dir+log_name], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
+        subprocess.call(["rm", "-f", log_dir+log_name])
         # Remove xcos file
-        subprocess.Popen(["rm", "-f", xcos_file_dir+xcos_file_name], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False) 
-        scilab_proc.kill()
+        subprocess.call(["rm", "-f", xcos_file_dir+xcos_file_name])
         line_count = 0
                
     # Log file directory
@@ -335,7 +350,7 @@ def event_stream(xcos_file_id):
     line = line_and_state(None, NOLINE)
     # Checks if such a file exists
     while not (os.path.isfile(log_name)):
-        pass
+        gevent.sleep(LOOK_DELAY)
     # This variable is for running the sleep command
  
     # Start sending log
@@ -611,15 +626,15 @@ def upload():
         workspace_counter=0
         blocks = new_xml.getElementsByTagName("BasicBlock")
         Details.tk_is_present = False
-	pattern = re.compile("<SplitBlock")
+	pattern = re.compile(r"<SplitBlock")
 	for i, line in enumerate(open(temp_file_xml_name)):
     		for match in re.finditer(pattern, line):
         		list1.append(i+1)
-	pattern1 = re.compile("<ControlPort")
+	pattern1 = re.compile(r"<ControlPort")
 	for i, line in enumerate(open(temp_file_xml_name)):
     		for match in re.finditer(pattern1, line):
         		list2.append(i+1)
-	pattern2 = re.compile("<ImplicitInputPort")
+	pattern2 = re.compile(r"<ImplicitInputPort")
 	count1=0
 	
 	for i, line in enumerate(open(temp_file_xml_name)):
@@ -1258,9 +1273,7 @@ def run_scilab_func_request():
     else:
         command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();s=poly(0,'s');exec('" + xcos_function_file_dir + "cont_frm_write.sci"+"');calculate_cont_frm("+num+","+den+");quit();"]
         
-    scilab_proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False);
-    scilab_out = ""
-    scilab_err = ""
+    scilab_proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=os.setpgrp);
     scilab_out, scilab_err = scilab_proc.communicate()
     
     file_name="cont_frm_value.txt";
@@ -1284,5 +1297,8 @@ def run_scilab_func_request():
 if __name__ == '__main__':
     # Set server address 127.0.0.1:8001/
     http_server = WSGIServer(('127.0.0.1', 8001), app)
-    http_server.serve_forever()
+    try:
+        http_server.serve_forever()
+    except KeyboardInterrupt:
+        print('exiting')
 
