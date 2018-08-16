@@ -223,7 +223,10 @@ def kill_scilab_with(proc, sgnl):
     function to kill a process group with a signal. wait for maximum 2 seconds
     for process to exit. return True on exit, False otherwise
     '''
-    os.killpg(proc.pid, sgnl)
+    try:
+        os.killpg(proc.pid, sgnl)
+    except OSError:
+        print('could not kill', proc.pid, 'with signal', sgnl)
     for i in range(0, 20):
         gevent.sleep(LOOK_DELAY)
         if proc.poll() is not None:
