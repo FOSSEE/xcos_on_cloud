@@ -66,19 +66,11 @@ workspace_dict = {}
 #workspace_counter = 0
 log_dir = ''
 log_name = ''
-affich_log_name = ''
 filename = ''
 file_image = ''
 flag_sci = False
 ts_image = 0
 counter = 1
-# For Affich_m
-workspace_variable_list = []
-# For keeping count of affich_m blocks fro replacing with TOWS_c in diagram and also for assigning variable name for TOWS_c workspace variable
-affich_count = 0
-
-#path = os.getcwd() + '/scifunc_files/'
-#filename = secure_filename(file.filename)
 
 class line_and_state:
     # Class to store the line and its state
@@ -405,7 +397,6 @@ def event_stream(xcos_file_id):
                 # The first line ID 
                 if(line_count == 1):
                     line_id = line_contents[7]
-                #print("event: block data:::1 "+logLine+"")
                 yield "event: block\ndata: "+logLine+"\n\n"
 
             elif line.get_state() != DATA:
@@ -425,7 +416,6 @@ def event_stream(xcos_file_id):
                 # The first line ID 
                 if(line_count == 1):
                     line_id = line_contents[7]
-                #print("event: log data:::2 "+logLine+"")
                 yield "event: log\ndata: "+logLine+ "\n\n"
 
 
@@ -452,12 +442,10 @@ def event_stream(xcos_file_id):
             # Get the line and loop until the state is ENDING and figure_list empty
             # Determine if we get block id and give it to chart.js
             if line.get_state()== BLOCK_IDENTIFICATION:
-                #print("event: block data:::3 "+line.get_line()+"")
                 yield "event: block\ndata: "+line.get_line()+"\n\n"
             elif line.get_state() != DATA:
                 gevent.sleep(LOOK_DELAY)
             else:
-                #print("event: log data:::4 "+line.get_line()+"")
                 yield "event: log\ndata: "+line.get_line()+"\n\n"
             # Reset line, so server won't send same line twice
             line = line_and_state(None, NOLINE)

@@ -16,9 +16,14 @@ var isDone = false;
 // pnts - Points list of the blocks
 var fig_id, l_id, pnts = [];
 
-//Function to display Affich Value
+/*Function to display values of all affich blocks
+
+displayParameter : Contains the data which is display as data of affich block
+blockId : is used to get needed div according to affichm id
+*/
 var create_affich_displaytext = function (displayParameter, blockId){
-    $('#affichdata-'+blockId).html(displayParameter);
+
+    $('#affichdata-'+blockId).html(displayParameter); //updating html data of div html for each time change according to each affich  
 
 }
 
@@ -357,7 +362,6 @@ function chart_init(wnd,affichwnd){
         
 	// Start listening to server
 	chart_reset();
-        //$('#img_loader').html("");
 	eventSource = new EventSource("/SendLog?id="+clientID);
         
 	eventSource.addEventListener("block", function(event){
@@ -524,17 +528,19 @@ function chart_init(wnd,affichwnd){
 
 		}else if(block == 20){
 			//Process data for Affich_m block
-                        //console.log(data.toSource());
-			var length_of_data = data.length;
-			var block_id = data[3];
-			var rows = data[10];
-			var columns = data[11];
+                        
+			var length_of_data = data.length; //store length of data for each line
+			var block_id = data[3]; //to store block id of affichm block
+			var rows = data[10];  // gets row of matrix
+			var columns = data[11]; // gets column of matrix
+
+                        //below code creates a html code which is table with data in that (To display it as matrix)
 			var p="<b>Value of Block : AFFICH_m-"+block_id+"</b> (Refer to label on block)<br><br><table style='width:100%'><tr>";
 			var count=1;
 			for(var k=12; k<(length_of_data-1); k++){
                                 p+="<td>";
 				p+=data[k];
-			   if((count % columns)==0){
+			   if((count % columns)==0){ // to break into new column of table
 				p+="</td></tr><tr>";
 			    }else{
 			    	p+="</td>";
@@ -543,7 +549,7 @@ function chart_init(wnd,affichwnd){
 				
 			}
 			p+="</table>";
-                        create_affich_displaytext(p,block_id);
+                        create_affich_displaytext(p,block_id); // to send data to display result
                         //console.log("affich called::::::"+p);
 		}
 
