@@ -1870,7 +1870,7 @@
                             StopTK();  // call this function 
                             });
          	
-		// Create mxWindow for affich
+		            // Create mxWindow for affich
                             var affichwin = '<div id="affich_div"><div id="img_loader" align="center" style="height:30px;"><img  src="images/loading.gif"/></div></div>';
                             var affichcontent = document.createElement('div');
                             affichcontent.style.padding="1%";
@@ -1882,17 +1882,14 @@
          	    
          	            
                             affichwnd = new mxWindow('Affich_m Values', affichcontent, (affichw-800)/2, (affichh-400)/2, 300, 500, true, true);
-			    //console.log("Getx and Gety of affichwnd:::"+affichwnd.getX()+"::::"+affichwnd.getY());
-                            //affichwnd.setLocation(600,100);
                             affichwnd.setMaximizable(true);              
                             affichwnd.setMinimizable(true);
                             affichwnd.setScrollable(true);
                             affichwnd.setResizable(true);
                             affichwnd.setClosable(true);
-                            //affichwnd.setVisible(true);
+                            
                             affichwnd.addListener(mxEvent.CLOSE, function(e){
-                                //chart_reset();
-                            //StopTK();  // call this function 
+                            	StopTK();  // call this function 
                             });
          	    
 
@@ -1914,7 +1911,7 @@
          	   var row=0,min,max,norm,num=1,cscount=0; // variables to store the values
          	   	var winArr = new Array();
          	   	var Bblock_tag=xmlDoc.getElementsByTagName("BasicBlock"); 	// get all 'BasicBlock' tags from xml code
-                var Ablock_tag=xmlDoc.getElementsByTagName("AfficheBlock");   // get all 'AfficheBlock' tags from xml code
+                        var Ablock_tag=xmlDoc.getElementsByTagName("AfficheBlock");   // get all 'AfficheBlock' tags from xml code
          		var mx_tag = xmlDoc.getElementsByTagName("mxCell"); 	// get all 'mxCell' tags from xml code
          		var tkid  = new Array();				// array which stores the main id of each tkblock
 			var affichmid  = new Array();
@@ -2010,40 +2007,27 @@
          				}
          			}
          		}
+
+                //To loop to get id of block AFFICH from array of Ablock_Tag
                 for (var i=0;i<Ablock_tag.length;i++)
                 {
                     if(Ablock_tag[i].attributes.blockElementName.value == "AFFICH_m")        // if block is AFFICH_m
                     {
-                        affichmid[m++] = parseInt(Ablock_tag[i].attributes.id.value);        // a.store tk ids
+                        /*
+				affichmid : is used to store ids of affichm block which will be used for creating div for display result 
+                        */
+                        affichmid[m++] = parseInt(Ablock_tag[i].attributes.id.value);       
                 
-                        var Sdouble_tag=Ablock_tag[i].getElementsByTagName("ScilabDouble");     // b. under scilab double tag in real parameters attributes take the input size,font number,font size,color,total number of digits,number of rational part digits,block inherits values
-                        var Realpart_tag=Sdouble_tag[1].getElementsByTagName("data");   
-
-                        if(row>10)
-                        {
-                            alert("maximum \"10\" Affich_m blocks are allowed");         // limit - only (maximum) 10 Affich_m should use in an experiment
-                            wnd.destroy(); 
-                            break;
-                        }               
-                        valArr[row]=new Array();
-                        valArr[row][0]=parseFloat(Realpart_tag[0].attributes.realPart.value); // input size value
-                        valArr[row][1]=parseFloat(Realpart_tag[1].attributes.realPart.value);   // font number value
-                        valArr[row][2]=parseFloat(Realpart_tag[2].attributes.realPart.value);   // font size value
-                        valArr[row][3]=parseFloat(Realpart_tag[3].attributes.realPart.value);   // color value
-                        valArr[row][4]=parseFloat(Realpart_tag[4].attributes.realPart.value);   // total number of digits value
-                        valArr[row][5]=parseFloat(Realpart_tag[5].attributes.realPart.value);   //number of rational part digits value
-                        valArr[row][6]=parseFloat(Realpart_tag[6].attributes.realPart.value);   //block inherits value
-                        row++;  
                     }   
                 }
-
+		//To check if affichmid array is empty or not and create div with ID with name append with block ID
                 if(affichmid.length!=0){
                         
-			affichwnd.setVisible(true);
+			affichwnd.setVisible(true); // to make affich mxwindow visible only if affich block exist
                         for(var i=0;i<affichmid.length;i++){
-                        $('#affich_div').append("<div id='affichdata-"+affichmid[i]+"' style='padding-bottom: 20px;'></div>");
+                        $('#affich_div').append("<div id='affichdata-"+affichmid[i]+"' style='padding-bottom: 20px;'></div>"); //create div for displaying result of affichm blocks 
                         }
-                        //wnd.setVisible(false);
+                        
 		    }
          		
          		 // finding splits from every link, TKSCALE parameter values
