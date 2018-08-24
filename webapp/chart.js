@@ -22,7 +22,7 @@ displayParameter : Contains the data which is display as data of affich block
 blockId : is used to get needed div according to affichm id
 */
 var create_affich_displaytext = function (displayParameter, blockId){
-
+    $('#img_loader').html(""); //remove loading image once data is received
     $('#affichdata-'+blockId).html(displayParameter); //updating html data of div html for each time change according to each affich  
 
 }
@@ -356,7 +356,6 @@ function chart_init(wnd,affichwnd){
 	var buffer;
         // buffer for CANIMXY
         var buffer_canimxy;
-        $('#img_loader').html("");
 	// Initialise variable for entry condition of creating chart for BARXY and AFFICH_m
 	var block_entry_BARXY = 1, block_entry_AFFICH = 1;
         
@@ -605,7 +604,7 @@ function chart_init(wnd,affichwnd){
 		console.log("Error: "+event.data);
 		chart_reset();
 		if(event.data=="Empty diagram") alert(event.data);
-		else alert("Some Error occured!");
+		else alert("Error occured! "+event.data);
 		wnd.destroy();
                 affichwnd.destroy();
 		isDone = true;
