@@ -240,8 +240,6 @@ def event_stream(xcos_file_id):
     xcos_file_dir = os.getcwd() + '/uploads/'
     xcos_affich_function_file_dir = os.getcwd() + '/'
     path = os.getcwd() + '/scifunc_files/'
-    #filename = 'Scifunc2.sci'
-    #print(xcos_affich_function_file_dir)
     xcos_file_name = xcos_file_list[xcos_file_id]
     # Get previously running scilab process IDs
     proc = subprocess.Popen("pgrep scilab", stdout=subprocess.PIPE, shell=True)
@@ -255,25 +253,20 @@ def event_stream(xcos_file_id):
     ts = datetime.now()
     ts_fmt = ts.strftime('%Y-%m-%d %H:%M:%S.%f')
     ts_image = ts_fmt[:-3]
-    # name of worspace file the session
+    # name of workspace file the session
     workspace="workspace"+session+".dat"
-    #ts_image = datetime.now()
-    #filename = Details.uid + ts + filename
-    #print(workspace)
-    #print(len(xcos_file_id))
     workspace_counter=workspace_list[xcos_file_id]
     ############################################################################################################
     # commands for ruuning of scilab based on existence of TOWS_c and FROMWSB
     # 3 means both exists,2 FROMWSB exists,1 TOWS_c exists,0 none exists meaning normal set of commands 
-    #print(path)
-    #print(filename)
+
     if (workspace_counter ==3 and exists(workspace)):
         append=workspace_dict[xcos_file_id]
         command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","load('"+workspace+"');loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);deletefile('"+workspace+"');save('"+workspace+"') ;quit()"]
     elif (workspace_counter ==1 or workspace_counter==3):
         append=workspace_dict[xcos_file_id]
         command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);deletefile('"+workspace+"');save('"+workspace+"') ;quit()"]
-    elif (workspace_counter ==4):     # added for affich_m
+    elif (workspace_counter ==4):     # added for affich_m block
         command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);quit()"]
     elif (workspace_counter ==2 and exists(workspace)):
         command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "load('"+workspace+"');loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);deletefile('"+workspace+"') ;quit()"]
@@ -325,9 +318,6 @@ def event_stream(xcos_file_id):
     log_dir = "" 
     # Log file name
     log_name = "scilab-log-"+pid+".txt"
-    # Affich Log File
-    #affich_log_name = "aff-scilab-log-"+pid+".txt"
-
     # Initialise output and error variables for subprocess
     scilab_out = ""
     scilab_err = ""
@@ -339,124 +329,58 @@ def event_stream(xcos_file_id):
         gevent.sleep(LOOK_DELAY)
     # This variable is for running the sleep command
  
-    # Start sending log
-    put_delay = False
-    line_id = -1
-    delay_length = -1
-    if(Details.tk_is_present):
-        try:
-            # For processes taking less than 10 seconds
-            scilab_out, scilab_err = scilab_proc.communicate(timeout=4)
-            #print(scilab_out)
-            # Check for errors in Scilab 
-            if "Empty diagram" in scilab_out:
-                yield "event: ERROR\ndata: Empty diagram\n\n"
-                kill_scilab()
-                return
+    # Start sending log to chart function for creating chart
+    try:
+        # For processes taking less than 10 seconds
+        scilab_out, scilab_err = scilab_proc.communicate(timeout=4)
+        
+        # Check for errors in Scilab 
+        if "Empty diagram" in scilab_out:
+            yield "event: ERROR\ndata: Empty diagram\n\n"
+            kill_scilab()
+            return
+        
+        if "xcos_simulate: Error during block parameters update." in scilab_out:
+            yield "event: ERROR\ndata: Error in block parameter.\nPlease check block parameters\n\n"
+            kill_scilab()
+            return
            
 
-        # For processes taking more than 10 seconds
-        except subprocess.TimeoutExpired:
-            # Check for errors in Scilab 
-            if "Empty diagram" in scilab_out:
-                yield "event: ERROR\ndata: Empty diagram\n\n"
-                kill_scilab()
-                return
-     
-            # Open the log file
-        log_file = open(log_dir + log_name, "r")
-
-        # Start sending log
-        line = line_and_state(None, NOLINE)
-        while (True):
-
-            # The chart must be updated for all the various lines it has in 0.1 seconds.
-            # Hence dividing the sleep time 0.1 by the number of lines the chart contains
-
-            if put_delay:
-                gevent.sleep(0.1 / delay_length)
-
-            if not (os.path.isfile(log_name)):
-                break
-            log_file = open(log_dir + log_name, "r+")
-
-            if not ( line.set(get_line_and_state(log_file,line_count)) or line.get_state() != ENDING or len(figure_list) > 0 ):
-                break
-
-
-            if line.get_state()== BLOCK_IDENTIFICATION:
-                # Split the line obtained from log file and the 8th element is line ID
-                logLine = line.get_line()
-
-                line_contents = logLine.split(' ')
-                # Checking if the current line ID is same as first line ID and is the first occurence of matching
-                if(line_id == line_contents[7] and not put_delay):
-                    delay_length = line_count - 1
-                    # The count of total number of lines in the chart
-                    put_delay = True
-                # The first line ID 
-                if(line_count == 1):
-                    line_id = line_contents[7]
-                yield "event: block\ndata: "+logLine+"\n\n"
-
-            elif line.get_state() != DATA:
-                gevent.sleep(LOOK_DELAY)    
-
-            else:
-                # Split the line obtained from log file and the 8th element is line ID
-                logLine = line.get_line()
-
-                line_contents = logLine.split(' ')
-                # Checking if the current line ID is same as first line ID and is the first occurence of matching
-                if(line_id == line_contents[7] and not put_delay):
-                    # Take the count of total number of lines in the chart
-                    delay_length = line_count - 1 
-                    put_delay = True
-
-                # The first line ID 
-                if(line_count == 1):
-                    line_id = line_contents[7]
-                yield "event: log\ndata: "+logLine+ "\n\n"
-
-
-            # Reset line, so server won't send same line twice
-            line = line_and_state(None, NOLINE)
-            line_count = line_count + 1
-            log_file.close()
-
-        # Finished Sending Log
-        kill_scilab()
-
-        # Notify Client
-        yield "event: DONE\ndata: None\n\n"
-
-    else:
-        # Open the log file
-        if not (os.path.isfile(log_name)):
+    # For processes taking more than 10 seconds
+    except subprocess.TimeoutExpired:
+        # Check for errors in Scilab 
+        if "Empty diagram" in scilab_out:
+            yield "event: ERROR\ndata: Empty diagram\n\n"
+            kill_scilab()
             return
-        log_file = open(log_dir + log_name, "r")
-    
-        # Start sending log
-        line = line_and_state(None, NOLINE)
-        while (line.set(get_line_and_state_modified(log_file)) or len(figure_list) > 0):
-            # Get the line and loop until the state is ENDING and figure_list empty
-            # Determine if we get block id and give it to chart.js
-            if line.get_state()== BLOCK_IDENTIFICATION:
-                yield "event: block\ndata: "+line.get_line()+"\n\n"
-            elif line.get_state() != DATA:
-                gevent.sleep(LOOK_DELAY)
-            else:
-                yield "event: log\ndata: "+line.get_line()+"\n\n"
-            # Reset line, so server won't send same line twice
-            line = line_and_state(None, NOLINE)
+     
         
-        log_file.close()   
-        # Finished Sending Log
-        kill_scilab()
+    # Open the log file
+    if not (os.path.isfile(log_name)):
+        return
+    log_file = open(log_dir + log_name, "r")
+    
+    # Start sending log
+    line = line_and_state(None, NOLINE)
+    while (line.set(get_line_and_state_modified(log_file)) or len(figure_list) > 0):
+        # Get the line and loop until the state is ENDING and figure_list empty
+        # Determine if we get block id and give it to chart.js
+        if line.get_state()== BLOCK_IDENTIFICATION:
+            yield "event: block\ndata: "+line.get_line()+"\n\n"
+        elif line.get_state() != DATA:
+            gevent.sleep(LOOK_DELAY)
+        else:
+            yield "event: log\ndata: "+line.get_line()+"\n\n"
+        # Reset line, so server won't send same line twice
+        line = line_and_state(None, NOLINE)
+        
+    log_file.close()   
+    # Finished Sending Log
+    kill_scilab()
 
-        # Notify Client
-        print("event: DONE data: None")
-        yield "event: DONE\ndata: None\n\n"
+    # Notify Client
+    yield "event: DONE\ndata: None\n\n"
+
         
 # class used to get the user_id and the boolean value is to make run a thread    
 class Details:
@@ -1205,7 +1129,6 @@ def static_file(path):
 @app.route('/stop')
 def stop():
     kill_scilab()
-    print("called")
     return "done"
 
 
