@@ -68,7 +68,7 @@ function importBlock(currentNode, cell, details_instance) {
     var f = details_instance.importset;
     if (typeof f === 'function') {
         /* set the remaining parameters */
-        f();
+        details_instance.importset();
     }
 
     return details_instance.getContainer();
