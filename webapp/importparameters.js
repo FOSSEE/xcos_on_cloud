@@ -537,7 +537,11 @@ CONSTRAINT_c.prototype.importset = function CONSTRAINT_c() {
     /* TODO */
 }
 CONVERT.prototype.importset = function CONVERT() {
-    /* TODO */
+    	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.it = ary[0];
+	this.ot = ary[1];
+	this.np = ary[2];
 }
 COSBLK_f.prototype.importset = function COSBLK_f() {
     /* TODO */
@@ -880,7 +884,9 @@ NPN.prototype.importset = function NPN() {
     /* TODO */
 }
 NRMSOM_f.prototype.importset = function NRMSOM_f() {
-    /* TODO */
+   	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.nin = ary;
 }
 OpAmp.prototype.importset = function OpAmp() {
     /* TODO */
