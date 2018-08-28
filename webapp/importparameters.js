@@ -696,7 +696,11 @@ generic_block3.prototype.importset = function generic_block3() {
     /* TODO */
 }
 GENSIN_f.prototype.importset = function GENSIN_f() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.M = ary[0];
+	this.F = ary[1];
+	this.P = ary[2];
 }
 GENSQR_f.prototype.importset = function GENSQR_f() {
     /* TODO */
