@@ -958,7 +958,11 @@ REGISTER.prototype.importset = function REGISTER() {
     /* TODO */
 }
 RELATIONALOP.prototype.importset = function RELATIONALOP() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.oprt = ary[0];
+	this.zcr = ary[1];
+	this.data = ary[2];
 }
 RELAY_f.prototype.importset = function RELAY_f() {
     /* TODO */
@@ -982,7 +986,11 @@ SampleCLK.prototype.importset = function SampleCLK() {
     /* TODO */
 }
 SATURATION.prototype.importset = function SATURATION() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.maxp = ary[0];
+	this.minp = ary[1];
+	this.zeroc = ary[2]
 }
 SAWTOOTH_f.prototype.importset = function SAWTOOTH_f() {
     /* TODO */
