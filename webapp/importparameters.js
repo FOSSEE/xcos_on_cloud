@@ -749,7 +749,9 @@ INIMPL_f.prototype.importset = function INIMPL_f() {
     /* TODO */
 }
 INTEGRAL_f.prototype.importset = function INTEGRAL_f() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.x0 = ary;
 }
 INTEGRAL_m.prototype.importset = function INTEGRAL_m() {
     /* TODO */
@@ -892,7 +894,10 @@ OpAmp.prototype.importset = function OpAmp() {
     /* TODO */
 }
 OUT_f.prototype.importset = function OUT_f() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.prt = ary;
+	this.displayParameter = this.prt;
 }
 OUTIMPL_f.prototype.importset = function OUTIMPL_f() {
     /* TODO */
@@ -1068,7 +1073,11 @@ TEXT_f.prototype.importset = function TEXT_f() {
     /* TODO */
 }
 TIME_DELAY.prototype.importset = function TIME_DELAY() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.T = ary[0];
+	this.init = ary[1];
+	this.N = ary[2];
 }
 TIME_f.prototype.importset = function TIME_f() {
     /* TODO */
