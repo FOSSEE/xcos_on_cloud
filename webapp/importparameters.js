@@ -426,13 +426,11 @@ Bache.prototype.importset = function Bache() {
     /* TODO */
 }
 BACKLASH.prototype.importset = function BACKLASH() {	
-/*
 	var graphics = this.x.graphics;
 	var ary = getData(graphics.exprs);
 	this.ini = ary[0];
 	this.gap = ary[1];
 	this.zcr = ary[2];
-*/
 }
 BARXY.prototype.importset = function BARXY() {
     /* TODO */
@@ -520,10 +518,20 @@ CLOCK_c.prototype.importset = function CLOCK_c() {
 */
 }
 CLR.prototype.importset = function CLR() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.num = ary[0];
+	this.den = ary[1];
+	this.displayParameter = [[this.num], [this.den]];
 }
 CLSS.prototype.importset = function CLSS() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.A = ary[0];
+	this.B = ary[1];
+	this.C = ary[2];
+	this.D = ary[3];
+	this.x0 = ary[4];
 }
 CMAT3D.prototype.importset = function CMAT3D() {
     /* TODO */
@@ -632,7 +640,11 @@ DLRADAPT_f.prototype.importset = function DLRADAPT_f() {
     /* TODO */
 }
 DLR.prototype.importset = function DLR() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.num = ary[0];
+	this.den = ary[1];
+	this.displayParameter = [[this.num], [this.den]];
 }
 DLSS.prototype.importset = function DLSS() {
     /* TODO */
@@ -1147,7 +1159,13 @@ TANBLK_f.prototype.importset = function TANBLK_f() {
     /* TODO */
 }
 TCLSS.prototype.importset = function TCLSS() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.A = ary[0];
+	this.B = ary[1];
+	this.C = ary[2];
+	this.D = ary[3];
+	this.x0 = ary[4];
 }
 TEXT_f.prototype.importset = function TEXT_f() {
     /* TODO */
