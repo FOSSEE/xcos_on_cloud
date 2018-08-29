@@ -498,7 +498,11 @@ CLKINV_f.prototype.importset = function CLKINV_f() {
     /* TODO */
 }
 CLKOUTV_f.prototype.importset = function CLKOUTV_f() {
-    /* TODO */
+/*
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.prt = ary;
+*/
 }
 CLKSOM_f.prototype.importset = function CLKSOM_f() {
     /* TODO */
@@ -632,7 +636,10 @@ DOLLAR_m.prototype.importset = function DOLLAR_m() {
     /* TODO */
 }
 EDGE_TRIGGER.prototype.importset = function EDGE_TRIGGER() {
-    /* TODO */
+/*	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.edge = ary;
+*/
 }
 EDGETRIGGER.prototype.importset = function EDGETRIGGER() {
     /* TODO */
@@ -641,13 +648,23 @@ ENDBLK.prototype.importset = function ENDBLK() {
     /* TODO */
 }
 END_c.prototype.importset = function END_c() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.tf = ary;
 }
 ESELECT_f.prototype.importset = function ESELECT_f() {
-    /* TODO */
+   	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.out = ary[0];
+	this.inh = ary[1];
+	this.nmod = ary[2];
 }
 EVTDLY_c.prototype.importset = function EVTDLY_c() {
-    /* TODO */
+   	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.dt = ary[0];
+	this.ff	 = ary[1];
+	this.displayParameter = this.dt;
 }
 EVTDLY_f.prototype.importset = function EVTDLY_f() {
     /* TODO */
@@ -1008,10 +1025,15 @@ ROOTCOEF.prototype.importset = function ROOTCOEF() {
     /* TODO */
 }
 SAMPHOLD_m.prototype.importset = function SAMPHOLD_m() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.it = ary;
 }
 SampleCLK.prototype.importset = function SampleCLK() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.frequ = ary[0];
+	this.offset = ary[1];
 }
 SATURATION.prototype.importset = function SATURATION() {
 	var graphics = this.x.graphics;
