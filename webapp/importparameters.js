@@ -425,8 +425,14 @@ AUTOMAT.prototype.importset = function AUTOMAT() {
 Bache.prototype.importset = function Bache() {
     /* TODO */
 }
-BACKLASH.prototype.importset = function BACKLASH() {
-    /* TODO */
+BACKLASH.prototype.importset = function BACKLASH() {	
+/*
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.ini = ary[0];
+	this.gap = ary[1];
+	this.zcr = ary[2];
+*/
 }
 BARXY.prototype.importset = function BARXY() {
     /* TODO */
@@ -571,7 +577,11 @@ CVS.prototype.importset = function CVS() {
     /* TODO */
 }
 DEADBAND.prototype.importset = function DEADBAND() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.maxp = ary[0];
+	this.minp = ary[1];
+	this.zeroc = ary[2];
 }
 DEBUG.prototype.importset = function DEBUG() {
     /* TODO */
@@ -731,7 +741,14 @@ HALT_f.prototype.importset = function HALT_f() {
     /* TODO */
 }
 HYSTHERESIS.prototype.importset = function HYSTHERESIS() {
-    /* TODO */
+/*	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.high_lim = ary[0];
+	this.low_lim = ary[1];
+	this.out_high = ary[2];
+	this.out_low = ary[3];
+	this.nzz = ary[4];
+*/
 }
 IdealTransformer.prototype.importset = function IdealTransformer() {
     /* TODO */
@@ -939,7 +956,10 @@ PULSE_SC.prototype.importset = function PULSE_SC() {
     /* TODO */
 }
 QUANT_f.prototype.importset = function QUANT_f() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.pas = ary[0];
+	this.meth = ary[1];
 }
 RAMP.prototype.importset = function RAMP() {
     /* TODO */
@@ -948,7 +968,10 @@ RAND_m.prototype.importset = function RAND_m() {
     /* TODO */
 }
 RATELIMITER.prototype.importset = function RATELIMITER() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.maxp = ary[0];
+	this.minp = ary[1];
 }
 READAU_f.prototype.importset = function READAU_f() {
     /* TODO */
@@ -1098,7 +1121,11 @@ VanneReglante.prototype.importset = function VanneReglante() {
     /* TODO */
 }
 VARIABLE_DELAY.prototype.importset = function VARIABLE_DELAY() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.T = ary[0];
+	this.init = ary[1];
+	this.N = ary[2];
 }
 VariableResistor.prototype.importset = function VariableResistor() {
     /* TODO */
