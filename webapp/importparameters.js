@@ -438,7 +438,9 @@ BARXY.prototype.importset = function BARXY() {
     /* TODO */
 }
 BIGSOM_f.prototype.importset = function BIGSOM_f() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.sgn = ary
 }
 BITCLEAR.prototype.importset = function BITCLEAR() {
     /* TODO */
@@ -511,7 +513,11 @@ CLKSOMV_f.prototype.importset = function CLKSOMV_f() {
     /* TODO */
 }
 CLOCK_c.prototype.importset = function CLOCK_c() {
-    /* TODO */
+/*	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.dt = ary[0];
+	this.t0 = ary[1];
+*/
 }
 CLR.prototype.importset = function CLR() {
     /* TODO */
@@ -538,7 +544,10 @@ CONST.prototype.importset = function CONST() {
     /* TODO */
 }
 CONST_m.prototype.importset = function CONST_m() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.c = ary
+	this.displayParameter = this.c;
 }
 CONSTRAINT2_c.prototype.importset = function CONSTRAINT2_c() {
     /* TODO */
@@ -600,7 +609,9 @@ DEMUX_f.prototype.importset = function DEMUX_f() {
     /* TODO */
 }
 DEMUX.prototype.importset = function DEMUX() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.out = ary
 }
 DERIV.prototype.importset = function DERIV() {
     /* TODO */
@@ -627,7 +638,10 @@ DLSS.prototype.importset = function DLSS() {
     /* TODO */
 }
 DOLLAR_f.prototype.importset = function DOLLAR_f() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.a = ary[0];
+	this.inh = ary[1];
 }
 DOLLAR.prototype.importset = function DOLLAR() {
     /* TODO */
@@ -816,7 +830,10 @@ ISELECT_m.prototype.importset = function ISELECT_m() {
     /* TODO */
 }
 JKFLIPFLOP.prototype.importset = function JKFLIPFLOP() {
-    /* TODO */
+/*	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.initialvalue = ary
+*/
 }
 LOGBLK_f.prototype.importset = function LOGBLK_f() {
     /* TODO */
@@ -922,7 +939,9 @@ MUX_f.prototype.importset = function MUX_f() {
     /* TODO */
 }
 MUX.prototype.importset = function MUX() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.in = ary;
 }
 NEGTOPOS_f.prototype.importset = function NEGTOPOS_f() {
     /* TODO */
@@ -978,7 +997,9 @@ PROD_f.prototype.importset = function PROD_f() {
     /* TODO */
 }
 PRODUCT.prototype.importset = function PRODUCT() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.sgn = ary;
 }
 PuitsP.prototype.importset = function PuitsP() {
     /* TODO */
