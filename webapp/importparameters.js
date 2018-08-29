@@ -670,10 +670,15 @@ EVTDLY_f.prototype.importset = function EVTDLY_f() {
     /* TODO */
 }
 EVTGEN_f.prototype.importset = function EVTGEN_f() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.tt = ary;
+	this.displayParameter = this.tt;
 }
 EVTVARDLY.prototype.importset = function EVTVARDLY() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.fir = ary;
 }
 EXPBLK_m.prototype.importset = function EXPBLK_m() {
     /* TODO */
@@ -755,7 +760,9 @@ Gyrator.prototype.importset = function Gyrator() {
     /* TODO */
 }
 HALT_f.prototype.importset = function HALT_f() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.n = ary;
 }
 HYSTHERESIS.prototype.importset = function HYSTHERESIS() {
 /*	var graphics = this.x.graphics;
@@ -771,7 +778,10 @@ IdealTransformer.prototype.importset = function IdealTransformer() {
     /* TODO */
 }
 IFTHEL_f.prototype.importset = function IFTHEL_f() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.inh = ary[0];
+	this.nmod = ary[1];
 }
 Inductor.prototype.importset = function Inductor() {
     /* TODO */
@@ -887,7 +897,11 @@ MBLOCK.prototype.importset = function MBLOCK() {
     /* TODO */
 }
 MCLOCK_f.prototype.importset = function MCLOCK_f() {
-    /* TODO */
+/*	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.dt = ary[0];
+	this.nn = ary[1];
+*/
 }
 MFCLCK_f.prototype.importset = function MFCLCK_f() {
     /* TODO */
