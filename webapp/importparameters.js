@@ -420,7 +420,15 @@ ANDLOG_f.prototype.importset = function ANDLOG_f() {
     /* TODO */
 }
 AUTOMAT.prototype.importset = function AUTOMAT() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.NMode = ary[0];
+	this.Minitial = ary[1];
+	this.NX = ary[2];
+	this.X0 = ary[3];
+	this.XP = ary[4];
+	this.C1 = ary[5];
+	this.C2 = ary[6];
 }
 Bache.prototype.importset = function Bache() {
     /* TODO */
@@ -811,14 +819,13 @@ HALT_f.prototype.importset = function HALT_f() {
 	this.n = ary;
 }
 HYSTHERESIS.prototype.importset = function HYSTHERESIS() {
-/*	var graphics = this.x.graphics;
+	var graphics = this.x.graphics;
 	var ary = getData(graphics.exprs);
 	this.high_lim = ary[0];
 	this.low_lim = ary[1];
 	this.out_high = ary[2];
 	this.out_low = ary[3];
 	this.nzz = ary[4];
-*/
 }
 IdealTransformer.prototype.importset = function IdealTransformer() {
     /* TODO */
@@ -844,7 +851,13 @@ INTEGRAL_f.prototype.importset = function INTEGRAL_f() {
 	this.x0 = ary;
 }
 INTEGRAL_m.prototype.importset = function INTEGRAL_m() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.x0 = ary[0];
+	this.reinit = ary[1];
+	this.satur = ary[2];
+	this.maxp = ary[3]
+	this.lowp = ary[4]
 }
 INTMUL.prototype.importset = function INTMUL() {
     /* TODO */
@@ -879,7 +892,13 @@ LOGBLK_f.prototype.importset = function LOGBLK_f() {
     /* TODO */
 }
 LOGICAL_OP.prototype.importset = function LOGICAL_OP() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.nin = ary[0];
+	this.oprt = ary[1];
+	this.data = ary[2];
+	this.bit = ary[3];
+	this.displayParameter = [this.label];
 }
 LOGIC.prototype.importset = function LOGIC() {
     /* TODO */
@@ -1178,7 +1197,12 @@ SUPER_f.prototype.importset = function SUPER_f() {
     /* TODO */
 }
 SWITCH2_m.prototype.importset = function SWITCH2_m() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.ot = ary[0];
+	this.rule = ary[1];
+	this.thra = ary[2];
+	this.nzz = ary[3]
 }
 SWITCH_f.prototype.importset = function SWITCH_f() {
     /* TODO */
