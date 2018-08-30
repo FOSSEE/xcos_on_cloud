@@ -485,7 +485,16 @@ CCS.prototype.importset = function CCS() {
     /* TODO */
 }
 CEVENTSCOPE.prototype.importset = function CEVENTSCOPE() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.nclock = ary[0];
+	this.clrs = ary[1];
+	this.win = ary[2];
+	this.wdim = ary[3];
+	this.per = ary[4];
+	var model = scicos_model();
+	var par = getData(model.ipar);
+	this.wpos = par;
 }
 CFSCOPE.prototype.importset = function CFSCOPE() {
     /* TODO */
@@ -499,7 +508,11 @@ CLKFROM.prototype.importset = function CLKFROM() {
 	this.tag = ary;
 }
 CLKGOTO.prototype.importset = function CLKGOTO() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.tag = ary[0];
+	this.tagvis = ary[1];
+	this.displayParameter = [this.tag];
 }
 CLKGotoTagVisibility.prototype.importset = function CLKGotoTagVisibility() {
 	var graphics = this.x.graphics;
@@ -511,11 +524,11 @@ CLKINV_f.prototype.importset = function CLKINV_f() {
     /* TODO */
 }
 CLKOUTV_f.prototype.importset = function CLKOUTV_f() {
-/*
+
 	var graphics = this.x.graphics;
 	var ary = getData(graphics.exprs);
 	this.prt = ary;
-*/
+
 }
 CLKSOM_f.prototype.importset = function CLKSOM_f() {
     /* TODO */
@@ -553,7 +566,18 @@ CMATVIEW.prototype.importset = function CMATVIEW() {
     /* TODO */
 }
 CMSCOPE.prototype.importset = function CMSCOPE() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.ini1 = ary[0];	
+	this.clrs = ary[1];
+	this.win = ary[2];
+	this.ymin = ary[5];
+	this.ymax = ary[6];
+	this.per = ary[7];
+	this.N = ary[8];
+	this.wpos = ary[3];
+	this.wdim = ary[4];
+	this.heritance = ary[9];	
 }
 ConstantVoltage.prototype.importset = function ConstantVoltage() {
     /* TODO */
@@ -590,13 +614,36 @@ Counter.prototype.importset = function Counter() {
     /* TODO */
 }
 CSCOPE.prototype.importset = function CSCOPE() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.clrs = ary[0];
+	this.win = ary[1];
+	this.wdim = ary[2];
+	this.ymin = ary[3];
+	this.ymax = ary[4];
+	this.per = ary[5];
+	this.N = ary[6];
+	this.heritance = ary[7];
+	this.nom = ary[8];
+	this.wpos = ary[9];
 }
 CSCOPXY3D.prototype.importset = function CSCOPXY3D() {
     /* TODO */
 }
 CSCOPXY.prototype.importset = function CSCOPXY() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.nbr_curves = ary[0];
+	this.clrs = ary[1];
+	this.siz = ary[2];
+	this.win = ary[3];
+	this.wdim = ary[4];
+	this.xmin = ary[5];
+	this.xmax = ary[6];
+	this.ymin = ary[7];
+	this.ymax = ary[8];
+	this.N = ary[9];
+	this.wpos = ary[9];
 }
 CUMSUM.prototype.importset = function CUMSUM() {
     /* TODO */
@@ -624,7 +671,11 @@ DELAY_f.prototype.importset = function DELAY_f() {
     /* TODO */
 }
 DELAYV_f.prototype.importset = function DELAYV_f() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.nin = ary[0];
+	this.zz0 = ary[1];
+	this.T = ary[2];
 }
 DEMUX_f.prototype.importset = function DEMUX_f() {
     /* TODO */
@@ -1097,7 +1148,10 @@ REGISTER_f.prototype.importset = function REGISTER_f() {
     /* TODO */
 }
 REGISTER.prototype.importset = function REGISTER() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.z0 = ary[0];
+	this.it = ary[1];
 }
 RELATIONALOP.prototype.importset = function RELATIONALOP() {
 	var graphics = this.x.graphics;
@@ -1225,8 +1279,7 @@ TCLSS.prototype.importset = function TCLSS() {
 TEXT_f.prototype.importset = function TEXT_f() {
 /*	var graphics = this.x.graphics;
 	var ary = getData(graphics.exprs);
-	this.tag = ary
-*/
+	this.tag = ary;*/
 }
 TIME_DELAY.prototype.importset = function TIME_DELAY() {
 	var graphics = this.x.graphics;
