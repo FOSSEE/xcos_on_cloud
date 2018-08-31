@@ -35,7 +35,7 @@ function ESELECT_f() {
     }
         var options={
             out:["number of output event ports",this.out],
-            inh:["Inherit (1: no, 0: yes)",1],
+            inh:["Inherit (1: no, 0: yes)",this.inh],
             nmod:["zero-crossing (0: no, 1: yes)",this.nmod],
         }
         return options

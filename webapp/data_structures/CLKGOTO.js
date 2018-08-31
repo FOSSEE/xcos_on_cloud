@@ -1,6 +1,8 @@
 function CLKGOTO() {
 
     CLKGOTO.prototype.define = function CLKGOTO() {
+        this.tag = "A";
+        this.tagvis = sci2exp(1);
         var model = scicos_model();
         model.sim = new ScilabString(["clkgoto"]);
         model.evtin = new ScilabDouble([1]);
@@ -22,8 +24,8 @@ function CLKGOTO() {
     }
 CLKGOTO.prototype.get = function CLKGOTO() {
         var options={
-            tag:["Tag","A"],
-            tagvis:["Tag Visibility (1=Local 2=Scoped 3=Global)",sci2exp(1)],
+            tag:["Tag",this.tag],
+            tagvis:["Tag Visibility (1=Local 2=Scoped 3=Global)",this.tagvis],
         }
         return options
     }
