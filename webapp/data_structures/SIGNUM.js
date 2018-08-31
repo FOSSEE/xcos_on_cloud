@@ -1,14 +1,15 @@
 function SIGNUM() {
 
     SIGNUM.prototype.define = function SIGNUM() {
-        this.nu = -1;
+        this.zcr = -1;
+        var nu = -1;
 
         var model = scicos_model();
         model.sim = list(new ScilabString(["signum"]), new ScilabDouble([4]));
-        model.in = new ScilabDouble([this.nu]);
-        model.out = new ScilabDouble([this.nu]);
-        model.nzcross = new ScilabDouble([this.nu]);
-        model.nmode = new ScilabDouble([this.nu]);
+        model.in = new ScilabDouble([nu]);
+        model.out = new ScilabDouble([nu]);
+        model.nzcross = new ScilabDouble([nu]);
+        model.nmode = new ScilabDouble([nu]);
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
