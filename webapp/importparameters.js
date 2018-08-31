@@ -492,7 +492,7 @@ CEVENTSCOPE.prototype.importset = function CEVENTSCOPE() {
 	this.win = ary[2];
 	this.wdim = ary[3];
 	this.per = ary[4];
-	var model = scicos_model();
+	var model = this.x.model;
 	var par = getData(model.ipar);
 	this.wpos = par;
 }
