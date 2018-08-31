@@ -668,7 +668,13 @@ DEBUG.prototype.importset = function DEBUG() {
     /* TODO */
 }
 DELAY_f.prototype.importset = function DELAY_f() {
-    /* TODO */
+/*	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.zz0 = ary;
+	var model = this.x.model;
+	var par = getData(model.rpar);
+	this.dt = par;
+*/
 }
 DELAYV_f.prototype.importset = function DELAYV_f() {
 	var graphics = this.x.graphics;
@@ -701,7 +707,14 @@ DLATCH.prototype.importset = function DLATCH() {
     /* TODO */
 }
 DLRADAPT_f.prototype.importset = function DLRADAPT_f() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.p = ary[0];
+	this.m = ary[1];
+	this.rd = ary[2];
+	this.g = ary[3];
+	this.last_u = ary[4];
+	this.last_y = ary[5];
 }
 DLR.prototype.importset = function DLR() {
 	var graphics = this.x.graphics;
@@ -907,8 +920,9 @@ INTEGRAL_m.prototype.importset = function INTEGRAL_m() {
 	this.x0 = ary[0];
 	this.reinit = ary[1];
 	this.satur = ary[2];
-	this.maxp = ary[3]
-	this.lowp = ary[4]
+	this.maxp = ary[3];
+	this.lowp = ary[4];
+	this.minp = ary[4];
 }
 INTMUL.prototype.importset = function INTMUL() {
     /* TODO */
@@ -934,7 +948,7 @@ ISELECT_m.prototype.importset = function ISELECT_m() {
     /* TODO */
 }
 JKFLIPFLOP.prototype.importset = function JKFLIPFLOP() {
-/*	var graphics = this.x.graphics;
+/* 	var graphics = this.x.graphics;
 	var ary = getData(graphics.exprs);
 	this.initialvalue = ary
 */
