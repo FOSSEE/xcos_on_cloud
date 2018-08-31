@@ -1,14 +1,14 @@
 function TOWS_c() {
 
     TOWS_c.prototype.define = function TOWS_c() {
-        this.nu = -1;
+        var nu = -1;
         this.nz = 128;
         this.varnam = "A";
         this.herit = 0;
 
         var model = scicos_model();
         model.sim = list(new ScilabString(["tows_c"]), new ScilabDouble([4]));
-        model.in = new ScilabDouble([this.nu]);
+        model.in = new ScilabDouble([nu]);
         model.in2 = new ScilabDouble([-2]);
         model.intyp = new ScilabDouble([-1]);
         model.out = new ScilabDouble();
