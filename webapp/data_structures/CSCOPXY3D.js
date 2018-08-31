@@ -40,7 +40,7 @@ function CSCOPXY3D() {
             clrs:["color (>0) or mark (<0)",this.clrs.toString().replace(/,/g," ")],
             siz:["Line or Mark Size",this.siz.toString().replace(/,/g," ")],
             win:["Output window number (-1 for automatic)",this.win],
-            wpos:["Output window position","[]"],
+            wpos:["Output window position",this.wpos.toString().replace(/,/g," ")],
             wdim:["Output window sizes",this.wdim.toString().replace(/,/g," ")],
             vec_x:["Xmin and Xmax",this.vec_x.toString().replace(/,/g," ")],
             vec_y:["Ymin and Ymax",this.vec_y.toString().replace(/,/g," ")],

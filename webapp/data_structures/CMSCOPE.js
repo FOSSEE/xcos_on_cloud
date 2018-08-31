@@ -9,14 +9,14 @@ function CMSCOPE() {
             in1: ["Input ports sizes", this.in1.toString().replace(/,/g, " ")],
             clrs: ["Drawing colors (>0) or mark (<0)", this.clrs.toString().replace(/,/g, " ")],
             win: ["Output window number (-1 for automatic)", this.win],
-            wpos: ["Output window position", "[]"],
-            wdim: ["Output window sizes", "[]"],
+            wpos: ["Output window position", this.wpos.toString().replace(/,/g," ")],
+            wdim: ["Output window sizes", this.wdim.toString().replace(/,/g," ")],
             ymin: ["Ymin vector", this.ymin.toString().replace(/,/g, " ")],
             ymax: ["Ymax vector", this.ymax.toString().replace(/,/g, " ")],
             per: ["Refresh period", this.per.toString().replace(/,/g, " ")],
             N: ["Buffer size", this.N],
-            heritance: ["Accept herited events 0/1", 0],
-            nom: ["Name of Scope (label&Id)", ""]
+            heritance: ["Accept herited events 0/1", this.heritance],
+            nom: ["Name of Scope (label&Id)", this.nom]
         };
         return options;
     }
@@ -119,6 +119,8 @@ function CMSCOPE() {
         return new BasicBlock(this.x);
     }
     CMSCOPE.prototype.define = function CMSCOPE() {
+        this.heritance = 0;
+        this.nom = "";
         this.win = -1;
         this.in1 = [[1],[1]];
         this.wdim = [[-1],[-1]];

@@ -1,13 +1,13 @@
 function ABS_VALUE () {
 
 ABS_VALUE.prototype.define = function ABS_VALUE() {
-    this.nu = -1;
+    this.zcr = -1;
     var model = scicos_model()
     model.sim = list(new ScilabString(["absolute_value"]), new ScilabDouble([4]))
-    model.in = new ScilabDouble([this.nu]);
-    model.out = new ScilabDouble([this.nu]);
-    model.nzcross = new ScilabDouble([this.nu]);
-    model.nmode = new ScilabDouble([this.nu]);
+    model.in = new ScilabDouble([this.zcr]);
+    model.out = new ScilabDouble([this.zcr]);
+    model.nzcross = new ScilabDouble([this.zcr]);
+    model.nmode = new ScilabDouble([this.zcr]);
     model.blocktype = new ScilabDouble(["c"]);
     model.dep_ut = new ScilabBoolean(true, false)
     var exprs = new ScilabString([1])
@@ -18,7 +18,7 @@ ABS_VALUE.prototype.define = function ABS_VALUE() {
     }
 ABS_VALUE.prototype.get = function ABS_VALUE() {
          var options={
-            zcr:["use zero_crossing (1: yes) (0:no)","1"],
+            zcr:["use zero_crossing (1: yes) (0:no)",this.zcr],
         }
         return options
     }

@@ -1,7 +1,7 @@
 function CLKFROM() {
     CLKFROM.prototype.get = function CLKFROM() {
              var options={
-                tag:["Tag","A"],
+                tag:["Tag",this.tag],
             }
             return options
         }
@@ -16,6 +16,7 @@ function CLKFROM() {
         return new BasicBlock(this.x)
     }
     CLKFROM.prototype.define = function CLKFROM() {
+        this.tag = "A";
         var model = scicos_model();
         model.sim = new ScilabString(["clkfrom"]);
         model.evtout = new ScilabDouble([1]);

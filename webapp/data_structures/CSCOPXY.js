@@ -40,7 +40,7 @@ function CSCOPXY() {
             clrs:["color (>0) or mark (<0)",this.clrs.toString().replace(/,/g," ")],
             siz:["line or mark size",this.siz.toString().replace(/,/g," ")],
             win:["Output window number (-1 for automatic)",this.win],
-            wpos:["Output window position","[]"],
+            wpos:["Output window position",this.wpos.toString().replace(/,/g," ")],
             wdim:["Output window sizes",this.wdim.toString().replace(/,/g," ")],
             xmin:["Xmin",this.xmin],
             xmax:["Xmax",this.xmax],
