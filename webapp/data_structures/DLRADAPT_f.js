@@ -34,10 +34,10 @@ function DLRADAPT_f() {
 
 	options={
             p:["Vector of p mesh points",sci2exp(this.p)],
-	    rn:["Numerator roots (one line for each mesh)",sci2exp([])],
+	    rn:["Numerator roots (one line for each mesh)",sci2exp(this.rn)],
             rd:["Denominator roots (one line for each mesh)",sci2exp(this.rd)],
             g:["Vector of gain at mesh points",sci2exp(this.g)],
-	    last_u:["past inputs (Num degree values)",sci2exp([])],
+	    last_u:["past inputs (Num degree values)",sci2exp(this.last_u)],
 	    last_y:["past outputs (Den degree values)",sci2exp(this.last_y)],
 
         }
@@ -46,10 +46,10 @@ function DLRADAPT_f() {
 
 	options={
             p:["Vector of p mesh points",sci2exp(this.p)],
-	    rn:["Numerator roots (one line for each mesh)",sci2exp([])],
+	    rn:["Numerator roots (one line for each mesh)",sci2exp(this.rn)],
             rd:["Denominator roots (one line for each mesh)",this.rd],
             g:["Vector of gain at mesh points",sci2exp(this.g)],
-	    last_u:["past inputs (Num degree values)",sci2exp([])],
+	    last_u:["past inputs (Num degree values)",sci2exp(this.last_u)],
 	    last_y:["past outputs (Den degree values)",sci2exp(this.last_y)],
 
         }

@@ -1,6 +1,7 @@
 function AFFICH_m() {
     
     AFFICH_m.prototype.define = function AFFICH_m() {
+        this.herit = 0;
         this.font = 1;
         this.fontsize = 1;
         this.colr = 1;
@@ -38,7 +39,7 @@ function AFFICH_m() {
             colr:["Color",this.colr],
             nt:["Total number of digits",this.nt],
             nd:["Number of rational part digits",this.nd],
-            herit:["Block inherits (1) or not (0)",0],
+            herit:["Block inherits (1) or not (0)",this.herit],
         }
         return options;
     }

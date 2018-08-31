@@ -1,5 +1,8 @@
 function BACKLASH() {
     BACKLASH.prototype.define = function BACKLASH() {
+        this.ini = 0;
+        this.gap = 1;
+        this.zcr = 1;
 
         var exprs = new ScilabString(["0"], ["1"], ["1"]);
         var model = scicos_model();
@@ -20,9 +23,9 @@ function BACKLASH() {
     }
     BACKLASH.prototype.get = function BACKLASH() {
          var options={
-            ini:["initial output","0"],
-            gap:["gap","1"],
-            zcr:["use zero-crossing (0:no, 1:yes)","1"],
+            ini:["initial output",this.ini],
+            gap:["gap",this.gap],
+            zcr:["use zero-crossing (0:no, 1:yes)",this.zcr],
         }
         return options
     }
