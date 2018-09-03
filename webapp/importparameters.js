@@ -506,6 +506,7 @@ CLKFROM.prototype.importset = function CLKFROM() {
 	var graphics = this.x.graphics;
 	var ary = getData(graphics.exprs);
 	this.tag = ary;
+	this.displayParameter = [this.tag];
 }
 CLKGOTO.prototype.importset = function CLKGOTO() {
 	var graphics = this.x.graphics;
@@ -969,7 +970,9 @@ LOGIC.prototype.importset = function LOGIC() {
     /* TODO */
 }
 LOOKUP_f.prototype.importset = function LOOKUP_f() {
-    /* TODO */
+	var model = this.x.model;
+	var par = getData(model.rpar);
+	this.graphpoints = par;
 }
 MATBKSL.prototype.importset = function MATBKSL() {
     /* TODO */
