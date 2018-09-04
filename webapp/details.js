@@ -977,7 +977,9 @@ function BasicBlock() {
 }
 
 function sci2exp(c) {
-    if (c.scilabClass == "ScilabList") {
+    if (typeof c === 'string') {
+        return c;
+    } else if (c.scilabClass == "ScilabList") {
         c = Object.create(c);
         c.scilabClass = "";
         if (c.length) {

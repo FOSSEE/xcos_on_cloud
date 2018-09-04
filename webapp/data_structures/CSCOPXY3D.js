@@ -127,7 +127,7 @@ function CSCOPXY3D() {
         this.size_siz = size(this.siz,"*")
         var ipar = new ScilabDouble([this.win],[this.size_siz],[this.N],...this.clrs,...this.siz,[1],...this.wpos,...this.wdim,[this.nbr_curves])
         this.x.model.ipar = ipar
-        var exprs = new ScilabString([this.nbr_curves],[this.clrs.toString().replace(/,/g, " ")],[this.siz.toString().replace(/,/g, " ")],[this.win],[sci2exp([])],[sci2exp(this.wdim)],[this.vec_x.toString().replace(/,/g," ")],[this.vec_y.toString().replace(/,/g," ")],[this.vec_z.toString().replace(/,/g," ")],[this.param3ds.toString().replace(/,/g," ")],[this.N])
+        var exprs = new ScilabString([this.nbr_curves],[this.clrs.toString().replace(/,/g, " ")],[this.siz.toString().replace(/,/g, " ")],[this.win],[sci2exp(this.wpos)],[sci2exp(this.wdim)],[this.vec_x.toString().replace(/,/g," ")],[this.vec_y.toString().replace(/,/g," ")],[this.vec_z.toString().replace(/,/g," ")],[this.param3ds.toString().replace(/,/g," ")],[this.N])
         this.x.graphics.exprs=exprs
         return new BasicBlock(this.x)
     }

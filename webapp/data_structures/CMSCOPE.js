@@ -109,7 +109,7 @@ function CMSCOPE() {
         this.period = transpose(this.per);
         var rpar = new ScilabDouble([0], ...colon_operator(this.period), ...colon_operator(this.yy));
         var ipar = new ScilabDouble([this.win], [this.in1.length], [this.N], ...this.wpos, ...this.wdim, ...this.in1, this.clrs[0], this.clrs[1],[this.heritance]);
-        var exprs = new ScilabString([this.in1.toString().replace(/,/g, " ")], [this.clrs.toString().replace(/,/g, " ")], [this.win], ["[]"], ["[]"], [this.ymin.toString().replace(/,/g, " ")], [this.ymax.toString().replace(/,/g, " ")], [this.per.toString().replace(/,/g, " ")], [this.N], [0], [""]);
+        var exprs = new ScilabString([this.in1.toString().replace(/,/g, " ")], [this.clrs.toString().replace(/,/g, " ")], [this.win], [this.wpos.toString().replace(/,/g," ")], [this.wdim.toString().replace(/,/g," ")], [this.ymin.toString().replace(/,/g, " ")], [this.ymax.toString().replace(/,/g, " ")], [this.per.toString().replace(/,/g, " ")], [this.N], [this.heritance], [this.nom]);
         this.x.model.ipar = ipar;
         this.x.model.label = new ScilabString([this.nom]);
         this.x.model.evtin = new ScilabDouble(...ones(1-this.heritance,1));

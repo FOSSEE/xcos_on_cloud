@@ -60,7 +60,7 @@ function CFSCOPE() {
         }
         var rpar = new ScilabDouble([0], [this.ymin], [this.ymax], [this.per])
         var ipar = new ScilabDouble([this.win], [1], [this.N], ...this.clrs, ...this.wpos, ...this.wdim, [this.wu.length], [this.wu]);
-        var exprs = new ScilabString([this.clrs.toString().replace(/,/g, " ")], [this.win], [sci2exp(this.wpos)], [sci2exp(this.wdim)], [this.ymin], [this.ymax], [this.per], [this.N], [1]);
+        var exprs = new ScilabString([this.clrs.toString().replace(/,/g, " ")], [this.win], [sci2exp(this.wpos)], [sci2exp(this.wdim)], [this.ymin], [this.ymax], [this.per], [this.N], [this.wu]);
         this.x.model.ipar = ipar;
         this.x.model.rpar = rpar;
         this.x.model.dep_ut = new ScilabBoolean([true, false]);
