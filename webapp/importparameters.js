@@ -572,13 +572,14 @@ CMSCOPE.prototype.importset = function CMSCOPE() {
 	this.ini1 = ary[0];	
 	this.clrs = ary[1];
 	this.win = ary[2];
+	this.wpos = ary[3];
+	this.wdim = ary[4];
 	this.ymin = ary[5];
 	this.ymax = ary[6];
 	this.per = ary[7];
 	this.N = ary[8];
-	this.wpos = ary[3];
-	this.wdim = ary[4];
-	this.heritance = ary[9];	
+	this.heritance = ary[9];
+	this.nom = ary[10];	
 }
 ConstantVoltage.prototype.importset = function ConstantVoltage() {
     /* TODO */
@@ -619,14 +620,14 @@ CSCOPE.prototype.importset = function CSCOPE() {
 	var ary = getData(graphics.exprs);
 	this.clrs = ary[0];
 	this.win = ary[1];
-	this.wdim = ary[2];
-	this.ymin = ary[3];
-	this.ymax = ary[4];
-	this.per = ary[5];
-	this.N = ary[6];
-	this.heritance = ary[7];
-	this.nom = ary[8];
-	this.wpos = ary[9];
+	this.wpos = ary[2];
+	this.wdim = ary[3];
+	this.ymin = ary[4];
+	this.ymax = ary[5];
+	this.per = ary[6];
+	this.N = ary[7];
+	this.heritance = ary[8];
+	this.nom = ary[9];
 }
 CSCOPXY3D.prototype.importset = function CSCOPXY3D() {
     /* TODO */
@@ -638,13 +639,14 @@ CSCOPXY.prototype.importset = function CSCOPXY() {
 	this.clrs = ary[1];
 	this.siz = ary[2];
 	this.win = ary[3];
-	this.wdim = ary[4];
-	this.xmin = ary[5];
-	this.xmax = ary[6];
-	this.ymin = ary[7];
-	this.ymax = ary[8];
-	this.N = ary[9];
-	this.wpos = ary[9];
+	this.wpos = ary[4];
+	this.wdim = ary[5];
+	this.xmin = ary[6];
+	this.xmax = ary[7];
+	this.ymin = ary[8];
+	this.ymax = ary[9];
+	this.N = ary[10];
+	
 }
 CUMSUM.prototype.importset = function CUMSUM() {
     /* TODO */
@@ -905,7 +907,11 @@ Inductor.prototype.importset = function Inductor() {
     /* TODO */
 }
 IN_f.prototype.importset = function IN_f() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.prt = ary[0];
+	this.otsz = ary[1];
+	this.ot = ary[2];
 }
 INIMPL_f.prototype.importset = function INIMPL_f() {
     /* TODO */
