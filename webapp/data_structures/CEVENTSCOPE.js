@@ -87,7 +87,7 @@ function CEVENTSCOPE() {
 	    var ipar = new ScilabDouble([this.win],[1],...this.clrs,...this.wpos,...this.wdim)
 	    this.x.model.rpar = rpar
 	    this.x.model.ipar = ipar
-	    var exprs = new ScilabString([sci2exp([this.nclock])],[this.clrs.toString().replace(/,/g," ")],[this.win],["[]"],[sci2exp(this.wdim)],[this.per]);
+	    var exprs = new ScilabString([sci2exp([this.nclock])],[this.clrs.toString().replace(/,/g," ")],[this.win],[sci2exp(this.wpos)],[sci2exp(this.wdim)],[this.per]);
 	    this.x.graphics.exprs=exprs
 	    return new BasicBlock(this.x)
     }
