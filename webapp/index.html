@@ -1595,6 +1595,8 @@
                                             temporaryMapObject.commandIds = [];
                                             
                                             switch(curNodeName){
+                                                case 'EventInBlock': ifaceFuncName='CLKINV_f'; break;
+                                                case 'EventOutBlock': ifaceFuncName='CLKOUTV_f'; break;
                                                 case 'ExplicitInBlock': ifaceFuncName='IN_f'; break;
                                                 case 'ExplicitOutBlock': ifaceFuncName='OUT_f'; break;
                                                 case 'ImplicitInBlock': ifaceFuncName='INIMPL_f'; break;
