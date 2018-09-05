@@ -8,7 +8,6 @@ function TEXT_f() {
         model.sim = new ScilabString(["Text"]);
         model.rpar = new ScilabString(["Text"]);
         model.ipar = new ScilabDouble([this.font], [this.siz]);
-	model.opar = list(new ScilabString(["Text"]));
         var exprs = ["Text", this.font, this.siz];
 	var n =this.tag;
         this.displayParameter=[n];
@@ -34,8 +33,8 @@ TEXT_f.prototype.set = function TEXT_f() {
 
     this.displayParameter=[n];
 
-    this.x.model.opar = list(new ScilabString([this.tag]))
-    var exprs = new ScilabString([this.tag])
+    this.x.model.rpar = new ScilabString([this.tag]);
+    var exprs = new ScilabString([this.tag, this.font, this.siz])
     this.x.graphics.exprs=exprs
     return new TextBlock(this.x)
     }
