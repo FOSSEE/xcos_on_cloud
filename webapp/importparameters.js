@@ -529,7 +529,7 @@ CLKOUTV_f.prototype.importset = function CLKOUTV_f() {
 	var graphics = this.x.graphics;
 	var ary = getData(graphics.exprs);
 	this.prt = ary;
-
+	this.displayParameter = [this.prt];
 }
 CLKSOM_f.prototype.importset = function CLKSOM_f() {
     /* TODO */
