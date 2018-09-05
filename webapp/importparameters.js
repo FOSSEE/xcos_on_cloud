@@ -490,11 +490,9 @@ CEVENTSCOPE.prototype.importset = function CEVENTSCOPE() {
 	this.nclock = ary[0];
 	this.clrs = ary[1];
 	this.win = ary[2];
-	this.wdim = ary[3];
-	this.per = ary[4];
-	var model = this.x.model;
-	var par = getData(model.ipar);
-	this.wpos = par;
+	this.wpos = ary[3];
+	this.wdim = ary[4];
+	this.per = ary[5];
 }
 CFSCOPE.prototype.importset = function CFSCOPE() {
     /* TODO */
