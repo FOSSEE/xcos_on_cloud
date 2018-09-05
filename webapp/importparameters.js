@@ -1300,9 +1300,10 @@ TCLSS.prototype.importset = function TCLSS() {
 	this.x0 = ary[4];
 }
 TEXT_f.prototype.importset = function TEXT_f() {
-/*	var graphics = this.x.graphics;
+	var graphics = this.x.graphics;
 	var ary = getData(graphics.exprs);
-	this.tag = ary;*/
+	this.tag = ary[0];
+	this.displayParameter=[this.tag];
 }
 TIME_DELAY.prototype.importset = function TIME_DELAY() {
 	var graphics = this.x.graphics;
