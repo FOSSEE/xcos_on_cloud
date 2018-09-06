@@ -1,3 +1,7 @@
+/*
+	This function is used to extract the values of the properties of a block from the XML.
+	The values are either present under the "exprs" node or are scattered over different nodes.
+*/
 function importBlock(currentNode, cell, details_instance) {
     details_instance.define();
     var model = details_instance.x.model;
@@ -65,346 +69,12 @@ function importBlock(currentNode, cell, details_instance) {
         model.equations = cell.equations;
     }
 
-    var f = details_instance.importset;
-    if (typeof f === 'function') {
+    if (typeof details_instance.importset === 'function') {
         /* set the remaining parameters */
         details_instance.importset();
     }
 
     return details_instance.getContainer();
-}
-
-/*
-	This function is used to extract the values of the properties of a block from the XML.
-	The values are either present under the "exprs" node or are scattered over different nodes.
-*/
-function importParameters ( blockName, codec, currentNode ) {
-
-	var importProperties = {};
-	if(blockName.startsWith('LOOKUP_f')) {
-	    var points = [];
-	    var currentNodeCopy = currentNode;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    currentNodeCopy = currentNodeCopy.nextSibling;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    while(currentNodeCopy != null) {
-	        var cellCopy = codec.decode(currentNodeCopy);
-	        points.push(cellCopy.realPart);
-	        currentNodeCopy = currentNodeCopy.nextSibling;
-	    }
-	    var xPoints = [];
-	    var yPoints = [];
-	    var graphPoints = [];
-	    for( var i=0 ; i < (points.length/2); i++) {
-	        xPoints.push(points[i]);
-	        yPoints.push(points[i+(points.length/2)]);
-	        graphPoints.push([points[i],points[i+(points.length/2)]]);
-	    }
-	    var xmin, xmax, ymin, ymax;
-	    if(Math.min(...xPoints) < -2.5)
-	        xmin = Math.min(...xPoints) - 1;
-	    else 
-	        xmin = -2.5;
-	    if(Math.max(...xPoints) > 2.5)
-	        xmax = Math.max(...xPoints) + 1;
-	    else
-	        xmax = 2.5;
-	    if(Math.min(...yPoints) < -1.2)
-	        ymin = Math.min(...yPoints) - 1;
-	    else
-	        ymin = -1.2;
-	    if(Math.max(...yPoints) > 1.2)
-	        ymax = Math.max(...yPoints) + 1;
-	    else
-	        ymax = 1.2;
-	    importProperties = {graphPoints, xmin, xmax, ymin, ymax };
-	}
-	if(blockName.startsWith('CSCOPE')) {
-	    var currentNodeCopy = currentNode;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    var clrs, win, wpos, wdim, ymin, ymax, per, N, heritance, nom;
-	    clrs = codec.decode(currentNodeCopy).value.toString();
-	    win = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    wpos = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString().slice(1,-1);
-	    if(wpos == "")
-	        wpos ="-1 -1";
-	    wdim = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString().replace(/;/g," ").slice(1,-1);
-	    ymin = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    ymax = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    per = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    N = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    heritance = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    nom = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    
-	    importProperties = {clrs, win, wpos, wdim, ymin, ymax, per, N, heritance, nom};
-	}
-	if(blockName.startsWith('GENSIN_f')) {
-	    var currentNodeCopy = currentNode;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    var M, F, P;
-	    M = codec.decode(currentNodeCopy).value.toString();
-	    F = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    P = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    importProperties = {M, F, P};
-	}
-	if(blockName.startsWith('CLOCK_c')) {
-	    var dt, d0;
-	    var currentNodeCopy = currentNode;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    currentNodeCopy = currentNodeCopy.nextSibling;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    currentNodeCopy = currentNodeCopy.nextSibling;
-	    currentNodeCopy = currentNodeCopy.nextSibling;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    currentNodeCopy = currentNodeCopy.nextSibling;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    currentNodeCopy = currentNodeCopy.nextSibling;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    currentNodeCopy = currentNodeCopy.nextSibling;
-	    currentNodeCopy = currentNodeCopy.nextSibling;
-	    currentNodeCopy = currentNodeCopy.nextSibling;
-	    currentNodeCopy = currentNodeCopy.nextSibling;
-	    currentNodeCopy = currentNodeCopy.nextSibling;
-	    
-	    dt = codec.decode(currentNodeCopy = currentNodeCopy.firstChild).value.toString();
-	    t0 = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    importProperties = {dt, t0};
-	}
-	if(blockName.startsWith('JKFLIPFLOP')) {
-	    var initialvalue;
-	    var currentNodeCopy = currentNode;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    currentNodeCopy = currentNodeCopy.nextSibling;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    currentNodeCopy = currentNodeCopy.nextSibling;
-	    currentNodeCopy = currentNodeCopy.nextSibling;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    currentNodeCopy = currentNodeCopy.nextSibling;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    currentNodeCopy = currentNodeCopy.nextSibling;
-	    currentNodeCopy = currentNodeCopy.nextSibling;
-	    currentNodeCopy = currentNodeCopy.nextSibling;
-	    currentNodeCopy = currentNodeCopy.nextSibling;
-	    currentNodeCopy = currentNodeCopy.nextSibling;
-	    
-	    initialvalue = codec.decode(currentNodeCopy = currentNodeCopy.firstChild).value;
-	    importProperties = {initialvalue};
-	}
-	if(blockName.startsWith('BIGSOM_f')) {
-	    var sgn;
-	    var currentNodeCopy = currentNode;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    sgn = codec.decode(currentNodeCopy = currentNodeCopy.firstChild).value.toString().replace(/;/g," ").slice(1,-1);
-	    importProperties = {sgn};
-	}
-	if( blockName.startsWith('CMSCOPE') ) {
-	    var in1, clrs, win, wpos, wdim, ymin, ymax, per, N, heritance, nom;
-	    var currentNodeCopy = currentNode;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-
-	    in1 = codec.decode(currentNodeCopy).value.toString();
-	    clrs = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    win = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    wpos = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    wdim = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    ymin = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    ymax = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    per = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    N =codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    heritance = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    nom = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-
-	    importProperties = {in1, clrs, win, wpos, wdim, ymin, ymax, per, N, heritance, nom};
-	}
-	if( blockName.startsWith('CONST_m') ) {
-		var currentNodeCopy = currentNode;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-
-	    var vec = codec.decode(currentNodeCopy).value.toString();
-	    importProperties = { vec };
-	}
-	if( blockName.startsWith('CONVERT') ) {
-		var it, ot ,np;
-		var currentNodeCopy = currentNode;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-
-	    it = codec.decode(currentNodeCopy).value.toString();
-	    ot = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    np = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	   	
-	   	importProperties = { it, ot, np};
-	}
-	if( blockName.startsWith('CSCOPXY') ) {
-
-		var nbr_curves, clrs, siz, win, wpos, wdim, xmin, xmax, ymin, ymax, N;
-		var currentNodeCopy = currentNode;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    nbr_curves = codec.decode(currentNodeCopy).value.toString();
-	    clrs = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    siz = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    win = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    wpos = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    wdim = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString().replace(/;/g," ").slice(1,-1);
-	    xmin = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    xmax = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    ymin = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    ymax = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    N = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-
-	    importProperties = { nbr_curves, clrs, siz, win, wpos, wdim, xmin, xmax, ymin ,ymax, N};
-	}
-	if( blockName.startsWith('DEMUX') ) {
-
-		var currentNodeCopy = currentNode;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    
-	    var out = codec.decode(currentNodeCopy).value.toString();
-	    importProperties = { out };
-	}
-	if( blockName.startsWith('DOLLAR_f') ) {
-
-		var currentNodeCopy = currentNode;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    
-	    var a = codec.decode(currentNodeCopy).value.toString();
-	    var inh = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    importProperties = { a, inh };
-	}
-	if( blockName.startsWith('INTEGRAL') ) {
-
-		var currentNodeCopy = currentNode;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    
-	    var x0 = codec.decode(currentNodeCopy).value.toString();
-	    importProperties = { x0 };
-	}
-	// if( blockName.startsWith('IN_f') ) {
-
-	// 	var prt, otsz, ot;
-	// 	var currentNodeCopy = currentNode;
-	//     currentNodeCopy = currentNodeCopy.firstChild;
-	//     currentNodeCopy = currentNodeCopy.firstChild;
-	    
-	//     prt = codec.decode(currentNodeCopy).value.toString();
-	//     otsz = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	//     ot = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	//     importProperties = { prt, otsz, ot };
-	//     console.log(importProperties);
-	// }
-	if( blockName.startsWith('LOGICAL_OP') ) {
-
-			var nin, oprt, bit, data;
-			var currentNodeCopy = currentNode;
-		    currentNodeCopy = currentNodeCopy.firstChild;
-		    currentNodeCopy = currentNodeCopy.firstChild;
-		    
-		    nin = codec.decode(currentNodeCopy).value.toString();
-		    oprt = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-		    data = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-		    bit = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-		    importProperties = { nin, oprt, data, bit};
-	}
-	if( blockName.startsWith('MUX') ) {
-
-		var inp;
-		var currentNodeCopy = currentNode;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    
-	    inp = codec.decode(currentNodeCopy).value.toString();
-	    importProperties = { inp };
-	}
-	if( blockName.startsWith('NRMSOM_f') ) {
-
-		var nin;
-		var currentNodeCopy = currentNode;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    
-	    nin = codec.decode(currentNodeCopy).value.toString();
-	    importProperties = { nin };
-	}
-	// if( blockName.startsWith('OUT_f') ) {
-
-	// 	var prt;
-	// 	var currentNodeCopy = currentNode;
-	//     currentNodeCopy = currentNodeCopy.firstChild;
-	//     currentNodeCopy = currentNodeCopy.firstChild;
-	    
-	//     prt = codec.decode(currentNodeCopy).value.toString();
-	//     importProperties = { prt };
-	// }
-	if( blockName.startsWith('PRODUCT') ) {
-
-		var sgn;
-		var currentNodeCopy = currentNode;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    
-	    sgn = codec.decode(currentNodeCopy).value.toString().replace(/;/g," ").slice(1,-1);
-	    importProperties = { sgn };
-	}
-	if( blockName.startsWith('RELATIONALOP') ) {
-
-		var oprt, zcr, data;
-		var currentNodeCopy = currentNode;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    
-	    oprt = codec.decode(currentNodeCopy).value.toString();
-	    zcr = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    data = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    
-	    importProperties = { oprt, zcr, data };
-	}
-	if( blockName.startsWith('SATURATION') ) {
-
-		var maxp, minp, zeroc;
-		var currentNodeCopy = currentNode;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    
-	    maxp = codec.decode(currentNodeCopy).value.toString();
-	    minp = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    zeroc = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    
-	    importProperties = { maxp, minp, zeroc};
-	}
-	if( blockName.startsWith('SWITCH2_m') ) {
-
-		var ot, rule, thra, nzz;
-		var currentNodeCopy = currentNode;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    currentNodeCopy = currentNodeCopy.firstChild;
-	    
-	    ot = codec.decode(currentNodeCopy).value.toString();
-	    rule = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    thra = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    nzz = codec.decode(currentNodeCopy = currentNodeCopy.nextSibling).value.toString();
-	    
-	    importProperties = { ot, rule, thra, nzz};
-	}
-	// if( blockName.startsWith('TEXT_f') ) {
-
-	// 	var tag
-	// 	var currentNodeCopy = currentNode;
-	//     currentNodeCopy = currentNodeCopy.firstChild;
-	//     currentNodeCopy = currentNodeCopy.firstChild;
-	    
-	//     tag = codec.decode(currentNodeCopy).value.toString();
-	//     importProperties = { tag };
-	// }
-	return importProperties;
 }
 
 function getRparObjByGui(obj, gui) {
@@ -455,6 +125,10 @@ function getDataPoints(par) {
     xmax += xgap;
     ymin -= ygap;
     ymax += ygap;
+    xmin = xmin.toPrecision(2);
+    xmax = xmax.toPrecision(2);
+    ymin = ymin.toPrecision(2);
+    ymax = ymax.toPrecision(2);
     return { ary, xmin, xmax, ymin, ymax };
 }
 
@@ -462,12 +136,6 @@ ABS_VALUE.prototype.importset = function ABS_VALUE() {
     /* TODO */
 }
 AFFICH_m.prototype.importset = function AFFICH_m() {
-    /* TODO */
-}
-ANDBLK.prototype.importset = function ANDBLK() {
-    /* TODO */
-}
-ANDLOG_f.prototype.importset = function ANDLOG_f() {
     /* TODO */
 }
 AUTOMAT.prototype.importset = function AUTOMAT() {
@@ -532,9 +200,6 @@ c_block.prototype.importset = function c_block() {
 CBLOCK.prototype.importset = function CBLOCK() {
     /* TODO */
 }
-CCS.prototype.importset = function CCS() {
-    /* TODO */
-}
 CEVENTSCOPE.prototype.importset = function CEVENTSCOPE() {
 	var graphics = this.x.graphics;
 	var ary = getData(graphics.exprs);
@@ -546,9 +211,6 @@ CEVENTSCOPE.prototype.importset = function CEVENTSCOPE() {
 	this.per = ary[5];
 }
 CFSCOPE.prototype.importset = function CFSCOPE() {
-    /* TODO */
-}
-CLINDUMMY_f.prototype.importset = function CLINDUMMY_f() {
     /* TODO */
 }
 CLKFROM.prototype.importset = function CLKFROM() {
@@ -579,12 +241,6 @@ CLKOUTV_f.prototype.importset = function CLKOUTV_f() {
 	var ary = getData(graphics.exprs);
 	this.prt = ary;
 	this.displayParameter = [this.prt];
-}
-CLKSOM_f.prototype.importset = function CLKSOM_f() {
-    /* TODO */
-}
-CLKSOMV_f.prototype.importset = function CLKSOMV_f() {
-    /* TODO */
 }
 CLOCK_c.prototype.importset = function CLOCK_c() {
 /*
@@ -662,9 +318,6 @@ CONVERT.prototype.importset = function CONVERT() {
 	this.ot = ary[1];
 	this.np = ary[2];
 }
-COSBLK_f.prototype.importset = function COSBLK_f() {
-    /* TODO */
-}
 Counter.prototype.importset = function Counter() {
     /* TODO */
 }
@@ -683,7 +336,19 @@ CSCOPE.prototype.importset = function CSCOPE() {
 	this.nom = ary[9];
 }
 CSCOPXY3D.prototype.importset = function CSCOPXY3D() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.nbr_curves = ary[0];
+	this.clrs = ary[1];
+	this.siz = ary[2];
+	this.win = ary[3];
+	this.wpos = ary[4];
+	this.wdim = ary[5];
+	this.vec_x = ary[6];
+	this.vec_y = ary[7];
+	this.vec_z = ary[8];
+	this.param3ds = ary[9];
+	this.N = ary[10];
 }
 CSCOPXY.prototype.importset = function CSCOPXY() {
 	var graphics = this.x.graphics;
@@ -699,18 +364,11 @@ CSCOPXY.prototype.importset = function CSCOPXY() {
 	this.ymin = ary[8];
 	this.ymax = ary[9];
 	this.N = ary[10];
-	
 }
 CUMSUM.prototype.importset = function CUMSUM() {
     /* TODO */
 }
-CurrentSensor.prototype.importset = function CurrentSensor() {
-    /* TODO */
-}
 CURV_f.prototype.importset = function CURV_f() {
-    /* TODO */
-}
-CVS.prototype.importset = function CVS() {
     /* TODO */
 }
 DEADBAND.prototype.importset = function DEADBAND() {
@@ -740,26 +398,19 @@ DELAYV_f.prototype.importset = function DELAYV_f() {
 	this.T = ary[2];
 }
 DEMUX_f.prototype.importset = function DEMUX_f() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.out = ary
 }
 DEMUX.prototype.importset = function DEMUX() {
 	var graphics = this.x.graphics;
 	var ary = getData(graphics.exprs);
 	this.out = ary
 }
-DERIV.prototype.importset = function DERIV() {
-    /* TODO */
-}
-DFLIPFLOP.prototype.importset = function DFLIPFLOP() {
-    /* TODO */
-}
 DIFF_f.prototype.importset = function DIFF_f() {
     /* TODO */
 }
 Diode.prototype.importset = function Diode() {
-    /* TODO */
-}
-DLATCH.prototype.importset = function DLATCH() {
     /* TODO */
 }
 DLRADAPT_f.prototype.importset = function DLRADAPT_f() {
@@ -857,9 +508,6 @@ EVTVARDLY.prototype.importset = function EVTVARDLY() {
 EXPBLK_m.prototype.importset = function EXPBLK_m() {
     /* TODO */
 }
-Extract_Activation.prototype.importset = function Extract_Activation() {
-    /* TODO */
-}
 EXTRACTBITS.prototype.importset = function EXTRACTBITS() {
     /* TODO */
 }
@@ -925,9 +573,6 @@ GotoTagVisibility.prototype.importset = function GotoTagVisibility() {
     /* TODO */
 }
 GotoTagVisibilityMO.prototype.importset = function GotoTagVisibilityMO() {
-    /* TODO */
-}
-Ground.prototype.importset = function Ground() {
     /* TODO */
 }
 Gyrator.prototype.importset = function Gyrator() {
@@ -1000,9 +645,6 @@ INTRPLBLK_f.prototype.importset = function INTRPLBLK_f() {
 	this.a = ary[0];
 	this.b = ary[1];
 
-}
-INVBLK.prototype.importset = function INVBLK() {
-    /* TODO */
 }
 ISELECT_m.prototype.importset = function ISELECT_m() {
     /* TODO */
@@ -1093,13 +735,7 @@ MATSUM.prototype.importset = function MATSUM() {
 MATTRAN.prototype.importset = function MATTRAN() {
     /* TODO */
 }
-MATZCONJ.prototype.importset = function MATZCONJ() {
-    /* TODO */
-}
 MATZREIM.prototype.importset = function MATZREIM() {
-    /* TODO */
-}
-MAX_f.prototype.importset = function MAX_f() {
     /* TODO */
 }
 MAXMIN.prototype.importset = function MAXMIN() {
@@ -1124,9 +760,6 @@ M_freq.prototype.importset = function M_freq() {
 	this.frequ = ary[0];
 	this.offset = ary[1];
 }
-MIN_f.prototype.importset = function MIN_f() {
-    /* TODO */
-}
 Modulo_Count.prototype.importset = function Modulo_Count() {
     /* TODO */
 }
@@ -1134,15 +767,14 @@ M_SWITCH.prototype.importset = function M_SWITCH() {
     /* TODO */
 }
 MUX_f.prototype.importset = function MUX_f() {
-    /* TODO */
+	var graphics = this.x.graphics;
+	var ary = getData(graphics.exprs);
+	this.in = ary;
 }
 MUX.prototype.importset = function MUX() {
 	var graphics = this.x.graphics;
 	var ary = getData(graphics.exprs);
 	this.in = ary;
-}
-NEGTOPOS_f.prototype.importset = function NEGTOPOS_f() {
-    /* TODO */
 }
 NMOS.prototype.importset = function NMOS() {
     /* TODO */
@@ -1182,16 +814,7 @@ PMOS.prototype.importset = function PMOS() {
 PNP.prototype.importset = function PNP() {
     /* TODO */
 }
-POSTONEG_f.prototype.importset = function POSTONEG_f() {
-    /* TODO */
-}
-PotentialSensor.prototype.importset = function PotentialSensor() {
-    /* TODO */
-}
 POWBLK_f.prototype.importset = function POWBLK_f() {
-    /* TODO */
-}
-PROD_f.prototype.importset = function PROD_f() {
     /* TODO */
 }
 PRODUCT.prototype.importset = function PRODUCT() {
@@ -1278,9 +901,6 @@ SATURATION.prototype.importset = function SATURATION() {
 	this.minp = ary[1];
 	this.zeroc = ary[2]
 }
-SAWTOOTH_f.prototype.importset = function SAWTOOTH_f() {
-    /* TODO */
-}
 SCALAR2VECTOR.prototype.importset = function SCALAR2VECTOR() {
     /* TODO */
 }
@@ -1288,9 +908,6 @@ scifunc_block_m.prototype.importset = function scifunc_block_m() {
     /* TODO */
 }
 SELECT_m.prototype.importset = function SELECT_m() {
-    /* TODO */
-}
-SELF_SWITCH.prototype.importset = function SELF_SWITCH() {
     /* TODO */
 }
 SHIFT.prototype.importset = function SHIFT() {
@@ -1302,13 +919,7 @@ Sigbuilder.prototype.importset = function Sigbuilder() {
 SIGNUM.prototype.importset = function SIGNUM() {
     /* TODO */
 }
-SINBLK_f.prototype.importset = function SINBLK_f() {
-    /* TODO */
-}
 SineVoltage.prototype.importset = function SineVoltage() {
-    /* TODO */
-}
-SOM_f.prototype.importset = function SOM_f() {
     /* TODO */
 }
 SourceP.prototype.importset = function SourceP() {
@@ -1326,13 +937,7 @@ STEP_FUNCTION.prototype.importset = function STEP_FUNCTION() {
 SUBMAT.prototype.importset = function SUBMAT() {
     /* TODO */
 }
-SUM_f.prototype.importset = function SUM_f() {
-    /* TODO */
-}
 SUMMATION.prototype.importset = function SUMMATION() {
-    /* TODO */
-}
-SUPER_f.prototype.importset = function SUPER_f() {
     /* TODO */
 }
 SWITCH2_m.prototype.importset = function SWITCH2_m() {
@@ -1347,9 +952,6 @@ SWITCH_f.prototype.importset = function SWITCH_f() {
     /* TODO */
 }
 Switch.prototype.importset = function Switch() {
-    /* TODO */
-}
-TANBLK_f.prototype.importset = function TANBLK_f() {
     /* TODO */
 }
 TCLSS.prototype.importset = function TCLSS() {
@@ -1374,16 +976,10 @@ TIME_DELAY.prototype.importset = function TIME_DELAY() {
 	this.init = ary[1];
 	this.N = ary[2];
 }
-TIME_f.prototype.importset = function TIME_f() {
-    /* TODO */
-}
 TKSCALE.prototype.importset = function TKSCALE() {
     /* TODO */
 }
 TOWS_c.prototype.importset = function TOWS_c() {
-    /* TODO */
-}
-TRASH_f.prototype.importset = function TRASH_f() {
     /* TODO */
 }
 TrigFun.prototype.importset = function TrigFun() {
@@ -1398,15 +994,6 @@ VARIABLE_DELAY.prototype.importset = function VARIABLE_DELAY() {
 	this.T = ary[0];
 	this.init = ary[1];
 	this.N = ary[2];
-}
-VariableResistor.prototype.importset = function VariableResistor() {
-    /* TODO */
-}
-VirtualCLK0.prototype.importset = function VirtualCLK0() {
-    /* TODO */
-}
-VoltageSensor.prototype.importset = function VoltageSensor() {
-    /* TODO */
 }
 VsourceAC.prototype.importset = function VsourceAC() {
     /* TODO */
