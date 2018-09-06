@@ -407,6 +407,57 @@ function importParameters ( blockName, codec, currentNode ) {
 	return importProperties;
 }
 
+function getRparObjByGui(obj, gui) {
+    var objs = obj.model.rpar.objs;
+    if (objs == null)
+        return null;
+    for (var i=0; i<objs.length; i++) {
+        var o = objs[i];
+        if (o.gui == gui) {
+            return o;
+        }
+    }
+}
+
+function getDataPoints(par) {
+    var no = Math.trunc(par.length / 2);
+    var ary = [];
+    var xmin = Number.MAX_VALUE;
+    var xmax = -Number.MAX_VALUE;
+    var ymin = Number.MAX_VALUE;
+    var ymax = -Number.MAX_VALUE;
+    if (no == 0) {
+        xmin = 0;
+        xmax = 0;
+        ymin = 0;
+        ymax = 0;
+    }
+    for (var i = 0; i < no; i++) {
+        var x = parseFloat(par[i]);
+        var y = parseFloat(par[no+i]);
+        ary.push([x, y])
+        if (xmin > x)
+            xmin = x;
+        if (xmax < x)
+            xmax = x;
+        if (ymin > y)
+            ymin = y;
+        if (ymax < y)
+            ymax = y;
+    }
+    var xgap = (xmax - xmin) / 20;
+    if (xgap == 0)
+        xgap = 0.5;
+    var ygap = (ymax - ymin) / 20;
+    if (ygap == 0)
+        ygap = 0.5;
+    xmin -= xgap;
+    xmax += xgap;
+    ymin -= ygap;
+    ymax += ygap;
+    return { ary, xmin, xmax, ymin, ymax };
+}
+
 ABS_VALUE.prototype.importset = function ABS_VALUE() {
     /* TODO */
 }
@@ -536,7 +587,11 @@ CLKSOMV_f.prototype.importset = function CLKSOMV_f() {
     /* TODO */
 }
 CLOCK_c.prototype.importset = function CLOCK_c() {
-/*	var graphics = this.x.graphics;
+/*
+	var block = getRparObjByGui(this.x, 'EVTDLY_c');
+	if (block == null)
+	    return;
+	var graphics = block.graphics;
 	var ary = getData(graphics.exprs);
 	this.dt = ary[0];
 	this.t0 = ary[1];
@@ -953,9 +1008,13 @@ ISELECT_m.prototype.importset = function ISELECT_m() {
     /* TODO */
 }
 JKFLIPFLOP.prototype.importset = function JKFLIPFLOP() {
-/* 	var graphics = this.x.graphics;
+/*
+	var block = getRparObjByGui(this.x, 'DOLLAR_m');
+	if (block == null)
+	    return;
+	var graphics = block.graphics;
 	var ary = getData(graphics.exprs);
-	this.initialvalue = ary
+	this.initialvalue = ary;
 */
 }
 LOGBLK_f.prototype.importset = function LOGBLK_f() {
@@ -974,9 +1033,14 @@ LOGIC.prototype.importset = function LOGIC() {
     /* TODO */
 }
 LOOKUP_f.prototype.importset = function LOOKUP_f() {
-	var model = this.x.model;
-	var par = getData(model.rpar);
-	this.graphpoints = par;
+    var model = this.x.model;
+    var par = getData(model.rpar);
+    let { ary, xmin, xmax, ymin, ymax } = getDataPoints(par);
+    this.defaultpoints = ary;
+    this.xmin = xmin;
+    this.xmax = xmax;
+    this.ymin = ymin;
+    this.ymax = ymax;
 }
 MATBKSL.prototype.importset = function MATBKSL() {
     /* TODO */
