@@ -42,7 +42,7 @@ function importBlock(currentNode, cell, details_instance) {
         graphics.exprs = cell.exprs;
     }
     if (cell.realParameters !== undefined) {
-        model.rpar = cell.realParameters;
+        model.rpar = getMListObject(cell.realParameters);
     }
     if (cell.integerParameters !== undefined) {
         model.ipar = cell.integerParameters;
@@ -77,13 +77,35 @@ function importBlock(currentNode, cell, details_instance) {
     return details_instance.getContainer();
 }
 
+function getMListObject(obj) {
+    if (obj.scilabClass == null || !(['ScilabMList', 'ScilabTList'].includes(obj.scilabClass)))
+        return obj;
+
+    var newObj = new Object();
+    var keys = getData(obj[0]);
+    for (var [i, key] of keys.entries()) {
+        var objlist = obj[i];
+        if (objlist.scilabClass == 'ScilabList') {
+            var newObjList = Array();
+            for (var [j, o] of objlist.entries()) {
+                var tmpobj = getMListObject(o);
+                newObjList[j] = tmpobj;
+            }
+            newObj[key] = newObjList;
+        } else {
+            newObj[key] = getMListObject(objlist);
+        }
+    }
+    return newObj;
+}
+
 function getRparObjByGui(obj, gui) {
     var objs = obj.model.rpar.objs;
     if (objs == null)
         return null;
-    for (var i=0; i<objs.length; i++) {
-        var o = objs[i];
-        if (o.gui == gui) {
+    for (var [i, o] of objs.entries()) {
+        var ary = getData(o.gui);
+        if (ary[0] == gui) {
             return o;
         }
     }
@@ -243,7 +265,6 @@ CLKOUTV_f.prototype.importset = function CLKOUTV_f() {
 	this.displayParameter = [this.prt];
 }
 CLOCK_c.prototype.importset = function CLOCK_c() {
-/*
 	var block = getRparObjByGui(this.x, 'EVTDLY_c');
 	if (block == null)
 	    return;
@@ -251,7 +272,6 @@ CLOCK_c.prototype.importset = function CLOCK_c() {
 	var ary = getData(graphics.exprs);
 	this.dt = ary[0];
 	this.t0 = ary[1];
-*/
 }
 CLR.prototype.importset = function CLR() {
 	var graphics = this.x.graphics;
@@ -650,14 +670,12 @@ ISELECT_m.prototype.importset = function ISELECT_m() {
     /* TODO */
 }
 JKFLIPFLOP.prototype.importset = function JKFLIPFLOP() {
-/*
 	var block = getRparObjByGui(this.x, 'DOLLAR_m');
 	if (block == null)
 	    return;
 	var graphics = block.graphics;
 	var ary = getData(graphics.exprs);
 	this.initialvalue = ary;
-*/
 }
 LOGBLK_f.prototype.importset = function LOGBLK_f() {
     /* TODO */
