@@ -402,13 +402,19 @@ DEBUG.prototype.importset = function DEBUG() {
     /* TODO */
 }
 DELAY_f.prototype.importset = function DELAY_f() {
-/*	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.zz0 = ary;
-	var model = this.x.model;
-	var par = getData(model.rpar);
-	this.dt = par;
-*/
+    var block = getRparObjByGui(this.x, 'EVTDLY_f');
+    if (block == null)
+        return;
+    var graphics = block.graphics;
+    var ary = getData(graphics.exprs);
+    this.dt = ary[0];
+
+    block = getRparObjByGui(this.x, 'REGISTER_f');
+    if (block == null)
+        return;
+    graphics = block.graphics;
+    ary = getData(graphics.exprs);
+    this.zz0 = ary[0];
 }
 DELAYV_f.prototype.importset = function DELAYV_f() {
 	var graphics = this.x.graphics;
@@ -478,19 +484,23 @@ DOLLAR_m.prototype.importset = function DOLLAR_m() {
 	this.inh = ary[1];
 }
 EDGE_TRIGGER.prototype.importset = function EDGE_TRIGGER() {
-/*	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.edge = ary;
-*/
+    var block = getRparObjByGui(this.x, 'EDGETRIGGER');
+    if (block == null)
+        return;
+    var graphics = block.graphics;
+    var ary = getData(graphics.exprs);
+    this.edge = ary[0];
 }
 EDGETRIGGER.prototype.importset = function EDGETRIGGER() {
     /* TODO */
 }
 ENDBLK.prototype.importset = function ENDBLK() {
-/*	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.simulationtime = ary;
-*/
+    var block = getRparObjByGui(this.x, 'END_c');
+    if (block == null)
+        return;
+    var graphics = block.graphics;
+    var ary = getData(graphics.exprs);
+    this.simulationtime = ary[0];
 }
 END_c.prototype.importset = function END_c() {
 	var graphics = this.x.graphics;
@@ -547,7 +557,13 @@ fortran_block.prototype.importset = function fortran_block() {
     /* TODO */
 }
 freq_div.prototype.importset = function freq_div() {
-    /* TODO */
+    var block = getRparObjByGui(this.x, 'Modulo_Count');
+    if (block == null)
+        return;
+    var graphics = block.graphics;
+    var ary = getData(graphics.exprs);
+    this.phase = ary[0];
+    this.divfac = ary[1];
 }
 FROM.prototype.importset = function FROM() {
     /* TODO */
@@ -763,14 +779,19 @@ MBLOCK.prototype.importset = function MBLOCK() {
     /* TODO */
 }
 MCLOCK_f.prototype.importset = function MCLOCK_f() {
-/*	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.dt = ary[0];
-	this.nn = ary[1];
-*/
+    var block = getRparObjByGui(this.x, 'MFCLCK_f');
+    if (block == null)
+        return;
+    var graphics = block.graphics;
+    var ary = getData(graphics.exprs);
+    this.period = ary[0];
+    this.multiplyby = ary[1];
 }
 MFCLCK_f.prototype.importset = function MFCLCK_f() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.period = ary[0];
+    this.multiplyby = ary[1];
 }
 M_freq.prototype.importset = function M_freq() {
 	var graphics = this.x.graphics;
