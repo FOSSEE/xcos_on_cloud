@@ -1016,7 +1016,11 @@ TIME_DELAY.prototype.importset = function TIME_DELAY() {
 	this.N = ary[2];
 }
 TKSCALE.prototype.importset = function TKSCALE() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.a = ary[0];
+    this.b = ary[1];
+    this.f = ary[2];
 }
 TOWS_c.prototype.importset = function TOWS_c() {
     /* TODO */
