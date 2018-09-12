@@ -285,7 +285,7 @@ def event_stream(xcos_file_id):
     # children of that process will have the same process group id. Later, we
     # stop those processes together with os.killpg(scilab_proc.pid).
     scilab_proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=os.setpgrp)
-
+    #print(command)
     # Wait till xcos is launched
     while len(out) == _l:
         # If length of out equals _l,
@@ -296,11 +296,15 @@ def event_stream(xcos_file_id):
         proc = subprocess.Popen("pgrep scilab", stdout=subprocess.PIPE, shell=True)
         # out will contain output of command, the list of process IDs of scilab
         (out, err) = proc.communicate()
-
+        
     # out will contain output of command, the list of process IDs of scilab
     # Get the latest process ID of scilab
+    abc = out.split()
+    print(str(abc)+":::::all process")
+    print(str(out.split()[-1])+":::: last process ie. pid")
+    
     pid = out.split()[-1]
-
+    
     # Define function to kill scilab(if still running) and remove files
     def kill_scilab():
         if not kill_scilab_with(scilab_proc, signal.SIGTERM):
@@ -317,7 +321,8 @@ def event_stream(xcos_file_id):
     # the log directory is same as that of this script
     log_dir = "" 
     # Log file name
-    log_name = "scilab-log-"+pid+".txt"
+    log_name = "scilab-log-"+str(pid)+".txt"
+    print(log_name)
     # Initialise output and error variables for subprocess
     scilab_out = ""
     scilab_err = ""
@@ -333,7 +338,7 @@ def event_stream(xcos_file_id):
     try:
         # For processes taking less than 10 seconds
         scilab_out, scilab_err = scilab_proc.communicate(timeout=4)
-        
+        print("Output from scilab console :::::"+str(scilab_out))
         # Check for errors in Scilab 
         if "Empty diagram" in scilab_out:
             yield "event: ERROR\ndata: Empty diagram\n\n"
@@ -353,8 +358,12 @@ def event_stream(xcos_file_id):
             yield "event: ERROR\ndata: Empty diagram\n\n"
             kill_scilab()
             return
-     
-        
+
+    if(os.path.isfile(log_name)):
+        print("File Exists!!")
+    else:
+        print("File does not exists!!")
+    
     # Open the log file
     if not (os.path.isfile(log_name)):
         return
@@ -370,6 +379,7 @@ def event_stream(xcos_file_id):
         elif line.get_state() != DATA:
             gevent.sleep(LOOK_DELAY)
         else:
+	    #print("event: log data: "+line.get_line()+"\n")
             yield "event: log\ndata: "+line.get_line()+"\n\n"
         # Reset line, so server won't send same line twice
         line = line_and_state(None, NOLINE)
@@ -1130,7 +1140,6 @@ def static_file(path):
 def stop():
     kill_scilab()
     return "done"
-
 
 # route ro end blocks with no Ending parameter
 @app.route('/endBlock/<fig_id>')
