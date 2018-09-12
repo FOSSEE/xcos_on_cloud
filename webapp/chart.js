@@ -16,6 +16,18 @@ var isDone = false;
 // pnts - Points list of the blocks
 var fig_id, l_id, pnts = [];
 
+/*Function to display values of all affich blocks
+
+displayParameter : Contains the data which is display as data of affich block
+blockId : is used to get needed div according to affichm id
+*/
+var create_affich_displaytext = function (displayParameter, blockId){
+    $('#img_loader').html(""); //remove loading image once data is received
+    $('#affichdata-'+blockId).html(displayParameter); //updating html data of div html for each time change according to each affich  
+
+}
+
+
 // Function to create a new chart
 var create_new_chart = function(id, no_of_graph,ymin,ymax,xmin,xmax,type_chart,title_text){
 	/* id - container id for graph(chart), no_of_graph - number of graphs in output of a block,
@@ -337,8 +349,8 @@ var create_draggable_points_chart = function(graphPoints, pointsHistory, xmin, x
 
 
 
-function chart_init(wnd){
-
+function chart_init(wnd,affichwnd){
+       
 	var block;
 	// define buffer for CANIMXY3D
 	var buffer;
@@ -346,7 +358,7 @@ function chart_init(wnd){
         var buffer_canimxy;
 	// Initialise variable for entry condition of creating chart for BARXY and AFFICH_m
 	var block_entry_BARXY = 1, block_entry_AFFICH = 1;
-
+        
 	// Start listening to server
 	chart_reset();
 	eventSource = new EventSource("/SendLog?id="+clientID);
@@ -354,7 +366,6 @@ function chart_init(wnd){
 	eventSource.addEventListener("block", function(event){
 		var data = event.data.split(' ');
 		block = parseInt(data[4]);
-
 		// For BARXY 
 		if(block == 11){
 
@@ -402,13 +413,14 @@ function chart_init(wnd){
 	eventSource.addEventListener("log", function(event){
 
 		var data = event.data.split(' ');
+		
 		// store block info. from the data line
 		block = parseInt(data[0]);
-
+		
 		// handle writec_f and writeau_f
 		if(block==21||block==22){
 
-			console.log(data[5]);
+			
                         //create a form and add the filename to it
 			var form = new FormData()
 			form.append('path',data[5]);
@@ -443,7 +455,7 @@ function chart_init(wnd){
 
 		if(block < 5 ||block ==9 ||block ==23){ //added new condition for ceventscope
 			// process data for 2D-SCOPE blocks
-
+                        
 			var figure_id = parseInt(data[5]),
 			line_id = parseInt(data[7]),
 			x  = parseFloat(data[9]),
@@ -513,6 +525,31 @@ function chart_init(wnd){
 			// store block number for chart creation
 			block_list[index] = block; 
 
+		}else if(block == 20){
+			//Process data for Affich_m block
+                        
+			var length_of_data = data.length; //store length of data for each line
+			var block_id = data[3]; //to store block id of affichm block
+			var rows = data[10];  // gets row of matrix
+			var columns = data[11]; // gets column of matrix
+
+                        //below code creates a html code which is table with data in that (To display it as matrix)
+			var p="<b>Value of Block : AFFICH_m-"+block_id+"</b> (Refer to label on block)<br><br><table style='width:100%'><tr>";
+			var count=1;
+			for(var k=12; k<(length_of_data-1); k++){
+                                p+="<td>";
+				p+=data[k];
+			   if((count % columns)==0){ // to break into new column of table
+				p+="</td></tr><tr>";
+			    }else{
+			    	p+="</td>";
+                            }
+			    count++;
+				
+			}
+			p+="</table>";
+                        create_affich_displaytext(p,block_id); // to send data to display result
+                        
 		}
 
 
@@ -547,8 +584,19 @@ function chart_init(wnd){
 	    var xhr = new XMLHttpRequest();
 	    xhr.open("GET", "/stop", true);
 	 	chart_reset();
+                affichwnd.destroy();
 	 	xhr.send();
 	});  
+         // stop scilab process on closing of window
+	affichwnd.addListener(mxEvent.CLOSE,function()
+	{
+	    var xhr = new XMLHttpRequest();
+	    xhr.open("GET", "/stop", true);
+	 	chart_reset();
+                wnd.destroy();
+	 	xhr.send();
+	});  
+
 
 
 	// Error	
@@ -556,20 +604,23 @@ function chart_init(wnd){
 		console.log("Error: "+event.data);
 		chart_reset();
 		if(event.data=="Empty diagram") alert(event.data);
-		else alert("Some Error occured!");
+		else alert("Error occured! "+event.data);
 		wnd.destroy();
+                affichwnd.destroy();
 		isDone = true;
 	}, false);
 	// Stop listening
 
 
 	eventSource.addEventListener("DONE", function(event){
+
+		eventSource.close(); 	// Close connection
 		console.log("Done");
                 chart_reset();
+                $('#img_loader').html("");
 		isDone = true;
 	}, false);
 	
-
 
 	interval = setInterval(function(){
 
@@ -767,3 +818,4 @@ function chart_reset(){
 	block_list = [];
 
 }
+
