@@ -30,6 +30,7 @@
 
          var editor ;
          var listofAffichCell = [];
+         var winArr = new Array();
 
          /*
             referenceModelProp is an array of objects used for saving ids and names of all nodes present in the xml (once properties window is opened) so that
@@ -1829,6 +1830,23 @@
          	    }
                         }
          	editor.addAction('importXcos', importxcos = function(editor, cell) {xeditor = editor; xcell = cell;IMPORTxcos(xeditor,xcell) } );
+                //Stop simulation inbetween process
+                function stopSimulation(){
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", "/stop", true);
+			chart_reset();
+			xhr.send();
+	  	}
+		//Button for stop
+         	editor.addAction('processStop', function(editor, cell) {
+					stopSimulation();
+                                        myAjaxreq("Stop", "/UpdateTKfile");
+                                        //to close tkscale window if any (Chart window will be there until user close it)
+					for(var i=0;i<winArr.length;i++){
+         			            winArr[i].close();
+                                        }
+
+		});
          
                         addToolbarButton(editor, toolbar, 'importXcos', 'Import Xcos', 'images/export1.png');
                         //addToolbarButton(editor, toolbar, 'exportXML', 'Export XML', 'images/export1.png');
@@ -1836,7 +1854,9 @@
                         toolbar.appendChild(spacer.cloneNode(true));
          
                         addToolbarButton(editor, toolbar, 'simulate', 'Simulate', 'images/ScilabExecute.png');
+                        addToolbarButton(editor, toolbar, 'processStop', ' Stop', 'images/process-stop.png');
                         
+
                         editor.addAction('simulate', function(editor, cell) {
                             
                          	window.onunload = function (e) {	// when user leaves the page...the process will be stopped 
@@ -1909,7 +1929,7 @@
          	  
          	   
          	   var row=0,min,max,norm,num=1,cscount=0; // variables to store the values
-         	   	var winArr = new Array();
+         	   	//var winArr = new Array();
          	   	var Bblock_tag=xmlDoc.getElementsByTagName("BasicBlock"); 	// get all 'BasicBlock' tags from xml code
                         var Ablock_tag=xmlDoc.getElementsByTagName("AfficheBlock");   // get all 'AfficheBlock' tags from xml code
          		var mx_tag = xmlDoc.getElementsByTagName("mxCell"); 	// get all 'mxCell' tags from xml code
@@ -2338,9 +2358,7 @@
          		for(var i=0;i<winArr.length;i++)
          			winArr[i].close();
          	    }
-         
-         
-
+         	    
          
          
          	   
@@ -2377,10 +2395,7 @@
                             xhr.send(form);
                         });
          	
-         	
-         				
-         		
-         	
+			
                         // Adds toolbar buttons into the status bar at the bottom
                         // of the window.
          
