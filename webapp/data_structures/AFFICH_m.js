@@ -1,5 +1,5 @@
 function AFFICH_m() {
-
+    
     AFFICH_m.prototype.define = function AFFICH_m() {
         this.font = 1;
         this.fontsize = 1;
@@ -21,7 +21,7 @@ function AFFICH_m() {
         model.label = new ScilabString([""]);
         var exprs = new ScilabString([sci2exp([parseFloat(...getData(model.in)), parseFloat(...getData(model.in2))])], [this.font], [this.fontsize], [this.colr], [this.nt], [this.nd], [0]);
         var n =0;
-        this.displayParameter = [n.toFixed(1)];
+        this.displayParameter = [this.displayParameter];
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"AFFICH_m\",sz(1),sz(2));"]);
         this.x = new standard_define(new ScilabDouble([3, 2]), model, exprs, gr_i);
         this.x.graphics.style = new ScilabString(["AFFICH_m"]);
@@ -74,6 +74,7 @@ function AFFICH_m() {
                 alert("Accept inherited values are 0 and 1");
                 AFFICH_m.get();
             }
+        this.displayParameter =[this.displayParameter];
         this.x.model.intyp = new ScilabDouble([1])
         var io = set_io(this.x.model,this.x.graphics,this.in,[],ones(1-this.herit,1),[])
         this.x.model.ipar = new ScilabDouble([this.font],[this.fontsize],[this.colr],[1000],[this.nt],[this.nd],this.in[0])
@@ -85,6 +86,9 @@ function AFFICH_m() {
     }
     AFFICH_m.prototype.details = function AFFICH_m() {
         return this.x;
+    }
+    AFFICH_m.prototype.setLabel = function AFFICH_m(SetIDForLabel) {
+        this.displayParameter=SetIDForLabel;
     }
     AFFICH_m.prototype.get_popup_title = function AFFICH_m() {
         var set_param_popup_title="Set parameters";
