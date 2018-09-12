@@ -455,7 +455,7 @@ function chart_init(wnd,affichwnd){
 
 		if(block < 5 ||block ==9 ||block ==23){ //added new condition for ceventscope
 			// process data for 2D-SCOPE blocks
-                        //console.log(data.toSource());
+                        
 			var figure_id = parseInt(data[5]),
 			line_id = parseInt(data[7]),
 			x  = parseFloat(data[9]),
@@ -549,7 +549,7 @@ function chart_init(wnd,affichwnd){
 			}
 			p+="</table>";
                         create_affich_displaytext(p,block_id); // to send data to display result
-                        //console.log("affich called::::::"+p);
+                        
 		}
 
 
