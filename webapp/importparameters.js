@@ -91,11 +91,13 @@ function getMListObject(obj) {
                 var tmpobj = getMListObject(o);
                 newObjList[j] = tmpobj;
             }
+            newObjList.scilabClass = objlist.scilabClass;
             newObj[key] = newObjList;
         } else {
             newObj[key] = getMListObject(objlist);
         }
     }
+    newObj.scilabClass = obj.scilabClass;
     return newObj;
 }
 
