@@ -19,7 +19,6 @@ function CMATVIEW () {
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean(true, false)
 	var exprs = new ScilabString(["jetcolormap("+this.size_c+")"],[this.cmin],[this.cmax]);
-	//var exprs = new ScilabString([this.size_c],[this.cmin],[this.cmax]);
         var gr_i = list(new ScilabString(["xstringb(orig(1),orig(2),\"CMATVIEW\",sz(1),sz(2));"]), new ScilabDouble([8]));
         this.x = new standard_define(new ScilabDouble([80, 80]),model,exprs,gr_i)
         this.x.graphics.style = new ScilabString(["CMATVIEW"]);
@@ -28,7 +27,7 @@ function CMATVIEW () {
 
     CMATVIEW.prototype.get = function CMATVIEW() {
         var options={
-            size_c:["size of ColorMap",[this.size_c]], //colormap:["size of ColorMap",[this.size_c]]
+            size_c:["size of ColorMap",[this.size_c]],
             cmin:["Minimum level range",this.cmin],
             cmax:["Maximum level range",this.cmax]
         }

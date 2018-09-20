@@ -1,6 +1,7 @@
 function RFILE_f() {
 
     RFILE_f.prototype.define = function RFILE_f() {
+        this.tmask1 = [];
         this.out = 1;
         this.nout = this.out;
         this.frmt = "(7(e10.3,1x))";
@@ -40,7 +41,7 @@ function RFILE_f() {
             this.frmt1 = this.frmt
 
         var options={
-            tmask1:["Time Record Selection",sci2exp([])],
+            tmask1:["Time Record Selection",sci2exp(this.tmask1)],
             outmask:["Outputs Record Selection",sci2exp(this.outmask)],
             fname1:["Input File Name",this.fname1],
             frmt1:["Input Format",this.frmt1],
