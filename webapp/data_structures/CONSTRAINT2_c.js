@@ -14,7 +14,7 @@ function CONSTRAINT2_c() {
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([false, true]);
 
-        var exprs = list(new ScilabString([sci2exp(this.x0)]), new ScilabString([sci2exp(this.xd0)]), new ScilabString([sci2exp(this.id)]));
+        var exprs = new ScilabString([sci2exp(this.x0)], [sci2exp(this.xd0)], [sci2exp(this.id)]);
         var k = this.x0.toString();
     var n = this.xd0.toString();//Check the correctness of these parametres
     this.displayParameter = [[k],[n]];
@@ -63,7 +63,7 @@ CONSTRAINT2_c.prototype.set = function CONSTRAINT2_c() {
     this.x.model.out = new ScilabDouble([this.N],[this.N])
     this.x.model.in = new ScilabDouble([this.N])
     this.x.model.ipar = new ScilabDouble(...this.id);
-    var exprs = new ScilabString()
+    var exprs = new ScilabString([sci2exp(this.x0)], [sci2exp(this.xd0)], [sci2exp(this.id)]);
     var k = this.x0.toString();
     var n = this.xd0.toString();//Check the correctness of these parametres
     this.displayParameter = [[k],[n]];

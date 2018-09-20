@@ -157,248 +157,423 @@ function getDataPoints(par) {
 }
 
 ABS_VALUE.prototype.importset = function ABS_VALUE() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.zcr = ary[0];
 }
 AFFICH_m.prototype.importset = function AFFICH_m() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.in = ary[0];
+    this.font = ary[1];
+    this.fontsize = ary[2];
+    this.colr = ary[3];
+    this.nt = ary[4];
+    this.nd = ary[5];
+    this.herit = ary[6];
 }
 AUTOMAT.prototype.importset = function AUTOMAT() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.NMode = ary[0];
-	this.Minitial = ary[1];
-	this.NX = ary[2];
-	this.X0 = ary[3];
-	this.XP = ary[4];
-	this.C1 = ary[5];
-	this.C2 = ary[6];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.NMode = ary[0];
+    this.Minitial = ary[1];
+    this.NX = ary[2];
+    this.X0 = ary[3];
+    this.XP = ary[4];
+    this.C1 = ary[5];
+    this.C2 = ary[6];
 }
 Bache.prototype.importset = function Bache() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.Patm = ary[0];
+    this.A = ary[1];
+    this.ze1 = ary[2];
+    this.ze2 = ary[3];
+    this.zs1 = ary[4];
+    this.zs2 = ary[5];
+    this.z0 = ary[6];
+    this.T0 = ary[7];
+    this.p_rho = ary[8];
 }
-BACKLASH.prototype.importset = function BACKLASH() {	
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.ini = ary[0];
-	this.gap = ary[1];
-	this.zcr = ary[2];
+BACKLASH.prototype.importset = function BACKLASH() {
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.ini = ary[0];
+    this.gap = ary[1];
+    this.zcr = ary[2];
 }
 BARXY.prototype.importset = function BARXY() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.xmin = ary[0];
+    this.xmax = ary[1];
+    this.ymin = ary[2];
+    this.ymax = ary[3];
+    this.thickness = ary[4];
 }
 BIGSOM_f.prototype.importset = function BIGSOM_f() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.sgn = ary[0];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.sgn = ary[0];
 }
 BITCLEAR.prototype.importset = function BITCLEAR() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.Datatype = ary[0];
+    this.bit = ary[1];
 }
 BITSET.prototype.importset = function BITSET() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.Datatype = ary[0];
+    this.bit = ary[1];
 }
 BOUNCE.prototype.importset = function BOUNCE() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.rpar1 = ary[0];
+    this.rpar2 = ary[1];
+    this.walls = ary[2];
+    this.xt = ary[3];
+    this.xd = ary[4];
+    this.y = ary[5];
+    this.yd = ary[6];
+    if (ary.length >= 9) {
+        this.g = ary[7];
+        this.C = ary[8];
+    }
 }
 BOUNCEXY.prototype.importset = function BOUNCEXY() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.clrs = ary[0];
+    this.siz = ary[1];
+    this.win = ary[2];
+    this.imode = ary[3];
+    this.xmin = ary[4];
+    this.xmax = ary[5];
+    this.ymin = ary[6];
+    this.ymax = ary[7];
 }
 BPLATFORM.prototype.importset = function BPLATFORM() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.plen = ary[0];
+    this.csiz = ary[1];
+    this.phi = ary[2];
+    this.xmin = ary[3];
+    this.xmax = ary[4];
+    this.ymin = ary[5];
+    this.ymax = ary[6];
 }
 CANIMXY3D.prototype.importset = function CANIMXY3D() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.nbr_curves = ary[0];
+    this.clrs = ary[1];
+    this.siz = ary[2];
+    this.win = ary[3];
+    this.wpos = ary[4];
+    this.wdim = ary[5];
+    this.vec_x = ary[6];
+    this.vec_y = ary[7];
+    this.vec_z = ary[8];
+    this.param3ds = ary[9];
+    this.N = ary[10];
 }
 CANIMXY.prototype.importset = function CANIMXY() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.nbr_curves = ary[0];
+    this.clrs = ary[1];
+    this.siz = ary[2];
+    this.win = ary[3];
+    this.wpos = ary[4];
+    this.wdim = ary[5];
+    this.xmin = ary[6];
+    this.xmax = ary[7];
+    this.ymin = ary[8];
+    this.ymax = ary[9];
+    this.N = ary[10];
 }
 Capacitor.prototype.importset = function Capacitor() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.C = ary[0];
+    this.v = ary[1];
 }
 CBLOCK4.prototype.importset = function CBLOCK4() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.function_name = ary[0];
+    this.impli = ary[1];
+    this.in = ary[2];
+    this.it = ary[3];
+    this.out = ary[4];
+    this.ot = ary[5];
+    this.ci = ary[6];
+    this.co = ary[7];
+    this.xx = ary[8];
+    this.z = ary[9];
+    this.oz = ary[10];
+    this.rpar = ary[11];
+    this.ipar = ary[12];
+    this.opar = ary[13];
+    this.nmode = ary[14];
+    this.nzcr = ary[15];
+    this.auto0 = ary[16];
+    this.depu = ary[17];
+    this.dept = ary[18];
 }
 c_block.prototype.importset = function c_block() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.i = ary[0];
+    this.o = ary[1];
+    this.rpar = ary[2];
+    this.funam = ary[3];
 }
 CBLOCK.prototype.importset = function CBLOCK() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.function_name = ary[0];
+    this.impli = ary[1];
+    this.i = ary[2];
+    this.o = ary[3];
+    this.ci = ary[4];
+    this.co = ary[5];
+    this.xx = ary[6];
+    this.ng = ary[7];
+    this.z = ary[8];
+    this.rpar = ary[9];
+    this.ipar = ary[10];
+    this.auto0 = ary[11];
+    this.depu = ary[12];
+    this.dept = ary[13];
+    var funam = this.function_name;
+    this.displayParameter = [funam];
 }
 CEVENTSCOPE.prototype.importset = function CEVENTSCOPE() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.nclock = ary[0];
-	this.clrs = ary[1];
-	this.win = ary[2];
-	this.wpos = ary[3];
-	this.wdim = ary[4];
-	this.per = ary[5];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.nclock = ary[0];
+    this.clrs = ary[1];
+    this.win = ary[2];
+    this.wpos = ary[3];
+    this.wdim = ary[4];
+    this.per = ary[5];
 }
 CFSCOPE.prototype.importset = function CFSCOPE() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.clrs = ary[0];
+    this.win = ary[1];
+    this.wpos = ary[2];
+    this.wdim = ary[3];
+    this.ymin = ary[4];
+    this.ymax = ary[5];
+    this.per = ary[6];
+    this.N = ary[7];
+    this.wu = ary[8];
 }
 CLKFROM.prototype.importset = function CLKFROM() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.tag = ary[0];
-	this.displayParameter = [this.tag];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.tag = ary[0];
+    this.displayParameter = [this.tag];
 }
 CLKGOTO.prototype.importset = function CLKGOTO() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.tag = ary[0];
-	this.tagvis = ary[1];
-	this.displayParameter = [this.tag];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.tag = ary[0];
+    this.tagvis = ary[1];
+    this.displayParameter = [this.tag];
 }
 CLKGotoTagVisibility.prototype.importset = function CLKGotoTagVisibility() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.tag = ary[0];
-	this.displayParameter = [this.tag];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.tag = ary[0];
+    this.displayParameter = [this.tag];
 }
 CLKINV_f.prototype.importset = function CLKINV_f() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.prt = ary[0];
 }
 CLKOUTV_f.prototype.importset = function CLKOUTV_f() {
-
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.prt = ary[0];
-	this.displayParameter = [this.prt];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.prt = ary[0];
+    this.displayParameter = [this.prt];
 }
 CLOCK_c.prototype.importset = function CLOCK_c() {
-	var block = getRparObjByGui(this.x, 'EVTDLY_c');
-	if (block == null)
-	    return;
-	var graphics = block.graphics;
-	var ary = getData(graphics.exprs);
-	this.dt = ary[0];
-	this.t0 = ary[1];
+    var block = getRparObjByGui(this.x, 'EVTDLY_c');
+    if (block == null)
+        return;
+    var graphics = block.graphics;
+    var ary = getData(graphics.exprs);
+    this.dt = ary[0];
+    this.t0 = ary[1];
 }
 CLR.prototype.importset = function CLR() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.num = ary[0];
-	this.den = ary[1];
-	this.displayParameter = [[this.num], [this.den]];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.num = ary[0];
+    this.den = ary[1];
+    this.displayParameter = [[this.num], [this.den]];
 }
 CLSS.prototype.importset = function CLSS() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.A = ary[0];
-	this.B = ary[1];
-	this.C = ary[2];
-	this.D = ary[3];
-	this.x0 = ary[4];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.A = ary[0];
+    this.B = ary[1];
+    this.C = ary[2];
+    this.D = ary[3];
+    this.x0 = ary[4];
 }
 CMAT3D.prototype.importset = function CMAT3D() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.vec_x = ary[0];
+    this.vec_y = ary[1];
+    this.colormap = ary[2];
+    this.cmin = ary[3];
+    this.cmax = ary[4];
+    this.size_c = this.colormap.replace(/.*\((.*)\).*/, "$1");
 }
 CMATVIEW.prototype.importset = function CMATVIEW() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.colormap = ary[0];
+    this.cmin = ary[1];
+    this.cmax = ary[2];
+    this.size_c = this.colormap.replace(/.*\((.*)\).*/, "$1");
 }
 CMSCOPE.prototype.importset = function CMSCOPE() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.ini1 = ary[0];	
-	this.clrs = ary[1];
-	this.win = ary[2];
-	this.wpos = ary[3];
-	this.wdim = ary[4];
-	this.ymin = ary[5];
-	this.ymax = ary[6];
-	this.per = ary[7];
-	this.N = ary[8];
-	this.heritance = ary[9];
-	this.nom = ary[10];	
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.in = ary[0];
+    this.clrs = ary[1];
+    this.win = ary[2];
+    this.wpos = ary[3];
+    this.wdim = ary[4];
+    this.ymin = ary[5];
+    this.ymax = ary[6];
+    this.per = ary[7];
+    this.N = ary[8];
+    this.heritance = ary[9];
+    this.nom = ary[10];
 }
 ConstantVoltage.prototype.importset = function ConstantVoltage() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.V = ary[0];
 }
 CONST_f.prototype.importset = function CONST_f() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.C = ary[0];
 }
 CONST.prototype.importset = function CONST() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.C = ary[0];
 }
 CONST_m.prototype.importset = function CONST_m() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.c = ary[0];
-	this.displayParameter = [this.c];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.C = ary[0];
+    this.displayParameter = [this.C];
 }
 CONSTRAINT2_c.prototype.importset = function CONSTRAINT2_c() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.x0 = ary[0];
+    this.xd0 = ary[1];
+    this.id = ary[2];
+    this.displayParameter = [[this.x0], [this.xd0]];
 }
 CONSTRAINT_c.prototype.importset = function CONSTRAINT_c() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.x0 = ary[0];
+    this.displayParameter = [this.x0];
 }
 CONVERT.prototype.importset = function CONVERT() {
-    	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.it = ary[0];
-	this.ot = ary[1];
-	this.np = ary[2];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.it = ary[0];
+    this.ot = ary[1];
+    this.np = ary[2];
 }
 Counter.prototype.importset = function Counter() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.minim = ary[0];
+    this.maxim = ary[1];
+    this.rule = ary[2];
+    this.displayParameter = [[this.minim], [this.maxim]];
 }
 CSCOPE.prototype.importset = function CSCOPE() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.clrs = ary[0];
-	this.win = ary[1];
-	this.wpos = ary[2];
-	this.wdim = ary[3];
-	this.ymin = ary[4];
-	this.ymax = ary[5];
-	this.per = ary[6];
-	this.N = ary[7];
-	this.heritance = ary[8];
-	this.nom = ary[9];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.clrs = ary[0];
+    this.win = ary[1];
+    this.wpos = ary[2];
+    this.wdim = ary[3];
+    this.ymin = ary[4];
+    this.ymax = ary[5];
+    this.per = ary[6];
+    this.N = ary[7];
+    this.heritance = ary[8];
+    this.nom = ary[9];
 }
 CSCOPXY3D.prototype.importset = function CSCOPXY3D() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.nbr_curves = ary[0];
-	this.clrs = ary[1];
-	this.siz = ary[2];
-	this.win = ary[3];
-	this.wpos = ary[4];
-	this.wdim = ary[5];
-	this.vec_x = ary[6];
-	this.vec_y = ary[7];
-	this.vec_z = ary[8];
-	this.param3ds = ary[9];
-	this.N = ary[10];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.nbr_curves = ary[0];
+    this.clrs = ary[1];
+    this.siz = ary[2];
+    this.win = ary[3];
+    this.wpos = ary[4];
+    this.wdim = ary[5];
+    this.vec_x = ary[6];
+    this.vec_y = ary[7];
+    this.vec_z = ary[8];
+    this.param3ds = ary[9];
+    this.N = ary[10];
 }
 CSCOPXY.prototype.importset = function CSCOPXY() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.nbr_curves = ary[0];
-	this.clrs = ary[1];
-	this.siz = ary[2];
-	this.win = ary[3];
-	this.wpos = ary[4];
-	this.wdim = ary[5];
-	this.xmin = ary[6];
-	this.xmax = ary[7];
-	this.ymin = ary[8];
-	this.ymax = ary[9];
-	this.N = ary[10];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.nbr_curves = ary[0];
+    this.clrs = ary[1];
+    this.siz = ary[2];
+    this.win = ary[3];
+    this.wpos = ary[4];
+    this.wdim = ary[5];
+    this.xmin = ary[6];
+    this.xmax = ary[7];
+    this.ymin = ary[8];
+    this.ymax = ary[9];
+    this.N = ary[10];
 }
 CUMSUM.prototype.importset = function CUMSUM() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.typ = ary[0];
+    this.decomptyp = ary[1];
 }
 CURV_f.prototype.importset = function CURV_f() {
     /* TODO */
 }
 DEADBAND.prototype.importset = function DEADBAND() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.maxp = ary[0];
-	this.minp = ary[1];
-	this.zeroc = ary[2];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.maxp = ary[0];
+    this.minp = ary[1];
+    this.zeroc = ary[2];
 }
 DEBUG.prototype.importset = function DEBUG() {
     /* TODO */
@@ -419,71 +594,79 @@ DELAY_f.prototype.importset = function DELAY_f() {
     this.zz0 = ary[0];
 }
 DELAYV_f.prototype.importset = function DELAYV_f() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.nin = ary[0];
-	this.zz0 = ary[1];
-	this.T = ary[2];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.nin = ary[0];
+    this.zz0 = ary[1];
+    this.T = ary[2];
 }
 DEMUX_f.prototype.importset = function DEMUX_f() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.out = ary[0];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.out = ary[0];
 }
 DEMUX.prototype.importset = function DEMUX() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.out = ary[0];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.out = ary[0];
 }
 DIFF_f.prototype.importset = function DIFF_f() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.x0 = ary[0];
+    this.xd0 = ary[1];
 }
 Diode.prototype.importset = function Diode() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.Ids = ary[0];
+    this.Vt = ary[1];
+    this.Maxexp = ary[2];
+    this.R = ary[3];
 }
 DLRADAPT_f.prototype.importset = function DLRADAPT_f() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.p = ary[0];
-	this.rn = ary[1];
-	this.rd = ary[2];
-	this.g = ary[3];
-	this.last_u = ary[4];
-	this.last_y = ary[5];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.p = ary[0];
+    this.rn = ary[1];
+    this.rd = ary[2];
+    this.g = ary[3];
+    this.last_u = ary[4];
+    this.last_y = ary[5];
 }
 DLR.prototype.importset = function DLR() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.num = ary[0];
-	this.den = ary[1];
-	this.displayParameter = [[this.num], [this.den]];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.num = ary[0];
+    this.den = ary[1];
+    this.displayParameter = [[this.num], [this.den]];
 }
 DLSS.prototype.importset = function DLSS() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.A = ary[0];
-	this.B = ary[1];
-	this.C = ary[2];
-	this.D = ary[3];
-	this.x0 = ary[4];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.A = ary[0];
+    this.B = ary[1];
+    this.C = ary[2];
+    this.D = ary[3];
+    this.x0 = ary[4];
 }
 DOLLAR_f.prototype.importset = function DOLLAR_f() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.a = ary[0];
-	this.inh = ary[1];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.a = ary[0];
+    this.inh = ary[1];
 }
 DOLLAR.prototype.importset = function DOLLAR() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.a = ary[0];
-	this.inh = ary[1];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.a = ary[0];
+    this.inh = ary[1];
 }
 DOLLAR_m.prototype.importset = function DOLLAR_m() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.a = ary[0];
-	this.inh = ary[1];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.a = ary[0];
+    this.inh = ary[1];
 }
 EDGE_TRIGGER.prototype.importset = function EDGE_TRIGGER() {
     var block = getRparObjByGui(this.x, 'EDGETRIGGER');
@@ -494,7 +677,9 @@ EDGE_TRIGGER.prototype.importset = function EDGE_TRIGGER() {
     this.edge = ary[0];
 }
 EDGETRIGGER.prototype.importset = function EDGETRIGGER() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.edge = ary[0];
 }
 ENDBLK.prototype.importset = function ENDBLK() {
     var block = getRparObjByGui(this.x, 'END_c');
@@ -505,58 +690,86 @@ ENDBLK.prototype.importset = function ENDBLK() {
     this.simulationtime = ary[0];
 }
 END_c.prototype.importset = function END_c() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.tf = ary[0];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.tf = ary[0];
 }
 ESELECT_f.prototype.importset = function ESELECT_f() {
-   	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.out = ary[0];
-	this.inh = ary[1];
-	this.nmod = ary[2];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.out = ary[0];
+    this.inh = ary[1];
+    this.nmod = ary[2];
 }
 EVTDLY_c.prototype.importset = function EVTDLY_c() {
-   	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.dt = ary[0];
-	this.ff	 = ary[1];
-	this.displayParameter = [this.dt];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.dt = ary[0];
+    this.ff = ary[1];
+    this.displayParameter = [this.dt];
 }
 EVTDLY_f.prototype.importset = function EVTDLY_f() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.dt = ary[0];
+    this.ff = ary[1];
 }
 EVTGEN_f.prototype.importset = function EVTGEN_f() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.tt = ary[0];
-	this.displayParameter = [this.tt];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.tt = ary[0];
+    this.displayParameter = [this.tt];
 }
 EVTVARDLY.prototype.importset = function EVTVARDLY() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.fir = ary[0];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.fir = ary[0];
 }
 EXPBLK_m.prototype.importset = function EXPBLK_m() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.a = ary[0];
 }
 EXTRACTBITS.prototype.importset = function EXTRACTBITS() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.Datatype = ary[0];
+    this.rule = ary[1];
+    this.bit = ary[2];
+    this.scal = ary[3];
+    this.displayParameter = [this.rule];
 }
 EXTRACT.prototype.importset = function EXTRACT() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.typ = ary[0];
+    this.a = ary[1];
+    this.b = ary[2];
 }
 EXTRACTOR.prototype.importset = function EXTRACTOR() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.ind = ary[0];
 }
 EXTTRI.prototype.importset = function EXTTRI() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.typ = ary[0];
+    this.decomptyp = ary[1];
 }
 Flowmeter.prototype.importset = function Flowmeter() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.Qini = ary[0];
 }
 fortran_block.prototype.importset = function fortran_block() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.i = ary[0];
+    this.o = ary[1];
+    this.rpar = ary[2];
+    this.funam = ary[3];
+    this.displayParameter = [this.funam];
 }
 freq_div.prototype.importset = function freq_div() {
     var block = getRparObjByGui(this.x, 'Modulo_Count');
@@ -568,79 +781,141 @@ freq_div.prototype.importset = function freq_div() {
     this.divfac = ary[1];
 }
 FROM.prototype.importset = function FROM() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.tag = ary[0];
+    this.displayParameter = [this.tag];
 }
 FROMMO.prototype.importset = function FROMMO() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.tag = ary[0];
+    this.displayParameter = [this.tag];
 }
 FROMWSB.prototype.importset = function FROMWSB() {
     /* TODO */
 }
 GAINBLK_f.prototype.importset = function GAINBLK_f() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.gain = ary[0];
+    this.displayParameter = [this.gain];
 }
 GAINBLK.prototype.importset = function GAINBLK() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.gain = ary[0];
+    this.over = ary[1];
+    this.displayParameter = [this.gain];
 }
 GAIN_f.prototype.importset = function GAIN_f() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.gain = ary[0];
+    this.displayParameter = [this.gain];
 }
 GENERAL_f.prototype.importset = function GENERAL_f() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.in = ary[0];
+    this.out = ary[1];
 }
 generic_block3.prototype.importset = function generic_block3() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.function_name = ary[0];
+    this.funtyp = ary[1];
+    this.in = ary[2];
+    this.it = ary[3];
+    this.out = ary[4];
+    this.ot = ary[5];
+    this.ci = ary[6];
+    this.co = ary[7];
+    this.xx = ary[8];
+    this.z = ary[9];
+    this.oz = ary[10];
+    this.rpar = ary[11];
+    this.ipar = ary[12];
+    this.opar = ary[13];
+    this.nmode = ary[14];
+    this.nzcr = ary[15];
+    this.auto0 = ary[16];
+    this.depu = ary[17];
+    this.dept = ary[18];
 }
 GENSIN_f.prototype.importset = function GENSIN_f() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.M = ary[0];
-	this.F = ary[1];
-	this.P = ary[2];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.M = ary[0];
+    this.F = ary[1];
+    this.P = ary[2];
 }
 GENSQR_f.prototype.importset = function GENSQR_f() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.Amplitude = ary[0];
 }
 GOTO.prototype.importset = function GOTO() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.tag = ary[0];
+    this.tagvis = ary[1];
+    this.displayParameter = [this.tag];
 }
 GOTOMO.prototype.importset = function GOTOMO() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.tag = ary[0];
+    this.tagvis = ary[1];
+    this.displayParameter = [this.tag];
 }
 GotoTagVisibility.prototype.importset = function GotoTagVisibility() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.tag = ary[0];
+    this.displayParameter = [this.tag];
 }
 GotoTagVisibilityMO.prototype.importset = function GotoTagVisibilityMO() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.tag = ary[0];
+    this.displayParameter = [this.tag];
 }
 Gyrator.prototype.importset = function Gyrator() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.G1 = ary[0];
+    this.G2 = ary[1];
 }
 HALT_f.prototype.importset = function HALT_f() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.n = ary[0];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.n = ary[0];
 }
 HYSTHERESIS.prototype.importset = function HYSTHERESIS() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.high_lim = ary[0];
-	this.low_lim = ary[1];
-	this.out_high = ary[2];
-	this.out_low = ary[3];
-	this.nzz = ary[4];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.high_lim = ary[0];
+    this.low_lim = ary[1];
+    this.out_high = ary[2];
+    this.out_low = ary[3];
+    this.nzz = ary[4];
 }
 IdealTransformer.prototype.importset = function IdealTransformer() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.N = ary[0];
 }
 IFTHEL_f.prototype.importset = function IFTHEL_f() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.inh = ary[0];
-	this.nmod = ary[1];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.inh = ary[0];
+    this.nmod = ary[1];
 }
 Inductor.prototype.importset = function Inductor() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.L = ary[0];
 }
 IN_f.prototype.importset = function IN_f() {
 	var graphics = this.x.graphics;
@@ -650,65 +925,89 @@ IN_f.prototype.importset = function IN_f() {
 	this.ot = ary[2];
 }
 INIMPL_f.prototype.importset = function INIMPL_f() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.prt = ary[0];
+    this.displayParameter = [this.prt];
 }
 INTEGRAL_f.prototype.importset = function INTEGRAL_f() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.x0 = ary[0];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.x0 = ary[0];
 }
 INTEGRAL_m.prototype.importset = function INTEGRAL_m() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.x0 = ary[0];
-	this.reinit = ary[1];
-	this.satur = ary[2];
-	this.maxp = ary[3];
-	this.lowp = ary[4];
-	this.minp = ary[4];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.x0 = ary[0];
+    this.reinit = ary[1];
+    this.satur = ary[2];
+    this.maxp = ary[3];
+    this.lowp = ary[4];
 }
 INTMUL.prototype.importset = function INTMUL() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.Datatype = ary[0];
+    this.np = ary[1];
 }
 INTRP2BLK_f.prototype.importset = function INTRP2BLK_f() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.a = ary[0];
-	this.b = ary[1];
-	this.c = ary[2];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.a = ary[0];
+    this.b = ary[1];
+    this.c = ary[2];
 }
 INTRPLBLK_f.prototype.importset = function INTRPLBLK_f() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.a = ary[0];
-	this.b = ary[1];
-
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.a = ary[0];
+    this.b = ary[1];
 }
 ISELECT_m.prototype.importset = function ISELECT_m() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.typ = ary[0];
+    this.nout = ary[1];
+    this.z0 = ary[2];
 }
 JKFLIPFLOP.prototype.importset = function JKFLIPFLOP() {
-	var block = getRparObjByGui(this.x, 'DOLLAR_m');
-	if (block == null)
-	    return;
-	var graphics = block.graphics;
-	var ary = getData(graphics.exprs);
-	this.initialvalue = ary[0];
+    var block = getRparObjByGui(this.x, 'DOLLAR_m');
+    if (block == null)
+        return;
+    var graphics = block.graphics;
+    var ary = getData(graphics.exprs);
+    this.initialvalue = ary[0];
 }
 LOGBLK_f.prototype.importset = function LOGBLK_f() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.a = ary[0];
 }
 LOGICAL_OP.prototype.importset = function LOGICAL_OP() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.nin = ary[0];
-	this.oprt = ary[1];
-	this.data = ary[2];
-	this.bit = ary[3];
-	this.displayParameter = [this.label];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.nin = ary[0];
+    this.rule = ary[1];
+    if (ary.length >= 4) {
+        this.Datatype = ary[2];
+        this.tp = ary[3];
+    }
+    var label = "";
+    switch (this.rule) {
+        case "0": label = "AND"; break;
+        case "1": label = "OR"; break;
+        case "2": label = "NAND"; break;
+        case "3": label = "NOR"; break;
+        case "4": label = "XOR"; break;
+        case "5": label = "NOT"; break;
+    }
+    this.displayParameter = [label];
 }
 LOGIC.prototype.importset = function LOGIC() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.mat = ary[0];
+    this.herit = ary[1];
 }
 LOOKUP_f.prototype.importset = function LOOKUP_f() {
     var model = this.x.model;
@@ -721,64 +1020,120 @@ LOOKUP_f.prototype.importset = function LOOKUP_f() {
     this.ymax = ymax;
 }
 MATBKSL.prototype.importset = function MATBKSL() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.typ = ary[0];
 }
 MATCATH.prototype.importset = function MATCATH() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.nin = ary[0];
 }
 MATCATV.prototype.importset = function MATCATV() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.nin = ary[0];
 }
 MATDET.prototype.importset = function MATDET() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.typ = ary[0];
 }
 MATDIAG.prototype.importset = function MATDIAG() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.typ = ary[0];
 }
 MATDIV.prototype.importset = function MATDIV() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.typ = ary[0];
 }
 MATEIG.prototype.importset = function MATEIG() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.typ = ary[0];
+    this.decomptyp = ary[1];
 }
 MATEXPM.prototype.importset = function MATEXPM() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.typ = ary[0];
 }
 MATINV.prototype.importset = function MATINV() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.typ = ary[0];
 }
 MATLU.prototype.importset = function MATLU() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.typ = ary[0];
 }
 MATMAGPHI.prototype.importset = function MATMAGPHI() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.decomptyp = ary[0];
 }
 MATMUL.prototype.importset = function MATMUL() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.dtype = ary[0];
+    this.rule = ary[1];
+    this.np = ary[2];
 }
 MATPINV.prototype.importset = function MATPINV() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.typ = ary[0];
 }
 MATRESH.prototype.importset = function MATRESH() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.typ = ary[0];
+    this.l1 = ary[1];
+    this.out = ary[2];
 }
 MATSING.prototype.importset = function MATSING() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.typ = ary[0];
+    this.decomptyp = ary[1];
 }
 MATSUM.prototype.importset = function MATSUM() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.typ = ary[0];
+    this.decomptyp = ary[1];
 }
 MATTRAN.prototype.importset = function MATTRAN() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.typ = ary[0];
+    this.rule = ary[1];
 }
 MATZREIM.prototype.importset = function MATZREIM() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.decomptyp = ary[0];
 }
 MAXMIN.prototype.importset = function MAXMIN() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.mm = ary[0];
+    this.nin = ary[1];
+    this.zcr = ary[2];
 }
 MBLOCK.prototype.importset = function MBLOCK() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.Tin = ary[0];
+    this.Tintype = ary[1];
+    this.Tout = ary[2];
+    this.Touttype = ary[3];
+    this.Tparam = ary[4];
+    this.pprop = ary[5];
+    this.Tfunam = ary[6];
 }
 MCLOCK_f.prototype.importset = function MCLOCK_f() {
     var block = getRparObjByGui(this.x, 'MFCLCK_f');
@@ -792,182 +1147,367 @@ MCLOCK_f.prototype.importset = function MCLOCK_f() {
 MFCLCK_f.prototype.importset = function MFCLCK_f() {
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.period = ary[0];
-    this.multiplyby = ary[1];
+    this.dt = ary[0];
+    this.nn = ary[1];
 }
 M_freq.prototype.importset = function M_freq() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.frequ = ary[0];
-	this.offset = ary[1];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.frequ = ary[0];
+    this.offset = ary[1];
 }
 Modulo_Count.prototype.importset = function Modulo_Count() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.ini_c = ary[0];
+    this.base = ary[1];
+    this.displayParameter = [this.base];
 }
 M_SWITCH.prototype.importset = function M_SWITCH() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.nin = ary[0];
+    this.base = ary[1];
+    this.rule = ary[2];
 }
 MUX_f.prototype.importset = function MUX_f() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.in = ary[0];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.in = ary[0];
 }
 MUX.prototype.importset = function MUX() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.in = ary[0];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.in = ary[0];
 }
 NMOS.prototype.importset = function NMOS() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.W = ary[0];
+    this.L = ary[1];
+    this.Beta = ary[2];
+    this.Vt = ary[3];
+    this.K2 = ary[4];
+    this.K5 = ary[5];
+    this.dW = ary[6];
+    this.dL = ary[7];
+    this.RDS = ary[8];
 }
 NPN.prototype.importset = function NPN() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.Bf = ary[0];
+    this.Br = ary[1];
+    this.Is = ary[2];
+    this.Vak = ary[3];
+    this.Tauf = ary[4];
+    this.Taur = ary[5];
+    this.Ccs = ary[6];
+    this.Cje = ary[7];
+    this.Cjc = ary[8];
+    this.Phie = ary[9];
+    this.Me = ary[10];
+    this.Phic = ary[11];
+    this.Mc = ary[12];
+    this.Gbc = ary[13];
+    this.Gbe = ary[14];
+    this.Vt = ary[15];
+    this.EMinMax = ary[16];
 }
 NRMSOM_f.prototype.importset = function NRMSOM_f() {
-   	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.nin = ary[0];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.nin = ary[0];
 }
 OpAmp.prototype.importset = function OpAmp() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.OLGain = ary[0];
+    this.SatH = ary[1];
+    this.SatL = ary[2];
 }
 OUT_f.prototype.importset = function OUT_f() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.prt = ary[0];
-	this.displayParameter = [this.prt];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.prt = ary[0];
+    this.displayParameter = [this.prt];
 }
 OUTIMPL_f.prototype.importset = function OUTIMPL_f() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.prt = ary[0];
+    this.displayParameter = [this.prt];
 }
 PDE.prototype.importset = function PDE() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.rdnom = ary[0];
 }
 PerteDP.prototype.importset = function PerteDP() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.L = ary[0];
+    this.D = ary[1];
+    this.lambda = ary[2];
+    this.z1 = ary[3];
+    this.z2 = ary[4];
+    this.p_rho = ary[5];
 }
 PID.prototype.importset = function PID() {
     /* TODO */
 }
 PMOS.prototype.importset = function PMOS() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.W = ary[0];
+    this.L = ary[1];
+    this.Beta = ary[2];
+    this.Vt = ary[3];
+    this.K2 = ary[4];
+    this.K5 = ary[5];
+    this.dW = ary[6];
+    this.dL = ary[7];
+    this.RDS = ary[8];
 }
 PNP.prototype.importset = function PNP() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.Bf = ary[0];
+    this.Br = ary[1];
+    this.Is = ary[2];
+    this.Vak = ary[3];
+    this.Tauf = ary[4];
+    this.Taur = ary[5];
+    this.Ccs = ary[6];
+    this.Cje = ary[7];
+    this.Cjc = ary[8];
+    this.Phie = ary[9];
+    this.Me = ary[10];
+    this.Phic = ary[11];
+    this.Mc = ary[12];
+    this.Gbc = ary[13];
+    this.Gbe = ary[14];
+    this.Vt = ary[15];
+    this.EMinMax = ary[16];
 }
 POWBLK_f.prototype.importset = function POWBLK_f() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.a = ary[0];
 }
 PRODUCT.prototype.importset = function PRODUCT() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.sgn = ary[0];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.sgn = ary[0];
 }
 PuitsP.prototype.importset = function PuitsP() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.P0 = ary[0];
+    this.T0 = ary[1];
+    this.H0 = ary[2];
+    this.option_temperature = ary[3];
 }
 PULSE_SC.prototype.importset = function PULSE_SC() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    /* TODO: set scicos_context first */
+    this.scicos_context.E = ary[0];
+    this.scicos_context.W = ary[1];
+    this.scicos_context.F = ary[2];
+    this.scicos_context.A = ary[3];
 }
 QUANT_f.prototype.importset = function QUANT_f() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.pas = ary[0];
-	this.meth = ary[1];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.pas = ary[0];
+    this.meth = ary[1];
 }
 RAMP.prototype.importset = function RAMP() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.slope = ary[0];
+    this.stt = ary[1];
+    this.iout = ary[2];
 }
 RAND_m.prototype.importset = function RAND_m() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.typ = ary[0];
+    this.flag = ary[1];
+    this.a = ary[2];
+    this.b = ary[3];
+    this.seed_c = ary[4];
 }
 RATELIMITER.prototype.importset = function RATELIMITER() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.maxp = ary[0];
-	this.minp = ary[1];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.maxp = ary[0];
+    this.minp = ary[1];
 }
 READAU_f.prototype.importset = function READAU_f() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.fname1 = ary[0];
+    this.N = ary[1];
+    this.swap = ary[2];
 }
 READC_f.prototype.importset = function READC_f() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.tmask1 = ary[0];
+    this.outmask = ary[1];
+    this.fname1 = ary[2];
+    this.frmt1 = ary[3];
+    this.M = ary[4];
+    this.N = ary[5];
+    this.offset = ary[6];
+    this.swap = ary[7];
 }
 REGISTER_f.prototype.importset = function REGISTER_f() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.z0 = ary[0];
 }
 REGISTER.prototype.importset = function REGISTER() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.z0 = ary[0];
-	this.it = ary[1];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.z0 = ary[0];
+    this.it = ary[1];
 }
 RELATIONALOP.prototype.importset = function RELATIONALOP() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.oprt = ary[0];
-	this.zcr = ary[1];
-	this.data = ary[2];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.rule = ary[0];
+    this.zcr = ary[1];
+    if (ary.length >= 3) {
+        this.Datatype = ary[2];
+    }
+    var label = "";
+    switch (this.rule) {
+        case "0": label = "=="; break;
+        case "1": label = "~="; break;
+        case "2": label = "<"; break;
+        case "3": label = "<="; break;
+        case "4": label = ">"; break;
+        case "5": label = ">="; break;
+    }
+    this.displayParameter = [label];
 }
 RELAY_f.prototype.importset = function RELAY_f() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.nin = ary[0];
+    this.z0 = ary[1];
 }
 Resistor.prototype.importset = function Resistor() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.R = ary[0];
 }
 RFILE_f.prototype.importset = function RFILE_f() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.tmask1 = ary[0];
+    this.outmask = ary[1];
+    this.fname1 = ary[2];
+    this.frmt1 = ary[3];
+    this.N = ary[4];
 }
 RICC.prototype.importset = function RICC() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.tpe = ary[0];
+    this.mod = ary[1];
 }
 ROOTCOEF.prototype.importset = function ROOTCOEF() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.typ = ary[0];
+    this.inp = ary[1];
 }
 SAMPHOLD_m.prototype.importset = function SAMPHOLD_m() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.it = ary[0];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.it = ary[0];
 }
 SampleCLK.prototype.importset = function SampleCLK() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.frequ = ary[0];
-	this.offset = ary[1];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.frequ = ary[0];
+    this.offset = ary[1];
 }
 SATURATION.prototype.importset = function SATURATION() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.maxp = ary[0];
-	this.minp = ary[1];
-	this.zeroc = ary[2]
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.maxp = ary[0];
+    this.minp = ary[1];
+    this.zeroc = ary[2];
 }
 SCALAR2VECTOR.prototype.importset = function SCALAR2VECTOR() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.nout = ary[0];
 }
 scifunc_block_m.prototype.importset = function scifunc_block_m() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.i = ary[0];
+    this.o = ary[1];
+    this.ci = ary[2];
+    this.co = ary[3];
+    this.xx = ary[4];
+    this.z = ary[5];
+    this.rpar = ary[6];
+    this.auto0 = ary[7];
+    this.deptime = ary[8];
+    this.displayParameter = [this.o]; // TODO: should come from popup 2
 }
 SELECT_m.prototype.importset = function SELECT_m() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.typ = ary[0];
+    this.nin = ary[1];
+    this.z0 = ary[2];
 }
 SHIFT.prototype.importset = function SHIFT() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.Datatype = ary[0];
+    this.nb = ary[1];
+    this.np = ary[2];
+    this.displayParameter = [this.nb];
 }
 Sigbuilder.prototype.importset = function Sigbuilder() {
     /* TODO */
 }
 SIGNUM.prototype.importset = function SIGNUM() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.zcr = ary[0];
 }
 SineVoltage.prototype.importset = function SineVoltage() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.V = ary[0];
+    this.ph = ary[1];
+    this.frq = ary[2];
+    this.offset = ary[3];
+    this.start = ary[4];
+    this.displayParameter = [this.V];
 }
 SourceP.prototype.importset = function SourceP() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.P0 = ary[0];
+    this.T0 = ary[1];
+    this.H0 = ary[2];
+    this.option_temperature = ary[3];
 }
 SQRT.prototype.importset = function SQRT() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.typ = ary[0];
 }
 SRFLIPFLOP.prototype.importset = function SRFLIPFLOP() {
     /* TODO */
@@ -976,46 +1516,65 @@ STEP_FUNCTION.prototype.importset = function STEP_FUNCTION() {
     /* TODO */
 }
 SUBMAT.prototype.importset = function SUBMAT() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.typ = ary[0];
+    this.a = ary[1];
+    this.b = ary[2];
+    this.c = ary[3];
+    this.d = ary[4];
+    this.inp = ary[5];
 }
 SUMMATION.prototype.importset = function SUMMATION() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.Datatype = ary[0];
+    this.sgn = ary[1];
+    this.satur = ary[2];
 }
 SWITCH2_m.prototype.importset = function SWITCH2_m() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.ot = ary[0];
-	this.rule = ary[1];
-	this.thra = ary[2];
-	this.nzz = ary[3]
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.ot = ary[0];
+    this.rule = ary[1];
+    this.thra = ary[2];
+    this.nzz = ary[3];
 }
 SWITCH_f.prototype.importset = function SWITCH_f() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.nin = ary[0];
+    this.z0 = ary[1];
 }
 Switch.prototype.importset = function Switch() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.Ron = ary[0];
+    this.Roff = ary[1];
 }
 TCLSS.prototype.importset = function TCLSS() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.A = ary[0];
-	this.B = ary[1];
-	this.C = ary[2];
-	this.D = ary[3];
-	this.x0 = ary[4];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.A = ary[0];
+    this.B = ary[1];
+    this.C = ary[2];
+    this.D = ary[3];
+    this.x0 = ary[4];
 }
 TEXT_f.prototype.importset = function TEXT_f() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.tag = ary[0];
-	this.displayParameter=[this.tag];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.txt = ary[0];
+    this.font = ary[1];
+    this.siz = ary[2];
+    this.displayParameter = [this.txt];
 }
 TIME_DELAY.prototype.importset = function TIME_DELAY() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.T = ary[0];
-	this.init = ary[1];
-	this.N = ary[2];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.T = ary[0];
+    this.init = ary[1];
+    this.N = ary[2];
 }
 TKSCALE.prototype.importset = function TKSCALE() {
     var graphics = this.x.graphics;
@@ -1025,35 +1584,63 @@ TKSCALE.prototype.importset = function TKSCALE() {
     this.f = ary[2];
 }
 TOWS_c.prototype.importset = function TOWS_c() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.nz = ary[0];
+    this.varnam = ary[1];
+    this.herit = ary[2];
+    this.displayParameter = [[this.varnam], [this.nz]];
 }
 TrigFun.prototype.importset = function TrigFun() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.fun = ary[0];
 }
 VanneReglante.prototype.importset = function VanneReglante() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.Cvmax = ary[0];
+    this.p_rho = ary[1];
 }
 VARIABLE_DELAY.prototype.importset = function VARIABLE_DELAY() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.T = ary[0];
-	this.init = ary[1];
-	this.N = ary[2];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.T = ary[0];
+    this.init = ary[1];
+    this.N = ary[2];
 }
 VsourceAC.prototype.importset = function VsourceAC() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.VA = ary[0];
+    this.FR = ary[1];
+    this.displayParameter = [[this.VA], [this.FR]];
 }
 VVsourceAC.prototype.importset = function VVsourceAC() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.FR = ary[0];
+    this.displayParameter = [this.FR];
 }
 WRITEAU_f.prototype.importset = function WRITEAU_f() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.N = ary[0];
+    this.swap = ary[1];
 }
 WRITEC_f.prototype.importset = function WRITEC_f() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.in = ary[0];
+    this.fname1 = ary[1];
+    this.frmt1 = ary[2];
+    this.N = ary[3];
+    this.swap = ary[4];
 }
 ZCROSS_f.prototype.importset = function ZCROSS_f() {
-    /* TODO */
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.in = ary[0];
 }
 
 /* Below code is autogenerated. Do not edit. */

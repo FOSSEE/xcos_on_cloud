@@ -33,24 +33,24 @@ function OpAmp() {
     OpAmp.prototype.get = function OpAmp() {
         /*if(this.OLGain == undefined){
             this.OLGain = ""
-            this.Sath = ""
-            this.Satl = ""
+            this.SatH = ""
+            this.SatL = ""
         }
         var options={
             OLGain:["Open Loop Gain",this.OLGain],
-            Sath:["positive saturation voltage",this.Sath],
-            Satl:["Negative saturation voltage",this.Satl],
+            SatH:["positive saturation voltage",this.SatH],
+            SatL:["Negative saturation voltage",this.SatL],
         }
         return options*/
         alert("parameters can not be changed");
     }
 /*OpAmp.prototype.set = function OpAmp() {
     this.OLGain = parseFloat((arguments[0]["OLGain"]))
-    this.Sath = parseFloat((arguments[0]["Sath"]))
-    this.Satl = parseFloat((arguments[0]["Satl"]))
+    this.SatH = parseFloat((arguments[0]["SatH"]))
+    this.SatL = parseFloat((arguments[0]["SatL"]))
 
-    this.x.model.equations.parameters = list(new ScilabDouble(), new ScilabDouble([this.OLGain],[this.Sath],[this.Satl]));
-    var exprs = new ScilabString([this.OLGain],[this.Sath],[this.Satl])
+    this.x.model.equations.parameters = list(new ScilabDouble(), new ScilabDouble([this.OLGain],[this.SatH],[this.SatL]));
+    var exprs = new ScilabString([this.OLGain],[this.SatH],[this.SatL])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }*/
