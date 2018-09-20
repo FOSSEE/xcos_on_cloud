@@ -7,15 +7,15 @@ function AFFICH_m() {
         this.colr = 1;
         this.nt = 5;
         this.nd = 1;
-        this.in1 = [[1],[1]];
+        this.in = [[1],[1]];
 
         var model = scicos_model();
         model.sim = list(new ScilabString(["affich2"]), new ScilabDouble([4]));
-        model.in = new ScilabDouble([this.in1[0]]);
-        model.in2 = new ScilabDouble([this.in1[1]]);
+        model.in = new ScilabDouble([this.in[0]]);
+        model.in2 = new ScilabDouble([this.in[1]]);
         model.evtin = new ScilabDouble([1]);
-        model.dstate = new ScilabDouble([-1], [0], [0], [1], [1], [0], ...zeros(this.in1[0] * this.in1[1], 1));
-        model.ipar = new ScilabDouble([this.font], [this.fontsize], [this.colr], [1000], [this.nt], [this.nd], [this.in1[0]]);
+        model.dstate = new ScilabDouble([-1], [0], [0], [1], [1], [0], ...zeros(this.in[0] * this.in[1], 1));
+        model.ipar = new ScilabDouble([this.font], [this.fontsize], [this.colr], [1000], [this.nt], [this.nd], [this.in[0]]);
         model.blocktype = new ScilabString(["c"]);
         model.firing = new ScilabDouble();
         model.dep_ut = new ScilabBoolean([true, false]);
@@ -81,7 +81,7 @@ function AFFICH_m() {
         this.x.model.ipar = new ScilabDouble([this.font],[this.fontsize],[this.colr],[1000],[this.nt],[this.nd],this.in[0])
         this.x.model.dstate = new ScilabDouble([-1],[0],[0],[1],[1],[0],zeros(this.in[0]*this.in[1],1))
         this.x.model.evtin = new ScilabDouble(...ones(1-this.herit,1))
-        var exprs = new ScilabString([this.in.toString().replace(/,/g," ")], [this.font], [this.fontsize], [this.colr], [this.nt], [this.nd], [0]);
+        var exprs = new ScilabString([this.in.toString().replace(/,/g," ")], [this.font], [this.fontsize], [this.colr], [this.nt], [this.nd], [this.herit]);
         this.x.graphics.exprs=exprs;
         return new AfficheBlock(this.x);
     }

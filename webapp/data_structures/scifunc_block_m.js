@@ -1,26 +1,34 @@
 function scifunc_block_m() {
 
     scifunc_block_m.prototype.define = function scifunc_block_m() {
-        this.in1 = 1;
-        this.out = 1;
-        this.clkin = [];
-        this.clkout = [];
-        this.x0 = [];
-        this.z0 = [];
+        this.i = 1;
+        this.o = 1;
+        this.ci = [];
+        this.co = [];
+        this.xx = [];
+        this.z = [];
+        this.auto0 = [];
+        this.deptime = 1;
+        var in1 = 1;
+        var out = 1;
+        var clkin = [];
+        var clkout = [];
+        var x0 = [];
+        var z0 = [];
         this.typ = "c";
-        this.auto = [];
+        var auto = [];
         this.rpar = [];
-        this.it = 1;
+        var it = 1;
         this.exprs = [];
 
         var model = scicos_model();
         model.sim = list(new ScilabString(["scifunc"]), new ScilabDouble([3]));
-        model.in = new ScilabDouble([this.in1]);
-        model.in2 = new ScilabDouble([this.in1]);
-        model.intyp = new ScilabDouble([this.it]);
-        model.out = new ScilabDouble([this.out]);
-        model.out2 = new ScilabDouble([this.out]);
-        model.outtyp = new ScilabDouble([this.it]);
+        model.in = new ScilabDouble([in1]);
+        model.in2 = new ScilabDouble([in1]);
+        model.intyp = new ScilabDouble([it]);
+        model.out = new ScilabDouble([out]);
+        model.out2 = new ScilabDouble([out]);
+        model.outtyp = new ScilabDouble([it]);
         model.evtin = new ScilabDouble();
         model.evtout = new ScilabDouble();
         model.state = new ScilabDouble();
@@ -33,7 +41,7 @@ function scifunc_block_m() {
         model.dep_ut = new ScilabBoolean([true, false]);
         var n = "scifunc";
         this.displayParameter = [n];
-        var exprs = list(new ScilabString([sci2exp([this.in1, this.in1])], [sci2exp([this.out, this.out])], [sci2exp(this.clkin)], [sci2exp(this.clkout)], [sci2exp(this.x0)], [sci2exp(this.z0)], [sci2exp(this.rpar)], [sci2exp(this.auto)], [sci2exp(0)]), list(new ScilabString(["y1=sin(u1)"]), new ScilabString([" "]), new ScilabString([" "]), new ScilabString(["y1=sin(u1)"]), new ScilabString([" "]), new ScilabString([" "]), new ScilabString([" "])));
+        var exprs = list(new ScilabString([sci2exp([in1, in1])], [sci2exp([out, out])], [sci2exp(clkin)], [sci2exp(clkout)], [sci2exp(x0)], [sci2exp(z0)], [sci2exp(this.rpar)], [sci2exp(auto)], [sci2exp(0)]), list(new ScilabString(["y1=sin(u1)"]), new ScilabString([" "]), new ScilabString([" "]), new ScilabString(["y1=sin(u1)"]), new ScilabString([" "]), new ScilabString([" "]), new ScilabString([" "])));
 
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"scifunc_block_m\",sz(1),sz(2));"]);
         this.x = new standard_define(new ScilabDouble([4, 2]), model, exprs, gr_i);
@@ -71,65 +79,65 @@ function scifunc_block_m() {
         }
 
         var options ={
-            in1 : ["input port sizes", this.in1],//i
-            out : ["output port sizes", this.out],//o
-            clkin : ["input event port sizes", this.clkin],//ci
-            clkout : ["output event port sizes", this.clkout],//co
-            x0 : ["initial continuous state", this.x0],
-            z0 : ["initial discrete state", this.z0],
+            i : ["input port sizes", this.i],
+            o : ["output port sizes", this.o],
+            ci : ["input event port sizes", this.ci],
+            co : ["output event port sizes", this.co],
+            xx : ["initial continuous state", this.xx],
+            z : ["initial discrete state", this.z],
             rpar : ["system parameters vector", this.rpar],
-            auto : ["initial firing vector(<0 for no firing)", this.auto],
-            it : ["is block always active(0:no, 1:yes)", this.it],
+            auto0 : ["initial firing vector(<0 for no firing)", this.auto0],
+            deptime : ["is block always active(0:no, 1:yes)", this.deptime],
         }
         return options
     }
 
     scifunc_block_m.prototype.set = function scifunc_block_m() {
-        this.in1 = MatrixInverse((arguments[0]["in1"]))
-        this.out = MatrixInverse((arguments[0]["out"]))
-        this.clkin = MatrixInverse((arguments[0]["clkin"]))
-        this.clkout = MatrixInverse((arguments[0]["clkout"]))
-        this.x0 = MatrixInverse((arguments[0]["x0"]))
-        this.z0 = MatrixInverse((arguments[0]["z0"]))
+        this.i = MatrixInverse((arguments[0]["i"]))
+        this.o = MatrixInverse((arguments[0]["o"]))
+        this.ci = MatrixInverse((arguments[0]["ci"]))
+        this.co = MatrixInverse((arguments[0]["co"]))
+        this.xx = MatrixInverse((arguments[0]["xx"]))
+        this.z = MatrixInverse((arguments[0]["z"]))
         this.rpar = MatrixInverse((arguments[0]["rpar"]))
-        this.auto = MatrixInverse((arguments[0]["auto"]))
-        this.it = MatrixInverse((arguments[0]["it"]))
-        if(arguments[0]["out"] != ""){
+        this.auto0 = MatrixInverse((arguments[0]["auto0"]))
+        this.deptime = MatrixInverse((arguments[0]["deptime"]))
+        if(arguments[0]["o"] != ""){
             this.popup2value = ((arguments[0]["popup2value"]))
             var to_display = this.popup2value[0];
 
-            if(this.out.length == 2 && this.popup2value.length == 1){
+            if(this.o.length == 2 && this.popup2value.length == 1){
                 this.popup2value_disp = new ScilabString([this.popup2value[0].toString()])
             }
-            if(this.out.length == 2 && this.popup2value.length == 2){
+            if(this.o.length == 2 && this.popup2value.length == 2){
                 this.popup2value_disp = new ScilabString([this.popup2value[0].toString()],[this.popup2value[1].toString()])
             }
-            if(this.out.length == 3){
+            if(this.o.length == 3){
                 this.popup2value_disp = new ScilabString([this.popup2value[0].toString()],[this.popup2value[1].toString()],[this.popup2value[2].toString()])
             }
-            if(this.out.length == 4){
+            if(this.o.length == 4){
                 this.popup2value_disp = new ScilabString([this.popup2value[0].toString()],[this.popup2value[1].toString()],[this.popup2value[2].toString()],[this.popup2value[3].toString()])
             }
-            if(this.out.length == 5){
+            if(this.o.length == 5){
                 this.popup2value_disp = new ScilabString([this.popup2value[0].toString()],[this.popup2value[1].toString()],[this.popup2value[2].toString()],[this.popup2value[3].toString()],[this.popup2value[4].toString()])
             }
-            if(this.out.length == 6){
+            if(this.o.length == 6){
                 this.popup2value_disp = new ScilabString([this.popup2value[0].toString()],[this.popup2value[1].toString()],[this.popup2value[2].toString()],[this.popup2value[3].toString()],[this.popup2value[4].toString()],[this.popup2value[5].toString()])
             }
-            if(this.out.length == 7){
+            if(this.o.length == 7){
                 this.popup2value_disp = new ScilabString([this.popup2value[0].toString()],[this.popup2value[1].toString()],[this.popup2value[2].toString()],[this.popup2value[3].toString()],[this.popup2value[4].toString()],[this.popup2value[5].toString()],[this.popup2value[6].toString()])
             }
         }
         this.null = "";
-        if(arguments[0]["out"] == ""){
+        if(arguments[0]["o"] == ""){
             this.popup2value_disp = new ScilabString([this.null.toString()])
         }
 
-        if(!arguments[0]["x0"] == ""){
+        if(!arguments[0]["xx"] == ""){
             this.popup3value = ((arguments[0]["popup3value"]))
         }
 
-        if(arguments[0]["z0"] != ""){
+        if(arguments[0]["z"] != ""){
             this.popup4value = ((arguments[0]["popup4value"]))
 
             if(this.popup4value[0] == "" && this.popup4value[1] == ""){
@@ -145,11 +153,11 @@ function scifunc_block_m() {
                 this.popup4value_disp = new ScilabString([this.popup4value[0].toString()],[this.popup4value[1].toString()])
             }
         }
-        if(arguments[0]["z0"] == ""){
+        if(arguments[0]["z"] == ""){
             this.popup4value_disp = new ScilabString([this.null.toString()])
         }
 
-        if(arguments[0]["clkin"] != "" && arguments[0]["clkout"] != ""){
+        if(arguments[0]["ci"] != "" && arguments[0]["co"] != ""){
             this.popup5value = ((arguments[0]["popup5value"]))
 
             if(this.popup5value[1] == "" && this.popup5value[2] == ""){
@@ -166,7 +174,7 @@ function scifunc_block_m() {
             }
         }
 
-        if(arguments[0]["clkin"] == "" && arguments[0]["clkout"] == ""){
+        if(arguments[0]["ci"] == "" && arguments[0]["co"] == ""){
             this.popup5value_disp = new ScilabString([this.null.toString()])
         }
 
@@ -199,7 +207,7 @@ function scifunc_block_m() {
             this.popup7value_disp = new ScilabString([this.popup7value[0].toString()],[this.popup7value[1].toString()])
         }
 
-        var len = this.out.length;
+        var len = this.o.length;
         this.popup8value = ((arguments[0]["popup8value"]))
 
         if(this.popup8value[0] == "" && this.popup8value[1] == ""){
@@ -304,20 +312,20 @@ function scifunc_block_m() {
         if(this.rpar == ""){
             this.x.model.rpar = new ScilabDouble()
         }
-        if(this.x0 != ""){
-            this.x.model.state = new ScilabDouble([this.x0])
+        if(this.xx != ""){
+            this.x.model.state = new ScilabDouble([this.xx])
         }
-        if(this.z0 != ""){
-            this.x.model.dstate = new ScilabDouble([this.z0])
+        if(this.z != ""){
+            this.x.model.dstate = new ScilabDouble([this.z])
         }
-        this.it_set = ones(size(this.in1,1),1);
-        this.ot = ones(size(this.out,1),1);
+        this.it_set = ones(size(this.i,1),1);
+        this.ot = ones(size(this.o,1),1);
 
         var n = to_display;
         this.displayParameter = [n];
-        var io = set_io(this.x.model,this.x.graphics,list(this.in1,...this.it_set),list(this.out,...this.ot),this.clkin,this.clkout);
+        var io = set_io(this.x.model,this.x.graphics,list(this.i,...this.it_set),list(this.o,...this.ot),this.ci,this.co);
         this.x.model.opar = list(this.popup2value_disp, new ScilabString([this.popup3value.toString()]), this.popup4value_disp, this.popup5value_disp, this.popup6value_disp, this.popup7value_disp, this.popup8value_disp)
-        var exprs = list(new ScilabString([sci2exp(this.in1)], [sci2exp(this.out)], [sci2exp(this.clkin)], [sci2exp(this.clkout)], [sci2exp(this.x0)], [sci2exp(this.z0)], [sci2exp(this.rpar)], [sci2exp(this.auto)], [sci2exp(this.it)]), list(this.popup2value_disp, new ScilabString([this.popup3value.toString()]), this.popup4value_disp, this.popup5value_disp, this.popup6value_disp, this.popup7value_disp, this.popup8value_disp))
+        var exprs = list(new ScilabString([sci2exp(this.i)], [sci2exp(this.o)], [sci2exp(this.ci)], [sci2exp(this.co)], [sci2exp(this.xx)], [sci2exp(this.z)], [sci2exp(this.rpar)], [sci2exp(this.auto0)], [sci2exp(this.deptime)]), list(this.popup2value_disp, new ScilabString([this.popup3value.toString()]), this.popup4value_disp, this.popup5value_disp, this.popup6value_disp, this.popup7value_disp, this.popup8value_disp))
         this.x.graphics.exprs = exprs
         return new BasicBlock(this.x)
     }

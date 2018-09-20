@@ -19,7 +19,7 @@ CMAT3D.prototype.define = function CMAT3D() {
     model.rpar = new ScilabDouble(...this.colormap, [this.x], [this.y])
     model.blocktype = new ScilabDouble(["c"]);
     model.dep_ut = new ScilabBoolean(true, false)
-    var exprs = new ScilabString([this.x.toString().replace(/,/g, " ")], [this.y.toString().replace(/,/g, " ")], [this.size_c], [this.cmin], [this.cmax])
+    var exprs = new ScilabString([this.x.toString().replace(/,/g, " ")], [this.y.toString().replace(/,/g, " ")], ["jetcolormap("+this.size_c+")"], [this.cmin], [this.cmax]);
     var gr_i = list(new ScilabString(["xstringb(orig(1),orig(2),\"CMAT3D\",sz(1),sz(2));"]), new ScilabDouble([8]));
     this.x = new standard_define(new ScilabDouble([80, 80]),model,exprs,gr_i)
     return new BasicBlock(this.x);
@@ -32,7 +32,7 @@ CMAT3D.prototype.get = function CMAT3D() {
         var options={
             vec_x:["Bounds Vector X (-1 for standard)",this.vec_x.toString().replace(/,/g," ")],
             vec_y:["Bounds Vector Y (-1 for standard)",this.vec_y.toString().replace(/,/g," ")],
-            colormap:["ColorMap",this.size_c],
+            size_c:["ColorMap",this.size_c],
             cmin:["Zmin",this.cmin],
             cmax:["Zmax",this.cmax],
         }
@@ -41,7 +41,8 @@ CMAT3D.prototype.get = function CMAT3D() {
 CMAT3D.prototype.set = function CMAT3D() {
     this.vec_x = inverse(arguments[0]["vec_x"])
     this.vec_y = inverse(arguments[0]["vec_y"])
-    this.colormap = jetcolormap(parseFloat((arguments[0]["colormap"])))
+    this.size_c = parseFloat(arguments[0]["size_c"])
+    this.colormap = jetcolormap(this.size_c)
     this.cmin = parseFloat((arguments[0]["cmin"]))
     this.cmax = parseFloat((arguments[0]["cmax"]))
     if(size(this.vec_x,"*")!=size(this.vec_y,"*")){
@@ -53,7 +54,6 @@ CMAT3D.prototype.set = function CMAT3D() {
                 CMAT3D.get();
             }
     this.size_x = size(this.vec_x,"*")
-    this.size_c = size(...this.colormap,1)
     var ipar = new ScilabDouble([this.cmin],[this.cmax],[this.size_c],[this.size_x])
     var rpar = new ScilabDouble(...this.colormap,...this.vec_x,...this.vec_y)
     this.x.model.ipar = ipar
