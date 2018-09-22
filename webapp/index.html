@@ -1681,10 +1681,7 @@
                                                 //To get affich Id for label 
                                                 if(ifaceFuncName=="AFFICH_m"){
 						     details_instance.setLabel(ifaceFuncName+"-"+temporaryMapObject.newId);
-                                                     var affich_details = details_instance.define();
-                                                     if(Object.keys(importProperties).length != 0) {
-                                                       affich_details = details_instance.set(importProperties);
-                                                      } 
+                                                     var affich_details = importBlock(currentNode, cell, details_instance);
                                                 }
                                                 
                                                 //findAndCreatePorts(graph,v1,doc,curId,codec);
