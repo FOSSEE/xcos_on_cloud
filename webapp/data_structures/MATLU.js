@@ -28,7 +28,7 @@ function MATLU() {
         this.x = new standard_define(new ScilabDouble([2, 2]), model, label, gr_i);
         return new BasicBlock(this.x);
     }
-    MATLU.prototype.details = function CSCOPE() {
+    MATLU.prototype.details = function MATLU() {
         return this.x;
     }
     MATLU.prototype.get = function MATLU() {
