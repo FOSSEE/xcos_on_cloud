@@ -1,8 +1,9 @@
 function INTEGRAL_m() {
 
     INTEGRAL_m.prototype.define = function INTEGRAL_m() {
+        this.lowp = -1;
         this.maxp = 1;
-        this.minp = -1;
+        var minp = -1;
         this.rpar = [];
 
         var model = scicos_model();
@@ -16,7 +17,7 @@ function INTEGRAL_m() {
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([false, true]);
 
-        var exprs = new ScilabString([0], [0], [0], [this.maxp], [this.minp]);
+        var exprs = new ScilabString([0], [0], [0], [this.maxp], [minp]);
 
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"INTEGRAL_m\",sz(1),sz(2));"]);
         this.x = new standard_define(new ScilabDouble([2, 2]), model, exprs, gr_i);
@@ -35,7 +36,7 @@ function INTEGRAL_m() {
             reinit:["With re-initialization (1:yes, 0:no)",this.reinit],
             satur:["With saturation (1:yes, 0:no)",this.satur],
             maxp:["Upper limit",this.maxp.toString().replace(/,/g," ")],
-            lowp:["Lower limit",this.minp.toString().replace(/,/g," ")],
+            lowp:["Lower limit",this.lowp.toString().replace(/,/g," ")],
         }
         return options
     }

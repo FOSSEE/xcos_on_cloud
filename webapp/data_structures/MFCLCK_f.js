@@ -1,8 +1,6 @@
 function MFCLCK_f() {
 
     MFCLCK_f.prototype.define = function MFCLCK_f() {
-	this.period=0.1;
-	this.multiplyby=2;
         this.nn = 2;
         this.dt = 0.1;
 
@@ -26,8 +24,6 @@ function MFCLCK_f() {
     MFCLCK_f.prototype.internal = function MFCLCK_f() {
         this.nn = 2;
         this.dt = 0.1;
-	this.period=0.1;
-	this.multiplyby=2;
 
         var model = scicos_model();
         model.sim = new ScilabString(["mfclck"]);
@@ -50,14 +46,14 @@ function MFCLCK_f() {
     }
     MFCLCK_f.prototype.get = function MFCLCK_f() {
         var options={
-            period:["Basic Period (1/f)",this.period],
-	    multiplyby:["Multiply by (n)" ,this.multiplyby],
+            dt:["Basic Period (1/f)",this.dt],
+	    nn:["Multiply by (n)" ,this.nn],
         }
         return options
     }
     MFCLCK_f.prototype.set = function MFCLCK_f() {
-	    this.period = parseFloat((arguments[0]["period"]))
-	    this.multiplyby = parseFloat((arguments[0]["multiplyby"]))
+	    this.dt = parseFloat((arguments[0]["dt"]))
+	    this.nn = parseFloat((arguments[0]["nn"]))
 	    return new BasicBlock(this.x)
     }
     MFCLCK_f.prototype.details = function MFCLCK_f() {

@@ -56,7 +56,7 @@ MUX.prototype.set = function MUX() {
     }
     this.x.model.out = new ScilabDouble([0]);
     this.x.model.ipar = new ScilabDouble(...this.in)
-    var exprs = new ScilabString(this.in.toString())
+    var exprs = new ScilabString([this.in.toString()])
     this.x.graphics.exprs = exprs
     return new BasicBlock(this.x)
 }

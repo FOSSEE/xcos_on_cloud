@@ -25,7 +25,7 @@ function CANIMXY3D() {
         model.firing = new ScilabDouble();
         model.dep_ut = new ScilabBoolean([false, false]);
 
-        var exprs = new ScilabString([this.nbr_curves], [this.clrs.toString().replace(/,/g, " ")], [this.siz.toString().replace(/,/g, " ")], [this.win], ["[]"], ["[]"], [this.vec_x.toString().replace(/,/g, " ")], [this.vec_y.toString().replace(/,/g, " ")], [this.vec_z.toString().replace(/,/g, " ")], [this.param3ds.toString().replace(/,/g, " ")], [this.N]);
+        var exprs = new ScilabString([this.nbr_curves], [this.clrs.toString().replace(/,/g, " ")], [this.siz.toString().replace(/,/g, " ")], [this.win], [this.wpos.toString().replace(/,/g, " ")], [this.wdim.toString().replace(/,/g, " ")], [this.vec_x.toString().replace(/,/g, " ")], [this.vec_y.toString().replace(/,/g, " ")], [this.vec_z.toString().replace(/,/g, " ")], [this.param3ds.toString().replace(/,/g, " ")], [this.N]);
 
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"CANIMXY3D\",sz(1),sz(2));"]);
         this.x = new standard_define(new ScilabDouble([2, 2]), model, exprs, gr_i);
@@ -42,8 +42,8 @@ CANIMXY3D.prototype.get = function CANIMXY3D() {
             clrs:["color (>0) or mark (<0)",this.clrs.toString().replace(/,/g," ")],
             siz:["line or mark size",this.siz.toString().replace(/,/g," ")],
             win:["Output window number (-1 for automatic)",this.win],
-            wpos:["Output window position","[]"],
-            wdim:["Output window sizes","[]"],
+            wpos:["Output window position",this.wpos.toString().replace(/,/g," ")],
+            wdim:["Output window sizes",this.wdim.toString().replace(/,/g," ")],
             vec_x:["Xmin and Xmax",this.vec_x.toString().replace(/,/g," ")],
             vec_y:["Ymin and Ymax",this.vec_y.toString().replace(/,/g," ")],
             vec_z:["Zmin and Zmax",this.vec_z.toString().replace(/,/g," ")],
@@ -131,7 +131,7 @@ CANIMXY3D.prototype.set = function CANIMXY3D() {
     var ipar = new ScilabDouble([this.win],[this.size_siz],[this.N],...this.clrs,...this.siz,[1],...this.wpos,...this.wdim,[this.nbr_curves])
     this.x.model.rpar = rpar
     this.x.model.ipar = ipar
-    var exprs = new ScilabString([this.nbr_curves],[this.clrs.toString().replace(/,/g, " ")],[this.siz.toString().replace(/,/g, " ")],[this.win],["[]"],["[]"],[this.vec_x.toString().replace(/,/g, " ")],[this.vec_y.toString().replace(/,/g, " ")],[this.vec_z.toString().replace(/,/g, " ")],[this.param3ds.toString().replace(/,/g, " ")],[this.N])
+    var exprs = new ScilabString([this.nbr_curves],[this.clrs.toString().replace(/,/g, " ")],[this.siz.toString().replace(/,/g, " ")],[this.win],[this.wpos.toString().replace(/,/g, " ")],[this.wdim.toString().replace(/,/g, " ")],[this.vec_x.toString().replace(/,/g, " ")],[this.vec_y.toString().replace(/,/g, " ")],[this.vec_z.toString().replace(/,/g, " ")],[this.param3ds.toString().replace(/,/g, " ")],[this.N]);
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
