@@ -40,7 +40,7 @@ function CSCOPXY() {
             clrs:["color (>0) or mark (<0)",this.clrs.toString().replace(/,/g," ")],
             siz:["line or mark size",this.siz.toString().replace(/,/g," ")],
             win:["Output window number (-1 for automatic)",this.win],
-            wpos:["Output window position","[]"],
+            wpos:["Output window position",this.wpos.toString().replace(/,/g," ")],
             wdim:["Output window sizes",this.wdim.toString().replace(/,/g," ")],
             xmin:["Xmin",this.xmin],
             xmax:["Xmax",this.xmax],
@@ -104,7 +104,7 @@ CSCOPXY.prototype.set = function CSCOPXY() {
     var ipar = new ScilabDouble([this.win],[1],[this.N],[this.clrs],[this.siz],[1],...this.wpos,...this.wdim,[this.nbr_curves])
     this.x.model.rpar = rpar
     this.x.model.ipar = ipar
-    var exprs = new ScilabString([this.nbr_curves],[sci2exp(this.clrs)],[sci2exp(this.siz)],[this.win],["[]"],[sci2exp(this.wdim)],[this.xmin],[this.xmax],[this.ymin],[this.ymax],[this.N])
+    var exprs = new ScilabString([this.nbr_curves],[sci2exp(this.clrs)],[sci2exp(this.siz)],[this.win],[sci2exp(this.wpos)],[sci2exp(this.wdim)],[this.xmin],[this.xmax],[this.ymin],[this.ymax],[this.N])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }

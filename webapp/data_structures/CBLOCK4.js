@@ -1,6 +1,9 @@
 function CBLOCK4() {
 
     CBLOCK4.prototype.define = function CBLOCK4() {
+        this.impli = "n";
+        this.depu = true;
+        this.dept = false;
 
         this.funam = "toto";
 
@@ -28,7 +31,7 @@ function CBLOCK4() {
 // CBLOCK4.prototype.get = function CBLOCK4() {
 //          var options={
 //             function_name:["Simulation function",this.function_name],
-//             impli:["Is block implicit? (y,n)","n"],
+//             impli:["Is block implicit? (y,n)",this.impli],
 //             in:["Input ports sizes",sci2exp([this.x.model.in,this.x.model.in2])],
 //             it:["Input ports type",sci2exp(this.x.model.intyp)],
 //             out:["Output port sizes",sci2exp([this.x.model.out,this.x.model.out2])],
@@ -44,8 +47,8 @@ function CBLOCK4() {
 //             nmode:["Number of modes",sci2exp(this.x.model.nmode)],
 //             nzcr:["Number of zero crossings",sci2exp(this.x.model.nzcross)],
 //             auto0:["Initial firing vector (<0 for no firing)",sci2exp(this.x.model.firing)],
-//             depu:["Direct feedthrough (y or n)","y"],
-//             dept:["Time dependence (y or n)","n"],
+//             depu:["Direct feedthrough (y or n)",(this.depu?"y":"n")],
+//             dept:["Time dependence (y or n)",(this.dept?"y":"n")],
 //         }
 //         return options
 //     }

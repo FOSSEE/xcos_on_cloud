@@ -47,7 +47,6 @@ function PMOS() {
             K5:["Reduction of pinch-off region",this.K5],
             dW:["Narrowing of channel [m]",this.dW],
             dL:["Shortening of channel [m]",this.dL],
-            //RDS:["Drain-Source-Resistance [Ohm]",this.RDS.toString().replace(/,/g," ")],
             RDS:["Drain-Source-Resistance [Ohm]",this.RDS],
         }
         return options

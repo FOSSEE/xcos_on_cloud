@@ -1,6 +1,10 @@
 function HYSTHERESIS() {
 
     HYSTHERESIS.prototype.define = function HYSTHERESIS() {
+        this.high_lim = 1;
+        this.low_lim = 0;
+        this.out_high = 1;
+        this.out_low = 0;
         this.in1 = 1;
         this.ipar = 0;
         this.nzz = 1;
@@ -27,10 +31,10 @@ function HYSTHERESIS() {
     }
     HYSTHERESIS.prototype.get = function HYSTHERESIS() {
         var options={
-            high_lim:["switch on at","1"],
-            low_lim:["switch off at","0"],
-            out_high:["output when on","1"],
-            out_low:["output when off","0"],
+            high_lim:["switch on at",this.high_lim],
+            low_lim:["switch off at",this.low_lim],
+            out_high:["output when on",this.out_high],
+            out_low:["output when off",this.out_low],
             nzz:["use zero crossing: yes (1), no (0)",this.nzz],
         }
         return options

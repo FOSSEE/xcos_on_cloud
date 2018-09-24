@@ -1,6 +1,23 @@
 function NPN() {
 
     NPN.prototype.define = function NPN() {
+        this.Bf = 50;
+        this.Br = 0.1;
+        this.Is = 1.0e-16;
+        this.Vak = 0.02;
+        this.Tauf = 0.12e-9;
+        this.Taur = 5.0e-9;
+        this.Ccs = 1.0e-12;
+        this.Cje = 0.4e-12;
+        this.Cjc = 0.5e-12;
+        this.Phie = 0.8;
+        this.Me = 0.4;
+        this.Phic = 0.8;
+        this.Mc = 0.333;
+        this.Gbc = 1.0e-15;
+        this.Gbe = 1.0e-15;
+        this.Vt = 0.02585;
+        this.EMinMax = 40;
         this.ModelName = "NPN";
         this.PrametersValue = [[50], [0.1], [0], [0.02], [1.2E-10], [5.0E-09], [1.0E-12], [4.0E-13], [5.0E-13], [0.8], [0.4], [0.8], [0.333], [1.0E-15], [1.0E-15], [0.02585], [40]];
         this.ParametersName = [["Bf"], ["Br"], ["Is"], ["Vak"], ["Tauf"], ["Taur"], ["Ccs"], ["Cje"], ["Cjc"], ["Phie"], ["Me"], ["Phic"], ["Mc"], ["Gbc"], ["Gbe"], ["Vt"], ["EMinMax"]];
@@ -55,23 +72,23 @@ function NPN() {
     }
     NPN.prototype.get = function NPN() {
         var options={
-            Bf:["Bf  : Forward beta","50"],
-            Br:["Br  : Reverse beta","0.1"],
-            Is:["Is  : Transport saturation current","1.e-16"],
-            Vak:["Vak : Early voltage (inverse), 1/Volt","0.02"],
-            Tauf:["Tauf: Ideal forward transit time","0.12e-9"],
-            Taur:["Taur: Ideal reverse transit time","5e-9"],
-            Ccs:["Ccs : Collector-substrat(ground) cap.","1e-12"],
-            Cje:["Cje : Base-emitter zero bias depletion cap.","0.4e-12"],
-            Cjc:["Cjc : Base-coll. zero bias depletion cap.","0.5e-12"],
-            Phie:["Phie: Base-emitter diffusion voltage","0.8"],
-            Me:["Me  : Base-emitter gradation exponent","0.4"],
-            Phic:["Phic: Base-collector diffusion voltage","0.8"],
-            Mc:["Mc  : Base-collector gradation exponent","0.333"],
-            Gbc:["Gbc : Base-collector conductance","1e-15"],
-            Gbe:["Gbe : Base-emitter conductance","1e-15"],
-            Vt:["Vt  : Voltage equivalent of temperature","0.02585"],
-            EMinMax:["EMinmax: if x > EMinMax, the exp(x) is linearized","40"],
+            Bf:["Bf  : Forward beta",this.Bf],
+            Br:["Br  : Reverse beta",this.Br],
+            Is:["Is  : Transport saturation current",this.Is],
+            Vak:["Vak : Early voltage (inverse), 1/Volt",this.Vak],
+            Tauf:["Tauf: Ideal forward transit time",this.Tauf],
+            Taur:["Taur: Ideal reverse transit time",this.Taur],
+            Ccs:["Ccs : Collector-substrat(ground) cap.",this.Ccs],
+            Cje:["Cje : Base-emitter zero bias depletion cap.",this.Cje],
+            Cjc:["Cjc : Base-coll. zero bias depletion cap.",this.Cjc],
+            Phie:["Phie: Base-emitter diffusion voltage",this.Phie],
+            Me:["Me  : Base-emitter gradation exponent",this.Me],
+            Phic:["Phic: Base-collector diffusion voltage",this.Phic],
+            Mc:["Mc  : Base-collector gradation exponent",this.Mc],
+            Gbc:["Gbc : Base-collector conductance",this.Gbc],
+            Gbe:["Gbe : Base-emitter conductance",this.Gbe],
+            Vt:["Vt  : Voltage equivalent of temperature",this.Vt],
+            EMinMax:["EMinmax: if x > EMinMax, the exp(x) is linearized",this.EMinMax],
         }
         return options
     }

@@ -5,13 +5,13 @@ function CFSCOPE() {
         var options={
             clrs:["Color (>0) or mark (<0) vector (8 entries)",this.clrs.toString().replace(/,/g, " ")],
             win:["Output window number (-1 for automatic)",this.win],
-            wpos:["Output window position",sci2exp([])],
+            wpos:["Output window position",this.wpos.toString().replace(/,/g, " ")],
             wdim:["Output window sizes", this.wdim.toString().replace(/,/g, " ")],
             ymin:["Ymin",this.ymin],
             ymax:["Ymax",this.ymax],
             per:["Refresh Period",this.per],
             N:["Buffer size",this.N],
-            wu:["Links to view",1],
+            wu:["Links to view",this.wu],
         };
         return options;
     }
@@ -60,7 +60,7 @@ function CFSCOPE() {
         }
         var rpar = new ScilabDouble([0], [this.ymin], [this.ymax], [this.per])
         var ipar = new ScilabDouble([this.win], [1], [this.N], ...this.clrs, ...this.wpos, ...this.wdim, [this.wu.length], [this.wu]);
-        var exprs = new ScilabString([this.clrs.toString().replace(/,/g, " ")], [this.win], [sci2exp(this.wpos)], [sci2exp(this.wdim)], [this.ymin], [this.ymax], [this.per], [this.N], [1]);
+        var exprs = new ScilabString([this.clrs.toString().replace(/,/g, " ")], [this.win], [sci2exp(this.wpos)], [sci2exp(this.wdim)], [this.ymin], [this.ymax], [this.per], [this.N], [this.wu]);
         this.x.model.ipar = ipar;
         this.x.model.rpar = rpar;
         this.x.model.dep_ut = new ScilabBoolean([true, false]);
@@ -70,6 +70,7 @@ function CFSCOPE() {
 
 
     CFSCOPE.prototype.define = function CFSCOPE() {
+        this.wu = 1;
         this.win = -1;
         this.wdim = [[600],[400]];
         this.wpos = [[-1],[-1]];

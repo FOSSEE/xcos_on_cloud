@@ -34,10 +34,10 @@ function DLRADAPT_f() {
 
 	options={
             p:["Vector of p mesh points",sci2exp(this.p)],
-	    rn:["Numerator roots (one line for each mesh)",sci2exp([])],
+	    rn:["Numerator roots (one line for each mesh)",sci2exp(this.rn)],
             rd:["Denominator roots (one line for each mesh)",sci2exp(this.rd)],
             g:["Vector of gain at mesh points",sci2exp(this.g)],
-	    last_u:["past inputs (Num degree values)",sci2exp([])],
+	    last_u:["past inputs (Num degree values)",sci2exp(this.last_u)],
 	    last_y:["past outputs (Den degree values)",sci2exp(this.last_y)],
 
         }
@@ -46,10 +46,10 @@ function DLRADAPT_f() {
 
 	options={
             p:["Vector of p mesh points",sci2exp(this.p)],
-	    rn:["Numerator roots (one line for each mesh)",sci2exp([])],
+	    rn:["Numerator roots (one line for each mesh)",sci2exp(this.rn)],
             rd:["Denominator roots (one line for each mesh)",this.rd],
             g:["Vector of gain at mesh points",sci2exp(this.g)],
-	    last_u:["past inputs (Num degree values)",sci2exp([])],
+	    last_u:["past inputs (Num degree values)",sci2exp(this.last_u)],
 	    last_y:["past outputs (Den degree values)",sci2exp(this.last_y)],
 
         }
@@ -115,15 +115,8 @@ function DLRADAPT_f() {
 
 
 	var temp_rd=eval("["+str1 +"]"); //this is to pass to real function used in rpar
-	var exprs="";
 	if (str1.includes("i")) {
-	this.rd=temp_rd;
-	exprs = new ScilabString([sci2exp(this.p)], [sci2exp([])], [sci2exp(this.rd, 0)], [sci2exp(this.g)], [sci2exp([])], [sci2exp(this.last_y)]);
-
-	}else{
-	this.rd=this.rd;
-	exprs = new ScilabString([sci2exp(this.p)], [sci2exp([])], [this.rd], [sci2exp(this.g)], [sci2exp([])], [sci2exp(this.last_y)]);
-
+            this.rd = temp_rd;
 	}
 
 	//this.x.model.ipar = new ScilabDouble(m, n, npt);
@@ -132,6 +125,11 @@ function DLRADAPT_f() {
 	this.last_u = MatrixInverse(arguments[0]["last_u"])
 
 	this.last_y = MatrixInverse(arguments[0]["last_y"])
+	if (str1.includes("i")) {
+            var exprs = new ScilabString([sci2exp(this.p)], [sci2exp(this.rn)], [sci2exp(this.rd, 0)], [sci2exp(this.g)], [sci2exp(this.last_u)], [sci2exp(this.last_y)]);
+        } else {
+	    var exprs = new ScilabString([sci2exp(this.p)], [sci2exp(this.rn)], [this.rd], [sci2exp(this.g)], [sci2exp(this.last_u)], [sci2exp(this.last_y)]);
+        }
 	this.x.graphics.exprs=exprs;
 	this.x.model.rpar = new ScilabDouble(...this.p, ...real(colon_operator(temp_rd)), ...math.im(colon_operator(temp_rd)), ...this.g);
 

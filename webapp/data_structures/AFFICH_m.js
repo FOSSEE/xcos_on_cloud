@@ -1,20 +1,21 @@
 function AFFICH_m() {
     
     AFFICH_m.prototype.define = function AFFICH_m() {
+        this.herit = 0;
         this.font = 1;
         this.fontsize = 1;
         this.colr = 1;
         this.nt = 5;
         this.nd = 1;
-        this.in1 = [[1],[1]];
+        this.in = [[1],[1]];
 
         var model = scicos_model();
         model.sim = list(new ScilabString(["affich2"]), new ScilabDouble([4]));
-        model.in = new ScilabDouble([this.in1[0]]);
-        model.in2 = new ScilabDouble([this.in1[1]]);
+        model.in = new ScilabDouble([this.in[0]]);
+        model.in2 = new ScilabDouble([this.in[1]]);
         model.evtin = new ScilabDouble([1]);
-        model.dstate = new ScilabDouble([-1], [0], [0], [1], [1], [0], ...zeros(this.in1[0] * this.in1[1], 1));
-        model.ipar = new ScilabDouble([this.font], [this.fontsize], [this.colr], [1000], [this.nt], [this.nd], [this.in1[0]]);
+        model.dstate = new ScilabDouble([-1], [0], [0], [1], [1], [0], ...zeros(this.in[0] * this.in[1], 1));
+        model.ipar = new ScilabDouble([this.font], [this.fontsize], [this.colr], [1000], [this.nt], [this.nd], [this.in[0]]);
         model.blocktype = new ScilabString(["c"]);
         model.firing = new ScilabDouble();
         model.dep_ut = new ScilabBoolean([true, false]);
@@ -38,7 +39,7 @@ function AFFICH_m() {
             colr:["Color",this.colr],
             nt:["Total number of digits",this.nt],
             nd:["Number of rational part digits",this.nd],
-            herit:["Block inherits (1) or not (0)",0],
+            herit:["Block inherits (1) or not (0)",this.herit],
         }
         return options;
     }
@@ -80,7 +81,7 @@ function AFFICH_m() {
         this.x.model.ipar = new ScilabDouble([this.font],[this.fontsize],[this.colr],[1000],[this.nt],[this.nd],this.in[0])
         this.x.model.dstate = new ScilabDouble([-1],[0],[0],[1],[1],[0],zeros(this.in[0]*this.in[1],1))
         this.x.model.evtin = new ScilabDouble(...ones(1-this.herit,1))
-        var exprs = new ScilabString([this.in.toString().replace(/,/g," ")], [this.font], [this.fontsize], [this.colr], [this.nt], [this.nd], [0]);
+        var exprs = new ScilabString([this.in.toString().replace(/,/g," ")], [this.font], [this.fontsize], [this.colr], [this.nt], [this.nd], [this.herit]);
         this.x.graphics.exprs=exprs;
         return new AfficheBlock(this.x);
     }
