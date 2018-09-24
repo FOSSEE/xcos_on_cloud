@@ -1462,6 +1462,15 @@
                                         if (!confirmValue) {
                                             return false;
                                         }
+					//Close simulation windows of earlier diagram for graph and affich 
+					wnd.destroy(); //simulation window
+					affichwnd.destroy(); //affichm window
+					stopSimulation(); //stop scilab for earlier execution is not stopped
+                                        myAjaxreq("Stop", "/UpdateTKfile"); // in case tkscale example will stop updating values
+					//to close tkscale window if any
+					for(var i=0;i<winArr.length;i++){
+         			            winArr[i].close();
+                                        }
                                         graph.removeCells(graph.getChildVertices(graph.getDefaultParent()));
                                     }
                                     finally {
