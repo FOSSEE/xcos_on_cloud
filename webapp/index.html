@@ -916,15 +916,17 @@
                                 if (displayedLabel != null) {
                                     //for setting label for affichm
                                     if(cell.value.getAttribute('style')!="AFFICH_m"){
-                                    var displayParameter = cell.blockInstance.instance.displayParameter;
-                                    for (i in displayParameter) {
-                                        displayedLabel = displayedLabel.replace("%s", displayParameter[i].toString());
-                                    }
-				    }
-				    else{
+                                        var displayParameter = cell.blockInstance.instance.displayParameter;
+                                        if (displayParameter != null) {
+                                            for (var lbl of displayParameter) {
+                                                if (lbl == null)
+                                                    lbl = "";
+                                                displayedLabel = displayedLabel.replace("%s", lbl.toString());
+                                            }
+                                        }
+				    } else {
                                         var displayParameter = cell.value.getAttribute('style')+"-"+cell.id;
                                         displayedLabel = displayedLabel.replace("%s", displayParameter.toString());
-                                   
                                     }
                                     return displayedLabel;
                                 } else {
