@@ -111,7 +111,7 @@ CSCOPE.prototype.set = function CSCOPE() {
     this.x.model.evtin = new ScilabDouble(...ones(1-this.heritance,1))
     this.x.model.label = this.nom
     this.x.graphics.id = this.nom
-    var exprs = new ScilabString([this.clrs.toString().replace(/,/g," ")],[this.win],["[]"],[this.wdim.toString().replace(/,/g, " ")],[this.ymin],[this.ymax],[this.per],[this.N],[this.heritance],[this.nom])
+    var exprs = new ScilabString([this.clrs.toString().replace(/,/g," ")],[this.win],[this.wpos.toString().replace(/,/g, " ")],[this.wdim.toString().replace(/,/g, " ")],[this.ymin],[this.ymax],[this.per],[this.N],[this.heritance],[this.nom])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }

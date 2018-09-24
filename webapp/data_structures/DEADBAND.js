@@ -1,6 +1,7 @@
 function DEADBAND() {
 
     DEADBAND.prototype.define = function DEADBAND() {
+        this.zeroc = 1;
         this.minp = -0.5;
         this.maxp = 0.5;
         this.rpar = new ScilabDouble([this.maxp], [this.minp]);
@@ -28,7 +29,7 @@ DEADBAND.prototype.get = function DEADBAND() {
         var options={
             maxp:["End of dead band",this.maxp],
             minp:["Start of dead band",this.minp],
-            zeroc:["zero crossing (0:no, 1:yes)","1"],
+            zeroc:["zero crossing (0:no, 1:yes)",this.zeroc],
         }
         return options
     }

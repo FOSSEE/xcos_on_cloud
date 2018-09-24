@@ -30,7 +30,7 @@ function CEVENTSCOPE() {
     CEVENTSCOPE.prototype.get = function CEVENTSCOPE() {
 	var options={
 		nclock:["Number of events inputs",this.nclock],
-		clrs:["Color c(>0) or mark (<0)",(this.nclock==1?this.clrs[this.nclock-1].toString().replace(/,/g," "):this.clrs.toString().replace(/,/g," "))],
+		clrs:["Color c(>0) or mark (<0)",this.clrs.toString().replace(/,/g," ")],
 		win:["Output window number (-1 for automatic)",this.win],
                 wpos:["Output window position",this.wpos.toString().replace(/,/g," ")],
 		wdim:["Output window sizes",this.wdim.toString().replace(/,/g," ")],
@@ -87,7 +87,7 @@ function CEVENTSCOPE() {
 	    var ipar = new ScilabDouble([this.win],[1],...this.clrs,...this.wpos,...this.wdim)
 	    this.x.model.rpar = rpar
 	    this.x.model.ipar = ipar
-	    var exprs = new ScilabString([sci2exp([this.nclock])],[this.clrs.toString().replace(/,/g," ")],[this.win],["[]"],[sci2exp(this.wdim)],[this.per]);
+	    var exprs = new ScilabString([sci2exp([this.nclock])],[this.clrs.toString().replace(/,/g," ")],[this.win],[sci2exp(this.wpos)],[sci2exp(this.wdim)],[this.per]);
 	    this.x.graphics.exprs=exprs
 	    return new BasicBlock(this.x)
     }
