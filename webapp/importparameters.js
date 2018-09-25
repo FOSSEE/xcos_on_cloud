@@ -222,12 +222,14 @@ BITCLEAR.prototype.importset = function BITCLEAR() {
     var ary = getData(graphics.exprs);
     this.Datatype = ary[0];
     this.bit = ary[1];
+    this.displayParameter = [this.bit];
 }
 BITSET.prototype.importset = function BITSET() {
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
     this.Datatype = ary[0];
     this.bit = ary[1];
+    this.displayParameter = [this.bit];
 }
 BOUNCE.prototype.importset = function BOUNCE() {
     var graphics = this.x.graphics;
@@ -325,6 +327,8 @@ CBLOCK4.prototype.importset = function CBLOCK4() {
     this.auto0 = ary[16];
     this.depu = ary[17];
     this.dept = ary[18];
+    var funam = this.function_name;
+    this.displayParameter = [funam];
 }
 c_block.prototype.importset = function c_block() {
     var graphics = this.x.graphics;
@@ -333,6 +337,7 @@ c_block.prototype.importset = function c_block() {
     this.o = ary[1];
     this.rpar = ary[2];
     this.funam = ary[3];
+    this.displayParameter = [this.funam];
 }
 CBLOCK.prototype.importset = function CBLOCK() {
     var graphics = this.x.graphics;
@@ -400,6 +405,7 @@ CLKINV_f.prototype.importset = function CLKINV_f() {
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
     this.prt = ary[0];
+    this.displayParameter = [this.prt];
 }
 CLKOUTV_f.prototype.importset = function CLKOUTV_f() {
     var graphics = this.x.graphics;
@@ -474,11 +480,13 @@ CONST_f.prototype.importset = function CONST_f() {
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
     this.C = ary[0];
+    this.displayParameter = [this.C];
 }
 CONST.prototype.importset = function CONST() {
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
     this.C = ary[0];
+    this.displayParameter = [this.C];
 }
 CONST_m.prototype.importset = function CONST_m() {
     var graphics = this.x.graphics;
@@ -730,6 +738,9 @@ EXPBLK_m.prototype.importset = function EXPBLK_m() {
     var ary = getData(graphics.exprs);
     this.a = ary[0];
 }
+EXPRESSION.prototype.importset = function EXPRESSION() {
+    /* TODO */
+}
 EXTRACTBITS.prototype.importset = function EXTRACTBITS() {
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
@@ -842,6 +853,7 @@ generic_block3.prototype.importset = function generic_block3() {
     this.auto0 = ary[16];
     this.depu = ary[17];
     this.dept = ary[18];
+    this.displayParameter = [this.function_name];
 }
 GENSIN_f.prototype.importset = function GENSIN_f() {
     var graphics = this.x.graphics;
@@ -918,11 +930,12 @@ Inductor.prototype.importset = function Inductor() {
     this.L = ary[0];
 }
 IN_f.prototype.importset = function IN_f() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.prt = ary[0];
-	this.otsz = ary[1];
-	this.ot = ary[2];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.prt = ary[0];
+    this.otsz = ary[1];
+    this.ot = ary[2];
+    this.displayParameter = [this.prt];
 }
 INIMPL_f.prototype.importset = function INIMPL_f() {
     var graphics = this.x.graphics;
