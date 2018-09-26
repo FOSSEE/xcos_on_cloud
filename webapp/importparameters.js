@@ -1340,11 +1340,10 @@ PuitsP.prototype.importset = function PuitsP() {
 PULSE_SC.prototype.importset = function PULSE_SC() {
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    /* TODO: set scicos_context first */
-    this.scicos_context.E = ary[0];
-    this.scicos_context.W = ary[1];
-    this.scicos_context.F = ary[2];
-    this.scicos_context.A = ary[3];
+    this.E = ary[0];
+    this.W = ary[1];
+    this.F = ary[2];
+    this.A = ary[3];
 }
 QUANT_f.prototype.importset = function QUANT_f() {
     var graphics = this.x.graphics;
