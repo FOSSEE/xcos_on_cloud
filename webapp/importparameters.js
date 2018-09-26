@@ -113,8 +113,10 @@ function getRparObjByGui(obj, gui) {
     }
 }
 
-function getDataPoints(par) {
+function getDataPoints(par, withrect=false) {
     var no = Math.trunc(par.length / 2);
+    if (withrect)
+        no -= 2;
     var defaultpoints = [];
     var xmin = Number.MAX_VALUE;
     var xmax = -Number.MAX_VALUE;
@@ -139,16 +141,23 @@ function getDataPoints(par) {
         if (ymax < y)
             ymax = y;
     }
-    var xgap = (xmax - xmin) / 20;
-    if (xgap == 0)
-        xgap = 0.5;
-    var ygap = (ymax - ymin) / 20;
-    if (ygap == 0)
-        ygap = 0.5;
-    xmin -= xgap;
-    xmax += xgap;
-    ymin -= ygap;
-    ymax += ygap;
+    if (withrect) {
+        xmin = parseFloat(par[2*no]);
+        xmax = parseFloat(par[2*no+2]);
+        ymin = parseFloat(par[2*no+1]);
+        ymax = parseFloat(par[2*no+3]);
+    } else {
+        var xgap = (xmax - xmin) / 20;
+        if (xgap == 0)
+            xgap = 0.5;
+        var ygap = (ymax - ymin) / 20;
+        if (ygap == 0)
+            ygap = 0.5;
+        xmin -= xgap;
+        xmax += xgap;
+        ymin -= ygap;
+        ymax += ygap;
+    }
     xmin = xmin.toPrecision(2);
     xmax = xmax.toPrecision(2);
     ymin = ymin.toPrecision(2);
@@ -574,7 +583,14 @@ CUMSUM.prototype.importset = function CUMSUM() {
     this.decomptyp = ary[1];
 }
 CURV_f.prototype.importset = function CURV_f() {
-    /* TODO */
+    var model = this.x.model;
+    var par = getData(model.rpar);
+    var { defaultpoints, xmin, xmax, ymin, ymax } = getDataPoints(par, true);
+    this.defaultpoints = defaultpoints;
+    this.xmin = xmin;
+    this.xmax = xmax;
+    this.ymin = ymin;
+    this.ymax = ymax;
 }
 DEADBAND.prototype.importset = function DEADBAND() {
     var graphics = this.x.graphics;
