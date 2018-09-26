@@ -820,6 +820,9 @@ FROMMO.prototype.importset = function FROMMO() {
     this.displayParameter = [this.tag];
 }
 FROMWSB.prototype.importset = function FROMWSB() {
+    var block = getRparObjByGui(this.x, 'FROMWS_c');
+    if (block == null)
+        return;
     /* TODO */
 }
 GAINBLK_f.prototype.importset = function GAINBLK_f() {
@@ -1507,6 +1510,9 @@ SHIFT.prototype.importset = function SHIFT() {
     this.displayParameter = [this.nb];
 }
 Sigbuilder.prototype.importset = function Sigbuilder() {
+    var block = getRparObjByGui(this.x, 'CURVE_c');
+    if (block == null)
+        return;
     /* TODO */
 }
 SIGNUM.prototype.importset = function SIGNUM() {
@@ -1538,9 +1544,17 @@ SQRT.prototype.importset = function SQRT() {
     this.typ = ary[0];
 }
 SRFLIPFLOP.prototype.importset = function SRFLIPFLOP() {
-    /* TODO */
+    var block = getRparObjByGui(this.x, 'DOLLAR_m');
+    if (block == null)
+        return;
+    var graphics = block.graphics;
+    var ary = getData(graphics.exprs);
+    this.initialvalue = ary[0];
 }
 STEP_FUNCTION.prototype.importset = function STEP_FUNCTION() {
+    var block = getRparObjByGui(this.x, 'STEP');
+    if (block == null)
+        return;
     /* TODO */
 }
 SUBMAT.prototype.importset = function SUBMAT() {
@@ -1752,6 +1766,7 @@ EVTDLY_f.prototype.getContainer = function EVTDLY_f() { return new BasicBlock(th
 EVTGEN_f.prototype.getContainer = function EVTGEN_f() { return new BasicBlock(this.x); }
 EVTVARDLY.prototype.getContainer = function EVTVARDLY() { return new BasicBlock(this.x); }
 EXPBLK_m.prototype.getContainer = function EXPBLK_m() { return new BasicBlock(this.x); }
+EXPRESSION.prototype.getContainer = function EXPRESSION() { return new BasicBlock(this.x); }
 Extract_Activation.prototype.getContainer = function Extract_Activation() { return new BasicBlock(this.x); }
 EXTRACTBITS.prototype.getContainer = function EXTRACTBITS() { return new BasicBlock(this.x); }
 EXTRACT.prototype.getContainer = function EXTRACT() { return new BasicBlock(this.x); }
