@@ -113,8 +113,10 @@ function getRparObjByGui(obj, gui) {
     }
 }
 
-function getDataPoints(par) {
+function getDataPoints(par, withrect=false) {
     var no = Math.trunc(par.length / 2);
+    if (withrect)
+        no -= 2;
     var defaultpoints = [];
     var xmin = Number.MAX_VALUE;
     var xmax = -Number.MAX_VALUE;
@@ -139,16 +141,23 @@ function getDataPoints(par) {
         if (ymax < y)
             ymax = y;
     }
-    var xgap = (xmax - xmin) / 20;
-    if (xgap == 0)
-        xgap = 0.5;
-    var ygap = (ymax - ymin) / 20;
-    if (ygap == 0)
-        ygap = 0.5;
-    xmin -= xgap;
-    xmax += xgap;
-    ymin -= ygap;
-    ymax += ygap;
+    if (withrect) {
+        xmin = parseFloat(par[2*no]);
+        xmax = parseFloat(par[2*no+2]);
+        ymin = parseFloat(par[2*no+1]);
+        ymax = parseFloat(par[2*no+3]);
+    } else {
+        var xgap = (xmax - xmin) / 20;
+        if (xgap == 0)
+            xgap = 0.5;
+        var ygap = (ymax - ymin) / 20;
+        if (ygap == 0)
+            ygap = 0.5;
+        xmin -= xgap;
+        xmax += xgap;
+        ymin -= ygap;
+        ymax += ygap;
+    }
     xmin = xmin.toPrecision(2);
     xmax = xmax.toPrecision(2);
     ymin = ymin.toPrecision(2);
@@ -222,12 +231,14 @@ BITCLEAR.prototype.importset = function BITCLEAR() {
     var ary = getData(graphics.exprs);
     this.Datatype = ary[0];
     this.bit = ary[1];
+    this.displayParameter = [this.bit];
 }
 BITSET.prototype.importset = function BITSET() {
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
     this.Datatype = ary[0];
     this.bit = ary[1];
+    this.displayParameter = [this.bit];
 }
 BOUNCE.prototype.importset = function BOUNCE() {
     var graphics = this.x.graphics;
@@ -325,6 +336,8 @@ CBLOCK4.prototype.importset = function CBLOCK4() {
     this.auto0 = ary[16];
     this.depu = ary[17];
     this.dept = ary[18];
+    var funam = this.function_name;
+    this.displayParameter = [funam];
 }
 c_block.prototype.importset = function c_block() {
     var graphics = this.x.graphics;
@@ -333,6 +346,7 @@ c_block.prototype.importset = function c_block() {
     this.o = ary[1];
     this.rpar = ary[2];
     this.funam = ary[3];
+    this.displayParameter = [this.funam];
 }
 CBLOCK.prototype.importset = function CBLOCK() {
     var graphics = this.x.graphics;
@@ -400,6 +414,7 @@ CLKINV_f.prototype.importset = function CLKINV_f() {
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
     this.prt = ary[0];
+    this.displayParameter = [this.prt];
 }
 CLKOUTV_f.prototype.importset = function CLKOUTV_f() {
     var graphics = this.x.graphics;
@@ -474,11 +489,13 @@ CONST_f.prototype.importset = function CONST_f() {
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
     this.C = ary[0];
+    this.displayParameter = [this.C];
 }
 CONST.prototype.importset = function CONST() {
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
     this.C = ary[0];
+    this.displayParameter = [this.C];
 }
 CONST_m.prototype.importset = function CONST_m() {
     var graphics = this.x.graphics;
@@ -566,7 +583,14 @@ CUMSUM.prototype.importset = function CUMSUM() {
     this.decomptyp = ary[1];
 }
 CURV_f.prototype.importset = function CURV_f() {
-    /* TODO */
+    var model = this.x.model;
+    var par = getData(model.rpar);
+    var { defaultpoints, xmin, xmax, ymin, ymax } = getDataPoints(par, true);
+    this.defaultpoints = defaultpoints;
+    this.xmin = xmin;
+    this.xmax = xmax;
+    this.ymin = ymin;
+    this.ymax = ymax;
 }
 DEADBAND.prototype.importset = function DEADBAND() {
     var graphics = this.x.graphics;
@@ -730,6 +754,9 @@ EXPBLK_m.prototype.importset = function EXPBLK_m() {
     var ary = getData(graphics.exprs);
     this.a = ary[0];
 }
+EXPRESSION.prototype.importset = function EXPRESSION() {
+    /* TODO */
+}
 EXTRACTBITS.prototype.importset = function EXTRACTBITS() {
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
@@ -793,6 +820,9 @@ FROMMO.prototype.importset = function FROMMO() {
     this.displayParameter = [this.tag];
 }
 FROMWSB.prototype.importset = function FROMWSB() {
+    var block = getRparObjByGui(this.x, 'FROMWS_c');
+    if (block == null)
+        return;
     /* TODO */
 }
 GAINBLK_f.prototype.importset = function GAINBLK_f() {
@@ -842,6 +872,7 @@ generic_block3.prototype.importset = function generic_block3() {
     this.auto0 = ary[16];
     this.depu = ary[17];
     this.dept = ary[18];
+    this.displayParameter = [this.function_name];
 }
 GENSIN_f.prototype.importset = function GENSIN_f() {
     var graphics = this.x.graphics;
@@ -918,11 +949,12 @@ Inductor.prototype.importset = function Inductor() {
     this.L = ary[0];
 }
 IN_f.prototype.importset = function IN_f() {
-	var graphics = this.x.graphics;
-	var ary = getData(graphics.exprs);
-	this.prt = ary[0];
-	this.otsz = ary[1];
-	this.ot = ary[2];
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.prt = ary[0];
+    this.otsz = ary[1];
+    this.ot = ary[2];
+    this.displayParameter = [this.prt];
 }
 INIMPL_f.prototype.importset = function INIMPL_f() {
     var graphics = this.x.graphics;
@@ -1311,11 +1343,10 @@ PuitsP.prototype.importset = function PuitsP() {
 PULSE_SC.prototype.importset = function PULSE_SC() {
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    /* TODO: set scicos_context first */
-    this.scicos_context.E = ary[0];
-    this.scicos_context.W = ary[1];
-    this.scicos_context.F = ary[2];
-    this.scicos_context.A = ary[3];
+    this.E = ary[0];
+    this.W = ary[1];
+    this.F = ary[2];
+    this.A = ary[3];
 }
 QUANT_f.prototype.importset = function QUANT_f() {
     var graphics = this.x.graphics;
@@ -1479,6 +1510,9 @@ SHIFT.prototype.importset = function SHIFT() {
     this.displayParameter = [this.nb];
 }
 Sigbuilder.prototype.importset = function Sigbuilder() {
+    var block = getRparObjByGui(this.x, 'CURVE_c');
+    if (block == null)
+        return;
     /* TODO */
 }
 SIGNUM.prototype.importset = function SIGNUM() {
@@ -1510,9 +1544,17 @@ SQRT.prototype.importset = function SQRT() {
     this.typ = ary[0];
 }
 SRFLIPFLOP.prototype.importset = function SRFLIPFLOP() {
-    /* TODO */
+    var block = getRparObjByGui(this.x, 'DOLLAR_m');
+    if (block == null)
+        return;
+    var graphics = block.graphics;
+    var ary = getData(graphics.exprs);
+    this.initialvalue = ary[0];
 }
 STEP_FUNCTION.prototype.importset = function STEP_FUNCTION() {
+    var block = getRparObjByGui(this.x, 'STEP');
+    if (block == null)
+        return;
     /* TODO */
 }
 SUBMAT.prototype.importset = function SUBMAT() {
@@ -1724,6 +1766,7 @@ EVTDLY_f.prototype.getContainer = function EVTDLY_f() { return new BasicBlock(th
 EVTGEN_f.prototype.getContainer = function EVTGEN_f() { return new BasicBlock(this.x); }
 EVTVARDLY.prototype.getContainer = function EVTVARDLY() { return new BasicBlock(this.x); }
 EXPBLK_m.prototype.getContainer = function EXPBLK_m() { return new BasicBlock(this.x); }
+EXPRESSION.prototype.getContainer = function EXPRESSION() { return new BasicBlock(this.x); }
 Extract_Activation.prototype.getContainer = function Extract_Activation() { return new BasicBlock(this.x); }
 EXTRACTBITS.prototype.getContainer = function EXTRACTBITS() { return new BasicBlock(this.x); }
 EXTRACT.prototype.getContainer = function EXTRACT() { return new BasicBlock(this.x); }
