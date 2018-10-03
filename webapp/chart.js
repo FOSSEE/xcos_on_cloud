@@ -361,7 +361,7 @@ function chart_init(wnd,affichwnd){
         
 	// Start listening to server
 	chart_reset();
-	eventSource = new EventSource("/SendLog?id="+clientID);
+	eventSource = new EventSource("/SendLog?id="+clientID, { withCredentials: true });
         
 	eventSource.addEventListener("block", function(event){
 		var data = event.data.split(' ');
@@ -582,7 +582,7 @@ function chart_init(wnd,affichwnd){
 	wnd.addListener(mxEvent.CLOSE,function()
 	{
 	    var xhr = new XMLHttpRequest();
-	    xhr.open("GET", "/stop", true);
+	    xhr.open("GET", "/stop?id="+clientID, true);
 	 	chart_reset();
                 affichwnd.destroy();
 	 	xhr.send();
@@ -591,7 +591,7 @@ function chart_init(wnd,affichwnd){
 	affichwnd.addListener(mxEvent.CLOSE,function()
 	{
 	    var xhr = new XMLHttpRequest();
-	    xhr.open("GET", "/stop", true);
+	    xhr.open("GET", "/stop?id="+clientID, true);
 	 	chart_reset();
                 wnd.destroy();
 	 	xhr.send();

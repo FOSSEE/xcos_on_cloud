@@ -79,16 +79,18 @@
          
          } 
          
+        function httpGetAsync(theUrl, callback)
+        {
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.onreadystatechange = function() {
+                if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+                    callback(xmlHttp.responseText);
+            }
+            xmlHttp.open("GET", theUrl, true); // true for asynchronous
+            xmlHttp.send(null);
+        }
          var importxcos; // variable used at anonymous function in importXcos event   
          var xeditor,xcell;
-         
-         function CheckViewExample()         	 // one line function which calls import xcos function for 'view example' 	
-         { 
-         	if(ViewExampleXcos.innerHTML != 'XcosNull')
-         	{
-         		importxcos(xeditor,xcell); 
-         	} 
-         }   
          
          function GetcurVal()  // function which updates the slider values and send ajax req with the updated data    
          {
@@ -104,7 +106,7 @@
          		valueArr[8]=tkclk[8]+tk9.innerHTML;
          		valueArr[9]=tkclk[9]+tk10.innerHTML;
          
-         		myAjaxreq(valueArr, "/UpdateTKfile"); 		// send the request
+                        myAjaxreq(valueArr, "/UpdateTKfile?id="+clientID); // send the request
          
          }
                 function main(container, outline, toolbar, sidebar, status) {
@@ -1469,7 +1471,7 @@
 					affichwnd.destroy(); //affichm window
 					}
 					stopSimulation(); //stop scilab for earlier execution is not stopped
-                                        myAjaxreq("Stop", "/UpdateTKfile"); // in case tkscale example will stop updating values
+                                        myAjaxreq("Stop", "/UpdateTKfile?id="+clientID); // in case tkscale example will stop updating values
 					//to close tkscale window if any
 					for(var i=0;i<winArr.length;i++){
          			            winArr[i].close();
@@ -1825,36 +1827,19 @@
          
                             node.style.visibility = "visible";
                             var wind = showModalWindow(graph, 'Set Context', div, 268, 162);
-         	    if(ViewExampleXcos.innerHTML != 'XcosNull')
-         							 
-              	    {			
-         		var xcosDoc = ViewExampleXcos.innerHTML;
-         		myAjaxreq(0,'/ChangeIndexFile');
-         		xcosDoc = xcosDoc.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-         
-         		//RegEx to replace all the newline characters.
-                                xcosDoc = xcosDoc.replace(/\n*/, '');
-                                    //RegEx to replace all the space characters between any a closing and the next opening tag.
-                                xcosDoc = xcosDoc.replace(/>\s*</g, '><');
-         			
-                                    //RegEx to replace all the XML comments.
-                                xcosDoc = xcosDoc.replace(/<!--[\s\S]*?-->/g, '');
-         		
-         	        xcosToDiagram(xcosDoc);
-         	    }
                         }
          	editor.addAction('importXcos', importxcos = function(editor, cell) {xeditor = editor; xcell = cell;IMPORTxcos(xeditor,xcell) } );
                 //Stop simulation inbetween process
                 function stopSimulation(){
 			var xhr = new XMLHttpRequest();
-			xhr.open("GET", "/stop", true);
+			xhr.open("GET", "/stop?id="+clientID, true);
 			chart_reset();
 			xhr.send();
 	  	}
 		//Button for stop
          	editor.addAction('processStop', function(editor, cell) {
 					stopSimulation();
-                                        myAjaxreq("Stop", "/UpdateTKfile");
+                                        myAjaxreq("Stop", "/UpdateTKfile?id="+clientID);
                                         //to close tkscale window if any (Chart window will be there until user close it)
 					for(var i=0;i<winArr.length;i++){
          			            winArr[i].close();
@@ -2360,7 +2345,7 @@
          			}					
          			num=i+1;
          			tag='tk'+(i+1);
-                                winArr[i] = window.open('/slider.html?min='+min+"&max="+max+"&num="+num+"&tag="+tag+"&norm="+norm,"TK-"+i,'height=300,width=500');
+                                winArr[i] = window.open('/slider.html?min='+min+"&max="+max+"&num="+num+"&tag="+tag+"&norm="+norm+"&clientID="+clientID,"TK-"+i,'height=350,width=500');
          			// creating a new window using 'slider.html' and some css 
          		}
          	    }
@@ -2368,7 +2353,7 @@
                     function StopTK() // function which deletes the sliders and related files which are created
                     {
          		
-         		myAjaxreq("Stop", "/UpdateTKfile");
+                        myAjaxreq("Stop", "/UpdateTKfile?id="+clientID);
          		for(var i=0;i<winArr.length;i++)
          			winArr[i].close();
          	    }
@@ -2387,14 +2372,20 @@
                                 if(this.responseText!='error'){
                                     // If no error in uploading, initialize chart
                                     clientID = this.responseText;
+                                    document.title = 'Xcos-' + clientID;
          
          		     if((row<=10 && row >= 1))
          		     {
-         			myAjaxreq("Start", "/UpdateTKfile");
-         			CreateSlider();  // if tkblocks are <=10 then create slider else not    
+                                myAjaxreq("Start", "/UpdateTKfile?id="+clientID);
          		     }
 
+                             httpGetAsync("/start_scilab?id="+clientID, function() {
+                                 if((row<=10 && row >= 1))
+                                 {
+                                    CreateSlider();  // if tkblocks are <=10 then create slider else not
+                                 }
                                     chart_init(wnd,affichwnd);  
+                             });
 
                                 }else{
                                     alert("Error");
@@ -4374,7 +4365,6 @@
    </head>
    <!-- Creating p'id for each tkblock -->
    <!-- tkchange will call GetcurVal() if any one of the slider value is updated -->
-   <!-- ViewExampleXcos will get the xcos file imported from the file with 'eid' obtained from 'view example' link -->
    <p hidden id="tkchange"></p>
    <p hidden id="tk1"></p>
    <p hidden id="tk2"></p>
@@ -4386,13 +4376,12 @@
    <p hidden id="tk8"></p>
    <p hidden id="tk9"></p>
    <p hidden id="tk10"></p>
-   <p hidden id="ViewExampleXcos">XcosNull</p>
    <!-- Page passes the container for the graph to the program -->
    <body onload="main(document.getElementById('graphContainer'),
       document.getElementById('outlineContainer'),
       document.getElementById('toolbarContainer'),
       document.getElementById('sidebarContainer'),
-      document.getElementById('statusContainer')); CheckViewExample()" style="margin:0px;">
+      document.getElementById('statusContainer'));" style="margin:0px;">
       <!-- Creates a container for the splash screen -->
       <div id="splash" style="position:absolute;top:0px;left:0px;width:100%;height:100%;background:white;z-index:1;">
          <center id="splash" style="padding-top:230px;">
