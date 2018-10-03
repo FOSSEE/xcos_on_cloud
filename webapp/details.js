@@ -1229,15 +1229,37 @@ function sign(){
  */
   function getValueOfImaginaryInput(inputvalue){
          var actualDoubleValue=null;
+
          if(inputvalue.includes("pi")){
-		 inputvalue=inputvalue.replace("%pi", Math.PI);
-		 actualDoubleValue=math.eval(inputvalue);
+		    inputvalue=inputvalue.replace("%pi", Math.PI);
+		    actualDoubleValue=math.eval(inputvalue);
          }else if(inputvalue.includes("e")){
-                 inputvalue=inputvalue.replace("%e", Math.E);
-		 actualDoubleValue=math.eval(inputvalue);
+            inputvalue=inputvalue.replace("%e", Math.E);
+		    actualDoubleValue=math.eval(inputvalue);
+         }else if(inputvalue.includes("%i")){   //For imaginary inputs used in complex
+            //Diffrent condition of using imaginary and operators (More condition will be added in future)
+		    if(inputvalue.includes("*%i")){
+			    inputvalue=inputvalue.replace("*%i","i");
+		    }else if(inputvalue.includes("%i*")){
+			    inputvalue=inputvalue.replace("%i*","i");
+		    }else if(inputvalue.includes("/%i")){
+			    inputvalue=inputvalue.replace("/%i","i");
+		    }else if(inputvalue.includes("%i/")){
+			    inputvalue=inputvalue.replace("%i/","i");
+		    }else{
+                inputvalue=inputvalue.replace("%i","i");
+		    }
+		    //As complex doesnt accepts array format [], those bracket are removed 
+		    if(inputvalue.includes("[")||inputvalue.includes("]")){
+		        inputvalue=inputvalue.replace("[","");
+		        inputvalue=inputvalue.replace("]","");
+		    }
+            var complexnumber=inputvalue.toString();
+            const b = math.complex(complexnumber); //convert into const to extract real part from complex number for passing it to rpar/opar
+		    actualDoubleValue=b.re;
          }else{
-		 actualDoubleValue=math.eval(inputvalue);
-	 }
+		    actualDoubleValue=math.eval(inputvalue);
+	     }
          return actualDoubleValue;
  }
 
