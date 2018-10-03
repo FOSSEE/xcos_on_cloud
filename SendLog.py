@@ -10,64 +10,141 @@ import glob
 import uuid
 import signal
 from threading import Timer
+from time import time
 import subprocess
 import webbrowser
 from datetime import datetime
 from gevent import monkey
 import bs4
 from gevent.pywsgi import WSGIServer
-from flask import Flask, request, Response, send_file
+import flask
+from flask import request, Response, session
+import flask_session
 from werkzeug import secure_filename
-from os.path import exists
+from os.path import abspath, basename, exists, isfile, join, splitext
+from tempfile import mkdtemp
 import re
+
+def makedirs(dirname, dirtype):
+    if not exists(dirname):
+        print('making', dirtype, 'dir', dirname)
+        os.makedirs(dirname)
+
+def remove(filename):
+    if filename is None:
+        return False
+    try:
+        os.remove(filename)
+        return True
+    except:
+        print("could not remove", filename)
+        return False
 
 monkey.patch_all(aggressive=False)
 
-app = Flask(__name__, static_folder='webapp/')
+FLASKSESSIONDIR = '/tmp/flask-sessiondir'
+makedirs(FLASKSESSIONDIR, 'top flask session')
+SESSIONDIR = '/tmp/sessiondir'
+makedirs(SESSIONDIR, 'top session')
 
-# This is the path to the upload directory and values directory
-app.config['UPLOAD_FOLDER'] = 'uploads/' # to store xcos file 
-app.config['VALUES_FOLDER'] = 'values/' # to store files related to tkscale block 
-app.config['SCI_UPLOAD_FOLDER'] = 'scifunc_files/' # to store uploaded sci files for sci-func block
-
-# Make the directories if not available
-subprocess.call(['mkdir', '-p', app.config['UPLOAD_FOLDER']])
-subprocess.call(['mkdir', '-p', app.config['VALUES_FOLDER']])
-subprocess.call(['mkdir', '-p', app.config['SCI_UPLOAD_FOLDER']])
-
+app = flask.Flask(__name__, static_folder='webapp/')
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SESSION_FILE_DIR'] = FLASKSESSIONDIR
 # These are the extension that we are accepting to be uploaded
 app.config['ALLOWED_EXTENSIONS'] = set(['zcos', 'xcos', 'txt'])
+flask_session.Session(app)
+
+# This is the path to the upload directory and values directory
+UPLOAD_FOLDER = 'uploads' # to store xcos file
+VALUES_FOLDER = 'values' # to store files related to tkscale block
+SCIFUNC_FILES_FOLDER = 'scifunc_files' # to store uploaded sci files for sci-func block
 
 # Delay time to look for new line (in s)
 LOOK_DELAY = 0.1
 # States of the line
 INITIALIZATION = 0 # to indicate initialization of block in log file is encounter
-ENDING = 1	# to indicate ending of log file data for that block is encounter
-DATA = 2        # to indicate data is proper and can be read 
+ENDING = 1      # to indicate ending of log file data for that block is encounter
+DATA = 2        # to indicate data is proper and can be read
 NOLINE = -1     # to indicate there is no line in log file further
 BLOCK_IDENTIFICATION = -2 # to indicate block id is present
 
-# Scilab dir, can't run absolute paths
-SCI = "../scilab_for_xcos_on_cloud/"
+# Scilab dir
+SCI = abspath("../scilab_for_xcos_on_cloud/bin/scilab-adv-cli")
+STARTUPDIR = os.getcwd()
+READCONTENTFILE = abspath("Read_Content.txt")
+CONT_FRM_WRITE = abspath("cont_frm_write.sci")
+BASEDIR = abspath('webapp')
+IMAGEDIR = join(BASEDIR, 'res_imgs')
 
-# List to store figure IDs
-figure_list = []
-# List to store filenames of files
-xcos_file_list = []
-# List to identify whether to save to workspace ,or load from workspce or neither
-workspace_list = []
-# Dictionary to find variable to load or save from workspace
-workspace_dict = {}
-#Variables used in sci-func block
-log_dir = ''  # to set root path
-log_name = '' # to store log name 
-filename = ''
-file_image = ''
-flag_sci = False 
-ts_image = 0
-counter = 1
+RUNTIME = {}
 
- # Class to store the line and its state (Used in reading data from log file)
+class Runtime:
+    scilab_proc = None
+    # store log name
+    log_name = None
+    # is thread running?
+    tkbool = False
+    # List to store figure IDs from log_name
+    figure_list = None
+
+    def __init__(self):
+        self.figure_list = []
+
+    def __str__(self):
+        return "{ 'scilab_pid': %s, 'log_name': %s, 'tkbool': %s, 'figure_list': %s }" % (
+                self.scilab_proc.pid if self.scilab_proc is not None else None,
+                self.log_name, self.tkbool, self.figure_list)
+
+class Diagram:
+    diagram_id = None
+    # session dir
+    sessiondir = None
+    # store uploaded filename
+    xcos_file_name = None
+    # type of uploaded file
+    workspace_counter = 0
+    # tk count
+    tk_count = 0
+    # link to runtime
+    uid = None
+
+    def toDict(self):
+        return self.__dict__
+
+    def fromDict(self, d):
+        if 'diagram_id' in d:
+            self.diagram_id = d['diagram_id']
+        if 'sessiondir' in d:
+            self.sessiondir = d['sessiondir']
+        if 'xcos_file_name' in d:
+            self.xcos_file_name = d['xcos_file_name']
+        if 'workspace_counter' in d:
+            self.workspace_counter = d['workspace_counter']
+        if 'tk_count' in d:
+            self.tk_count = d['tk_count']
+        if 'uid' in d:
+            self.uid = d['uid']
+        else:
+            self.uid = str(uuid.uuid1())
+
+class SciFile:
+    #Variables used in sci-func block
+    filename = ''
+    file_image = ''
+    flag_sci = False
+
+    def toDict(self):
+        return self.__dict__
+
+    def fromDict(self, d):
+        if 'filename' in d:
+            self.filename = d['filename']
+        if 'file_image' in d:
+            self.file_image = d['file_image']
+        if 'flag_sci' in d:
+            self.flag_sci = d['flag_sci']
+
+# Class to store the line and its state (Used in reading data from log file)
 class line_and_state:
     line = None # initial line to none(Nothing is present)
     state = NOLINE #initial state to NOLINE ie
@@ -75,23 +152,102 @@ class line_and_state:
         self.line = line
         self.state = state
     def set(self, line_state):
-        self.line = line_state[0] #to set line 
-        self.state = line_state[1] # to set state 
+        self.line = line_state[0] #to set line
+        self.state = line_state[1] # to set state
         return False
     def get_line(self):
         return self.line
     def get_state(self):
         return self.state
 
+def init_session():
+    if 'sessiondir' not in session:
+        session['sessiondir'] = mkdtemp(prefix=datetime.now().strftime('%Y%m%d.'), dir=SESSIONDIR)
+
+    sessiondir = session['sessiondir']
+
+    makedirs(sessiondir, 'session')
+    makedirs(join(sessiondir, UPLOAD_FOLDER), 'upload')
+    makedirs(join(sessiondir, VALUES_FOLDER), 'values')
+    makedirs(join(sessiondir, SCIFUNC_FILES_FOLDER), 'scifunc files')
+
+    if 'diagrams' not in session:
+        session['diagrams'] = []
+    if 'scifile' not in session:
+        session['scifile'] = SciFile().toDict()
+
+    diagrams = session['diagrams']
+
+    s = session['scifile']
+    scifile = SciFile()
+    scifile.fromDict(s)
+
+    return (diagrams, scifile)
+
+def get_diagram(xcos_file_id, remove=False):
+    if len(xcos_file_id) == 0:
+        print("no id")
+        return (None, None)
+    xcos_file_id = int(xcos_file_id)
+
+    (diagrams, scifile) = init_session()
+
+    if xcos_file_id < 0 or xcos_file_id >= len(diagrams):
+        print("id", xcos_file_id, "not in diagrams")
+        return (None, None)
+
+    d = diagrams[xcos_file_id]
+    diagram = Diagram()
+    diagram.fromDict(d)
+    if diagram.diagram_id is None:
+        diagram.diagram_id = str(xcos_file_id)
+    if diagram.sessiondir is None:
+        diagram.sessiondir = session['sessiondir']
+
+    if remove:
+        diagrams[xcos_file_id] = Diagram().toDict()
+    else:
+        diagrams[xcos_file_id] = diagram.toDict()
+    save_diagram()
+
+    return (diagram, scifile)
+
+def add_diagram():
+    (diagrams, scifile) = init_session()
+
+    diagram = Diagram()
+    diagram.diagram_id = str(len(diagrams))
+    diagram.sessiondir = session['sessiondir']
+    diagram.uid = str(uuid.uuid1())
+    diagrams.append(diagram.toDict())
+
+    return (diagram, scifile)
+
+def get_runtime(uid, create=False):
+    if uid in RUNTIME:
+        return RUNTIME[uid]
+    if create:
+        runtime = RUNTIME[uid] = Runtime()
+        print('added runtime[', uid, ']=', runtime, sep='')
+        return runtime
+    print('not found runtime: uid=', uid, sep='')
+    return None
+
+def save_diagram():
+    session.modified = True
+
+def save_scifile(scifile):
+    session['scifile'] = scifile.toDict()
+
 # Function to parse the line
-    # Returns tuple of figure ID and state
-    # state = INITIALIZATION if new figure is created
-    #         ENDING if current fig end
-    #         DATA otherwise
+# Returns tuple of figure ID and state
+# state = INITIALIZATION if new figure is created
+#         ENDING if current fig end
+#         DATA otherwise
 def parse_line(line):
-    line_words = line.split(' ') #Each line is split to read condition 
+    line_words = line.split(' ') #Each line is split to read condition
     #The below condition determines the block ID
-    if line_words[2] == "Block": 
+    if line_words[2] == "Block":
         block_id=int(line_words[4]) # to get block id (Which is explicitly added by us while writing into log in scilab source code)
         return (block_id, BLOCK_IDENTIFICATION)
     if line_words[2] == "Initialization":
@@ -109,10 +265,9 @@ def parse_line(line):
         figure_id = int(line_words[3])
         return (figure_id, DATA)
 
-def get_line_and_state_modified(file):
+def get_line_and_state_modified(file, figure_list):
     # Function to get a new line from file
     # This also parses the line and appends new figures to figure List
-    global figure_list
     line = file.readline() #read line by line from log
     if not line:            # if line is empty then return noline
         return (None, NOLINE)
@@ -126,7 +281,7 @@ def get_line_and_state_modified(file):
         return (None, INITIALIZATION)
     # Check for block identification
     elif state == BLOCK_IDENTIFICATION:
-        return (line,BLOCK_IDENTIFICATION)
+        return (line, BLOCK_IDENTIFICATION)
     elif state == ENDING:
         # End of figure
         # Remove figure ID from list
@@ -138,59 +293,60 @@ def get_line_and_state_modified(file):
 # Below route is called for uploading sci file which is required in sci-func block (called in Javscript only_scifunc_code.js)
 @app.route('/uploadsci', methods=['POST'])
 def uploadsci():
+    (diagrams, scifile) = init_session()
+
     file = request.files['file'] #to get uploaded file
     if file and request.method == 'POST':
-        global flag_sci
-        global filename
         ts = datetime.now()
-        filename = Details.uid + str(ts) + secure_filename(file.filename) # file name is created with uid and timestamp
-        path = os.getcwd() + '/scifunc_files/'
-        file.save(os.path.join(path, filename)) # file is saved in scifunc_files folder
-        flag_sci = True # flag for file saved
-        
-        #Following are system command which are not permitted in sci files (Reference scilab-on-cloud project) 
+        # file name is created with timestamp
+        scifile.filename = join(session['sessiondir'], SCIFUNC_FILES_FOLDER, str(ts) + secure_filename(file.filename))
+        file.save(scifile.filename) # file is saved in scifunc_files folder
+        scifile.flag_sci = True # flag for file saved
+
+        #Following are system command which are not permitted in sci files (Reference scilab-on-cloud project)
         system_commands = re.compile(r'unix\(.*\)|unix_g\(.*\)|unix_w\(.*\)|unix_x\(.*\)|unix_s\(.*\)|host|newfun|execstr|ascii|mputl|dir\(\)')
         #Read file and check for system commands and return error if file contain system commands
-        match = re.findall(system_commands, open(os.path.join(path, filename), 'r').read())
+        match = re.findall(system_commands, open(scifile.filename, 'r').read())
         if(match):
             msg = "System calls are not allowed in .sci file!\n Please upload another .sci file!!"
-            os.remove(path + filename) # Delete saved file if system commands are encounter in that file
-            flag_sci = False # flag for file saved will be set as False
+            remove(scifile.filename) # Delete saved file if system commands are encounter in that file
+            scifile.flag_sci = False # flag for file saved will be set as False
             return msg
-        
+
         # scilab command is created to run that uploaded sci file which will be used by sci-func block
-        command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","loadXcosLibs();exec('"+path + filename+"'),mode(2);quit()"]
+        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();exec('"+scifile.filename+"'),mode(2);quit()"]
         output_com = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=os.setpgrp, bufsize=1, universal_newlines=True)
-        
+
         out = output_com.communicate()[0] # output from scilab terminal is saved for checking error msg
-       
+
         # if error is encounter while execution of sci file then error msg is return to user for rectifying it
         # in case no error are encounter file uploaded successful msg is sent to user
         if('!--error' in out):
             error_index = out.index('!')
             msg = out[error_index:-9]
-            os.remove(path+filename) # Delete saved file if error is encounter while executing sci function in that file
-            flag_sci = False # flag for file saved will be set as False
+            remove(scifile.filename) # Delete saved file if error is encounter while executing sci function in that file
+            scifile.flag_sci = False # flag for file saved will be set as False
             return msg
         else:
+            save_scifile(scifile)
             msg = "File is uploaded successfully!!"
             return msg
 
-''' 
-This route is used in index.html for checking condition 
+'''
+This route is used in index.html for checking condition
 if sci file is uploaded for sci-func block diagram imported directly using import (will confirm again)
 '''
 @app.route('/requestfilename', methods=['POST'])
 def sendfile():
-    global file_image
-    global flag_sci
-    if(flag_sci == True):
-        file_image = filename
-        file_image = file_image[:-4]
+    (diagrams, scifile) = init_session()
+
+    if scifile.flag_sci:
+        scifile.file_image = splitext(basename(scifile.filename))[0]
     else:
-        file_image = ""
-    flag_sci = False
-    return file_image
+        scifile.file_image = ''
+    scifile.flag_sci = False
+    save_scifile(scifile)
+    return scifile.file_image
 
 
 def kill_scilab_with(proc, sgnl):
@@ -202,53 +358,87 @@ def kill_scilab_with(proc, sgnl):
         os.killpg(proc.pid, sgnl)
     except OSError:
         print('could not kill', proc.pid, 'with signal', sgnl)
+        return False
+    except TypeError:
+        print('could not kill invalid process with signal', sgnl)
+        return True
+
     for i in range(0, 20):
         gevent.sleep(LOOK_DELAY)
         if proc.poll() is not None:
             return True
     return False
 
+def get_request_id(key = 'id'):
+    args = request.args
+    if args is None:
+        print('No args in request')
+        return ''
+    if key not in args:
+        print('No', key, 'in request.args')
+        return ''
+    return args[key]
+
+# Define function to kill scilab(if still running) and remove files
+def kill_scilab(diagram = None):
+    if diagram is None:
+        (diagram, __) = get_diagram(get_request_id(), True)
+
+    if diagram is None:
+        print('no diagram')
+        return
+    print('kill_scilab: diagram=', diagram.toDict())
+
+    if diagram.xcos_file_name is None:
+        print('empty diagram')
+    else:
+        # Remove xcos file
+        remove(diagram.xcos_file_name)
+        diagram.xcos_file_name = None
+
+    runtime = get_runtime(diagram.uid)
+    if runtime is None:
+        print('no runtime')
+        return
+    print('kill_scilab: runtime=', runtime)
+
+    if runtime.scilab_proc is None:
+        print('no scilab proc')
+    else:
+        if not kill_scilab_with(runtime.scilab_proc, signal.SIGTERM):
+            kill_scilab_with(runtime.scilab_proc, signal.SIGKILL)
+        runtime.scilab_proc = None
+
+    if runtime.log_name is None:
+        print('empty runtime')
+    else:
+        # Remove log file
+        remove(runtime.log_name)
+        runtime.log_name = None
+
+    stopDetailsThread(diagram)
 
 '''
 function to execute xcos file using scilab (scilab-adv-cli), get pid of process , access log file genarated by scilab
-Read log file and return data to eventscource function of javascript for displaying chart.
 
-This function is called in app route 'SendLog' below
+This function is called in app route 'start_scilab' below
 '''
-def event_stream(xcos_file_id):
-    global figure_list
-    global kill_scilab
-    global filename
-    global ts_image
-    global file_image
-    global counter
-    # If no id is sent, return
-    if(len(xcos_file_id)==0):
-        return
-    xcos_file_id = int(xcos_file_id)
-    xcos_file_dir = os.getcwd() + '/uploads/'
-    xcos_affich_function_file_dir = os.getcwd() + '/'
-    path = os.getcwd() + '/scifunc_files/'
-    xcos_file_name = xcos_file_list[xcos_file_id]
+@app.route('/start_scilab')
+def start_scilab():
+    (diagram, scifile) = get_diagram(get_request_id())
+    if diagram is None:
+        print('no diagram')
+        return "error"
+    runtime = get_runtime(diagram.uid, True)
+
     # Get previously running scilab process IDs
-    proc = subprocess.Popen("pgrep scilab", stdout=subprocess.PIPE, shell=True, universal_newlines=True)
+    proc = subprocess.Popen("pgrep scilab-bin", stdout=subprocess.PIPE, shell=True, universal_newlines=True)
     # out will contain output of command, the list of process IDs of scilab
     (out, err) = proc.communicate()
     _l = len(out)
-    # Initialise pid
-    pid = 0
-    # id to identify each session for saving workspace
-    session=Details.uid
-    # used for creating file image name in case of sci-func block output
-    ts = datetime.now()
-    ts_fmt = ts.strftime('%Y-%m-%d %H:%M:%S.%f')
-    ts_image = ts_fmt[:-3]
-    # name of workspace file the session
-    workspace="workspace"+session+".dat"
-    # workspace_counter is used to get identification of few block which need different scilab command for execution
-    workspace_counter=workspace_list[xcos_file_id]
-    
-   
+    # name of workspace file
+    workspace="workspace.dat"
+
     ''' Scilab Commands for running of scilab based on existence of different blocks in same diagram from workpace_counter's value
         1: Indicate TOWS_c exist
         2: Indicate FROMWSB exist
@@ -257,39 +447,36 @@ def event_stream(xcos_file_id):
         5: Indicate Sci-func block as it some time return image as output rather than Sinks's log file.
         0/No-condition : For all other blocks
     '''
-    if (workspace_counter ==3 and exists(workspace)):
-         #3 - for both TOWS_c and FROMWSB and also workspace dat file exist
-         #In this case workspace is saved in format of dat file (Scilab way of saying workpsace)
-        append=workspace_dict[xcos_file_id]
-        command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","load('"+workspace+"');loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);deletefile('"+workspace+"');save('"+workspace+"') ;quit()"]
-    elif (workspace_counter ==1 or workspace_counter==3):
+    if diagram.workspace_counter == 3 and exists(workspace):
+        #3 - for both TOWS_c and FROMWSB and also workspace dat file exist
+        #In this case workspace is saved in format of dat file (Scilab way of saying workpsace)
+        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "load('"+workspace+"');loadXcosLibs();importXcosDiagram('" + diagram.xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'" + IMAGEDIR + "/img_test.jpg'),mode(2);deletefile('"+workspace+"');save('"+workspace+"') ;quit()"]
+    elif diagram.workspace_counter == 1 or diagram.workspace_counter == 3:
         #For 1- TOWS_c or 3 - for both TOWS_c and FROMWSB
-        append=workspace_dict[xcos_file_id]
-        command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);deletefile('"+workspace+"');save('"+workspace+"') ;quit()"]
-    elif (workspace_counter ==4):
+        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();importXcosDiagram('" + diagram.xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'" + IMAGEDIR + "/img_test.jpg'),mode(2);deletefile('"+workspace+"');save('"+workspace+"') ;quit()"]
+    elif diagram.workspace_counter == 4:
         # For AFFICH-m block
-        command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);quit()"]
-    elif (workspace_counter ==2 and exists(workspace)):
+        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();importXcosDiagram('" + diagram.xcos_file_name + "');xcos_simulate(scs_m,4);quit()"]
+    elif diagram.workspace_counter == 2 and exists(workspace):
         # For FROMWSB block and also workspace dat file exist
-        command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "load('"+workspace+"');loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);deletefile('"+workspace+"') ;quit()"]
-    elif (workspace_counter == 5):
+        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "load('"+workspace+"');loadXcosLibs();importXcosDiagram('" + diagram.xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'" + IMAGEDIR + "/img_test.jpg'),mode(2);deletefile('"+workspace+"') ;quit()"]
+    elif diagram.workspace_counter == 5:
         # For Sci-Func block (Image are return as output in some cases)
-        command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","loadXcosLibs();exec('" + path + filename +"');importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test"+file_image+".jpg'),mode(2);quit()"]
-        counter = counter + 1
+        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();exec('" + scifile.filename +"');importXcosDiagram('" + diagram.xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'" + IMAGEDIR + "/img_test"+scifile.file_image+".jpg'),mode(2);quit()"]
         t = Timer(15.0, delete_image)
         t.start()
         t1 = Timer(10.0, delete_scifile)
         t1.start()
     else:
         # For all other block
-        command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);quit()"]
+        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();importXcosDiagram('" + diagram.xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'" + IMAGEDIR + "/img_test.jpg'),mode(2);quit()"]
 
     # Put the process in its own process group using os.setpgrp. For a new
     # group, the process group id is always equal to the process id. All the
     # children of that process will have the same process group id. Later, we
-    # stop those processes together with os.killpg(scilab_proc.pid).
-    scilab_proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=os.setpgrp)
-    #print(command)
+    # stop those processes together with os.killpg(runtime.scilab_proc.pid).
+    print('running command', command)
+    runtime.scilab_proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=os.setpgrp)
     # Wait till xcos is launched
     while len(out) == _l:
         # If length of out equals _l,
@@ -297,81 +484,65 @@ def event_stream(xcos_file_id):
         # Wait
         gevent.sleep(LOOK_DELAY)
         # Get process IDs of scilab instances
-        proc = subprocess.Popen("pgrep scilab", stdout=subprocess.PIPE, shell=True, universal_newlines=True)
+        proc = subprocess.Popen("pgrep scilab-bin", stdout=subprocess.PIPE, shell=True, universal_newlines=True)
         # out will contain output of command, the list of process IDs of scilab
         (out, err) = proc.communicate()
 
     # out will contain output of command, the list of process IDs of scilab
     # Get the latest process ID of scilab
-    abc = out.split()
-    print(str(abc)+":::::all process")
-    print(str(out.split()[-1])+":::: last process ie. pid")
-
     pid = out.split()[-1]
+    print("scilab-bin pid=", pid)
 
-    # Define function to kill scilab(if still running) and remove files
-    def kill_scilab():
-        if not kill_scilab_with(scilab_proc, signal.SIGTERM):
-            kill_scilab_with(scilab_proc, signal.SIGKILL)
-
-        # Remove log file
-        subprocess.call(["rm", "-f", log_dir+log_name])
-        # Remove xcos file
-        subprocess.call(["rm", "-f", xcos_file_dir+xcos_file_name])
-        line_count = 0
-
-    # Log file directory
-    # As the scilab process is spawned by this script,
-    # the log directory is same as that of this script
-    log_dir = ""
     # Log file name
-    log_name = "scilab-log-"+str(pid)+".txt"
-    print(log_name)
-    # Initialise output and error variables for subprocess
-    scilab_out = ""
-    scilab_err = ""
+    runtime.log_name = "scilab-log-"+str(pid)+".txt"
 
-    line_count = 0
-    line = line_and_state(None, NOLINE)
     # Checks if such a file exists
-    while not (os.path.isfile(log_name)):
+    while not (isfile(runtime.log_name)):
         gevent.sleep(LOOK_DELAY)
-    # This variable is for running the sleep command
 
     # Start sending log to chart function for creating chart
     try:
         # For processes taking less than 10 seconds
-        scilab_out, scilab_err = scilab_proc.communicate(timeout=4)
-        print("Output from scilab console :::::"+str(scilab_out))
+        scilab_out, scilab_err = runtime.scilab_proc.communicate(timeout=4)
+        print("Output from scilab console : "+str(scilab_out))
         # Check for errors in Scilab
         if b"Empty diagram" in scilab_out:
-            yield "event: ERROR\ndata: Empty diagram\n\n"
-            kill_scilab()
-            return
+            kill_scilab(diagram)
+            return "Empty diagram"
 
         if b"xcos_simulate: Error during block parameters update." in scilab_out:
-            yield "event: ERROR\ndata: Error in block parameter.\nPlease check block parameters\n\n"
-            kill_scilab()
-            return
-
+            kill_scilab(diagram)
+            return "Error in block parameter. Please check block parameters"
 
     # For processes taking more than 10 seconds
     except subprocess.TimeoutExpired:
         pass
 
-    if(os.path.isfile(log_name)):
-        print("File Exists!!")
-    else:
-        print("File does not exists!!")
+    return ""
+
+'''
+Read log file and return data to eventscource function of javascript for displaying chart.
+
+This function is called in app route 'SendLog' below
+'''
+@flask.stream_with_context
+def event_stream():
+    (diagram, __) = get_diagram(get_request_id())
+    runtime = get_runtime(diagram.uid)
+    if runtime is None:
+        print('no runtime')
+        return
 
     # Open the log file
-    if not (os.path.isfile(log_name)):
+    if not (isfile(runtime.log_name)):
+        print("log file does not exist")
         return
-    log_file = open(log_dir + log_name, "r")
+
+    log_file = open(runtime.log_name, "r")
 
     # Start sending log
     line = line_and_state(None, NOLINE)
-    while (line.set(get_line_and_state_modified(log_file)) or len(figure_list) > 0):
+    while (line.set(get_line_and_state_modified(log_file, runtime.figure_list)) or len(runtime.figure_list) > 0):
         # Get the line and loop until the state is ENDING and figure_list empty
         # Determine if we get block id and give it to chart.js
         if line.get_state()== BLOCK_IDENTIFICATION:
@@ -379,61 +550,55 @@ def event_stream(xcos_file_id):
         elif line.get_state() != DATA:
             gevent.sleep(LOOK_DELAY)
         else:
-            #print("event: log data: "+line.get_line()+"\n")
             yield "event: log\ndata: "+line.get_line()+"\n\n"
         # Reset line, so server won't send same line twice
         line = line_and_state(None, NOLINE)
 
     log_file.close()
     # Finished Sending Log
-    kill_scilab()
+    kill_scilab(diagram)
 
     # Notify Client
     yield "event: DONE\ndata: None\n\n"
 
 
-# class used to get the user_id and the boolean value is to make run a thread
-class Details:
-    tk_is_present = False
-    my_id = uuid.uuid1()
-    uid = str(my_id)
-    # user_id
-    tkbool = True
-    # boolean value to run the thread acc. to it
-    print("user_id:"+uid)
-    names = {}
-
 def delete_image():
-    global file_image
-    file_uid = file_image[0:36]
-    if(file_uid == Details.uid):
-        image_path = os.getcwd() + '/webapp/res_imgs/img_test' + file_image + '.jpg'
-        os.remove(image_path)
+    (diagrams, scifile) = init_session()
+
+    if scifile.file_image == '':
+        return
+
+    image_path = IMAGEDIR + '/img_test' + scifile.file_image + '.jpg'
+    remove(image_path)
+    scifile.file_image = ''
+    save_scifile(scifile)
 
 def delete_scifile():
-    global filename
-    scifile_uid = filename[0:36]
-    if(scifile_uid == Details.uid):
-        sci_path = os.getcwd() + '/scifunc_files/' + filename
-        os.remove(sci_path)
+    (diagrams, scifile) = init_session()
+
+    if scifile.filename == '':
+        return
+
+    remove(scifile.filename)
+    scifile.filename = ''
+    save_scifile(scifile)
 
 # function which will check and make initialization of every required files.
-def findFile():
-    r = open("values/"+Details.uid+"_val.txt","r")
-    line = r.readline()
+def findFile(diagram):
+    with open(join(diagram.sessiondir, VALUES_FOLDER, diagram.diagram_id+"_val.txt"), "r") as r:
+        line = r.readline()
     # at first the val.txt contains "Start" indicating the starting of the process
-    r.close()
 
     if line == "Start":
-        Details.tkbool = True
-        w = open("values/"+Details.uid+"_tktime.txt","w")
-        # tktime.txt is the file where we will update the time basing on the parameter ("Period" of CLOCK_c) for each tkscale
-        w.write("0\n0\n0\n0\n0\n0\n0\n0\n0\n0")
-        # initialize all tktime values to 0
-        w.close()
+        runtime = get_runtime(diagram.uid, True)
+        runtime.tkbool = True
+        with open(join(diagram.sessiondir, VALUES_FOLDER, diagram.diagram_id+"_tktime.txt"), "w") as w:
+            # tktime.txt is the file where we will update the time basing on the parameter ("Period" of CLOCK_c) for each tkscale
+            w.write("0\n0\n0\n0\n0\n0\n0\n0\n0\n0")
+            # initialize all tktime values to 0
 
         for i in range(10):
-            open("values/"+Details.uid+"_tk"+str(i+1)+".txt","w").close();
+            open(join(diagram.sessiondir, VALUES_FOLDER, diagram.diagram_id+"_tk"+str(i+1)+".txt"), "w").close();
             # create empty tk text files
         return 0
     elif line=="Stop":
@@ -454,28 +619,28 @@ def changeFormat(n):
         exp=exp+1
     n=n*check
     n = "%.3f" % n
-    exp = "%02d" % (exp,)
+    exp = "%02d" % (exp, )
 
     formated = n+"E+"+exp
 
     return formated
 
 # function which appends the 'updated' ('new') value to the file
-def AppendtoTKfile(fname,tlist,i):
+def AppendtoTKfile(diagram, fname, tlist, i):
     tl = tlist.split('  ')
     # converting string to list which stores the Period parameter at 0 index, data to be appended at index 1
 
     if(tl[1]==''):
         # if data is empty, do not append it
         return
-    with open("values/"+Details.uid+"_tktime.txt", 'r') as file:
+    with open(join(diagram.sessiondir, VALUES_FOLDER, diagram.diagram_id+"_tktime.txt"), 'r') as file:
         # read the tktime folder to get tkfile time at respective index (tk1.txt at 0 index)
         tktime = file.readlines()
     # update the time
     time = float(tktime[i])+float(tl[0])
     tktime[i]=str(time)+'\n'
 
-    with open("values/"+Details.uid+"_tktime.txt", 'w') as file:
+    with open(join(diagram.sessiondir, VALUES_FOLDER, diagram.diagram_id+"_tktime.txt"), 'w') as file:
         # write the updated the time to tktime.txt
         file.writelines( tktime )
 
@@ -485,41 +650,57 @@ def AppendtoTKfile(fname,tlist,i):
     line = time+"  "+data+"\n"
 
     # append data to the tk.txt
-    w= open(fname,'a')
-    w.write(line)
-    w.close()
+    with open(fname, 'a') as w:
+        w.write(line)
 
 
 # function which take values from val.txt send the data to  append them in their respective 'tk' files.
-def getDetails():
-    r=open("values/"+Details.uid+"_val.txt","r")
-    line=r.readline()
-    tklist=line.split(',')
+def getDetails(diagram):
+    with open(join(diagram.sessiondir, VALUES_FOLDER, diagram.diagram_id+"_val.txt"), "r") as r:
+        line=r.readline()
+        if line == 'Start':
+            line = '0.1  0.000E+00,' * diagram.tk_count + '0,' * (10 - diagram.tk_count)
+        tklist=line.split(',')
 
-    for i in range(len(tklist)):
-        tl = tklist[i].split('  ')
+        for i in range(len(tklist)):
+            tl = tklist[i].split('  ')
 
-        if  len(tklist)==1 or len(tl)==1:
-            break
-        else:
-            fname="values/"+Details.uid+"_tk"+str(i+1)+".txt"
+            if  len(tklist)==1 or len(tl)==1:
+                break
 
-            AppendtoTKfile(fname,tklist[i],i)
+            fname=join(diagram.sessiondir, VALUES_FOLDER, diagram.diagram_id+"_tk"+str(i+1)+".txt")
+            AppendtoTKfile(diagram, fname, tklist[i], i)
+    return True
 
-    r.close()
 
 # function which makes the initialisation of thread
-def getDetailsThread():
-    if Details.tkbool:
-        getDetails()
-        # calls the same function adter 0.1 second
-        Timer(0.1,getDetailsThread).start()
+def getDetailsThread(diagram):
+    runtime = get_runtime(diagram.uid)
+    if runtime is None:
+        print('no runtime')
+        return
 
-def stopDetailsThread():
-    Details.tkbool = False # stops the thread
-    for filename in glob.glob("values/"+Details.uid+"*"):
-        # deletes all files created under the 'uid' name
-        os.remove(filename)
+    if runtime.tkbool:
+        starttime = time()
+        getDetails(diagram)
+        endtime = time()
+        timeinterval = 0.1 + starttime - endtime
+        if timeinterval < 0.001:
+            timeinterval = 0.001
+        # calls the same function after 0.1 second
+        Timer(timeinterval, getDetailsThread, [diagram]).start()
+
+def stopDetailsThread(diagram):
+    runtime = get_runtime(diagram.uid)
+    if runtime is None:
+        print('no runtime')
+        return
+
+    runtime.tkbool = False # stops the thread
+    gevent.sleep(LOOK_DELAY)
+    for fn in glob.glob(join(diagram.sessiondir, VALUES_FOLDER, diagram.diagram_id)+"_*"):
+        # deletes all files created under the 'diagram_id' name
+        remove(fn)
 
 # Route that will process the file upload
 @app.route('/upload', methods=['POST'])
@@ -534,16 +715,15 @@ def upload():
     # Check if the file is not null
     if file:
         # Make the filename safe, remove unsupported chars
-        client_id = len(xcos_file_list)
+        (diagram, scifile) = add_diagram()
         # Save the file in xml extension and using it for further modification by using xml parser
-        temp_file_xml_name = str(client_id)+".xml"
-        file.save(os.path.join(temp_file_xml_name))
+        temp_file_xml_name = diagram.diagram_id+".xml"
+        file.save(temp_file_xml_name)
         new_xml = minidom.parse(temp_file_xml_name)
 
         # to identify if we have to load or save to workspace or neither #0 if neither TOWS_c or FROWSB found
-        workspace_counter=0
         blocks = new_xml.getElementsByTagName("BasicBlock")
-        Details.tk_is_present = False
+        tk_is_present = False
         pattern = re.compile(r"<SplitBlock")
         for i, line in enumerate(open(temp_file_xml_name)):
             for match in re.finditer(pattern, line):
@@ -597,10 +777,10 @@ def upload():
                 finalchangeid.append(finalsplit[i]+4)
                 finalchangeid.append(finalsplit[i]+5)
 
-            with open(temp_file_xml_name,'w') as f:#here we save the contents
+            with open(temp_file_xml_name, 'w') as f:#here we save the contents
                 f.write(new_xml.toxml())
 
-            with open(temp_file_xml_name,"r") as f:
+            with open(temp_file_xml_name, "r") as f:
                 newline=[]
                 i=0
                 for word in f.readlines():
@@ -609,7 +789,7 @@ def upload():
                         temp_word=""
                         for i in range(len(finalchangeid)):
                             if "<CommandControlLink id=\""+str(finalchangeid[i])+"\"" in word:
-                                temp_word=word.replace("<CommandControlLink id=\""+str(finalchangeid[i])+"\"","<ImplicitLink id=\""+str(finalchangeid[i])+"\"")
+                                temp_word=word.replace("<CommandControlLink id=\""+str(finalchangeid[i])+"\"", "<ImplicitLink id=\""+str(finalchangeid[i])+"\"")
                                 i=i+1
                         if temp_word!="":
                             newline.append(temp_word)
@@ -617,15 +797,14 @@ def upload():
                             newline.append(word)
                     else:
                         newline.append(word)
-            with open(temp_file_xml_name,"w") as f:
+            with open(temp_file_xml_name, "w") as f:
                 for line in newline:
                     f.writelines(line)
-            with open(temp_file_xml_name,"r") as in_file:
+            with open(temp_file_xml_name, "r") as in_file:
                 buf = in_file.readlines()
             #length=len(finalsplit)
             #return finalsplit
-            #print finalsplit1
-            with open(temp_file_xml_name,"w") as out_file:
+            with open(temp_file_xml_name, "w") as out_file:
                 for line in buf:
                     for i in range (len(finalsplit)):
                         if '<ControlPort connectable=\"0\" dataType=\"UNKNOW_TYPE\" id=\"-1\" ordering=\"1\" parent="'+str(finalsplit[i])+"\"" in line:
@@ -643,7 +822,7 @@ def upload():
                 for i, line in enumerate(open(temp_file_xml_name)):
                     for match in re.finditer(pattern3, line):
                         list3.append(i-1)
-            with open(temp_file_xml_name,'r+') as f:
+            with open(temp_file_xml_name, 'r+') as f:
                 data = f.read().splitlines()
                 replace = list3
                 for i in replace:
@@ -651,26 +830,17 @@ def upload():
                 f.seek(0)
                 f.write('\n'.join(data))
                 f.truncate()
-            base_filename = os.path.splitext(temp_file_xml_name)[0]
-            os.rename(temp_file_xml_name, base_filename + ".xcos")
-            source_folder = os.getcwd()
-            destination_folder = source_folder + "/uploads/"
-            folder_file_content = filter(os.path.isfile, os.listdir( os.curdir ) )
-            for file in folder_file_content:
-                if file.endswith(".xcos"):
-                    shutil.copy(file, destination_folder)
-                    os.remove(file)# After moving to the required folder deleting the xcos file.
-            temp_file_xml_name = base_filename + ".xcos"
-            xcos_file_list.append(temp_file_xml_name)
-            workspace_list.append(workspace_counter)
-            return str(client_id)
+            diagram.xcos_file_name = join(session['sessiondir'], UPLOAD_FOLDER, splitext(temp_file_xml_name)[0] + ".xcos")
+            os.rename(temp_file_xml_name, diagram.xcos_file_name)
+            save_diagram()
+            return diagram.diagram_id
 
 
         # List to contain all affich blocks
         blockaffich = new_xml.getElementsByTagName("AfficheBlock")
         for block in blockaffich:
             if block.getAttribute("interfaceFunctionName") == "AFFICH_m":
-               workspace_counter=4
+                diagram.workspace_counter = 4
 
         # List to contain all the block IDs of tkscales so that we can create read blocks with these IDs
         block_id = []
@@ -678,34 +848,28 @@ def upload():
             if block.getAttribute("interfaceFunctionName") == "TKSCALE":
                 block_id.append(block.getAttribute("id"))
                 block.setAttribute('id', '-1')
-                Details.tk_is_present = True
+                tk_is_present = True
                 # Changed the ID of tkscales to -1 so that virtually the tkscale blocks get disconnected from diagram at the backend
             # Taking workspace_counter 1 for TOWS_c and 2 for FROMWSB
             if block.getAttribute("interfaceFunctionName")== "scifunc_block_m":
-                workspace_counter = 5
+                diagram.workspace_counter = 5
             if block.getAttribute("interfaceFunctionName")== "TOWS_c":
-                workspace_counter=1
+                diagram.workspace_counter = 1
                 flag1=1
-                main_attributes=block.getElementsByTagName("ScilabString")
-                data= main_attributes[0].getElementsByTagName("data")
-                workspace_variable=data[1].getAttribute("value")
-                workspace_dict[client_id]=workspace_variable
             if block.getAttribute("interfaceFunctionName")== "FROMWSB":
-                workspace_counter=2
+                diagram.workspace_counter = 2
                 flag2=1
         if (flag1 and flag2):
             # Both TOWS_c and FROMWSB are present
-            workspace_counter=3
+            diagram.workspace_counter = 3
         # Hardcoded the real time scaling to 1.0 (i.e., no scaling of time occurs) only if tkscale is present
-        if(Details.tk_is_present):
-            diagram = new_xml.getElementsByTagName("XcosDiagram")
-            for dia in diagram:
+        if tk_is_present:
+            for dia in new_xml.getElementsByTagName("XcosDiagram"):
                 dia.setAttribute('realTimeScaling', '1.0')
 
 
         # Save the changes made by parser
-        tk_count = 0
-        with open(temp_file_xml_name,'w') as f:
+        with open(temp_file_xml_name, 'w') as f:
             f.write(new_xml.toxml())
 
 
@@ -713,27 +877,14 @@ def upload():
         for line in fileinput.input(temp_file_xml_name, inplace=1):
 
             if 'interfaceFunctionName=\"TKSCALE\"' in line:
-                print("<BasicBlock blockType=\"d\" id=\"", end ='')
                 # change the block ID
-                print(block_id[tk_count], end = '')
-                print("\" interfaceFunctionName=\"RFILE_f\" parent=\"1\" simulationFunctionName=\"readf\" simulationFunctionType=\"DEFAULT\" style=\"RFILE_f\">")
+                print('<BasicBlock blockType="d" id="', block_id[diagram.tk_count], '" interfaceFunctionName="RFILE_f" parent="1" simulationFunctionName="readf" simulationFunctionType="DEFAULT" style="RFILE_f">', sep='')
                 print("<ScilabString as=\"exprs\" height=\"5\" width=\"1\">")
                 print("<data column=\"0\" line=\"0\" value=\"1\"/>")
                 # Value equal to 1 implies take readings from first column in the file
                 print("<data column=\"0\" line=\"1\" value=\"2\"/>")
-                print("<data column=\"0\" line=\"2\" value=\"", end = '')
-
-
-
-                path_current_directory = os.getcwd()
-                print(path_current_directory, end='')
-                print("/values/", end ='')
-                print(Details.uid, end ='')
-                print("_tk", end = '')
                 # Path to the file from which read block obtains the values
-                print(tk_count + 1, end = '')
-                print(".txt", end = '')
-                print("\"/>")
+                print('<data column="0" line="2" value="', join(diagram.sessiondir, VALUES_FOLDER, diagram.diagram_id), '_tk', diagram.tk_count + 1, '.txt', '"/>', sep='')
                 print("<data column=\"0\" line=\"3\" value=\"(2(e10.3,1x))\"/>")
                 # (2(e10.3,1x)) The format in which numbers are written
                 # Two columns with base 10 and 3 digits after decimal and 1x represents 1 unit space between two columns.
@@ -741,14 +892,13 @@ def upload():
                 print("</ScilabString>")
                 print("<ScilabDouble as=\"realParameters\" height=\"0\" width=\"0\"/>")
                 print("<ScilabDouble as=\"integerParameters\" height=\"105\" width=\"1\">")
-                tk_count = tk_count + 1
+                diagram.tk_count += 1
                 # The remaining part of the block is read from the Read_Content.txt file and written to the xml file
-                read_file = open("Read_Content.txt", "r")
-                for line_content in read_file:
-                    print(line_content,end= '')
-            print(line,end = '')
-            
-            
+                with open(READCONTENTFILE, "r") as read_file:
+                    for line_content in read_file:
+                        print(line_content, end= '')
+            print(line, end = '')
+
         # To resolve port issue coming in xcos file for following blocks : INTMUL,MATBKSL,MATDET,MATDIAG,MATDIV and CURV_F
         # ISSUE is missing of dataColumns and dataLines in port tag
         block_idint=[]
@@ -771,7 +921,7 @@ def upload():
             if block.getAttribute("style") == "CURV_f": # to find CURV_f in blocks and extract its block id and save in block_curl
                 block_curl.append(int(block.getAttribute("id")))
         if len(block_idint)>=1:
-            with open(temp_file_xml_name,"r") as f:
+            with open(temp_file_xml_name, "r") as f:
                 newline=[]
                 i=0
                 for word in f.readlines():
@@ -788,10 +938,10 @@ def upload():
                             newline.append(word)
                     else:
                         newline.append(word)
-            with open(temp_file_xml_name,"w") as f:
+            with open(temp_file_xml_name, "w") as f:
                 for line in newline:
                     f.writelines(line)
-            with open(temp_file_xml_name,"r") as f:
+            with open(temp_file_xml_name, "r") as f:
                 newline=[]
                 i=0
                 for word in f.readlines():
@@ -807,11 +957,11 @@ def upload():
                             newline.append(word)
                     else:
                         newline.append(word)
-            with open(temp_file_xml_name,"w") as f:
+            with open(temp_file_xml_name, "w") as f:
                 for line in newline:
                     f.writelines(line)
         if len(block_idmatblsk)>=1:
-            with open(temp_file_xml_name,"r") as f:
+            with open(temp_file_xml_name, "r") as f:
                 newline=[]
                 i=0
                 for word in f.readlines():
@@ -828,10 +978,10 @@ def upload():
                             newline.append(word)
                     else:
                         newline.append(word)
-            with open(temp_file_xml_name,"w") as f:
+            with open(temp_file_xml_name, "w") as f:
                 for line in newline:
                     f.writelines(line)
-            with open(temp_file_xml_name,"r") as f:
+            with open(temp_file_xml_name, "r") as f:
                 newline=[]
                 i=0
                 for word in f.readlines():
@@ -848,11 +998,11 @@ def upload():
                             newline.append(word)
                     else:
                         newline.append(word)
-            with open(temp_file_xml_name,"w") as f:
+            with open(temp_file_xml_name, "w") as f:
                 for line in newline:
                     f.writelines(line)
         if len(block_det)>=1:
-            with open(temp_file_xml_name,"r") as f:
+            with open(temp_file_xml_name, "r") as f:
                 newline=[]
                 i=0
                 for word in f.readlines():
@@ -869,10 +1019,10 @@ def upload():
                             newline.append(word)
                     else:
                         newline.append(word)
-            with open(temp_file_xml_name,"w") as f:
+            with open(temp_file_xml_name, "w") as f:
                 for line in newline:
                     f.writelines(line)
-            with open(temp_file_xml_name,"r") as f:
+            with open(temp_file_xml_name, "r") as f:
                 newline=[]
                 i=0
                 for word in f.readlines():
@@ -889,11 +1039,11 @@ def upload():
                             newline.append(word)
                     else:
                         newline.append(word)
-            with open(temp_file_xml_name,"w") as f:
+            with open(temp_file_xml_name, "w") as f:
                 for line in newline:
                     f.writelines(line)
         if len(block_curl)>=1:
-            with open(temp_file_xml_name,"r") as f:
+            with open(temp_file_xml_name, "r") as f:
                 newline=[]
                 i=0
                 for word in f.readlines():
@@ -910,11 +1060,11 @@ def upload():
                             newline.append(word)
                     else:
                         newline.append(word)
-            with open(temp_file_xml_name,"w") as f:
+            with open(temp_file_xml_name, "w") as f:
                 for line in newline:
                     f.writelines(line)
         if len(block_diag)>=1:
-            with open(temp_file_xml_name,"r") as f:
+            with open(temp_file_xml_name, "r") as f:
                 newline=[]
                 i=0
                 for word in f.readlines():
@@ -931,10 +1081,10 @@ def upload():
                             newline.append(word)
                     else:
                         newline.append(word)
-            with open(temp_file_xml_name,"w") as f:
+            with open(temp_file_xml_name, "w") as f:
                 for line in newline:
                     f.writelines(line)
-            with open(temp_file_xml_name,"r") as f:
+            with open(temp_file_xml_name, "r") as f:
                 newline=[]
                 i=0
                 for word in f.readlines():
@@ -951,11 +1101,11 @@ def upload():
                             newline.append(word)
                     else:
                         newline.append(word)
-            with open(temp_file_xml_name,"w") as f:
+            with open(temp_file_xml_name, "w") as f:
                 for line in newline:
                     f.writelines(line)
         if len(block_div)>=1:
-            with open(temp_file_xml_name,"r") as f:
+            with open(temp_file_xml_name, "r") as f:
                 newline=[]
                 i=0
                 for word in f.readlines():
@@ -972,10 +1122,10 @@ def upload():
                             newline.append(word)
                     else:
                         newline.append(word)
-            with open(temp_file_xml_name,"w") as f:
+            with open(temp_file_xml_name, "w") as f:
                 for line in newline:
                     f.writelines(line)
-            with open(temp_file_xml_name,"r") as f:
+            with open(temp_file_xml_name, "r") as f:
                 newline=[]
                 i=0
                 for word in f.readlines():
@@ -992,26 +1142,15 @@ def upload():
                             newline.append(word)
                     else:
                         newline.append(word)
-            with open(temp_file_xml_name,"w") as f:
+            with open(temp_file_xml_name, "w") as f:
                 for line in newline:
                     f.writelines(line)
         # Changing the file extension from xml to xcos
-        base_filename = os.path.splitext(temp_file_xml_name)[0]
-        os.rename(temp_file_xml_name, base_filename + ".xcos")
-        source_folder = os.getcwd()
-        destination_folder = source_folder + "/uploads/"
-
-
+        diagram.xcos_file_name = join(session['sessiondir'], UPLOAD_FOLDER, splitext(temp_file_xml_name)[0] + ".xcos")
         # Move the xcos file to uploads directory
-        folder_file_content = filter(os.path.isfile, os.listdir( os.curdir ) )
-        for file in folder_file_content:
-            if file.endswith(".xcos"):
-                shutil.copy(file, destination_folder)
-                os.remove(file)# After moving to the required folder deleting the xcos file.
-        temp_file_xml_name = base_filename + ".xcos"
-        xcos_file_list.append(temp_file_xml_name)
-        workspace_list.append(workspace_counter)
-        return str(client_id)
+        os.rename(temp_file_xml_name, diagram.xcos_file_name)
+        save_diagram()
+        return diagram.diagram_id
     else:
         return "error"
 
@@ -1020,109 +1159,63 @@ def filenames():
     url = request.form['url']
     if url == '' or '.' in url or url[0] != '/' or url[-1] != '/':
         return "error"
-    filelist = [url + f for f in os.listdir('webapp' + url)]
+    filelist = [url + f for f in os.listdir(BASEDIR + url)]
     return Response(json.dumps(filelist), mimetype='application/json')
 
 @app.route('/UpdateTKfile', methods=['POST'])
 def UpdateTKfile():
+    (diagram, __) = get_diagram(get_request_id())
+    if diagram is None:
+        print('no diagram')
+        return "error"
+
     # function which makes the initialazation and updation of the files with obtained new value
     # Get the file
     file = request.files['file']
-    
+
     # Check if the file is not null
-    if file:
-        filename1 = Details.uid+'_val.txt'
-        # saves the file in values folder
-        file.save(os.path.join(app.config['VALUES_FOLDER'], filename1))
-        n = findFile()
-        if n==0:
-            # starts the thread
-            getDetailsThread()
-
-        elif n==1:
-            # stops the thread
-            if not (os.path.isfile(log_name)):
-                stopDetailsThread()
-                return ""
-            open(log_dir + log_name,"w")
-
-
-        return ""
-    else:
+    if not file:
         return "error"
 
-
-@app.route('/importXcos')
-def importXcos():
-    # function to take the request data when user click the url link (view example)
-    # get the eid from the url
-    Details.names[Details.uid+"eid"] = request.args.get('eid')
-
-    with open("webapp/xcos/"+str(Details.names[Details.uid+"eid"])+".xcos") as inf:
-        # read the xcos file contents
-        Details.names[Details.uid+"xcosContents"] = inf.read()
-
-    with open("webapp/index.html") as inf:
-        txt = inf.read()
-        # load soup to edit the html file
-        Details.names[Details.uid+"soup"] = bs4.BeautifulSoup(txt,'html.parser')
-
-    Details.names[Details.uid+"pidlist"] = Details.names[Details.uid+"soup"].findAll("p")
-    Details.names[Details.uid+"innerhtml_1"] = Details.names[Details.uid+"pidlist"][11].text
-    temp = Details.names[Details.uid+"soup"].find(text=Details.names[Details.uid+"innerhtml_1"]).replaceWith(Details.names[Details.uid+"xcosContents"])
-
-    with open("webapp/index.html", "w") as file:
-        # edit and save the changes in html file
-        file.write(str(Details.names[Details.uid+"soup"]))
-
-    # open browser to load the imported experiment
-    url = "http://127.0.1:8001?eid="+str(Details.names[Details.uid+"eid"])
-    webbrowser.open(url,2)
-
-    return "0"
-
-
-@app.route('/ChangeIndexFile',  methods=['POST'])
-def ChangeIndexFile():
-    with open("webapp/index.html") as inf:
-        txt = inf.read()
-        # load soup to edit the html file
-        Details.names[Details.uid+"soup"] = bs4.BeautifulSoup(txt,'html.parser')
-
-    Details.names[Details.uid+"pidlist"] = Details.names[Details.uid+"soup"].findAll("p")
-    Details.names[Details.uid+"innerhtml_2"] = Details.names[Details.uid+"pidlist"][11].text
-
-    if Details.names[Details.uid+"innerhtml_2"] == Details.names[Details.uid+"xcosContents"] :
-        temp = Details.names[Details.uid+"soup"].find(text=Details.names[Details.uid+"innerhtml_2"]).replaceWith("XcosNull")
-        with open("webapp/index.html", "w") as file:
-            file.write(str(Details.names[Details.uid+"soup"]))
-    return "0"
+    filename1 = diagram.diagram_id+'_val.txt'
+    # saves the file in values folder
+    file.save(join(session['sessiondir'], VALUES_FOLDER, filename1))
+    n = findFile(diagram)
+    if n==0:
+        # starts the thread
+        getDetailsThread(diagram)
+    elif n==1:
+        # stops the thread
+        stopDetailsThread(diagram)
+    return ""
 
 
 # route for download of binary and audio
-@app.route('/downloadfile',methods=['POST'])
-def DownloadFile ():
-    filename =request.form['path']
-    download_file =os.getcwd()+'/'+filename
+@app.route('/downloadfile', methods=['POST'])
+def DownloadFile():
+    fn = request.form['path']
+    download_file = join(session['sessiondir'], fn)
     #check if audio file or binary file
-    if "audio"  in filename:
-        return send_file(download_file, as_attachment=True,mimetype='audio/basic')
-    return send_file(download_file, as_attachment=True,mimetype='application/octet-stream')
+    if "audio" in fn:
+        mimetype = 'audio/basic'
+    else:
+        mimetype = 'application/octet-stream'
+    return flask.send_file(download_file, as_attachment=True, mimetype=mimetype)
 
 
 # route for deletion of binary and audio file
-@app.route('/deletefile',methods=['POST'])
-def DeletFile ():
-    filename =request.form['path']
-    delete_file =os.getcwd()+'/'+filename
-    os.remove(delete_file)#deleting the file
+@app.route('/deletefile', methods=['POST'])
+def DeleteFile():
+    fn = request.form['path']
+    delete_file = join(session['sessiondir'], fn)
+    remove(delete_file)#deleting the file
     return "0"
 
 
 @app.route('/SendLog')
 def sse_request():
     # Set response method to event-stream
-    return Response(event_stream(request.args.get('id', '')), mimetype='text/event-stream')
+    return Response(event_stream(), mimetype='text/event-stream')
 
 
 @app.route('/<path:path>')
@@ -1139,7 +1232,13 @@ def stop():
 # route ro end blocks with no Ending parameter
 @app.route('/endBlock/<fig_id>')
 def endBlock(fig_id):
-    figure_list.remove(fig_id)
+    (diagram, __) = get_diagram(get_request_id())
+    if diagram is None:
+        print('no diagram')
+        return
+    runtime = get_runtime(diagram.uid)
+
+    runtime.figure_list.remove(fig_id)
     return "done"
 
 
@@ -1147,43 +1246,46 @@ def endBlock(fig_id):
 def page():
     return app.send_static_file('index.html')
 
-@app.route('/getOutput',methods=['POST'])
+@app.route('/getOutput', methods=['POST'])
 def run_scilab_func_request():
+    (diagram, __) = get_diagram(get_request_id())
+    if diagram is None:
+        print('no diagram')
+        return
+    runtime = get_runtime(diagram.uid, True)
 
-    xcos_function_file_dir = os.getcwd() + '/'
     num =request.form['num']
     den =request.form['den']
     alpha="A,B,C,D";
 
-    #session=Details.uid
     if 'z' in num or 'z' in den:
-        command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();z=poly(0,'z');exec('" + xcos_function_file_dir + "cont_frm_write.sci"+"');calculate_cont_frm("+num+","+den+");quit();"]
+        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();z=poly(0,'z');exec('" + CONT_FRM_WRITE +"');calculate_cont_frm("+num+","+den+");quit();"]
 
     else:
-        command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();s=poly(0,'s');exec('" + xcos_function_file_dir + "cont_frm_write.sci"+"');calculate_cont_frm("+num+","+den+");quit();"]
+        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();s=poly(0,'s');exec('" + CONT_FRM_WRITE +"');calculate_cont_frm("+num+","+den+");quit();"]
 
-    scilab_proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=os.setpgrp);
-    scilab_out, scilab_err = scilab_proc.communicate()
+    print('running command', command)
+    runtime.scilab_proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=os.setpgrp);
+    scilab_out, scilab_err = runtime.scilab_proc.communicate()
 
     file_name="cont_frm_value.txt";
-    #print(file_name);
     with open(file_name) as f:
-       data = f.read() # Read the data into a variable
-       file_rows = data.strip().split(' ') # Split the file rows into seperate elements of a list
-       #print(file_rows)
-       list_value="[["
-       for i in range(len(file_rows)):
-           value=file_rows[i]
-           if(i==(len(file_rows)-1)):
-              list_value=list_value+value+"]]"
-           else:
-              list_value=list_value+value+"],["
+        data = f.read() # Read the data into a variable
+        file_rows = data.strip().split(' ') # Split the file rows into seperate elements of a list
+        list_value="[["
+        for i in range(len(file_rows)):
+            value=file_rows[i]
+            if(i==(len(file_rows)-1)):
+                list_value=list_value+value+"]]"
+            else:
+                list_value=list_value+value+"],["
 
-       #print (list_value)
     return list_value
 
 
 if __name__ == '__main__':
+    print('starting: flask=', flask.__version__, ', flask_session=', flask_session.__version__, sep='')
+    os.chdir(SESSIONDIR)
     # Set server address 127.0.0.1:8001/
     http_server = WSGIServer(('127.0.0.1', 8001), app)
     try:
