@@ -58,7 +58,8 @@ xcos_file_list = []
 workspace_list = []
 # Dictionary to find variable to load or save from workspace
 workspace_dict = {}
-log_dir = ''  # to get root path of this file
+#Variables used in sci-func block
+log_dir = ''  # to set root path
 log_name = '' # to store log name 
 filename = ''
 file_image = ''
@@ -74,8 +75,8 @@ class line_and_state:
         self.line = line
         self.state = state
     def set(self, line_state):
-        self.line = line_state[0]
-        self.state = line_state[1]
+        self.line = line_state[0] #to set line 
+        self.state = line_state[1] # to set state 
         return False
     def get_line(self):
         return self.line
@@ -143,19 +144,18 @@ def uploadsci():
         global filename
         ts = datetime.now()
         filename = Details.uid + str(ts) + secure_filename(file.filename) # file name is created with uid and timestamp
-        file.save(os.path.join(app.config['SCI_UPLOAD_FOLDER'], filename)) # file is saved in scifunc_files folder
-        flag_sci = True
         path = os.getcwd() + '/scifunc_files/'
-        #read = open(os.path.join(path, filename), "r") # file is open 
+        file.save(os.path.join(path, filename)) # file is saved in scifunc_files folder
+        flag_sci = True # flag for file saved
         
         #Following are system command which are not permitted in sci files (Reference scilab-on-cloud project) 
         system_commands = re.compile(r'unix\(.*\)|unix_g\(.*\)|unix_w\(.*\)|unix_x\(.*\)|unix_s\(.*\)|host|newfun|execstr|ascii|mputl|dir\(\)')
-        #Read file and check for system commands and return error if file contain them
+        #Read file and check for system commands and return error if file contain system commands
         match = re.findall(system_commands, open(os.path.join(path, filename), 'r').read())
         if(match):
             msg = "System calls are not allowed in .sci file!\n Please upload another .sci file!!"
-            os.remove(path + filename) # Delete saved file if system commands encounter in that file
-            flag_sci = False
+            os.remove(path + filename) # Delete saved file if system commands are encounter in that file
+            flag_sci = False # flag for file saved will be set as False
             return msg
         
         # scilab command is created to run that uploaded sci file which will be used by sci-func block
@@ -170,7 +170,7 @@ def uploadsci():
             error_index = out.index('!')
             msg = out[error_index:-9]
             os.remove(path+filename) # Delete saved file if error is encounter while executing sci function in that file
-            flag_sci = False
+            flag_sci = False # flag for file saved will be set as False
             return msg
         else:
             msg = "File is uploaded successfully!!"
@@ -247,21 +247,33 @@ def event_stream(xcos_file_id):
     workspace="workspace"+session+".dat"
     # workspace_counter is used to get identification of few block which need different scilab command for execution
     workspace_counter=workspace_list[xcos_file_id]
-    ############################################################################################################
-    # commands for running of scilab based on existence of TOWS_c and FROMWSB
-    # 3 means both exists,2 FROMWSB exists,1 TOWS_c exists,0 none exists meaning normal set of commands
-
+    
+   
+    ''' Scilab Commands for running of scilab based on existence of different blocks in same diagram from workpace_counter's value
+        1: Indicate TOWS_c exist
+        2: Indicate FROMWSB exist
+        3: Both TOWS_c and FROMWSB exist
+        4: Indicate AFFICH_m exist (We dont want graphic window to open so xs2jpg() command is removed)
+        5: Indicate Sci-func block as it some time return image as output rather than Sinks's log file.
+        0/No-condition : For all other blocks
+    '''
     if (workspace_counter ==3 and exists(workspace)):
+         #3 - for both TOWS_c and FROMWSB and also workspace dat file exist
+         #In this case workspace is saved in format of dat file (Scilab way of saying workpsace)
         append=workspace_dict[xcos_file_id]
         command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","load('"+workspace+"');loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);deletefile('"+workspace+"');save('"+workspace+"') ;quit()"]
     elif (workspace_counter ==1 or workspace_counter==3):
+        #For 1- TOWS_c or 3 - for both TOWS_c and FROMWSB
         append=workspace_dict[xcos_file_id]
         command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);deletefile('"+workspace+"');save('"+workspace+"') ;quit()"]
-    elif (workspace_counter ==4):     # added for affich_m block
+    elif (workspace_counter ==4):
+        # For AFFICH-m block
         command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);quit()"]
     elif (workspace_counter ==2 and exists(workspace)):
+        # For FROMWSB block and also workspace dat file exist
         command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "load('"+workspace+"');loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);deletefile('"+workspace+"') ;quit()"]
-    elif (workspace_counter == 7):
+    elif (workspace_counter == 5):
+        # For Sci-Func block (Image are return as output in some cases)
         command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e","loadXcosLibs();exec('" + path + filename +"');importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test"+file_image+".jpg'),mode(2);quit()"]
         counter = counter + 1
         t = Timer(15.0, delete_image)
@@ -269,6 +281,7 @@ def event_stream(xcos_file_id):
         t1 = Timer(10.0, delete_scifile)
         t1.start()
     else:
+        # For all other block
         command = ["./"+SCI+"bin/scilab-adv-cli", "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();importXcosDiagram('" + xcos_file_dir + xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'webapp/res_imgs/img_test.jpg'),mode(2);quit()"]
 
     # Put the process in its own process group using os.setpgrp. For a new
@@ -673,7 +686,7 @@ def upload():
                 # Changed the ID of tkscales to -1 so that virtually the tkscale blocks get disconnected from diagram at the backend
             # Taking workspace_counter 1 for TOWS_c and 2 for FROMWSB
             if block.getAttribute("interfaceFunctionName")== "scifunc_block_m":
-                workspace_counter = 7
+                workspace_counter = 5
             if block.getAttribute("interfaceFunctionName")== "TOWS_c":
                 workspace_counter=1
                 flag1=1
@@ -738,6 +751,10 @@ def upload():
                 for line_content in read_file:
                     print(line_content,end= '')
             print(line,end = '')
+            
+            
+        # To resolve port issue coming in xcos file for following blocks : INTMUL,MATBKSL,MATDET,MATDIAG,MATDIV and CURV_F
+        # ISSUE is missing of dataColumns and dataLines in port tag
         block_idint=[]
         block_idmatblsk=[]
         block_det=[]
@@ -745,17 +762,17 @@ def upload():
         block_div=[]
         block_curl=[]
         for block in blocks:
-            if block.getAttribute("style") == "INTMUL":
+            if block.getAttribute("style") == "INTMUL": # to find INTMUL in blocks and extract its block id and save in block_idint
                 block_idint.append(int(block.getAttribute("id")))
-            if block.getAttribute("style") == "MATBKSL":
+            if block.getAttribute("style") == "MATBKSL": # to find MATBKSL in blocks and extract its block id and save in block_idmatblsk
                 block_idmatblsk.append(int(block.getAttribute("id")))
-            if block.getAttribute("style") == "MATDET":
+            if block.getAttribute("style") == "MATDET": # to find MATDET in blocks and extract its block id and save in block_det
                 block_det.append(int(block.getAttribute("id")))
-            if block.getAttribute("style") == "MATDIAG":
+            if block.getAttribute("style") == "MATDIAG": # to find MATDIAG in blocks and extract its block id and save in block_diag
                 block_diag.append(int(block.getAttribute("id")))
-            if block.getAttribute("style") == "MATDIV":
+            if block.getAttribute("style") == "MATDIV": # to find MATDIV in blocks and extract its block id and save in block_div
                 block_div.append(int(block.getAttribute("id")))
-            if block.getAttribute("style") == "CURV_f":
+            if block.getAttribute("style") == "CURV_f": # to find CURV_f in blocks and extract its block id and save in block_curl
                 block_curl.append(int(block.getAttribute("id")))
         if len(block_idint)>=1:
             with open(temp_file_xml_name,"r") as f:
@@ -763,11 +780,11 @@ def upload():
                 i=0
                 for word in f.readlines():
 
-                    if "<ExplicitInputPort dataType=\"REAL_MATRIX\"" in word:
+                    if "<ExplicitInputPort dataType=\"REAL_MATRIX\"" in word: # check for existance of "ExplicitInputPort" in line
                         temp_word=""
                         for i in range(len(block_idint)):
-                            if "<ExplicitInputPort dataType=\"REAL_MATRIX\" id=\""+str(block_idint[i]+2)+"\"" in word:
-                                temp_word=word.replace("<ExplicitInputPort dataType=\"REAL_MATRIX\" id=\""+str(block_idint[i]+2)+"\"","<ExplicitInputPort dataColumns=\"-3\" dataLines=\"-2\" dataType=\"REAL_MATRIX\" id=\""+str(block_idint[i]+2)+"\"")
+                            if "ordering=\"2\" parent=\""+str(block_idint[i])+"\"" in word: # if ordering= 2 and parent id= INTMUL block id
+                                temp_word=word.replace("<ExplicitInputPort dataType=\"REAL_MATRIX\"","<ExplicitInputPort dataColumns=\"-3\" dataLines=\"-2\" dataType=\"REAL_MATRIX\"") # replace work and add datacolumns and datalines
                                 i=i+1
                         if temp_word!="":
                             newline.append(temp_word)
@@ -782,11 +799,11 @@ def upload():
                 newline=[]
                 i=0
                 for word in f.readlines():
-                    if "<ExplicitOutputPort dataType=\"REAL_MATRIX\"" in word:
+                    if "<ExplicitOutputPort dataType=\"REAL_MATRIX\"" in word: # check for existance of "ExplicitOutputPort" in line
                         temp_word=""
                         for i in range(len(block_idint)):
-                            if "<ExplicitOutputPort dataType=\"REAL_MATRIX\" id=\""+str(block_idint[i]+3)+"\"" in word:
-                                temp_word=word.replace("<ExplicitOutputPort dataType=\"REAL_MATRIX\" id=\""+str(block_idint[i]+3)+"\"","<ExplicitOutputPort dataColumns=\"-3\" dataType=\"REAL_MATRIX\" id=\""+str(block_idint[i]+3)+"\"")
+                            if "parent=\""+str(block_idint[i])+"\"" in word: # if parent id= INTMUL block id
+                                temp_word=word.replace("<ExplicitOutputPort dataType=\"REAL_MATRIX\"","<ExplicitOutputPort dataColumns=\"-3\" dataType=\"REAL_MATRIX\"")  # replace work and add datacolumns and datalines
                                 i=i+1
                         if temp_word!="":
                             newline.append(temp_word)
@@ -806,8 +823,8 @@ def upload():
                     if "<ExplicitInputPort dataType=\"REAL_MATRIX\"" in word:
                         temp_word=""
                         for i in range(len(block_idmatblsk)):
-                            if "<ExplicitInputPort dataType=\"REAL_MATRIX\" id=\""+str(block_idmatblsk[i]+2)+"\"" in word:
-                                temp_word=word.replace("<ExplicitInputPort dataType=\"REAL_MATRIX\" id=\""+str(block_idmatblsk[i]+2)+"\"","<ExplicitInputPort dataColumns=\"-3\" dataType=\"REAL_MATRIX\" id=\""+str(block_idmatblsk[i]+2)+"\"")
+                            if  "ordering=\"2\" parent=\""+str(block_idmatblsk[i])+"\"" in word:
+                                temp_word=word.replace("<ExplicitInputPort dataType=\"REAL_MATRIX\"","<ExplicitInputPort dataColumns=\"-3\" dataType=\"REAL_MATRIX\"")
                                 i=i+1
                         if temp_word!="":
                             newline.append(temp_word)
@@ -826,8 +843,8 @@ def upload():
                     if "<ExplicitOutputPort dataType=\"REAL_MATRIX\"" in word:
                         temp_word=""
                         for i in range(len(block_idmatblsk)):
-                            if "<ExplicitOutputPort dataType=\"REAL_MATRIX\" id=\""+str(block_idmatblsk[i]+3)+"\"" in word:
-                                    temp_word=word.replace("<ExplicitOutputPort dataType=\"REAL_MATRIX\" id=\""+str(block_idmatblsk[i]+3)+"\"","<ExplicitOutputPort dataColumns=\"-3\" dataLines=\"-2\" dataType=\"REAL_MATRIX\" id=\""+str(block_idmatblsk[i]+3)+"\"")
+                            if "parent=\""+str(block_idmatblsk[i])+"\"" in word:
+                                    temp_word=word.replace("<ExplicitOutputPort dataType=\"REAL_MATRIX\"","<ExplicitOutputPort dataColumns=\"-3\" dataLines=\"-2\" dataType=\"REAL_MATRIX\"")
                                     i=i+1
                         if temp_word!="":
                             newline.append(temp_word)
@@ -847,8 +864,8 @@ def upload():
                     if "<ExplicitInputPort dataType=\"REAL_MATRIX\"" in word:
                         temp_word=""
                         for i in range(len(block_det)):
-                            if "<ExplicitInputPort dataType=\"REAL_MATRIX\" id=\""+str(block_det[i]+1)+"\"" in word:
-                                temp_word=word.replace("<ExplicitInputPort dataType=\"REAL_MATRIX\" id=\""+str(block_det[i]+1)+"\"","<ExplicitInputPort dataColumns=\"-1\" dataType=\"REAL_MATRIX\" id=\""+str(block_det[i]+1)+"\"")
+                            if "ordering=\"2\" parent =\""+str(block_det[i])+"\"" in word:
+                                temp_word=word.replace("<ExplicitInputPort dataType=\"REAL_MATRIX\"","<ExplicitInputPort dataColumns=\"-1\" dataType=\"REAL_MATRIX\"")
                                 i=i+1
                         if temp_word!="":
                             newline.append(temp_word)
@@ -867,8 +884,8 @@ def upload():
                     if "<ExplicitOutputPort dataType=\"REAL_MATRIX\"" in word:
                         temp_word=""
                         for i in range(len(block_det)):
-                            if "<ExplicitOutputPort dataType=\"REAL_MATRIX\" id=\""+str(block_det[i]+2)+"\"" in word:
-                                temp_word=word.replace("<ExplicitOutputPort dataType=\"REAL_MATRIX\" id=\""+str(block_det[i]+2)+"\"","<ExplicitOutputPort dataColumns=\"1\" dataLines=\"1\" dataType=\"REAL_MATRIX\" id=\""+str(block_det[i]+2)+"\"")
+                            if "parent=\""+str(block_det[i])+"\"" in word:
+                                temp_word=word.replace("<ExplicitOutputPort dataType=\"REAL_MATRIX\"","<ExplicitOutputPort dataColumns=\"1\" dataLines=\"1\" dataType=\"REAL_MATRIX\"")
                                 i=i+1
                         if temp_word!="":
                             newline.append(temp_word)
@@ -888,8 +905,8 @@ def upload():
                     if "<ExplicitOutputPort dataType=\"REAL_MATRIX\"" in word:
                         temp_word=""
                         for i in range(len(block_curl)):
-                            if "<ExplicitOutputPort dataType=\"REAL_MATRIX\" id=\""+str(block_curl[i]+4)+"\"" in word:
-                                temp_word=word.replace("<ExplicitOutputPort dataType=\"REAL_MATRIX\" id=\""+str(block_curl[i]+4)+"\"","<ExplicitOutputPort dataColumns=\"1\" dataLines=\"1\" dataType=\"REAL_MATRIX\" id=\""+str(block_curl[i]+4)+"\"")
+                            if "parent=\""+str(block_curl[i])+"\"" in word:
+                                temp_word=word.replace("<ExplicitOutputPort dataType=\"REAL_MATRIX\"","<ExplicitOutputPort dataColumns=\"1\" dataLines=\"1\" dataType=\"REAL_MATRIX\"")
                                 i=i+1
                         if temp_word!="":
                             newline.append(temp_word)
@@ -909,8 +926,8 @@ def upload():
                     if "<ExplicitInputPort dataType=\"REAL_MATRIX\"" in word:
                         temp_word=""
                         for i in range(len(block_diag)):
-                            if "<ExplicitInputPort dataType=\"REAL_MATRIX\" id=\""+str(block_diag[i]+1)+"\"" in word:
-                                    temp_word=word.replace("<ExplicitInputPort dataType=\"REAL_MATRIX\" id=\""+str(block_diag[i]+1)+"\"","<ExplicitInputPort dataColumns=\"1\" dataType=\"REAL_MATRIX\" id=\""+str(block_diag[i]+1)+"\"")
+                            if "ordering=\"2\" parent=\""+str(block_diag[i])+"\"" in word:
+                                    temp_word=word.replace("<ExplicitInputPort dataType=\"REAL_MATRIX\"","<ExplicitInputPort dataColumns=\"1\" dataType=\"REAL_MATRIX\"")
                                     i=i+1
                         if temp_word!="":
                             newline.append(temp_word)
@@ -929,8 +946,8 @@ def upload():
                     if "<ExplicitOutputPort dataType=\"REAL_MATRIX\"" in word:
                         temp_word=""
                         for i in range(len(block_diag)):
-                            if "<ExplicitOutputPort dataType=\"REAL_MATRIX\" id=\""+str(block_diag[i]+2)+"\"" in word:
-                                temp_word=word.replace("<ExplicitOutputPort dataType=\"REAL_MATRIX\" id=\""+str(block_diag[i]+2)+"\"","<ExplicitOutputPort dataColumns=\"-1\" dataType=\"REAL_MATRIX\" id=\""+str(block_diag[i]+2)+"\"")
+                            if "parent=\""+str(block_diag[i])+"\"" in word:
+                                temp_word=word.replace("<ExplicitOutputPort dataType=\"REAL_MATRIX\"","<ExplicitOutputPort dataColumns=\"-1\" dataType=\"REAL_MATRIX\"")
                                 i=i+1
                         if temp_word!="":
                             newline.append(temp_word)
@@ -950,8 +967,8 @@ def upload():
                     if "<ExplicitInputPort dataType=\"REAL_MATRIX\"" in word:
                         temp_word=""
                         for i in range(len(block_div)):
-                            if "<ExplicitInputPort dataType=\"REAL_MATRIX\" id=\""+str(block_div[i]+1)+"\"" in word:
-                                temp_word=word.replace("<ExplicitInputPort dataType=\"REAL_MATRIX\" id=\""+str(block_div[i]+1)+"\"","<ExplicitInputPort dataColumns=\"-3\" dataType=\"REAL_MATRIX\" id=\""+str(block_div[i]+1)+"\"")
+                            if "ordering=\"1\" parent=\""+str(block_div[i])+"\"" in word:
+                                temp_word=word.replace("<ExplicitInputPort dataType=\"REAL_MATRIX\"","<ExplicitInputPort dataColumns=\"-3\" dataType=\"REAL_MATRIX\"")
                                 i=i+1
                         if temp_word!="":
                             newline.append(temp_word)
@@ -970,8 +987,8 @@ def upload():
                     if "<ExplicitInputPort dataType=\"REAL_MATRIX\"" in word:
                         temp_word=""
                         for i in range(len(block_div)):
-                            if "<ExplicitInputPort dataType=\"REAL_MATRIX\" id=\""+str(block_div[i]+2)+"\"" in word:
-                                temp_word=word.replace("<ExplicitInputPort dataType=\"REAL_MATRIX\" id=\""+str(block_div[i]+2)+"\"","<ExplicitInputPort dataColumns=\"-3\" dataLines=\"-2\" dataType=\"REAL_MATRIX\" id=\""+str(block_div[i]+2)+"\"")
+                            if "ordering=\"2\" parent=\""+str(block_div[i])+"\"" in word:
+                                temp_word=word.replace("<ExplicitInputPort dataType=\"REAL_MATRIX\"","<ExplicitInputPort dataColumns=\"-3\" dataLines=\"-2\" dataType=\"REAL_MATRIX\"")
                                 i=i+1
                         if temp_word!="":
                             newline.append(temp_word)
