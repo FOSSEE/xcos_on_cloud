@@ -668,13 +668,9 @@ def upload():
 
         # List to contain all affich blocks
         blockaffich = new_xml.getElementsByTagName("AfficheBlock")
-        block_ida = []
         for block in blockaffich:
             if block.getAttribute("interfaceFunctionName") == "AFFICH_m":
-               #block_ida.append(block.getAttribute("id"))
-               #block.setAttribute('id', '-1')
                workspace_counter=4
-               #flag1=1
 
         # List to contain all the block IDs of tkscales so that we can create read blocks with these IDs
         block_id = []
@@ -1032,7 +1028,7 @@ def UpdateTKfile():
     # function which makes the initialazation and updation of the files with obtained new value
     # Get the file
     file = request.files['file']
-
+    
     # Check if the file is not null
     if file:
         filename1 = Details.uid+'_val.txt'
