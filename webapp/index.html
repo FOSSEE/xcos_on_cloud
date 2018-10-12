@@ -1462,9 +1462,12 @@
                                         if (!confirmValue) {
                                             return false;
                                         }
-					//Close simulation windows of earlier diagram for graph and affich 
+					//Close simulation windows of earlier diagram for graph and affich if exist
+					
+					if (typeof wnd !== 'undefined'&& typeof affichwnd !== 'undefined' ){
 					wnd.destroy(); //simulation window
 					affichwnd.destroy(); //affichm window
+					}
 					stopSimulation(); //stop scilab for earlier execution is not stopped
                                         myAjaxreq("Stop", "/UpdateTKfile"); // in case tkscale example will stop updating values
 					//to close tkscale window if any
@@ -4372,18 +4375,18 @@
    <!-- Creating p'id for each tkblock -->
    <!-- tkchange will call GetcurVal() if any one of the slider value is updated -->
    <!-- ViewExampleXcos will get the xcos file imported from the file with 'eid' obtained from 'view example' link -->
-   <p hidden="" id="tkchange"></p>
-   <p hidden="" id="tk1"></p>
-   <p hidden="" id="tk2"></p>
-   <p hidden="" id="tk3"></p>
-   <p hidden="" id="tk4"></p>
-   <p hidden="" id="tk5"></p>
-   <p hidden="" id="tk6"></p>
-   <p hidden="" id="tk7"></p>
-   <p hidden="" id="tk8"></p>
-   <p hidden="" id="tk9"></p>
-   <p hidden="" id="tk10"></p>
-   <p hidden="" id="ViewExampleXcos">XcosNull</p>
+   <p hidden id="tkchange"></p>
+   <p hidden id="tk1"></p>
+   <p hidden id="tk2"></p>
+   <p hidden id="tk3"></p>
+   <p hidden id="tk4"></p>
+   <p hidden id="tk5"></p>
+   <p hidden id="tk6"></p>
+   <p hidden id="tk7"></p>
+   <p hidden id="tk8"></p>
+   <p hidden id="tk9"></p>
+   <p hidden id="tk10"></p>
+   <p hidden id="ViewExampleXcos">XcosNull</p>
    <!-- Page passes the container for the graph to the program -->
    <body onload="main(document.getElementById('graphContainer'),
       document.getElementById('outlineContainer'),
