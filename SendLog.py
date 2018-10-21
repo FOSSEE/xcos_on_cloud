@@ -84,6 +84,10 @@ class Runtime:
     log_name = None
     # is thread running?
     tkbool = False
+    # in memory values
+    tk_deltatimes = None
+    tk_values = None
+    tk_times = None
     # List to store figure IDs from log_name
     figure_list = None
 
@@ -416,7 +420,7 @@ def kill_scilab(diagram = None):
         remove(runtime.log_name)
         runtime.log_name = None
 
-    stopDetailsThread(diagram)
+    stopDetailsThread(diagram, runtime)
 
 '''
 function to execute xcos file using scilab (scilab-adv-cli), get pid of process , access log file genarated by scilab
@@ -583,94 +587,19 @@ def delete_scifile():
     scifile.filename = ''
     save_scifile(scifile)
 
-# function which will check and make initialization of every required files.
-def findFile(diagram):
-    with open(join(diagram.sessiondir, VALUES_FOLDER, diagram.diagram_id+"_val.txt"), "r") as r:
-        line = r.readline()
-    # at first the val.txt contains "Start" indicating the starting of the process
-
-    if line == "Start":
-        runtime = get_runtime(diagram.uid, True)
-        runtime.tkbool = True
-        with open(join(diagram.sessiondir, VALUES_FOLDER, diagram.diagram_id+"_tktime.txt"), "w") as w:
-            # tktime.txt is the file where we will update the time basing on the parameter ("Period" of CLOCK_c) for each tkscale
-            w.write("0\n0\n0\n0\n0\n0\n0\n0\n0\n0")
-            # initialize all tktime values to 0
-
-        for i in range(10):
-            open(join(diagram.sessiondir, VALUES_FOLDER, diagram.diagram_id+"_tk"+str(i+1)+".txt"), "w").close();
-            # create empty tk text files
-        return 0
-    elif line=="Stop":
-        # at last the val.txt contains "Stop" indicating the ending process
-        return 1
-    return 2
-
-# function which changes flaoting to req scientific format
-def changeFormat(n):
-    n = float(n)
-    check = 1
-    exp = 0
-    if n<0:
-        n = n*-1
-        check=-1
-    while not(0<=n and n<1):
-        n = n/10
-        exp=exp+1
-    n=n*check
-    n = "%.3f" % n
-    exp = "%02d" % (exp, )
-
-    formated = n+"E+"+exp
-
-    return formated
-
 # function which appends the 'updated' ('new') value to the file
-def AppendtoTKfile(diagram, fname, tlist, i):
-    tl = tlist.split('  ')
-    # converting string to list which stores the Period parameter at 0 index, data to be appended at index 1
+def AppendtoTKfile(diagram, runtime):
+    starttime = runtime.tk_starttime
 
-    if(tl[1]==''):
-        # if data is empty, do not append it
-        return
-    with open(join(diagram.sessiondir, VALUES_FOLDER, diagram.diagram_id+"_tktime.txt"), 'r') as file:
-        # read the tktime folder to get tkfile time at respective index (tk1.txt at 0 index)
-        tktime = file.readlines()
-    # update the time
-    time = float(tktime[i])+float(tl[0])
-    tktime[i]=str(time)+'\n'
+    for i in range(diagram.tk_count):
+        fname = join(diagram.sessiondir, VALUES_FOLDER, diagram.diagram_id+"_tk"+str(i+1)+".txt")
 
-    with open(join(diagram.sessiondir, VALUES_FOLDER, diagram.diagram_id+"_tktime.txt"), 'w') as file:
-        # write the updated the time to tktime.txt
-        file.writelines( tktime )
-
-    data = tl[1]
-    time = changeFormat(time)
-
-    line = time+"  "+data+"\n"
-
-    # append data to the tk.txt
-    with open(fname, 'a') as w:
-        w.write(line)
-
-
-# function which take values from val.txt send the data to  append them in their respective 'tk' files.
-def getDetails(diagram):
-    with open(join(diagram.sessiondir, VALUES_FOLDER, diagram.diagram_id+"_val.txt"), "r") as r:
-        line=r.readline()
-        if line == 'Start':
-            line = '0.1  0.000E+00,' * diagram.tk_count + '0,' * (10 - diagram.tk_count)
-        tklist=line.split(',')
-
-        for i in range(len(tklist)):
-            tl = tklist[i].split('  ')
-
-            if  len(tklist)==1 or len(tl)==1:
-                break
-
-            fname=join(diagram.sessiondir, VALUES_FOLDER, diagram.diagram_id+"_tk"+str(i+1)+".txt")
-            AppendtoTKfile(diagram, fname, tklist[i], i)
-    return True
+        # append data to the tk.txt
+        with open(fname, 'a') as w:
+            while time() > starttime + runtime.tk_times[i] + runtime.tk_deltatimes[i]:
+                # update the time
+                runtime.tk_times[i] += runtime.tk_deltatimes[i]
+                w.write('%10.3E %10.3E\n' % (runtime.tk_times[i], runtime.tk_values[i]))
 
 
 # function which makes the initialisation of thread
@@ -680,22 +609,11 @@ def getDetailsThread(diagram):
         print('no runtime')
         return
 
-    if runtime.tkbool:
-        starttime = time()
-        getDetails(diagram)
-        endtime = time()
-        timeinterval = 0.1 + starttime - endtime
-        if timeinterval < 0.001:
-            timeinterval = 0.001
-        # calls the same function after 0.1 second
-        Timer(timeinterval, getDetailsThread, [diagram]).start()
+    while runtime.tkbool:
+        AppendtoTKfile(diagram, runtime)
+        gevent.sleep(0.1)
 
-def stopDetailsThread(diagram):
-    runtime = get_runtime(diagram.uid)
-    if runtime is None:
-        print('no runtime')
-        return
-
+def stopDetailsThread(diagram, runtime):
     runtime.tkbool = False # stops the thread
     gevent.sleep(LOOK_DELAY)
     for fn in glob.glob(join(diagram.sessiondir, VALUES_FOLDER, diagram.diagram_id)+"_*"):
@@ -1169,6 +1087,8 @@ def UpdateTKfile():
         print('no diagram')
         return "error"
 
+    runtime = get_runtime(diagram.uid, True)
+
     # function which makes the initialazation and updation of the files with obtained new value
     # Get the file
     file = request.files['file']
@@ -1177,16 +1097,36 @@ def UpdateTKfile():
     if not file:
         return "error"
 
-    filename1 = diagram.diagram_id+'_val.txt'
     # saves the file in values folder
-    file.save(join(session['sessiondir'], VALUES_FOLDER, filename1))
-    n = findFile(diagram)
-    if n==0:
+    line = file.read().decode()
+    if line == "Start":
+        # at first the val.txt contains "Start" indicating the starting of the process
+        runtime.tkbool = True
+        runtime.tk_starttime = time()
+        runtime.tk_deltatimes = [ ]
+        runtime.tk_values = [ ]
+        runtime.tk_times = [ ]
+        for i in range(diagram.tk_count):
+            runtime.tk_deltatimes.append(0.1)
+            runtime.tk_values.append(0)
+            runtime.tk_times.append(0)
+            open(join(diagram.sessiondir, VALUES_FOLDER, diagram.diagram_id+"_tk"+str(i+1)+".txt"), "w").close();
+            # create empty tk text files
         # starts the thread
-        getDetailsThread(diagram)
-    elif n==1:
+        Timer(0.1, getDetailsThread, [diagram]).start()
+    elif line == "Stop":
+        # at last the val.txt contains "Stop" indicating the ending process
         # stops the thread
-        stopDetailsThread(diagram)
+        stopDetailsThread(diagram, runtime)
+    else:
+        tklist = line.split(',')
+
+        for i in range(min(diagram.tk_count, len(tklist))):
+            tl = tklist[i].split('  ')
+            if len(tl) == 1:
+                break
+            runtime.tk_deltatimes[i] = float(tl[0])
+            runtime.tk_values[i] = float(tl[1])
     return ""
 
 
