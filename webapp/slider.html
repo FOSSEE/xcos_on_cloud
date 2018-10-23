@@ -1,42 +1,32 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-
-
-
-<link rel='stylesheet prefetch' href='css/rangeslider.css'>
-
-      <link rel="stylesheet" href="css/style.css">
-
-
-</head>
-
-<body>
-
-<div id="ranger" class="rangeslider--horizontal"></div>
+<html><head>
+  <meta charset="UTF-8" />
+  <link rel='stylesheet prefetch' href='css/rangeslider.css' />
+  <link rel="stylesheet" href="css/style.css" />
+</head><body>
+  <div id="ranger" class="rangeslider--horizontal"></div>
   <script src='js/jquery.min.js'></script>
-<script src='js/rangeslider.min.js'></script>
+  <script src='js/rangeslider.min.js'></script>
 
-<p style="position:relative;" id="curVal"></p>
+  <p style="position:relative;" id="curVal"></p>
 
-<script>
-
+  <script>
 function getParameterByName(name, url) {
-    if (!url) url = window.location.href;
-    name = name.replace(/[\[\]]/g, "\\$&");
-    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, " "));
+  if (!url) url = window.location.href;
+  name = name.replace(/[\[\]]/g, "\\$&");
+  var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+    results = regex.exec(url);
+  if (!results) return null;
+  if (!results[2]) return '';
+  return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
-var minimum= getParameterByName('min');
-var maximum=getParameterByName('max');
-var num =getParameterByName('num');
-var tag =getParameterByName('tag');
-var norm=getParameterByName('norm');
-var clientID=getParameterByName('clientID');
+
+var minimum = getParameterByName('min');
+var maximum = getParameterByName('max');
+var num = getParameterByName('num');
+var tag = getParameterByName('tag');
+var norm = getParameterByName('norm');
+var clientID = getParameterByName('clientID');
 var $ruler = $('<div class="rangeslider__ruler" />');
 var valueBubble = '<output class="rangeslider__value-bubble" />';
 document.title = "TKSCALE-"+clientID+"-"+num;
@@ -50,10 +40,10 @@ function updateValueBubble(pos, value, context) {
   var tempPosition = pos + context.grabPos;
   var position = (tempPosition <= context.handleDimension) ? context.handleDimension : (tempPosition >= context.maxHandlePos) ? context.maxHandlePos : tempPosition;
   document.getElementById('curVal').value=value;
- var temp = value/norm;
- temp = temp.toFixed(3);
+  var temp = value/norm;
+  temp = temp.toFixed(3);
   document.getElementById('curVal').style.top="200px";
- curVal.innerHTML = temp;
+  curVal.innerHTML = temp;
 
   GetSliderValue();
   if ($valueBubble.length) {
@@ -62,75 +52,40 @@ function updateValueBubble(pos, value, context) {
   }
 }
 
-
-
-$element
-  .rangeslider({
-    polyfill: false,
-    onInit: function() {
-          $ruler[0].innerHTML = getRulerRange(this.min, this.max, this.step);
+$element.rangeslider({
+  polyfill: false,
+  onInit: function() {
+    $ruler[0].innerHTML = getRulerRange(this.min, this.max, this.step);
     this.$range.append($ruler);
-        this.$range.append($(valueBubble));
-        //this.value = norm;
+    this.$range.append($(valueBubble));
     updateValueBubble(null, null, this);
-   //   $handle = $('.rangeslider__handle', this.$range);
-      //updateHandle($handle[0], this.value);
-    },
-    onSlide: function(pos, value) {
-
-        //console.log(curVal.value);
+  },
+  onSlide: function(pos, value) {
     updateValueBubble(pos, value, this);
   }
-  });
-
-  /*.on('input', function(e) {
-    //updateHandle($handle[0], this.value);
-
-  });*/
+});
 
 function updateHandle(el, val) {
   el.textContent = val;
-  //console.log(val);
 }
+
 function getRulerRange(min, max, step) {
   var range = '';
   var i = min;
-  var w=((max-min)/4);
+  var w = (max - min) / 4;
   while (i <= max) {
     range += i + ' ';
-    i = i + w;
+    i += w;
   }
   return range;
 }
 
-function GetSliderValue()
-{
-        var n = document.getElementById("curVal").innerHTML;
-        var check=1,exp=0;
-        if(n<0)
-        {
-            n=n*-1;
-            check=-1;
-        }
-        while(!(0<=n && n<1))
-        {
-
-            n=n/10; exp++;
-        }
-        n=n*check;
-        n = n.toFixed(3);
-        var format = ("0" + exp).slice(-2);
-        n=n+"E"+"+"+format;
-
-
-        var val1 = window.opener.document.getElementById(tag);
-        val1.innerHTML = n;
-        //console.log(n);
-
-        var val2 = window.opener.document.getElementById('tkchange');
-        val2.innerHTML=-10000;
+function GetSliderValue() {
+  var n = document.getElementById("curVal").innerHTML;
+  var val1 = window.opener.document.getElementById(tag);
+  val1.innerHTML = n;
+  var val2 = window.opener.document.getElementById('tkchange');
+  val2.innerHTML=-10000;
 }
-
-</script>
-</body>
-</html>
+  </script>
+</body></html>
