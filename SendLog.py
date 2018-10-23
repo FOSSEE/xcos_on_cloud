@@ -417,7 +417,8 @@ def kill_scilab(diagram = None):
         print('empty diagram')
     else:
         # Remove xcos file
-        remove(diagram.xcos_file_name)
+        #remove(diagram.xcos_file_name)
+        print('not removing', diagram.xcos_file_name)
         diagram.xcos_file_name = None
 
     runtime = get_runtime(diagram.uid, remove=True)
@@ -524,8 +525,12 @@ def start_scilab():
     runtime.log_name = "scilab-log-"+str(pid)+".txt"
 
     # Checks if such a file exists
+    count = 0
+    print('before: count=', count, 'isfile=', isfile(runtime.log_name), 'poll=', runtime.scilab_proc.poll())
     while not isfile(runtime.log_name) and runtime.scilab_proc.poll() is None:
         gevent.sleep(LOOK_DELAY)
+        count += 1
+    print(' after: count=', count, 'isfile=', isfile(runtime.log_name), 'poll=', runtime.scilab_proc.poll())
 
     # Start sending log to chart function for creating chart
     try:
@@ -564,11 +569,16 @@ def event_stream():
     if not isfile(runtime.log_name):
         print("log file does not exist")
         yield "event: error\ndata: None\n\n"
+    count = 0
+    print('before: count=', count, 'size=', os.stat(runtime.log_name).st_size, 'poll=', runtime.scilab_proc.poll())
     while os.stat(runtime.log_name).st_size == 0 and runtime.scilab_proc.poll() is None:
         gevent.sleep(LOOK_DELAY)
+        count += 1
+    print(' after: count=', count, 'size=', os.stat(runtime.log_name).st_size, 'poll=', runtime.scilab_proc.poll())
 
     with open(runtime.log_name, "r") as log_file:
         # Start sending log
+        eventcount = 1
         line = line_and_state(None, NOLINE)
         while line.set(get_line_and_state_modified(log_file, runtime.figure_list)) or len(runtime.figure_list) > 0:
             # Get the line and loop until the state is ENDING and figure_list empty
@@ -581,6 +591,8 @@ def event_stream():
                 yield "event: log\ndata: "+line.get_line()+"\n\n"
             # Reset line, so server won't send same line twice
             line = line_and_state(None, NOLINE)
+            eventcount += 1
+        print('sent', eventcount, 'events')
 
     # Finished Sending Log
     kill_scilab(diagram)
@@ -641,7 +653,8 @@ def stopDetailsThread(diagram, runtime):
     gevent.sleep(LOOK_DELAY)
     for fn in glob.glob(join(diagram.sessiondir, VALUES_FOLDER, diagram.diagram_id)+"_*"):
         # deletes all files created under the 'diagram_id' name
-        remove(fn)
+        #remove(fn)
+        print('not removing', fn)
 
 # Route that will process the file upload
 @app.route('/upload', methods=['POST'])
@@ -1179,7 +1192,8 @@ def DeleteFile():
     if fn == '' or fn[0] == '.' or '/' in fn:
         print('deletefile=', fn)
         return "error"
-    remove(fn) #deleting the file
+    #remove(fn) #deleting the file
+    print('not removing', fn)
     return "0"
 
 
