@@ -25,6 +25,20 @@ from os.path import abspath, basename, exists, isfile, join, splitext
 from tempfile import mkdtemp
 import re
 
+# USER CONFIGURATION SECTION - Edit as per local settings
+
+# The location of the extracted scilab_for_xcos_on_cloud. This can be either
+# relative to SendLog.py or an absolute path.
+SCIDIR = '../scilab_for_xcos_on_cloud'
+
+# The location to keep the flask session data on server.
+FLASKSESSIONDIR = '/tmp/flask-sessiondir'
+
+# The location to keep the session data on server.
+SESSIONDIR = '/tmp/sessiondir'
+
+# END OF USER CONFIGURATION SECTION
+
 def makedirs(dirname, dirtype):
     if not exists(dirname):
         print('making', dirtype, 'dir', dirname)
@@ -42,9 +56,7 @@ def remove(filename):
 
 monkey.patch_all(aggressive=False)
 
-FLASKSESSIONDIR = '/tmp/flask-sessiondir'
 makedirs(FLASKSESSIONDIR, 'top flask session')
-SESSIONDIR = '/tmp/sessiondir'
 makedirs(SESSIONDIR, 'top session')
 
 app = flask.Flask(__name__, static_folder='webapp/')
@@ -69,12 +81,14 @@ NOLINE = -1     # to indicate there is no line in log file further
 BLOCK_IDENTIFICATION = -2 # to indicate block id is present
 
 # Scilab dir
-SCI = abspath("../scilab_for_xcos_on_cloud/bin/scilab-adv-cli")
-STARTUPDIR = os.getcwd()
+SCIDIR = abspath(SCIDIR)
+SCI = join(SCIDIR, "bin", "scilab-adv-cli")
 READCONTENTFILE = abspath("Read_Content.txt")
 CONT_FRM_WRITE = abspath("cont_frm_write.sci")
 BASEDIR = abspath('webapp')
 IMAGEDIR = join(BASEDIR, 'res_imgs')
+# display limit for long strings
+DISPLAY_LIMIT = 10
 
 RUNTIME = {}
 
@@ -84,6 +98,7 @@ class Runtime:
     log_name = None
     # is thread running?
     tkbool = False
+    tk_starttime = None
     # in memory values
     tk_deltatimes = None
     tk_values = None
@@ -227,9 +242,9 @@ def add_diagram():
 
     return (diagram, scifile)
 
-def get_runtime(uid, create=False):
+def get_runtime(uid, *, create=False, remove=False):
     if uid in RUNTIME:
-        return RUNTIME[uid]
+        return RUNTIME.pop(uid) if remove else RUNTIME[uid]
     if create:
         runtime = RUNTIME[uid] = Runtime()
         print('added runtime[', uid, ']=', runtime, sep='')
@@ -381,7 +396,12 @@ def get_request_id(key = 'id'):
     if key not in args:
         print('No', key, 'in request.args')
         return ''
-    return args[key]
+    value = args[key]
+    if re.fullmatch(r'[0-9]+', value):
+        return value
+    displayvalue = value if len(value) <= DISPLAY_LIMIT + 3 else value[:DISPLAY_LIMIT] + '...'
+    print('Invalid value', displayvalue, 'for', key, 'in request.args')
+    return ''
 
 # Define function to kill scilab(if still running) and remove files
 def kill_scilab(diagram = None):
@@ -400,7 +420,7 @@ def kill_scilab(diagram = None):
         remove(diagram.xcos_file_name)
         diagram.xcos_file_name = None
 
-    runtime = get_runtime(diagram.uid)
+    runtime = get_runtime(diagram.uid, remove=True)
     if runtime is None:
         print('no runtime')
         return
@@ -433,13 +453,15 @@ def start_scilab():
     if diagram is None:
         print('no diagram')
         return "error"
-    runtime = get_runtime(diagram.uid, True)
+    runtime = get_runtime(diagram.uid, create=True)
+
+    pgrepscilab = [ "pgrep", "scilab-bin" ]
 
     # Get previously running scilab process IDs
-    proc = subprocess.Popen("pgrep scilab-bin", stdout=subprocess.PIPE, shell=True, universal_newlines=True)
+    proc = subprocess.Popen(pgrepscilab, stdout=subprocess.PIPE, universal_newlines=True)
     # out will contain output of command, the list of process IDs of scilab
     (out, err) = proc.communicate()
-    _l = len(out)
+    origoutset = set(out.split())
     # name of workspace file
     workspace="workspace.dat"
 
@@ -482,26 +504,27 @@ def start_scilab():
     print('running command', command)
     runtime.scilab_proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=os.setpgrp)
     # Wait till xcos is launched
-    while len(out) == _l:
-        # If length of out equals _l,
-        #    it means scilab hasn't launched yet
+    newoutset = set()
+    while len(newoutset) == 0:
+        # If length of newoutset equals 0, it means scilab hasn't launched yet
         # Wait
         gevent.sleep(LOOK_DELAY)
         # Get process IDs of scilab instances
-        proc = subprocess.Popen("pgrep scilab-bin", stdout=subprocess.PIPE, shell=True, universal_newlines=True)
+        proc = subprocess.Popen(pgrepscilab, stdout=subprocess.PIPE, universal_newlines=True)
         # out will contain output of command, the list of process IDs of scilab
         (out, err) = proc.communicate()
+        # newoutset will contain list of new scilab pids
+        newoutset = set(out.split()) - origoutset
 
-    # out will contain output of command, the list of process IDs of scilab
     # Get the latest process ID of scilab
-    pid = out.split()[-1]
+    pid = newoutset.pop()
     print("scilab-bin pid=", pid)
 
     # Log file name
     runtime.log_name = "scilab-log-"+str(pid)+".txt"
 
     # Checks if such a file exists
-    while not (isfile(runtime.log_name)):
+    while not isfile(runtime.log_name) and runtime.scilab_proc.poll() is None:
         gevent.sleep(LOOK_DELAY)
 
     # Start sending log to chart function for creating chart
@@ -535,30 +558,30 @@ def event_stream():
     runtime = get_runtime(diagram.uid)
     if runtime is None:
         print('no runtime')
-        return
+        yield "event: error\ndata: None\n\n"
 
     # Open the log file
-    if not (isfile(runtime.log_name)):
+    if not isfile(runtime.log_name):
         print("log file does not exist")
-        return
+        yield "event: error\ndata: None\n\n"
+    while os.stat(runtime.log_name).st_size == 0 and runtime.scilab_proc.poll() is None:
+        gevent.sleep(LOOK_DELAY)
 
-    log_file = open(runtime.log_name, "r")
-
-    # Start sending log
-    line = line_and_state(None, NOLINE)
-    while (line.set(get_line_and_state_modified(log_file, runtime.figure_list)) or len(runtime.figure_list) > 0):
-        # Get the line and loop until the state is ENDING and figure_list empty
-        # Determine if we get block id and give it to chart.js
-        if line.get_state()== BLOCK_IDENTIFICATION:
-            yield "event: block\ndata: "+line.get_line()+"\n\n"
-        elif line.get_state() != DATA:
-            gevent.sleep(LOOK_DELAY)
-        else:
-            yield "event: log\ndata: "+line.get_line()+"\n\n"
-        # Reset line, so server won't send same line twice
+    with open(runtime.log_name, "r") as log_file:
+        # Start sending log
         line = line_and_state(None, NOLINE)
+        while (line.set(get_line_and_state_modified(log_file, runtime.figure_list)) or len(runtime.figure_list) > 0):
+            # Get the line and loop until the state is ENDING and figure_list empty
+            # Determine if we get block id and give it to chart.js
+            if line.get_state()== BLOCK_IDENTIFICATION:
+                yield "event: block\ndata: "+line.get_line()+"\n\n"
+            elif line.get_state() != DATA:
+                gevent.sleep(LOOK_DELAY)
+            else:
+                yield "event: log\ndata: "+line.get_line()+"\n\n"
+            # Reset line, so server won't send same line twice
+            line = line_and_state(None, NOLINE)
 
-    log_file.close()
     # Finished Sending Log
     kill_scilab(diagram)
 
@@ -1087,8 +1110,6 @@ def UpdateTKfile():
         print('no diagram')
         return "error"
 
-    runtime = get_runtime(diagram.uid, True)
-
     # function which makes the initialazation and updation of the files with obtained new value
     # Get the file
     file = request.files['file']
@@ -1099,6 +1120,12 @@ def UpdateTKfile():
 
     # saves the file in values folder
     line = file.read().decode()
+    createruntime = line == "Start"
+    runtime = get_runtime(diagram.uid, create=createruntime)
+    if runtime is None:
+        print('no runtime')
+        return ""
+
     if line == "Start":
         # at first the val.txt contains "Start" indicating the starting of the process
         runtime.tkbool = True
@@ -1123,8 +1150,8 @@ def UpdateTKfile():
 
         for i in range(min(diagram.tk_count, len(tklist))):
             tl = tklist[i].split('  ')
-            if len(tl) == 1:
-                break
+            if len(tl) == 1 or tl[1] == '':
+                continue
             runtime.tk_deltatimes[i] = float(tl[0])
             runtime.tk_values[i] = float(tl[1])
     return ""
