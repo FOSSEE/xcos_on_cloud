@@ -432,11 +432,20 @@ function chart_init(wnd,affichwnd){
 				if(this.status==200){
                     //blob data type to receive the file
 					var blob=this.response;
-					console.log("check");
-					console.log(blob);
 					var url  = window.URL.createObjectURL(blob);
                     //popup for download option of the file
-					window.open(url);
+                                        var anchor = document.createElement("a");
+                                        document.body.appendChild(anchor);
+                                        anchor.style = "display: none";
+                                        anchor.href = url;
+                                        if (block == 21) {
+                                            anchor.download = "writec-" + clientID + ".datas";
+                                        } else {
+                                            anchor.download = "audio-" + clientID + ".au";
+                                        }
+                                        anchor.click();
+                                        document.body.removeChild(anchor);
+                                        window.URL.revokeObjectURL(url);
 				}
 			};
 			xhr.send(form);
@@ -450,10 +459,7 @@ function chart_init(wnd,affichwnd){
 				}
                                };
                         xhr2.send(form);
-		}
-
-
-		if(block < 5 ||block ==9 ||block ==23){ //added new condition for ceventscope
+		} else if(block < 5 ||block ==9 ||block ==23){ //added new condition for ceventscope
 			// process data for 2D-SCOPE blocks
                         
 			var figure_id = parseInt(data[5]),
