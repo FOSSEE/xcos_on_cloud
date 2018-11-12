@@ -2367,7 +2367,7 @@
                             xhr.open("POST", "/upload", true);
                             xhr.onload = function() {
                                 
-                                if(this.responseText!='error'){
+                                if(this.responseText.search(/^[0-9]+$/) == 0){
                                     // If no error in uploading, initialize chart
                                     clientID = this.responseText;
                                     document.title = 'Xcos-' + clientID;
@@ -2391,6 +2391,7 @@
                              });
 
                                 }else{
+                                    document.title = 'Xcos';
                                     alert("Error");
                                 }
                             };
