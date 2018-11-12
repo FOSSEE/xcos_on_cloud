@@ -688,7 +688,7 @@ def upload():
                         count+=1
                         splitline.append(list1[i])
             blocksplit = new_xml.getElementsByTagName("SplitBlock")
-            block_ids=[]#this stores the id of split blocks
+            block_ids=[] #this stores the id of split blocks
             for block in blocksplit:
                 if block.getAttribute("style") == "SPLIT_f":
                     block_ids.append(int(block.getAttribute("id")))
@@ -705,7 +705,7 @@ def upload():
             blockcontrol = new_xml.getElementsByTagName("ControlPort")
             for block in blockcontrol:
                 for i in range(len(finalsplit)):
-                    if block.getAttribute("parent") == str(finalsplit[i]):#match the lines with the parent of our spliblocks which we need to change
+                    if block.getAttribute("parent") == str(finalsplit[i]): #match the lines with the parent of our spliblocks which we need to change
                         block.setAttribute('id', '-1')
             blockcommand = new_xml.getElementsByTagName("CommandPort")
             for block in blockcommand:
@@ -713,12 +713,12 @@ def upload():
                     if block.getAttribute("parent") == str(finalsplit[i]):
 
                         block.setAttribute('id', '-1')
-            finalchangeid=[]#here we take the ids of command controllink which we will search and change
+            finalchangeid=[] #here we take the ids of command controllink which we will search and change
             for i in range(len(finalsplit)):
                 finalchangeid.append(finalsplit[i]+4)
                 finalchangeid.append(finalsplit[i]+5)
 
-            with open(temp_file_xml_name, 'w') as f:#here we save the contents
+            with open(temp_file_xml_name, 'w') as f: #here we save the contents
                 f.write(new_xml.toxml())
 
             with open(temp_file_xml_name, "r") as f:
@@ -1161,21 +1161,25 @@ def UpdateTKfile():
 @app.route('/downloadfile', methods=['POST'])
 def DownloadFile():
     fn = request.form['path']
-    download_file = join(session['sessiondir'], fn)
+    if fn == '' or fn[0] == '.' or '/' in fn:
+        print('downloadfile=', fn)
+        return "error"
     #check if audio file or binary file
     if "audio" in fn:
         mimetype = 'audio/basic'
     else:
         mimetype = 'application/octet-stream'
-    return flask.send_file(download_file, as_attachment=True, mimetype=mimetype)
+    return flask.send_from_directory(SESSIONDIR, fn, as_attachment=True, mimetype=mimetype)
 
 
 # route for deletion of binary and audio file
 @app.route('/deletefile', methods=['POST'])
 def DeleteFile():
     fn = request.form['path']
-    delete_file = join(session['sessiondir'], fn)
-    remove(delete_file)#deleting the file
+    if fn == '' or fn[0] == '.' or '/' in fn:
+        print('deletefile=', fn)
+        return "error"
+    remove(fn) #deleting the file
     return "0"
 
 
