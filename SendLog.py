@@ -73,6 +73,8 @@ SCIFUNC_FILES_FOLDER = 'scifunc_files' # to store uploaded sci files for sci-fun
 
 # Delay time to look for new line (in s)
 LOOK_DELAY = 0.1
+# Delay time to send log event to browser (in s)
+LOG_EVENT_DELAY = 0.05
 # States of the line
 INITIALIZATION = 0 # to indicate initialization of block in log file is encounter
 ENDING = 1      # to indicate ending of log file data for that block is encounter
@@ -570,7 +572,7 @@ def event_stream():
     with open(runtime.log_name, "r") as log_file:
         # Start sending log
         line = line_and_state(None, NOLINE)
-        while (line.set(get_line_and_state_modified(log_file, runtime.figure_list)) or len(runtime.figure_list) > 0):
+        while line.set(get_line_and_state_modified(log_file, runtime.figure_list)) or len(runtime.figure_list) > 0:
             # Get the line and loop until the state is ENDING and figure_list empty
             # Determine if we get block id and give it to chart.js
             if line.get_state()== BLOCK_IDENTIFICATION:
@@ -579,6 +581,7 @@ def event_stream():
                 gevent.sleep(LOOK_DELAY)
             else:
                 yield "event: log\ndata: "+line.get_line()+"\n\n"
+                gevent.sleep(LOG_EVENT_DELAY)
             # Reset line, so server won't send same line twice
             line = line_and_state(None, NOLINE)
 
