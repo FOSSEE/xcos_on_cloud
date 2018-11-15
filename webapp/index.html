@@ -3680,6 +3680,8 @@
                 function addToolbarButton(editor, toolbar, action, label, image, isTransparent) {
                     var button = document.createElement('button');
                     button.style.fontSize = '10';
+                    button.style.borderWidth = '2px';
+                    button.style.padding = '1px 6px 1px 6px';
                     createButtonImage(button, image);
                     if (isTransparent) {
                         button.style.background = 'transparent';
