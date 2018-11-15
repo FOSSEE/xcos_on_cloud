@@ -73,8 +73,6 @@ SCIFUNC_FILES_FOLDER = 'scifunc_files' # to store uploaded sci files for sci-fun
 
 # Delay time to look for new line (in s)
 LOOK_DELAY = 0.1
-# Delay time to send log event to browser (in s)
-LOG_EVENT_DELAY = 0.05
 # States of the line
 INITIALIZATION = 0 # to indicate initialization of block in log file is encounter
 ENDING = 1      # to indicate ending of log file data for that block is encounter
@@ -581,7 +579,6 @@ def event_stream():
                 gevent.sleep(LOOK_DELAY)
             else:
                 yield "event: log\ndata: "+line.get_line()+"\n\n"
-                gevent.sleep(LOG_EVENT_DELAY)
             # Reset line, so server won't send same line twice
             line = line_and_state(None, NOLINE)
 
