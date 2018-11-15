@@ -569,7 +569,6 @@ function showGraphWindow(graph, cell, diagRoot) {
         else{
             alert("Your browser does not support the HTML5 Blob.");
         }
-        console.log("hey");
     };
     dataMenuOptions[2].onclick = function() {              // To clear the graph window
         dataMenu.style.display = 'none';
