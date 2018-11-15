@@ -621,8 +621,8 @@ function chart_init(wnd,affichwnd){
 	eventSource.addEventListener("DONE", function(event){
 
 		eventSource.close(); 	// Close connection
+                eventSource = null;
 		console.log("Done");
-                chart_reset();
                 $('#img_loader').html("");
 		isDone = true;
 	}, false);
@@ -800,7 +800,16 @@ function chart_init(wnd,affichwnd){
 
 }
 
-
+/*
+ * chart_reset(): call when the simulation is to be stopped when any one of
+ * these happens:
+ *
+ * - user clicks on stop or simulate
+ * - user closes the simulation window
+ * - user loads a new diagram
+ *
+ * Do not call this when the DONE event is received.
+ */
 function chart_reset(){
 
         if (interval != null) {
