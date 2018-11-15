@@ -1516,7 +1516,6 @@
          			
          
                                     while (rootNode.nodeName != 'root') {
-         				               //console.log("rootnode.nodeName = "+rootNode.nodeName);
                                         /*
                                             Maverick
                                             Extracting 'Set Context' values from Xcos diagram and setting the same 
@@ -1540,7 +1539,6 @@
                                         } else {
          
                                             rootNode = rootNode.firstChild;
-         				                   //console.log("rootnode.nodeName = "+rootNode.nodeName);
                                         }
          
                                     }
@@ -2391,12 +2389,6 @@
                                     alert("Error");
                                 }
                             };
-                            xhr.onreadystatechange = function() {
-                                console.log("state: " + xhr.readyState);
-                            };
-                            xhr.upload.onprogress = function() {
-                                console.log("uploading...");
-                            };
                             xhr.send(form);
                         });
          	
@@ -3137,7 +3129,6 @@
                         var edge = graph.insertEdge(graph.getDefaultParent(), null, '', source, target);
                         // Get geometry of the edge
                         var geometry = graph.getModel().getGeometry(edge);
-                        //console.log(geometry);
                         /*
                          * Clone the geometry object
                          * NOTE: Direct manipulation of the geometry object may not be
@@ -3902,7 +3893,6 @@
                             var x = 0;
                             var y = (i / (leftNumber + 1)).toFixed(4);
                             var portType = leftArray[i - 1];
-                            //console.log(parentObj.inputIds);
                             if (parentObj != null) {
                                 createInputPort(graph, block, x, y, portType, 'left', i, nodeDataObject, parentObj.inputIds);
                             } else {
@@ -3916,7 +3906,6 @@
                             var x = (i / (topNumber + 1)).toFixed(4);
                             var y = 0;
                             var portType = topArray[i - 1];
-                            //console.log(parentObj.controlIds);
                             if (parentObj != null) {
                                 createInputPort(graph, block, x, y, portType, 'top', i, nodeDataObject, parentObj.controlIds);
                             } else {
@@ -3936,7 +3925,6 @@
                             var x = 1;
                             var y = (i / (rightNumber + 1)).toFixed(4);
                             var portType = rightArray[i - 1];
-                            //console.log(parentObj.outputIds);
                             if (parentObj != null) {
                                 createOutputPort(graph, block, x, y, portType, 'right', i, nodeDataObject, parentObj.outputIds);
                             } else {
@@ -3949,7 +3937,6 @@
                             var x = (i / (bottomNumber + 1)).toFixed(4);
                             var y = 1;
                             var portType = bottomArray[i - 1];
-                            //console.log(parentObj.commandIds);
                             if (parentObj != null) {
                                 createOutputPort(graph, block, x, y, portType, 'bottom', i, nodeDataObject, parentObj.commandIds);
                             } else {
@@ -3984,7 +3971,6 @@
                             var obj = new Object();
                             obj.newId = port.id;
                             obj.oldId = idArray[ordering - 1];
-                            //console.log(idArray[ordering-1]);
                             nodeDataObject[idArray[ordering - 1]] = obj;
                         }
          
@@ -4020,7 +4006,6 @@
                             var obj = new Object();
                             obj.newId = port.id;
                             obj.oldId = idArray[ordering - 1];
-                            //console.log(idArray[ordering-1]);
                             nodeDataObject[idArray[ordering - 1]] = obj;
                         }
          
