@@ -59,7 +59,6 @@ var create_new_chart = function(id, no_of_graph,ymin,ymax,xmin,xmax,type_chart,t
 	}
     else if(title_text.substring(0,7)=="CANIMXY"){
         //disable line by putting thickness as 0
-        console.log("check");
         thickness= 0
 
     }
@@ -455,7 +454,6 @@ function chart_init(wnd,affichwnd){
 				if(this.status==200){
                                         //blob data type to receive the file
 					var x=this.response;
-					console.log("File Deleted");
 				}
                                };
                         xhr2.send(form);
@@ -607,7 +605,6 @@ function chart_init(wnd,affichwnd){
 
 	// Error	
 	eventSource.addEventListener("ERROR", function(event){
-		console.log("Error: "+event.data);
 		chart_reset();
 		if(event.data=="Empty diagram") alert(event.data);
 		else alert("Error occured! "+event.data);
@@ -621,8 +618,7 @@ function chart_init(wnd,affichwnd){
 	eventSource.addEventListener("DONE", function(event){
 
 		eventSource.close(); 	// Close connection
-		console.log("Done");
-                chart_reset();
+                eventSource = null;
                 $('#img_loader').html("");
 		isDone = true;
 	}, false);
@@ -800,7 +796,16 @@ function chart_init(wnd,affichwnd){
 
 }
 
-
+/*
+ * chart_reset(): call when the simulation is to be stopped when any one of
+ * these happens:
+ *
+ * - user clicks on stop or simulate
+ * - user closes the simulation window
+ * - user loads a new diagram
+ *
+ * Do not call this when the DONE event is received.
+ */
 function chart_reset(){
 
         if (interval != null) {
