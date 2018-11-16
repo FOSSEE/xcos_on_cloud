@@ -1709,10 +1709,9 @@ function mfrequ_clk(frequ, offset) {
       var mu = listiteration(mat, kki, kk1i, 1);
       mat[kk[i]][1] = sum(convertarray(mu));
     }
-    //console.log(mat)
     //mat(kkk(:),:)=[];//https://repl.it/@RinkiNag24/HarmfulFlippantAntelopegroundsquirrel
     mat = deletemulrows(mat, kkk);
-    //console.log(mat)//it will delete the rows listed in kkk array.
+    //it will delete the rows listed in kkk array.
     var last = mat.length - 1;
     //m=[mat(1,1);mat(2:$,1)-mat(1:$-1,1)];
     //constructing the first element of opar
@@ -1742,13 +1741,12 @@ function mfrequ_clk(frequ, offset) {
     }
 
     count = mat[0][0];
-    //console.log(count);// we put the first element of the matrix in a variable that will initialise the counter
+    // we put the first element of the matrix in a variable that will initialise the counter
     m.splice(0, 1); //deleting first row frm m matrix
      var mn = Math.pow(2, m1.length)-1; // find the number of event output.
     fir = matmultiplication(ones(1,mn),-1)[0];// put all the element of the firing to -1//
     //var fir=-ones(1,mn);as ones not working will work in combinedjs
     var prog = matclone[0][1] - 1;
-    //console.log(prog);
     fir[prog] = mat[0][0] / parseFloat(den); // programming the corresponding event output
     // by the first element of the matrix mat.(first delay).
     var off = 0; // the offset in this case will be equal to 0 because it is implemented in the calculation
@@ -1898,7 +1896,6 @@ function transpose(
     });
   });
 }
-//console.log(transpose([1,2]));
 function gsort(items) {
   //gsort works same like gsort in scilab
   var duplicate = [];
@@ -2008,9 +2005,7 @@ function fixedpointgcd(v) {
   var N = v;
   var D = [[1], [1]];
   var den = lcm_more_than_two_numbers(convertarray(D));
-  //console.log(den);
   var value = gcd_more_than_two_numbers(convertarray(D));
-  //console.log(value);
   if (f > 0) {
     value = value * Math.pow(10, f);
   } else {
@@ -2074,7 +2069,6 @@ function uni(fr, of) {
   }
 
   var result = [m, k];
-  //console.log(k)
   return result;
 }
 
