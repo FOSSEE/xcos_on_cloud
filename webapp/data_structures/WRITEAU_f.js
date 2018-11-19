@@ -60,6 +60,10 @@ function WRITEAU_f() {
         var set_param_popup_title="Set WRITEAU_f block parameters";
         return set_param_popup_title
     }
+    WRITEAU_f.prototype.getDimensionForDisplay = function WRITEAU_f(){
+        var dimension = [80,40];
+        return dimension
+    }
 }
 
 //updated on 8/6/17 --ritveeka

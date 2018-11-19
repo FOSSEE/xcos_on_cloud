@@ -94,5 +94,9 @@ RAND_m.prototype.set = function RAND_m() {
         var set_param_popup_title="Set Random generator block parameters<br>     flag = 0 : Uniform distribution A is min and A+B max <br>     flag = 1 : Normal distribution A is mean and B deviation <br> <br>    A and B must be matrix with equal sizes <br>";
         return set_param_popup_title
     }
+    RAND_m.prototype.getDimensionForDisplay = function RAND_m(){
+        var dimension = [60,40];
+        return dimension
+    }
 
 }

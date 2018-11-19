@@ -40,4 +40,8 @@ EVTVARDLY.prototype.get_popup_title = function EVTVARDLY() {
         var set_param_popup_title="Set parameter of variable event delay";
         return set_param_popup_title
     }
+    EVTVARDLY.prototype.getDimensionForDisplay = function EVTVARDLY(){
+        var dimension = [60,40];
+        return dimension
+    }
 }

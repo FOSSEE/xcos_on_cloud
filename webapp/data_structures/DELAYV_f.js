@@ -71,5 +71,9 @@ function DELAYV_f() {
         var set_param_popup_title="Set delay parameters";
         return set_param_popup_title
         }
+    DELAYV_f.prototype.getDimensionForDisplay = function DELAYV_f(){
+        var dimension = [60,40];
+        return dimension
+    }
 
 }

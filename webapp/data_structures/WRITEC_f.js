@@ -72,4 +72,8 @@ function WRITEC_f () {
         var set_param_popup_title="Set WRITEC_f block parameters";
         return set_param_popup_title
     }
+    WRITEC_f.prototype.getDimensionForDisplay = function WRITEC_f(){
+        var dimension = [80,40];
+        return dimension
+    }
 }

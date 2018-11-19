@@ -110,4 +110,8 @@ function CBLOCK4() {
         var set_param_popup_title="Set C-Block4 block parameters";
         return set_param_popup_title
     }
+    CBLOCK4.prototype.getDimensionForDisplay = function CBLOCK4(){
+        var dimension = [80,40];
+        return dimension
+    }
 }

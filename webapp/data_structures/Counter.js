@@ -59,4 +59,8 @@ Counter.prototype.set = function Counter() {
         var set_param_popup_title="Set Counter block parameters<br> Integer counter generator<br>";
         return set_param_popup_title
     }
+    Counter.prototype.getDimensionForDisplay = function Counter(){
+        var dimension = [60,40];
+        return dimension
+    }
 }

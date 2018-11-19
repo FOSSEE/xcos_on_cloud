@@ -1797,4 +1797,8 @@ JKFLIPFLOP.prototype.set = function JKFLIPFLOP() {
         var set_param_popup_title="Set JKFLIPFLOP block parameters <br> JK flip-flop <br> The \"Initial Value\" must be 0 or 1 of type int8 <br> - Negative values are considered as int8(0) <br> - Positive values are considered as int8(1)";
         return set_param_popup_title
     }
+    JKFLIPFLOP.prototype.getDimensionForDisplay = function JKFLIPFLOP(){
+        var dimension = [40,60];
+        return dimension
+    }
 }

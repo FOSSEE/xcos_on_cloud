@@ -127,5 +127,9 @@ INTMUL.prototype.set = function INTMUL() {
         var set_param_popup_title="Set INTMUL block parameters <br> Integer matrix multiplication";
         return set_param_popup_title
     }
+    INTMUL.prototype.getDimensionForDisplay = function INTMUL(){
+        var dimension = [40,40];
+        return dimension
+    }
 
 }

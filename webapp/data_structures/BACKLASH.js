@@ -49,4 +49,8 @@ function BACKLASH() {
         var set_param_popup_title="Set backlash parameters";
         return set_param_popup_title
     }
+    BACKLASH.prototype.getDimensionForDisplay = function BACKLASH(){
+        var dimension = [60,40];
+        return dimension
+    }
 }

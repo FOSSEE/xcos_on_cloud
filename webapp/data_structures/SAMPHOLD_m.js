@@ -51,4 +51,8 @@ SAMPHOLD_m.prototype.set = function SAMPHOLD_m() {
         var set_param_popup_title="Set parameters Block";
         return set_param_popup_title
     }
+    SAMPHOLD_m.prototype.getDimensionForDisplay = function SAMPHOLD_m(){
+        var dimension = [40,40];
+        return dimension
+    }
 }

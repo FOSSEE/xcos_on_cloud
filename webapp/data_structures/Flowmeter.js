@@ -80,5 +80,9 @@ function Flowmeter() {
         var set_param_popup_title="Set Flowmeter block parameters:<br>";
         return set_param_popup_title
     }
+    Flowmeter.prototype.getDimensionForDisplay = function Flowmeter(){
+        var dimension = [40,40];
+        return dimension
+    }
 
 }

@@ -37,4 +37,8 @@ END_c.prototype.set = function END_c() {
         var set_param_popup_title="Set final simulation time";
         return set_param_popup_title
     }
+    END_c.prototype.getDimensionForDisplay = function END_c(){
+        var dimension = [40,40];
+        return dimension
+    }
 }

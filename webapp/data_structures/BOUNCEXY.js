@@ -107,5 +107,9 @@ BOUNCEXY.prototype.get_popup_title = function BOUNCEXY() {
         var set_param_popup_title="Set Scope parameters";
         return set_param_popup_title
     }
+    BOUNCEXY.prototype.getDimensionForDisplay = function BOUNCEXY(){
+        var dimension = [40,40];
+        return dimension
+    }
 
 }

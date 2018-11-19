@@ -69,5 +69,9 @@ function MATDIV() {
         var set_param_popup_title="Set MATDIV block";
         return set_param_popup_title
     }
+    MATDIV.prototype.getDimensionForDisplay = function MATDIV(){
+        var dimension = [40,40];
+        return dimension
+    }
 
 }

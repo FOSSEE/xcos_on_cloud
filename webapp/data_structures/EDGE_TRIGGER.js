@@ -129,4 +129,9 @@ function EDGE_TRIGGER() {
         var set_param_popup_title="Set edge trigger block parameters";
         return set_param_popup_title
     }
+    EDGE_TRIGGER.prototype.getDimensionForDisplay = function EDGE_TRIGGER(){
+        var dimension = [60,40];
+        return dimension
+    }
+
 }

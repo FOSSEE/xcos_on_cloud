@@ -69,5 +69,9 @@ function BARXY() {
         var set_param_popup_title="Set Scope parameters";
         return set_param_popup_title
     }
+    BARXY.prototype.getDimensionForDisplay = function BARXY(){
+        var dimension = [40,40];
+        return dimension
+    }
 
 }

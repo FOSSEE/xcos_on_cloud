@@ -44,5 +44,9 @@ TEXT_f.prototype.set = function TEXT_f() {
         var set_param_popup_title="Set Text block parameters";
         return set_param_popup_title
     }
+    TEXT_f.prototype.getDimensionForDisplay = function TEXT_f(){
+        var dimension = [40,40];
+        return dimension
+    }
 
 }

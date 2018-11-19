@@ -60,4 +60,8 @@ function QUANT_f() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    QUANT_f.prototype.getDimensionForDisplay = function QUANT_f(){
+        var dimension = [40,40];
+        return dimension
+    }
 }

@@ -101,5 +101,9 @@ IN_f.prototype.get_popup_title = function IN_f() {
         var set_param_popup_title="Set Input block parameters";
         return set_param_popup_title
     }
+    IN_f.prototype.getDimensionForDisplay = function IN_f(){
+        var dimension = [20,20];
+        return dimension
+    }
 
 }

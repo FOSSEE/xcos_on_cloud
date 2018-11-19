@@ -44,4 +44,8 @@ TKSCALE.prototype.set = function TKSCALE() {
         var set_param_popup_title="Set scale block parameters";
         return set_param_popup_title
     }
+    TKSCALE.prototype.getDimensionForDisplay = function TKSCALE(){
+        var dimension = [60,40];
+        return dimension
+    }
 }

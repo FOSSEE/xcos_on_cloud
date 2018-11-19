@@ -52,4 +52,8 @@ CLKGOTO.prototype.set = function CLKGOTO() {
         var set_param_popup_title="Set block parameters";
         return set_param_popup_title
     }
+    CLKGOTO.prototype.getDimensionForDisplay = function CLKGOTO(){
+        var dimension = [40,20];
+        return dimension
+    }
 }

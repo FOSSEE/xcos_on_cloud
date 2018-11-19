@@ -199,5 +199,9 @@ function DELAY_f() {
         var set_param_popup_title="This block implements as a discretized delay<br> it is consist of a shift register and a clock<br> value of the delay is given by<br> the discretization time step multiplied by the<br> number-1 of state of the register<br>";
         return set_param_popup_title
     }
+    DELAY_f.prototype.getDimensionForDisplay = function DELAY_f(){
+        var dimension = [40,40];
+        return dimension
+    }
 
 }

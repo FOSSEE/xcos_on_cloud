@@ -91,4 +91,8 @@ IFTHEL_f.prototype.set = function IFTHEL_f() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    IFTHEL_f.prototype.getDimensionForDisplay = function IFTHEL_f(){
+        var dimension = [60,60];
+        return dimension
+    }
 }

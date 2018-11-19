@@ -48,4 +48,8 @@ function EXPBLK_m() {
         var set_param_popup_title="Set a^u  block parameters";
         return set_param_popup_title
     }
+    EXPBLK_m.prototype.getDimensionForDisplay = function EXPBLK_m(){
+        var dimension = [40,40];
+        return dimension
+    }
 }

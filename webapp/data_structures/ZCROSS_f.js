@@ -59,4 +59,8 @@ function ZCROSS_f() {
         var set_param_popup_title="Set Zero-Crossing parameters <br>All surfaces must cross together";
         return set_param_popup_title
     }
+    ZCROSS_f.prototype.getDimensionForDisplay = function ZCROSS_f(){
+        var dimension = [40,40];
+        return dimension
+    }
 }

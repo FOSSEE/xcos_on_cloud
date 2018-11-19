@@ -63,5 +63,9 @@ MATTRAN.prototype.get_popup_title = function MATTRAN() {
         var set_param_popup_title="Set MATTRAN block";
         return set_param_popup_title
     }
+    MATTRAN.prototype.getDimensionForDisplay = function MATTRAN(){
+        var dimension = [60,40];
+        return dimension
+    }
 
 }

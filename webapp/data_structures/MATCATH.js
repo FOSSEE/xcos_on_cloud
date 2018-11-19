@@ -72,4 +72,8 @@ function MATCATH() {
         var set_param_popup_title="Set MATCATH block parameters";
         return set_param_popup_title
     }
+    MATCATH.prototype.getDimensionForDisplay = function MATCATH(){
+        var dimension = [40,60];
+        return dimension
+    }
 }

@@ -72,5 +72,9 @@ ESELECT_f.prototype.set = function ESELECT_f() {
         var set_param_popup_title="Set ESELECT block parameters";
         return set_param_popup_title
     }
+    ESELECT_f.prototype.getDimensionForDisplay = function ESELECT_f(){
+        var dimension = [80,40];
+        return dimension
+    }
 
 }

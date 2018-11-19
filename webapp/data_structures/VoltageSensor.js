@@ -34,4 +34,8 @@ function VoltageSensor() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    VoltageSensor.prototype.getDimensionForDisplay = function VoltageSensor(){
+        var dimension = [40,40];
+        return dimension
+    }
 }

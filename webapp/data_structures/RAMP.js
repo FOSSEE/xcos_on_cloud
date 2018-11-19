@@ -51,6 +51,10 @@ RAMP.prototype.set = function RAMP() {
         var set_param_popup_title="Set RAMP block parameters <br> Ramp function <br>";
         return set_param_popup_title
     }
+    RAMP.prototype.getDimensionForDisplay = function RAMP(){
+        var dimension = [40,40];
+        return dimension
+    }
 
 
 }

@@ -115,5 +115,9 @@ LOGIC.prototype.get_popup_title = function LOGIC() {
         var set_param_popup_title="Set LOGIC block parameters <br> Combinatorial logic <br> Rows of the matrix are the output values<br> Number of rows must be a power of two. <br> Number of columns gives the number of outputs.<br>";
         return set_param_popup_title
     }
+    LOGIC.prototype.getDimensionForDisplay = function LOGIC(){
+        var dimension = [40,40];
+        return dimension
+    }
 
 }

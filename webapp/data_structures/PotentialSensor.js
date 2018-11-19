@@ -34,4 +34,8 @@ function PotentialSensor() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    PotentialSensor.prototype.getDimensionForDisplay = function PotentialSensor(){
+        var dimension = [40,40];
+        return dimension
+    }
 }

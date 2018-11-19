@@ -75,5 +75,9 @@ function TCLSS() {
         var set_param_popup_title="Set continuous linear system parameters";
         return set_param_popup_title
     }
+    TCLSS.prototype.getDimensionForDisplay = function TCLSS(){
+        var dimension = [60,40];
+        return dimension
+    }
 
 }

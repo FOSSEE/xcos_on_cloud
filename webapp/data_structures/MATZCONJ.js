@@ -39,4 +39,8 @@ function MATZCONJ() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    MATZCONJ.prototype.getDimensionForDisplay = function MATZCONJ(){
+        var dimension = [40,40];
+        return dimension
+    }
 }

@@ -33,5 +33,9 @@ function CurrentSensor() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    CurrentSensor.prototype.getDimensionForDisplay = function CurrentSensor(){
+        var dimension = [40,40];
+        return dimension
+    }
 
 }

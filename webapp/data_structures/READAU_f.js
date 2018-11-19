@@ -83,4 +83,8 @@ function READAU_f() {
         var set_param_popup_title="Set READAU_f block parameters <br>(Read Audio File)<br>Read is done on a binary '.au' file";
         return set_param_popup_title
     }
+    READAU_f.prototype.getDimensionForDisplay = function READAU_f(){
+        var dimension = [100,40];
+        return dimension
+    }
 }

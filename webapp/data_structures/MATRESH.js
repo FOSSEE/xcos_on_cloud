@@ -106,5 +106,9 @@ MATRESH.prototype.set = function MATRESH() {
         var set_param_popup_title="Set MATRESH block parameters";
         return set_param_popup_title
     }
+    MATRESH.prototype.getDimensionForDisplay = function MATRESH(){
+        var dimension = [60,40];
+        return dimension
+    }
 
 }

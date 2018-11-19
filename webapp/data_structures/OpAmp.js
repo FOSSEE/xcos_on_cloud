@@ -59,4 +59,8 @@ function OpAmp() {
         var set_param_popup_title="Set block parameters:";
         return set_param_popup_title
     }
+    OpAmp.prototype.getDimensionForDisplay = function OpAmp(){
+        var dimension = [60,100];
+        return dimension
+    }
 }

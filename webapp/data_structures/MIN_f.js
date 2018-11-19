@@ -26,4 +26,9 @@ function MIN_f() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    MIN_f.prototype.getDimensionForDisplay = function MIN_f(){
+        var dimension = [40,40];
+        return dimension
+    }
+
 }

@@ -49,4 +49,8 @@ Capacitor.prototype.get_popup_title = function Capacitor() {
         var set_param_popup_title="Set Capacitor block parameter";
         return set_param_popup_title
     }
+    Capacitor.prototype.getDimensionForDisplay = function Capacitor(){
+        var dimension = [40,22];
+        return dimension
+    }
 }

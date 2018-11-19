@@ -132,4 +132,8 @@ PNP.prototype.set = function PNP() {
         var set_param_popup_title="Set PNP block parameters";
         return set_param_popup_title
     }
+    PNP.prototype.getDimensionForDisplay = function PNP(){
+        var dimension = [40,40];
+        return dimension
+    }
 }

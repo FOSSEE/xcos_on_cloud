@@ -88,6 +88,10 @@ SWITCH2_m.prototype.set = function SWITCH2_m() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    SWITCH2_m.prototype.getDimensionForDisplay = function SWITCH2_m(){
+        var dimension = [40,40];
+        return dimension
+    }
 
 
 }

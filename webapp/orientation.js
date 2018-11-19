@@ -20,9 +20,9 @@ function transformBlockImage(graph, cell) {
     var point_y = geometry.y;
     //IS_GC is to check if browser is Google Chrome, IS_FF is for Firefox. Updating the image style.
     if (mxClient.IS_GC == true) {
-        details['label'] = '<img src="' + style['imagePath'] + '" height=80px; width=80px; style="  transform:translate(' + point_x + 'px,' + point_y + 'px) rotate(' + cell.currentAngle + 'deg) scale(' + cell.flipX + ',' + cell.flipY + '); "/>';
+        details['label'] = '<img src="' + style['imagePath'] + '" width="'+(geometry.width-5)+'px"; height="'+(geometry.height-5)+'px"; style="  transform:translate(' + point_x + 'px,' + point_y + 'px) rotate(' + cell.currentAngle + 'deg) scale(' + cell.flipX + ',' + cell.flipY + '); "/>';
     } else {
-        details['label'] = '<img src="' + style['imagePath'] + '" height=80px; width=80px; style="  transform: rotate(' + cell.currentAngle + 'deg) scale(' + cell.flipX + ',' + cell.flipY + '); "/>';
+        details['label'] = '<img src="' + style['imagePath'] + '" width="'+(geometry.width-5)+'px"; height="'+(geometry.height-5)+'px"; style="  transform: rotate(' + cell.currentAngle + 'deg) scale(' + cell.flipX + ',' + cell.flipY + '); "/>';
     }
     var enc = new mxCodec(mxUtils.createXmlDocument());
     var value = enc.encode(details);

@@ -63,5 +63,9 @@ function CCS() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    CCS.prototype.getDimensionForDisplay = function CCS(){
+        var dimension = [42,60];
+        return dimension
+    }
 
 }

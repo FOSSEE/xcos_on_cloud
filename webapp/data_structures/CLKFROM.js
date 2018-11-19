@@ -39,5 +39,9 @@ function CLKFROM() {
         var set_param_popup_title="Set block parameters";
         return set_param_popup_title
     }
+    CLKFROM.prototype.getDimensionForDisplay = function CLKFROM(){
+        var dimension = [40,20];
+        return dimension
+    }
 
 }

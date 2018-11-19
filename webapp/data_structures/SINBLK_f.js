@@ -26,4 +26,8 @@ function SINBLK_f() {
         var set_param_popup_title="Set Parameters";
         return set_param_popup_title
     }
+    SINBLK_f.prototype.getDimensionForDisplay = function SINBLK_f(){
+        var dimension = [40,40];
+        return dimension
+    }
 }

@@ -300,5 +300,9 @@ function Sigbuilder() {
         var set_param_popup_title="Spline data";
         return set_param_popup_title
     }
+    Sigbuilder.prototype.getDimensionForDisplay = function Sigbuilder(){
+        var dimension = [60,40];
+        return dimension
+    }
 
 }

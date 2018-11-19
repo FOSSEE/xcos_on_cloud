@@ -74,4 +74,8 @@ GENERAL_f.prototype.get = function GENERAL_f() {
         var set_param_popup_title="Set General Zero-Crossing parameters";
         return set_param_popup_title
     }
+    GENERAL_f.prototype.getDimensionForDisplay = function GENERAL_f(){
+        var dimension = [60,40];
+        return dimension
+    }
 }

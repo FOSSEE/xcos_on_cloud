@@ -49,4 +49,8 @@ function GAINBLK_f() {
         var set_param_popup_title="Set gain block parameters";
         return set_param_popup_title
         }
+    GAINBLK_f.prototype.getDimensionForDisplay = function GAINBLK_f(){
+        var dimension = [40,40];
+        return dimension
+    }
 }

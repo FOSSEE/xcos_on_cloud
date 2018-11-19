@@ -26,5 +26,9 @@ function VirtualCLK0() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    VirtualCLK0.prototype.getDimensionForDisplay = function VirtualCLK0(){
+        var dimension = [40,40];
+        return dimension
+    }
 
 }

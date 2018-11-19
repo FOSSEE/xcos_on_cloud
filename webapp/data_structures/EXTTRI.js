@@ -98,5 +98,9 @@ EXTTRI.prototype.set = function EXTTRI() {
         var set_param_popup_title="Set EXTTRI block parameters";
         return set_param_popup_title
     }
+    EXTTRI.prototype.getDimensionForDisplay = function EXTTRI(){
+        var dimension = [60,40];
+        return dimension
+    }
 
 }

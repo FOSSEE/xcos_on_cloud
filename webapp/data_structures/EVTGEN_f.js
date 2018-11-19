@@ -38,4 +38,8 @@ EVTGEN_f.prototype.get_popup_title = function EVTGEN_f() {
         var set_param_popup_title="Set Event time";
         return set_param_popup_title
     }
+    EVTGEN_f.prototype.getDimensionForDisplay = function EVTGEN_f(){
+        var dimension = [60,40];
+        return dimension
+    }
 }

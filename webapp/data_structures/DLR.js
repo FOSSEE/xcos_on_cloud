@@ -157,4 +157,8 @@ function DLR() {
         var set_param_popup_title="Set discrete SISO transfer parameters";
         return set_param_popup_title
     }
+    DLR.prototype.getDimensionForDisplay = function DLR(){
+        var dimension = [60,40];
+        return dimension
+    }
 }

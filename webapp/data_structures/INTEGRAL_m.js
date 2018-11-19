@@ -123,4 +123,8 @@ function INTEGRAL_m() {
         var set_param_popup_title="Set Integral block parameters";
         return set_param_popup_title
     }
+    INTEGRAL_m.prototype.getDimensionForDisplay = function INTEGRAL_m(){
+        var dimension = [40,40];
+        return dimension
+    }
 }

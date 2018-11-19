@@ -38,5 +38,10 @@ function CLKSOMV_f() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    
+    CLKSOMV_f.prototype.getDimensionForDisplay = function CLKSOMV_f(){
+        var dimension = [40,40];
+        return dimension
+    }
 
 }

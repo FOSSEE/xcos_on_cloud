@@ -65,5 +65,9 @@ function MUX_f() {
         var set_param_popup_title="Set MUX block parameters";
         return set_param_popup_title
     }
+    MUX_f.prototype.getDimensionForDisplay = function MUX_f(){
+        var dimension = [10,40];
+        return dimension
+    }
 
 }

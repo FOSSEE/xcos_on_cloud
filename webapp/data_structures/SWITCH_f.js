@@ -72,5 +72,9 @@ SWITCH_f.prototype.get_popup_title = function SWITCH_f() {
         var set_param_popup_title="Set switch parameters";
         return set_param_popup_title
     }
+    SWITCH_f.prototype.getDimensionForDisplay = function SWITCH_f(){
+        var dimension = [40,40];
+        return dimension
+    }
 
 }

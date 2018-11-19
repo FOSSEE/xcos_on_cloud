@@ -79,4 +79,8 @@ DLSS.prototype.set = function DLSS() {
         var set_param_popup_title="Set discrete linear system parameters";
         return set_param_popup_title
     }
+    DLSS.prototype.getDimensionForDisplay = function DLSS(){
+        var dimension = [80,40];
+        return dimension
+    }
 }

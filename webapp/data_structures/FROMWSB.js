@@ -202,4 +202,8 @@ function FROMWSB() {
         var set_param_popup_title="Set From_Workspace block parameters <br>";
         return set_param_popup_title
     }
+    FROMWSB.prototype.getDimensionForDisplay = function FROMWSB(){
+        var dimension = [100,40];
+        return dimension
+    }
 }

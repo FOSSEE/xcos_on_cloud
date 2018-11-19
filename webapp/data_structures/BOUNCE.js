@@ -98,4 +98,8 @@ function BOUNCE() {
         var set_param_popup_title="Set BOUNCE Block";
         return set_param_popup_title
     }
+    BOUNCE.prototype.getDimensionForDisplay = function BOUNCE(){
+        var dimension = [60,40];
+        return dimension
+    }
 }

@@ -47,4 +47,8 @@ Resistor.prototype.get_popup_title = function Resistor() {
         var set_param_popup_title="Set Resistor block parameter";
         return set_param_popup_title
     }
+    Resistor.prototype.getDimensionForDisplay = function Resistor(){
+        var dimension = [40,20];
+        return dimension
+    }
 }

@@ -69,5 +69,9 @@ MATDET.prototype.set = function MATDET() {
         var set_param_popup_title="Set MATDET block";
         return set_param_popup_title
     }
+    MATDET.prototype.getDimensionForDisplay = function MATDET(){
+        var dimension = [40,40];
+        return dimension
+    }
 
 }

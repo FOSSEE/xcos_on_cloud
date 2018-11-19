@@ -38,4 +38,8 @@ function INTEGRAL_f() {
         var set_param_popup_title="Set continuous linear system parameters";
         return set_param_popup_title
     }
+    INTEGRAL_f.prototype.getDimensionForDisplay = function INTEGRAL_f(){
+        var dimension = [40,40];
+        return dimension
+    }
 }

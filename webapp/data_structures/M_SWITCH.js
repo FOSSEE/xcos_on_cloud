@@ -65,4 +65,8 @@ M_SWITCH.prototype.set = function M_SWITCH() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    M_SWITCH.prototype.getDimensionForDisplay = function M_SWITCH(){
+        var dimension = [50,40];
+        return dimension
+    }
 }

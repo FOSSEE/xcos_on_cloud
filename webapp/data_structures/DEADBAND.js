@@ -25,7 +25,7 @@ function DEADBAND() {
     DEADBAND.prototype.details = function DEADBAND() {
         return this.x;
     }
-DEADBAND.prototype.get = function DEADBAND() {
+    DEADBAND.prototype.get = function DEADBAND() {
         var options={
             maxp:["End of dead band",this.maxp],
             minp:["Start of dead band",this.minp],
@@ -33,7 +33,7 @@ DEADBAND.prototype.get = function DEADBAND() {
         }
         return options
     }
-DEADBAND.prototype.set = function DEADBAND() {
+    DEADBAND.prototype.set = function DEADBAND() {
     this.maxp = parseFloat((arguments[0]["maxp"]))
     this.minp = parseFloat((arguments[0]["minp"]))
     if(this.maxp<=this.minp){
@@ -55,9 +55,13 @@ DEADBAND.prototype.set = function DEADBAND() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
-DEADBAND.prototype.get_popup_title = function DEADBAND() {
+    DEADBAND.prototype.get_popup_title = function DEADBAND() {
         var set_param_popup_title="Set Deadband parameters";
         return set_param_popup_title
+    }
+    DEADBAND.prototype.getDimensionForDisplay = function DEADBAND(){
+        var dimension = [40,40];
+        return dimension
     }
 
 }

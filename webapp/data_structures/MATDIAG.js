@@ -67,4 +67,8 @@ function MATDIAG() {
         var set_param_popup_title="Set MATDIAG block";
         return set_param_popup_title
     }
+    MATDIAG.prototype.getDimensionForDisplay = function MATDIAG(){
+        var dimension = [40,40];
+        return dimension
+    }
 }

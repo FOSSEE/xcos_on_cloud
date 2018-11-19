@@ -76,4 +76,8 @@ CONSTRAINT2_c.prototype.set = function CONSTRAINT2_c() {
         var set_param_popup_title="Set Constraint block parameters";
         return set_param_popup_title
     }
+    CONSTRAINT2_c.prototype.getDimensionForDisplay = function CONSTRAINT2_c(){
+        var dimension = [60,40];
+        return dimension
+    }
 }

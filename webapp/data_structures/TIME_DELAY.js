@@ -33,7 +33,7 @@ function TIME_DELAY() {
         }
         return options
     }
-TIME_DELAY.prototype.set = function TIME_DELAY() {
+    TIME_DELAY.prototype.set = function TIME_DELAY() {
     this.T = parseInt((arguments[0]["T"]))
     this.init = parseInt((arguments[0]["init"]))
     this.N = parseInt((arguments[0]["N"]))
@@ -55,9 +55,13 @@ TIME_DELAY.prototype.set = function TIME_DELAY() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
-TIME_DELAY.prototype.get_popup_title = function TIME_DELAY() {
+    TIME_DELAY.prototype.get_popup_title = function TIME_DELAY() {
         var set_param_popup_title="Set delay parameters";
         return set_param_popup_title
+    }
+    TIME_DELAY.prototype.getDimensionForDisplay = function TIME_DELAY(){
+        var dimension = [70,40];
+        return dimension
     }
 
 }

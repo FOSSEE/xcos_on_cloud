@@ -1667,8 +1667,7 @@
                                                 if (style != null && style['image'] != null) {
          
                                                     // Make label as a image html element
-                                                    var label = '<img src="' + style['image'] + '" height="80" width="80">';
-         
+                                                    var label = '<img src="' + style['image'] + '" width="'+ (geometryCell.width-5) +'px" height="'+ (geometryCell.height-5) +'px">';
                                                     // Set label
                                                     style['label'] = label;
                                                     style['imagePath'] = style['image'];
@@ -1692,8 +1691,7 @@
                                                     node.setAttribute('label', style['label']);
                                                 }
                                                 node.setAttribute('parent', temp.getAttribute('id'));
-         
-                                                var v1 = graph.insertVertex(graph.getDefaultParent(), null, node, geometryCell.x, geometryCell.y, 80, 80, ifaceFuncName);
+                                                var v1 = graph.insertVertex(graph.getDefaultParent(), null, node, geometryCell.x, geometryCell.y, geometryCell.width, geometryCell.height, ifaceFuncName);
                                                 // @Chhavi: Additional attribute to store the block's instance
                                                 v1.blockInstance = createInstanceTag(details_instance);
                                                 temporaryMapObject.newId = v1.id;
@@ -2878,9 +2876,9 @@
                              */
              
                             if (style != null && style['image'] != null) {
-         
+                            
                                 // Make label as a image html element
-                                var label = '<img src="' + style['image'] + '" height="80" width="80">';
+                                var label = '<img src="' + style['image'] + '" width="'+ (geometry.width-5) +'px" height="'+ (geometry.height-5) +'px">';
                                 // Set label
                                 style['label'] = label;
          
@@ -2948,8 +2946,7 @@
                                     commandPorts.push("COMMAND");
                                 }
                             }
-                            v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, name);
-         
+                            v1 = graph.insertVertex(parent, null, node, x, y,geometry.width, geometry.height, name);
                             // @Chhavi: Additional attribute to store the block's instance
                             v1.blockInstance = createInstanceTag(details_instance);
                             v1.currentAngle = 0;
@@ -3778,6 +3775,7 @@
                             var stylesheet = graph.getStylesheet();
                             // From the stylesheet, get the style of the particular block
                             var style = stylesheet.styles[name];
+                            var dimensionForBlock = details_instance.getDimensionForDisplay();
          
                             /*
                              * When a particular block is loaded for the first time,
@@ -3790,10 +3788,9 @@
                              *       set only once.
                              */
                             if (style != null && style['image'] != null) {
-         
+                                
                                 // Make label as a image html element
-                                var label = '<img src="' + style['image'] + '" height="80" width="80">';
-         
+                                var label = '<img src="' + style['image'] + '" width="'+(dimensionForBlock[0]-5)+'" height="'+(dimensionForBlock[1]-5)+'">';
                                 // Set label
                                 style['label'] = label;
          
@@ -3859,8 +3856,7 @@
                                     commandPorts.push("COMMAND");
                                 }
                             }
-                            v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, name);
-         
+                            v1 = graph.insertVertex(parent, null, node, x, y, dimensionForBlock[0], dimensionForBlock[1], name);
                             // @Chhavi: Additional attribute to store the block's instance
                             v1.blockInstance = createInstanceTag(details_instance);
                             v1.currentAngle = 0;
@@ -3888,8 +3884,8 @@
          
                     var dragElt = document.createElement('div');
                     dragElt.style.border = 'dashed black 1px';
-                    dragElt.style.width = '80px';
-                    dragElt.style.height = '80px';
+                    dragElt.style.width = '40px';
+                    dragElt.style.height = '40px';
          
                     // Creates the image which is used as the drag icon (preview)
                     var ds = mxUtils.makeDraggable(img, graph, funct, dragElt, 0, 0, true, true);

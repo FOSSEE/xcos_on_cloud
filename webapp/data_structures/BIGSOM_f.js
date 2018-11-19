@@ -43,4 +43,8 @@ function BIGSOM_f() {
         var set_param_popup_title="Set sum block parameters";
         return set_param_popup_title
     }
+    BIGSOM_f.prototype.getDimensionForDisplay = function BIGSOM_f(){
+        var dimension = [40,60];
+        return dimension
+    }
 }

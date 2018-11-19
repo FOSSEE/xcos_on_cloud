@@ -57,4 +57,8 @@ function GOTO() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    GOTO.prototype.getDimensionForDisplay = function GOTO(){
+        var dimension = [40,20];
+        return dimension
+    }
 }

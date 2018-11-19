@@ -106,5 +106,9 @@ CUMSUM.prototype.set = function CUMSUM() {
         var set_param_popup_title="Set CUMSUM block parameters";
         return set_param_popup_title
     }
+    CUMSUM.prototype.getDimensionForDisplay = function CUMSUM(){
+        var dimension = [60,40];
+        return dimension
+    }
 
 }

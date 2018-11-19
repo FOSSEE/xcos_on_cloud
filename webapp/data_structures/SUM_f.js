@@ -46,4 +46,8 @@ SUM_f.prototype.set = function SUM_f() {
         var set_param_popup_title="Set Parameters";
         return set_param_popup_title
     }
+    SUM_f.prototype.getDimensionForDisplay = function SUM_f(){
+        var dimension = [20,20];
+        return dimension
+    }
 }

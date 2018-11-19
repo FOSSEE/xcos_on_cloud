@@ -45,4 +45,8 @@ function SOM_f() {
         var set_param_popup_title="Set Parameters";
         return set_param_popup_title
     }
+    SOM_f.prototype.getDimensionForDisplay = function SOM_f(){
+        var dimension = [40,40];
+        return dimension
+    }
 }

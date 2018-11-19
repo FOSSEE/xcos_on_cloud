@@ -57,4 +57,8 @@ function Diode() {
         var set_param_popup_title="Set Diode block parameter";
         return set_param_popup_title
     }
+    Diode.prototype.getDimensionForDisplay = function Diode(){
+        var dimension = [40,20];
+        return dimension
+    }
 }

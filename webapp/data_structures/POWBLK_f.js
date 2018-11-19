@@ -50,4 +50,8 @@ POWBLK_f.prototype.get_popup_title = function POWBLK_f() {
         var set_param_popup_title="Set u^a block parameters";
         return set_param_popup_title
     }
+    POWBLK_f.prototype.getDimensionForDisplay = function POWBLK_f(){
+        var dimension = [40,40];
+        return dimension
+    }
 }

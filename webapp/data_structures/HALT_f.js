@@ -37,4 +37,8 @@ HALT_f.prototype.get_popup_title = function HALT_f() {
         var set_param_popup_title="Set Halt block parameters";
         return set_param_popup_title
     }
+    HALT_f.prototype.getDimensionForDisplay = function HALT_f(){
+        var dimension = [40,40];
+        return dimension
+    }
 }

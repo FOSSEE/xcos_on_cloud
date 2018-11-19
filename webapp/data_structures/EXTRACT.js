@@ -98,5 +98,9 @@ function EXTRACT() {
         var set_param_popup_title="Set EXTRACT Block";
         return set_param_popup_title
     }
+    EXTRACT.prototype.getDimensionForDisplay = function EXTRACT(){
+        var dimension = [60,40];
+        return dimension
+    }
 
 }

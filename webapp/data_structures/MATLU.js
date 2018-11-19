@@ -66,4 +66,8 @@ function MATLU() {
         var set_param_popup_title="Set MATLU block parameters";
         return set_param_popup_title
     }
+    MATLU.prototype.getDimensionForDisplay = function MATLU(){
+        var dimension = [40,40];
+        return dimension
+    }
 }

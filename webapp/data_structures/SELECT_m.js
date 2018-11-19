@@ -54,4 +54,8 @@ SELECT_m.prototype.set = function SELECT_m() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    SELECT_m.prototype.getDimensionForDisplay = function SELECT_m(){
+        var dimension = [60,40];
+        return dimension
+    }
 }

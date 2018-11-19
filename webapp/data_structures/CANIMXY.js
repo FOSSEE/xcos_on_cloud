@@ -122,5 +122,9 @@ CANIMXY.prototype.get_popup_title = function CANIMXY() {
         var set_param_popup_title="Set Scope parameters";
         return set_param_popup_title
     }
+    CANIMXY.prototype.getDimensionForDisplay = function CANIMXY(){
+        var dimension = [40,40];
+        return dimension
+    }
 
 }

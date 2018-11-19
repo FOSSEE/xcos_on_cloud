@@ -70,4 +70,8 @@ function PRODUCT() {
         var set_param_popup_title="Set multiplication block parameters<br>(multiplication is set with + 1, division with -1)<br>";
         return set_param_popup_title
     }
+    PRODUCT.prototype.getDimensionForDisplay = function PRODUCT(){
+        var dimension = [40,60];
+        return dimension
+    }
 }

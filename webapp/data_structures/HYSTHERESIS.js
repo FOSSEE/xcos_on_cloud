@@ -60,4 +60,8 @@ function HYSTHERESIS() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    HYSTHERESIS.prototype.getDimensionForDisplay = function HYSTHERESIS(){
+        var dimension = [40,40];
+        return dimension
+    }
 }

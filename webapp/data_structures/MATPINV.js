@@ -70,5 +70,9 @@ MATPINV.prototype.set = function MATPINV() {
         var set_param_popup_title="Set MATPINV block";
         return set_param_popup_title
     }
+    MATPINV.prototype.getDimensionForDisplay = function MATPINV(){
+        var dimension = [40,40];
+        return dimension
+    }
 
 }

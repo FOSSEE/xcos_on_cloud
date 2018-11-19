@@ -67,4 +67,8 @@ function MATBKSL() {
         var set_param_popup_title="Set MATBKSL block";
         return set_param_popup_title
     }
+    MATBKSL.prototype.getDimensionForDisplay = function MATBKSL(){
+        var dimension = [40,40];
+        return dimension
+    }
 }

@@ -120,6 +120,10 @@ function SHIFT() {
         var set_param_popup_title="Set SHIFT block parameters <br> Shift/Rotates bits <br>";
         return set_param_popup_title
     }
+    SHIFT.prototype.getDimensionForDisplay = function SHIFT(){
+        var dimension = [60,40];
+        return dimension
+    }
 
 
 }

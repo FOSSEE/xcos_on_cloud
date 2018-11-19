@@ -109,5 +109,9 @@ function AUTOMAT() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    AUTOMAT.prototype.getDimensionForDisplay = function AUTOMAT(){
+        var dimension = [80,40];
+        return dimension
+    }
 
 }

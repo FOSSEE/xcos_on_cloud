@@ -169,4 +169,8 @@ function MCLOCK_f() {
         var set_param_popup_title="Set Multifrequency clock parameters";
         return set_param_popup_title
     }
+    MCLOCK_f.prototype.getDimensionForDisplay = function MCLOCK_f(){
+        var dimension = [60,40];
+        return dimension
+    }
 }

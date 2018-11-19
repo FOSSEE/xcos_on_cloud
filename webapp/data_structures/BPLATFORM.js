@@ -73,5 +73,9 @@ BPLATFORM.prototype.set = function BPLATFORM() {
         var set_param_popup_title="Set Scope parameters";
         return set_param_popup_title
     }
+    BPLATFORM.prototype.getDimensionForDisplay = function BPLATFORM(){
+        var dimension = [40,40];
+        return dimension
+    }
 
 }

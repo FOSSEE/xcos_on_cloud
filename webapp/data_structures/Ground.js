@@ -35,4 +35,8 @@ function Ground() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    Ground.prototype.getDimensionForDisplay = function Ground(){
+        var dimension = [20,20];
+        return dimension
+    }
 }

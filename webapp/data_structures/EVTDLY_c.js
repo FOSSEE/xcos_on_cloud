@@ -73,5 +73,9 @@ EVTDLY_c.prototype.set = function EVTDLY_c() {
         var set_param_popup_title="Set Event Delay block parameters <br>Delay  is the delay between an input event <br> and the generated output event <br>Block may initially generate an output event before  <br>any input event. \"Date of initial output event\" <br>gives the date of this event. Set a negative value <br>to disable any output event.";
         return set_param_popup_title
     }
+    EVTDLY_c.prototype.getDimensionForDisplay = function EVTDLY_c(){
+        var dimension = [60,40];
+        return dimension
+    }
 
 }

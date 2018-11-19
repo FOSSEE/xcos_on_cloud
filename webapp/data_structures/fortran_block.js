@@ -32,4 +32,8 @@ function fortran_block() {
         var set_param_popup_title="Set fortran_block parameters <br>";
         return set_param_popup_title
     }
+    fortran_block.prototype.getDimensionForDisplay = function fortran_block(){
+        var dimension = [80,40];
+        return dimension
+    }
 }

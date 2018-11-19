@@ -60,4 +60,8 @@ GENSIN_f.prototype.set = function GENSIN_f() {
         var set_param_popup_title="Set GENSIN_f block parameters <br> Sine wave generator<br>";
         return set_param_popup_title
     }
+    GENSIN_f.prototype.getDimensionForDisplay = function GENSIN_f(){
+        var dimension = [60,40];
+        return dimension
+    }
 }

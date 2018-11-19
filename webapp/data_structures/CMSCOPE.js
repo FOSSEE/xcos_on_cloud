@@ -159,5 +159,9 @@ function CMSCOPE() {
         var set_param_popup_title="Set Scope parameters";
         return set_param_popup_title
     }
+    CMSCOPE.prototype.getDimensionForDisplay = function CMSCOPE(){
+        var dimension = [40,40];
+        return dimension
+    }
 
 }

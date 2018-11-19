@@ -66,4 +66,8 @@ function DEMUX_f() {
         var set_param_popup_title="Set DEMUX block parameters";
         return set_param_popup_title
     }
+    DEMUX_f.prototype.getDimensionForDisplay = function DEMUX_f(){
+        var dimension = [10,40];
+        return dimension
+    }
 }

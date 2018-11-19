@@ -74,4 +74,8 @@ ROOTCOEF.prototype.set = function ROOTCOEF() {
         var set_param_popup_title="Set ROOTCOEF block";
         return set_param_popup_title
     }
+    ROOTCOEF.prototype.getDimensionForDisplay = function ROOTCOEF(){
+        var dimension = [60,40];
+        return dimension
+    }
 }

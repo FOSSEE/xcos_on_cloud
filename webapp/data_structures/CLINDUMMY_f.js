@@ -25,5 +25,9 @@ function CLINDUMMY_f() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    CLINDUMMY_f.prototype.getDimensionForDisplay = function CLINDUMMY_f(){
+        var dimension = [60,40];
+        return dimension
+    }
 
 }

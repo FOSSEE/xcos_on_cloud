@@ -58,5 +58,9 @@ SourceP.prototype.set = function SourceP() {
         var set_param_popup_title="Set Parameters";
         return set_param_popup_title
     }
+    SourceP.prototype.getDimensionForDisplay = function SourceP(){
+        var dimension = [50,40];
+        return dimension
+    }
 
 }

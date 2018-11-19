@@ -43,4 +43,8 @@ TrigFun.prototype.get_popup_title = function TrigFun() {
         var set_param_popup_title="Choose among sin, cos, tan, asin<br>             acos, atan, sinh, cosh, tanh, asinh, acosh, atanh";
         return set_param_popup_title
     }
+    TrigFun.prototype.getDimensionForDisplay = function TrigFun(){
+        var dimension = [80,40];
+        return dimension
+    }
 }

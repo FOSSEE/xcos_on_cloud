@@ -75,4 +75,8 @@ function CMATVIEW () {
         var set_param_popup_title="Set Scope parameters";
         return set_param_popup_title
     }
+    CMATVIEW.prototype.getDimensionForDisplay = function CMATVIEW(){
+        var dimension = [40,40];
+        return dimension
+    }
 }

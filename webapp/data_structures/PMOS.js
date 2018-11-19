@@ -71,5 +71,9 @@ function PMOS() {
         var set_param_popup_title="Set PMOS Transistor parameters";
         return set_param_popup_title
     }
+    PMOS.prototype.getDimensionForDisplay = function PMOS(){
+        var dimension = [40,40];
+        return dimension
+    }
 
 }

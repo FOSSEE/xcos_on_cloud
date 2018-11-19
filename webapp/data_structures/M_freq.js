@@ -100,4 +100,8 @@ function M_freq() {
         var set_param_popup_title="Set block parameters";
         return set_param_popup_title
     }
+    M_freq.prototype.getDimensionForDisplay = function M_freq(){
+        var dimension = [60,40];
+        return dimension
+    }
 }

@@ -151,4 +151,8 @@ function MATMUL() {
         var set_param_popup_title="Set MATMUL block parameters";
         return set_param_popup_title
     }
+    MATMUL.prototype.getDimensionForDisplay = function MATMUL(){
+        var dimension = [60,40];
+        return dimension
+    }
 }

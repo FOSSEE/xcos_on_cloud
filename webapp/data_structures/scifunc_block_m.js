@@ -334,4 +334,8 @@ function scifunc_block_m() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    scifunc_block_m.prototype.getDimensionForDisplay = function scifunc_block_m(){
+        var dimension = [80,40];
+        return dimension
+    }
 }

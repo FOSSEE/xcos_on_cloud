@@ -20,4 +20,8 @@ function PDE() {
     PDE.prototype.details = function PDE() {
         return this.x;
     }
+    PDE.prototype.getDimensionForDisplay = function PDE(){
+        var dimension = [60,60];
+        return dimension
+    }
 }

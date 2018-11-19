@@ -97,5 +97,9 @@ function CBLOCK() {
         var set_param_popup_title="Set C-Block2 block parameters";
         return set_param_popup_title
     }
+    CBLOCK.prototype.getDimensionForDisplay = function CBLOCK(){
+        var dimension = [80,40];
+        return dimension
+    }
 
 }

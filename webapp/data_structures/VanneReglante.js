@@ -55,4 +55,8 @@ VanneReglante.prototype.set = function VanneReglante() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    VanneReglante.prototype.getDimensionForDisplay = function VanneReglante(){
+        var dimension = [40,40];
+        return dimension
+    }
 }

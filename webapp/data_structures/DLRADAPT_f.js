@@ -145,4 +145,8 @@ function DLRADAPT_f() {
         var set_param_popup_title="Set block parameters";
         return set_param_popup_title
     }
+    DLRADAPT_f.prototype.getDimensionForDisplay = function DLRADAPT_f(){
+        var dimension = [40,40];
+        return dimension
+    }
 }

@@ -56,4 +56,8 @@ SQRT.prototype.get_popup_title = function SQRT() {
         var set_param_popup_title="Set SQRT Block";
         return set_param_popup_title
     }
+    SQRT.prototype.getDimensionForDisplay = function SQRT(){
+        var dimension = [40,40];
+        return dimension
+    }
 }

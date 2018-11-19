@@ -659,4 +659,8 @@ function PID() {
         var set_param_popup_title="Set PID parameters:";
         return set_param_popup_title
     }
+    PID.prototype.getDimensionForDisplay = function PID(){
+        var dimension = [40,40];
+        return dimension
+    }
 }

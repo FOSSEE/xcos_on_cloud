@@ -136,5 +136,9 @@ function CSCOPXY3D() {
         var set_param_popup_title="Set Scope parameters";
         return set_param_popup_title
     }
+    CSCOPXY3D.prototype.getDimensionForDisplay = function CSCOPXY3D(){
+        var dimension = [40,40];
+        return dimension
+    }
 
 }
