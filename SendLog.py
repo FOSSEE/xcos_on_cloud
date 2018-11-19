@@ -89,6 +89,8 @@ BASEDIR = abspath('webapp')
 IMAGEDIR = join(BASEDIR, 'res_imgs')
 # display limit for long strings
 DISPLAY_LIMIT = 10
+# handle scilab startup
+SCILAB_START = "errcatch(-1,'stop');loadXcosLibs();"
 
 RUNTIME = {}
 
@@ -333,7 +335,7 @@ def uploadsci():
             return msg
 
         # scilab command is created to run that uploaded sci file which will be used by sci-func block
-        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();exec('"+scifile.filename+"'),mode(2);quit()"]
+        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", SCILAB_START + "exec('"+scifile.filename+"'),mode(2);quit()"]
         output_com = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=os.setpgrp, bufsize=1, universal_newlines=True)
 
         out = output_com.communicate()[0] # output from scilab terminal is saved for checking error msg
@@ -476,26 +478,26 @@ def start_scilab():
     if diagram.workspace_counter == 3 and exists(workspace):
         #3 - for both TOWS_c and FROMWSB and also workspace dat file exist
         #In this case workspace is saved in format of dat file (Scilab way of saying workpsace)
-        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "load('"+workspace+"');loadXcosLibs();importXcosDiagram('" + diagram.xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'" + IMAGEDIR + "/img_test.jpg'),mode(2);deletefile('"+workspace+"');save('"+workspace+"') ;quit()"]
+        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", SCILAB_START + "load('"+workspace+"');importXcosDiagram('" + diagram.xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'" + IMAGEDIR + "/img_test.jpg'),mode(2);deletefile('"+workspace+"');save('"+workspace+"') ;quit()"]
     elif diagram.workspace_counter == 1 or diagram.workspace_counter == 3:
         #For 1- TOWS_c or 3 - for both TOWS_c and FROMWSB
-        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();importXcosDiagram('" + diagram.xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'" + IMAGEDIR + "/img_test.jpg'),mode(2);deletefile('"+workspace+"');save('"+workspace+"') ;quit()"]
+        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", SCILAB_START + "importXcosDiagram('" + diagram.xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'" + IMAGEDIR + "/img_test.jpg'),mode(2);deletefile('"+workspace+"');save('"+workspace+"') ;quit()"]
     elif diagram.workspace_counter == 4:
         # For AFFICH-m block
-        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();importXcosDiagram('" + diagram.xcos_file_name + "');xcos_simulate(scs_m,4);quit()"]
+        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", SCILAB_START + "importXcosDiagram('" + diagram.xcos_file_name + "');xcos_simulate(scs_m,4);quit()"]
     elif diagram.workspace_counter == 2 and exists(workspace):
         # For FROMWSB block and also workspace dat file exist
-        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "load('"+workspace+"');loadXcosLibs();importXcosDiagram('" + diagram.xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'" + IMAGEDIR + "/img_test.jpg'),mode(2);deletefile('"+workspace+"') ;quit()"]
+        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", SCILAB_START + "load('"+workspace+"');importXcosDiagram('" + diagram.xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'" + IMAGEDIR + "/img_test.jpg'),mode(2);deletefile('"+workspace+"') ;quit()"]
     elif diagram.workspace_counter == 5:
         # For Sci-Func block (Image are return as output in some cases)
-        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();exec('" + scifile.filename +"');importXcosDiagram('" + diagram.xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'" + IMAGEDIR + "/img_test"+scifile.file_image+".jpg'),mode(2);quit()"]
+        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", SCILAB_START + "exec('" + scifile.filename +"');importXcosDiagram('" + diagram.xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'" + IMAGEDIR + "/img_test"+scifile.file_image+".jpg'),mode(2);quit()"]
         t = Timer(15.0, delete_image)
         t.start()
         t1 = Timer(10.0, delete_scifile)
         t1.start()
     else:
         # For all other block
-        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();importXcosDiagram('" + diagram.xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'" + IMAGEDIR + "/img_test.jpg'),mode(2);quit()"]
+        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", SCILAB_START + "importXcosDiagram('" + diagram.xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'" + IMAGEDIR + "/img_test.jpg'),mode(2);quit()"]
 
     # Put the process in its own process group using os.setpgrp. For a new
     # group, the process group id is always equal to the process id. All the
@@ -558,12 +560,14 @@ def event_stream():
     runtime = get_runtime(diagram.uid)
     if runtime is None:
         print('no runtime')
-        yield "event: error\ndata: None\n\n"
+        yield "event: ERROR\ndata: no data found\n\n"
+        return
 
     # Open the log file
     if not isfile(runtime.log_name):
         print("log file does not exist")
-        yield "event: error\ndata: None\n\n"
+        yield "event: ERROR\ndata: no log file found\n\n"
+        return
     while os.stat(runtime.log_name).st_size == 0 and runtime.scilab_proc.poll() is None:
         gevent.sleep(LOOK_DELAY)
 
@@ -1230,10 +1234,10 @@ def run_scilab_func_request():
     alpha="A,B,C,D";
 
     if 'z' in num or 'z' in den:
-        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();z=poly(0,'z');exec('" + CONT_FRM_WRITE +"');calculate_cont_frm("+num+","+den+");quit();"]
+        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", SCILAB_START + "z=poly(0,'z');exec('" + CONT_FRM_WRITE +"');calculate_cont_frm("+num+","+den+");quit();"]
 
     else:
-        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", "loadXcosLibs();s=poly(0,'s');exec('" + CONT_FRM_WRITE +"');calculate_cont_frm("+num+","+den+");quit();"]
+        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", SCILAB_START + "s=poly(0,'s');exec('" + CONT_FRM_WRITE +"');calculate_cont_frm("+num+","+den+");quit();"]
 
     print('running command', command)
     runtime.scilab_proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=os.setpgrp);
