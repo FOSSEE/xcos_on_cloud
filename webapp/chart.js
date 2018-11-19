@@ -607,7 +607,7 @@ function chart_init(wnd,affichwnd){
 	eventSource.addEventListener("ERROR", function(event){
 		chart_reset();
 		if(event.data=="Empty diagram") alert(event.data);
-		else alert("Error occured! "+event.data);
+		else alert("Error occurred! "+event.data);
 		wnd.destroy();
                 affichwnd.destroy();
 		isDone = true;
