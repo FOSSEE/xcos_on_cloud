@@ -75,7 +75,7 @@ function create_scifunc_popups(graph,cell,name,diagRoot){
                     }
             },
             error: function(msg){
-                alert("An error occured while uploading file, please try again!");
+                alert("An error occurred while uploading file, please try again!");
                 return false;
             }
         });
