@@ -2377,7 +2377,12 @@
                                 myAjaxreq("Start", "/UpdateTKfile?id="+clientID);
          		     }
 
-                             httpGetAsync("/start_scilab?id="+clientID, function() {
+                             httpGetAsync("/start_scilab?id="+clientID, function(responseText) {
+                                 if (responseText != "") {
+                                     wnd.destroy();
+                                     alert(responseText);
+                                     return;
+                                 }
                                  if((row<=10 && row >= 1))
                                  {
                                     CreateSlider();  // if tkblocks are <=10 then create slider else not
