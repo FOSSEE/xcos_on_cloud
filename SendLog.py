@@ -504,10 +504,14 @@ def start_scilab():
     # children of that process will have the same process group id. Later, we
     # stop those processes together with os.killpg(runtime.scilab_proc.pid).
     print('running command', command)
-    runtime.scilab_proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=os.setpgrp)
+    try:
+        runtime.scilab_proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=os.setpgrp)
+    except FileNotFoundError:
+        return "scilab not found. Follow the installation instructions"
+
     # Wait till xcos is launched
     newoutset = set()
-    while len(newoutset) == 0:
+    while len(newoutset) == 0 and runtime.scilab_proc.poll() is None:
         # If length of newoutset equals 0, it means scilab hasn't launched yet
         # Wait
         gevent.sleep(LOOK_DELAY)
@@ -518,16 +522,17 @@ def start_scilab():
         # newoutset will contain list of new scilab pids
         newoutset = set(out.split()) - origoutset
 
-    # Get the latest process ID of scilab
-    pid = newoutset.pop()
-    print("scilab-bin pid=", pid)
+    if len(newoutset) > 0:
+        # Get the latest process ID of scilab
+        pid = newoutset.pop()
+        print("scilab-bin pid=", pid)
 
-    # Log file name
-    runtime.log_name = "scilab-log-"+str(pid)+".txt"
+        # Log file name
+        runtime.log_name = "scilab-log-"+str(pid)+".txt"
 
-    # Checks if such a file exists
-    while not isfile(runtime.log_name) and runtime.scilab_proc.poll() is None:
-        gevent.sleep(LOOK_DELAY)
+        # Checks if such a file exists
+        while not isfile(runtime.log_name) and runtime.scilab_proc.poll() is None:
+            gevent.sleep(LOOK_DELAY)
 
     # Start sending log to chart function for creating chart
     try:
@@ -536,12 +541,16 @@ def start_scilab():
         print("Output from scilab console : "+str(scilab_out))
         # Check for errors in Scilab
         if b"Empty diagram" in scilab_out:
-            kill_scilab(diagram)
             return "Empty diagram"
 
         if b"xcos_simulate: Error during block parameters update." in scilab_out:
-            kill_scilab(diagram)
             return "Error in block parameter. Please check block parameters"
+
+        if b"Cannot find scilab-bin" in scilab_out:
+            return "scilab has not been built. Follow the installation instructions"
+
+        if runtime.log_name is None:
+            return "Could not get scilab-bin pid for log file name"
 
     # For processes taking more than 10 seconds
     except subprocess.TimeoutExpired:
