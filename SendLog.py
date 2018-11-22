@@ -90,7 +90,7 @@ IMAGEDIR = join(BASEDIR, 'res_imgs')
 # display limit for long strings
 DISPLAY_LIMIT = 10
 # handle scilab startup
-SCILAB_START = "errcatch(-1,'stop');loadXcosLibs();"
+SCILAB_START = "errcatch(-1,'stop');clearfun('messagebox');function messagebox(msg,msgboxTitle,msgboxIcon,buttons,isModal),disp(msg),endfunction;loadXcosLibs();"
 
 RUNTIME = {}
 
@@ -336,7 +336,7 @@ def uploadsci():
 
         # scilab command is created to run that uploaded sci file which will be used by sci-func block
         command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", SCILAB_START + "exec('"+scifile.filename+"'),mode(2);quit()"]
-        output_com = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=os.setpgrp, bufsize=1, universal_newlines=True)
+        output_com = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=os.setpgrp, universal_newlines=True)
 
         out = output_com.communicate()[0] # output from scilab terminal is saved for checking error msg
 
@@ -505,7 +505,7 @@ def start_scilab():
     # stop those processes together with os.killpg(runtime.scilab_proc.pid).
     print('running command', command)
     try:
-        runtime.scilab_proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=os.setpgrp)
+        runtime.scilab_proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=os.setpgrp, universal_newlines=True)
     except FileNotFoundError:
         return "scilab not found. Follow the installation instructions"
 
@@ -538,15 +538,18 @@ def start_scilab():
     try:
         # For processes taking less than 10 seconds
         scilab_out, scilab_err = runtime.scilab_proc.communicate(timeout=4)
-        print("Output from scilab console : "+str(scilab_out))
+        if type(scilab_out) == bytes:
+            scilab_out = scilab_out.decode(errors='ignore')
+        scilab_out = re.sub(r'^[ !-]*\n', r'', scilab_out, flags=re.MULTILINE)
+        print("Output from scilab console : ", scilab_out)
         # Check for errors in Scilab
-        if b"Empty diagram" in scilab_out:
+        if "Empty diagram" in scilab_out:
             return "Empty diagram"
 
-        if b"xcos_simulate: Error during block parameters update." in scilab_out:
+        if "xcos_simulate: Error during block parameters update." in scilab_out:
             return "Error in block parameter. Please check block parameters"
 
-        if b"Cannot find scilab-bin" in scilab_out:
+        if "Cannot find scilab-bin" in scilab_out:
             return "scilab has not been built. Follow the installation instructions"
 
         if runtime.log_name is None:
@@ -1249,7 +1252,7 @@ def run_scilab_func_request():
         command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", SCILAB_START + "s=poly(0,'s');exec('" + CONT_FRM_WRITE +"');calculate_cont_frm("+num+","+den+");quit();"]
 
     print('running command', command)
-    runtime.scilab_proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=os.setpgrp);
+    runtime.scilab_proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=os.setpgrp, universal_newlines=True);
     scilab_out, scilab_err = runtime.scilab_proc.communicate()
 
     file_name="cont_frm_value.txt";
