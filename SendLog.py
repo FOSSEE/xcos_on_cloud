@@ -538,6 +538,8 @@ def start_scilab():
     try:
         # For processes taking less than 10 seconds
         scilab_out, scilab_err = runtime.scilab_proc.communicate(timeout=4)
+        if type(scilab_out) == bytes:
+            scilab_out = scilab_out.decode(errors='ignore')
         scilab_out = re.sub(r'^[ !-]*\n', r'', scilab_out, flags=re.MULTILINE)
         print("Output from scilab console : ", scilab_out)
         # Check for errors in Scilab
