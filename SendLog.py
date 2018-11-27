@@ -3,6 +3,9 @@
 import json
 from xml.dom import minidom
 import gevent
+from gevent import monkey
+from gevent.lock import RLock
+from gevent.pywsgi import WSGIServer
 import fileinput
 import shutil
 import os
@@ -14,15 +17,13 @@ from time import time
 import subprocess
 import webbrowser
 from datetime import datetime
-from gevent import monkey
 import bs4
-from gevent.pywsgi import WSGIServer
 import flask
 from flask import request, Response, session
 import flask_session
 from werkzeug import secure_filename
 from os.path import abspath, basename, exists, isfile, join, splitext
-from tempfile import mkdtemp
+from tempfile import mkdtemp, mkstemp
 import re
 
 # USER CONFIGURATION SECTION - Edit as per local settings
@@ -54,7 +55,7 @@ def remove(filename):
         print("could not remove", filename)
         return False
 
-monkey.patch_all(aggressive=False)
+monkey.patch_all(aggressive=False, subprocess=False)
 
 makedirs(FLASKSESSIONDIR, 'top flask session')
 makedirs(SESSIONDIR, 'top session')
@@ -91,6 +92,7 @@ IMAGEDIR = join(BASEDIR, 'res_imgs')
 DISPLAY_LIMIT = 10
 # handle scilab startup
 SCILAB_START = "errcatch(-1,'stop');clearfun('messagebox');function messagebox(msg,msgboxTitle,msgboxIcon,buttons,isModal),disp(msg),endfunction;loadXcosLibs();"
+SCILAB_END = "mode(2);quit();"
 
 RUNTIME = {}
 
@@ -311,6 +313,29 @@ def get_line_and_state_modified(file, figure_list):
     return (line, DATA)
 
 
+logfilefdrlock = RLock()
+LOGFILEFD = 123
+
+def run_scilab(command, createlogfile=False):
+    cmd = SCILAB_START + command + SCILAB_END
+    print('running command', cmd)
+    cmdarray = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", cmd]
+    if not createlogfile:
+        return subprocess.Popen(cmdarray, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, start_new_session=True, universal_newlines=True)
+
+    logfilefd, log_name = mkstemp(prefix=datetime.now().strftime('scilab-log-%Y%m%d-'), suffix='.txt', dir=SESSIONDIR)
+
+    logfilefdrlock.acquire()
+    if logfilefd != LOGFILEFD:
+        os.dup2(logfilefd, LOGFILEFD)
+        os.close(logfilefd)
+    proc = subprocess.Popen(cmdarray, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, start_new_session=True, universal_newlines=True, pass_fds=(LOGFILEFD, ))
+    os.close(LOGFILEFD)
+    logfilefdrlock.release()
+
+    return (proc, log_name)
+
+
 # Below route is called for uploading sci file which is required in sci-func block (called in Javscript only_scifunc_code.js)
 @app.route('/uploadsci', methods=['POST'])
 def uploadsci():
@@ -335,8 +360,12 @@ def uploadsci():
             return msg
 
         # scilab command is created to run that uploaded sci file which will be used by sci-func block
-        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", SCILAB_START + "exec('"+scifile.filename+"'),mode(2);quit()"]
-        output_com = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=os.setpgrp, universal_newlines=True)
+        command = "exec('"+scifile.filename+"');"
+
+        try:
+            output_com = run_scilab(command)
+        except FileNotFoundError:
+            return "scilab not found. Follow the installation instructions"
 
         out = output_com.communicate()[0] # output from scilab terminal is saved for checking error msg
 
@@ -375,6 +404,10 @@ def kill_scilab_with(proc, sgnl):
     function to kill a process group with a signal. wait for maximum 2 seconds
     for process to exit. return True on exit, False otherwise
     '''
+
+    if proc.poll() is not None:
+        return True
+
     try:
         os.killpg(proc.pid, sgnl)
     except OSError:
@@ -445,7 +478,7 @@ def kill_scilab(diagram = None):
     stopDetailsThread(diagram, runtime)
 
 '''
-function to execute xcos file using scilab (scilab-adv-cli), get pid of process , access log file genarated by scilab
+function to execute xcos file using scilab (scilab-adv-cli), access log file written by scilab
 
 This function is called in app route 'start_scilab' below
 '''
@@ -457,13 +490,6 @@ def start_scilab():
         return "error"
     runtime = get_runtime(diagram.uid, create=True)
 
-    pgrepscilab = [ "pgrep", "scilab-bin" ]
-
-    # Get previously running scilab process IDs
-    proc = subprocess.Popen(pgrepscilab, stdout=subprocess.PIPE, universal_newlines=True)
-    # out will contain output of command, the list of process IDs of scilab
-    (out, err) = proc.communicate()
-    origoutset = set(out.split())
     # name of workspace file
     workspace="workspace.dat"
 
@@ -478,68 +504,38 @@ def start_scilab():
     if diagram.workspace_counter == 3 and exists(workspace):
         #3 - for both TOWS_c and FROMWSB and also workspace dat file exist
         #In this case workspace is saved in format of dat file (Scilab way of saying workpsace)
-        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", SCILAB_START + "load('"+workspace+"');importXcosDiagram('" + diagram.xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'" + IMAGEDIR + "/img_test.jpg'),mode(2);deletefile('"+workspace+"');save('"+workspace+"') ;quit()"]
+        command = "load('"+workspace+"');importXcosDiagram('" + diagram.xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'" + IMAGEDIR + "/img_test.jpg');deletefile('"+workspace+"');save('"+workspace+"');"
     elif diagram.workspace_counter == 1 or diagram.workspace_counter == 3:
         #For 1- TOWS_c or 3 - for both TOWS_c and FROMWSB
-        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", SCILAB_START + "importXcosDiagram('" + diagram.xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'" + IMAGEDIR + "/img_test.jpg'),mode(2);deletefile('"+workspace+"');save('"+workspace+"') ;quit()"]
+        command = "importXcosDiagram('" + diagram.xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'" + IMAGEDIR + "/img_test.jpg');deletefile('"+workspace+"');save('"+workspace+"');"
     elif diagram.workspace_counter == 4:
         # For AFFICH-m block
-        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", SCILAB_START + "importXcosDiagram('" + diagram.xcos_file_name + "');xcos_simulate(scs_m,4);quit()"]
+        command = "importXcosDiagram('" + diagram.xcos_file_name + "');xcos_simulate(scs_m,4);"
     elif diagram.workspace_counter == 2 and exists(workspace):
         # For FROMWSB block and also workspace dat file exist
-        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", SCILAB_START + "load('"+workspace+"');importXcosDiagram('" + diagram.xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'" + IMAGEDIR + "/img_test.jpg'),mode(2);deletefile('"+workspace+"') ;quit()"]
+        command = "load('"+workspace+"');importXcosDiagram('" + diagram.xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'" + IMAGEDIR + "/img_test.jpg');deletefile('"+workspace+"');"
     elif diagram.workspace_counter == 5:
         # For Sci-Func block (Image are return as output in some cases)
-        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", SCILAB_START + "exec('" + scifile.filename +"');importXcosDiagram('" + diagram.xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'" + IMAGEDIR + "/img_test"+scifile.file_image+".jpg'),mode(2);quit()"]
+        command = "exec('" + scifile.filename +"');importXcosDiagram('" + diagram.xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'" + IMAGEDIR + "/img_test"+scifile.file_image+".jpg');"
         t = Timer(15.0, delete_image)
         t.start()
         t1 = Timer(10.0, delete_scifile)
         t1.start()
     else:
         # For all other block
-        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", SCILAB_START + "importXcosDiagram('" + diagram.xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'" + IMAGEDIR + "/img_test.jpg'),mode(2);quit()"]
+        command = "importXcosDiagram('" + diagram.xcos_file_name + "');xcos_simulate(scs_m,4);xs2jpg(gcf(),'" + IMAGEDIR + "/img_test.jpg');"
 
-    # Put the process in its own process group using os.setpgrp. For a new
-    # group, the process group id is always equal to the process id. All the
-    # children of that process will have the same process group id. Later, we
-    # stop those processes together with os.killpg(runtime.scilab_proc.pid).
-    print('running command', command)
     try:
-        runtime.scilab_proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=os.setpgrp, universal_newlines=True)
+        runtime.scilab_proc, runtime.log_name = run_scilab(command, True)
     except FileNotFoundError:
         return "scilab not found. Follow the installation instructions"
 
-    # Wait till xcos is launched
-    newoutset = set()
-    while len(newoutset) == 0 and runtime.scilab_proc.poll() is None:
-        # If length of newoutset equals 0, it means scilab hasn't launched yet
-        # Wait
-        gevent.sleep(LOOK_DELAY)
-        # Get process IDs of scilab instances
-        proc = subprocess.Popen(pgrepscilab, stdout=subprocess.PIPE, universal_newlines=True)
-        # out will contain output of command, the list of process IDs of scilab
-        (out, err) = proc.communicate()
-        # newoutset will contain list of new scilab pids
-        newoutset = set(out.split()) - origoutset
-
-    if len(newoutset) > 0:
-        # Get the latest process ID of scilab
-        pid = newoutset.pop()
-        print("scilab-bin pid=", pid)
-
-        # Log file name
-        runtime.log_name = "scilab-log-"+str(pid)+".txt"
-
-        # Checks if such a file exists
-        while not isfile(runtime.log_name) and runtime.scilab_proc.poll() is None:
-            gevent.sleep(LOOK_DELAY)
+    print('log_name=', runtime.log_name)
 
     # Start sending log to chart function for creating chart
     try:
         # For processes taking less than 10 seconds
         scilab_out, scilab_err = runtime.scilab_proc.communicate(timeout=4)
-        if type(scilab_out) == bytes:
-            scilab_out = scilab_out.decode(errors='ignore')
         scilab_out = re.sub(r'^[ !-]*\n', r'', scilab_out, flags=re.MULTILINE)
         print("Output from scilab console : ", scilab_out)
         # Check for errors in Scilab
@@ -551,9 +547,6 @@ def start_scilab():
 
         if "Cannot find scilab-bin" in scilab_out:
             return "scilab has not been built. Follow the installation instructions"
-
-        if runtime.log_name is None:
-            return "Could not get scilab-bin pid for log file name"
 
     # For processes taking more than 10 seconds
     except subprocess.TimeoutExpired:
@@ -1246,13 +1239,16 @@ def run_scilab_func_request():
     alpha="A,B,C,D";
 
     if 'z' in num or 'z' in den:
-        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", SCILAB_START + "z=poly(0,'z');exec('" + CONT_FRM_WRITE +"');calculate_cont_frm("+num+","+den+");quit();"]
+        command = "z=poly(0,'z');exec('" + CONT_FRM_WRITE +"');calculate_cont_frm("+num+","+den+");"
 
     else:
-        command = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", SCILAB_START + "s=poly(0,'s');exec('" + CONT_FRM_WRITE +"');calculate_cont_frm("+num+","+den+");quit();"]
+        command = "s=poly(0,'s');exec('" + CONT_FRM_WRITE +"');calculate_cont_frm("+num+","+den+");"
 
-    print('running command', command)
-    runtime.scilab_proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, preexec_fn=os.setpgrp, universal_newlines=True);
+    try:
+        runtime.scilab_proc = run_scilab(command)
+    except FileNotFoundError:
+        return "scilab not found. Follow the installation instructions"
+
     scilab_out, scilab_err = runtime.scilab_proc.communicate()
 
     file_name="cont_frm_value.txt";
