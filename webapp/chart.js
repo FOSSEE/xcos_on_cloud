@@ -641,7 +641,7 @@ function chart_init(wnd,affichwnd){
 				// Get chart container	
 				var chart = $('#chart-'+figure_id.toString()).highcharts();
 				// Add points
-				for(var j=0;j<20 && !points.isEmpty();j++){
+				if(!points.isEmpty()){
 					var point = points.dequeue();
 					var line_id = point[0];
 					x = point[1],
