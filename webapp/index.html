@@ -1717,32 +1717,63 @@
                                             }
                                         } else if (curNodeName.endsWith('Port')) {
                                             var oldParentId = currentNode.getAttribute('parent');
+                                            var ordering = currentNode.getAttribute('ordering');
                                             var newParentObj = nodeDataObject[oldParentId];
          
                                             switch (curNodeName) {
                                                 case 'ExplicitInputPort':
-                                                newParentObj.inputArray.push('E');
-                                                newParentObj.inputIds.push(curId);
+                                                    if (ordering === undefined) {
+                                                        newParentObj.inputArray.push('E');
+                                                        newParentObj.inputIds.push(curId);
+                                                    } else {
+                                                        newParentObj.inputArray[ordering-1] = 'E';
+                                                        newParentObj.inputIds[ordering-1] = curId;
+                                                    }
                                                 break;
                                                 case 'ImplicitInputPort':
-                                                newParentObj.inputArray.push('I');
-                                                newParentObj.inputIds.push(curId);
+                                                    if (ordering === undefined) {
+                                                        newParentObj.inputArray.push('I');
+                                                        newParentObj.inputIds.push(curId);
+                                                    } else {
+                                                        newParentObj.inputArray[ordering-1] = 'I';
+                                                        newParentObj.inputIds[ordering-1] = curId;
+                                                    }
                                                 break;
                                                 case 'ExplicitOutputPort':
-                                                newParentObj.outputArray.push('E');
-                                                newParentObj.outputIds.push(curId);
+                                                    if (ordering === undefined) {
+                                                        newParentObj.outputArray.push('E');
+                                                        newParentObj.outputIds.push(curId);
+                                                    } else {
+                                                        newParentObj.outputArray[ordering-1] = 'E';
+                                                        newParentObj.outputIds[ordering-1] = curId;
+                                                    }
                                                 break;
                                                 case 'ImplicitOutputPort':
-                                                newParentObj.outputArray.push('I');
-                                                newParentObj.outputIds.push(curId);
+                                                    if (ordering === undefined) {
+                                                        newParentObj.outputArray.push('I');
+                                                        newParentObj.outputIds.push(curId);
+                                                    } else {
+                                                        newParentObj.outputArray[ordering-1] = 'I';
+                                                        newParentObj.outputIds[ordering-1] = curId;
+                                                    }
                                                 break;
                                                 case 'CommandPort':
-                                                newParentObj.commandArray.push('COMMAND');
-                                                newParentObj.commandIds.push(curId);
+                                                    if (ordering === undefined) {
+                                                        newParentObj.commandArray.push('COMMAND');
+                                                        newParentObj.commandIds.push(curId);
+                                                    } else {
+                                                        newParentObj.commandArray[ordering-1] = 'COMMAND';
+                                                        newParentObj.commandIds[ordering-1] = curId;
+                                                    }
                                                 break;
                                                 case 'ControlPort':
-                                                newParentObj.controlArray.push('CONTROL');
-                                                newParentObj.controlIds.push(curId);
+                                                    if (ordering === undefined) {
+                                                        newParentObj.controlArray.push('CONTROL');
+                                                        newParentObj.controlIds.push(curId);
+                                                    } else {
+                                                        newParentObj.controlArray[ordering-1] = 'CONTROL';
+                                                        newParentObj.controlIds[ordering-1] = curId;
+                                                    }
                                                 break;
                                             }
                                         }
