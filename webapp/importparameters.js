@@ -66,7 +66,7 @@ function importBlock(currentNode, cell, details_instance) {
         model.odstate = cell.oDState;
     }
     if (cell.equations !== undefined) {
-        model.equations = cell.equations;
+        model.equations = getMListObject(cell.equations);
     }
 
     if (typeof details_instance.importset === 'function') {
