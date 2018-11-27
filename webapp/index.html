@@ -89,6 +89,17 @@
             xmlHttp.open("GET", theUrl, true); // true for asynchronous
             xmlHttp.send(null);
         }
+
+        function StopTK() // function which deletes the sliders and related files which are created
+        {
+            if (winArr.length > 0) {
+                myAjaxreq("Stop", "/UpdateTKfile?id="+clientID);
+                for (var i = 0; i < winArr.length; i++)
+                    winArr[i].close();
+                winArr = new Array();
+            }
+        }
+
          var importxcos; // variable used at anonymous function in importXcos event   
          var xeditor,xcell;
          
@@ -1471,11 +1482,7 @@
 					affichwnd.destroy(); //affichm window
 					}
 					stopSimulation(); //stop scilab for earlier execution is not stopped
-                                        myAjaxreq("Stop", "/UpdateTKfile?id="+clientID); // in case tkscale example will stop updating values
-					//to close tkscale window if any
-					for(var i=0;i<winArr.length;i++){
-         			            winArr[i].close();
-                                        }
+                                        StopTK();
                                         graph.removeCells(graph.getChildVertices(graph.getDefaultParent()));
                                     }
                                     finally {
@@ -1868,12 +1875,7 @@
 		//Button for stop
          	editor.addAction('processStop', function(editor, cell) {
 					stopSimulation();
-                                        myAjaxreq("Stop", "/UpdateTKfile?id="+clientID);
-                                        //to close tkscale window if any (Chart window will be there until user close it)
-					for(var i=0;i<winArr.length;i++){
-         			            winArr[i].close();
-                                        }
-
+                                        StopTK();
 		});
          
                         addToolbarButton(editor, toolbar, 'importXcos', 'Import Xcos', 'images/export1.png');
@@ -1888,7 +1890,7 @@
                         editor.addAction('simulate', function(editor, cell) {
                             
                          	window.onunload = function (e) {	// when user leaves the page...the process will be stopped 
-                            	StopTK();
+                                    StopTK();
                          	}
                          	var diagram = getXcosDiagram(editor, cell);
                                 var blob = new Blob([diagram], {
@@ -1915,7 +1917,7 @@
                             //wnd.setVisible(true);
                             wnd.addListener(mxEvent.CLOSE, function(e){
                                 chart_reset();
-                            StopTK();  // call this function 
+                                StopTK();
                             });
          	
 		            // Create mxWindow for affich
@@ -1937,7 +1939,7 @@
                             affichwnd.setClosable(true);
                             
                             affichwnd.addListener(mxEvent.CLOSE, function(e){
-                            	StopTK();  // call this function 
+                                StopTK();
                             });
          	    
 
@@ -1957,7 +1959,6 @@
          	  
          	   
          	   var row=0,min,max,norm,num=1,cscount=0; // variables to store the values
-         	   	//var winArr = new Array();
          	   	var Bblock_tag=xmlDoc.getElementsByTagName("BasicBlock"); 	// get all 'BasicBlock' tags from xml code
                         var Ablock_tag=xmlDoc.getElementsByTagName("AfficheBlock");   // get all 'AfficheBlock' tags from xml code
          		var mx_tag = xmlDoc.getElementsByTagName("mxCell"); 	// get all 'mxCell' tags from xml code
@@ -2378,18 +2379,7 @@
          			// creating a new window using 'slider.html' and some css 
          		}
          	    }
-         	   
-                    function StopTK() // function which deletes the sliders and related files which are created
-                    {
-         		
-                        myAjaxreq("Stop", "/UpdateTKfile?id="+clientID);
-         		for(var i=0;i<winArr.length;i++)
-         			winArr[i].close();
-         	    }
-         	    
-         
-         
-         	   
+
                             // Send xcos file to server
                             var form = new FormData()  
                             form.append("file",blob);
