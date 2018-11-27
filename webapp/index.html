@@ -89,6 +89,17 @@
             xmlHttp.open("GET", theUrl, true); // true for asynchronous
             xmlHttp.send(null);
         }
+
+        function StopTK() // function which deletes the sliders and related files which are created
+        {
+            if (winArr.length > 0) {
+                myAjaxreq("Stop", "/UpdateTKfile?id="+clientID);
+                for (var i = 0; i < winArr.length; i++)
+                    winArr[i].close();
+                winArr = new Array();
+            }
+        }
+
          var importxcos; // variable used at anonymous function in importXcos event   
          var xeditor,xcell;
          
@@ -2337,20 +2348,7 @@
          			// creating a new window using 'slider.html' and some css 
          		}
          	    }
-         	   
-                    function StopTK() // function which deletes the sliders and related files which are created
-                    {
-                        if (winArr.length > 0) {
-                            myAjaxreq("Stop", "/UpdateTKfile?id="+clientID);
-                            for (var i = 0; i < winArr.length; i++)
-         			winArr[i].close();
-                            winArr = new Array();
-                        }
-         	    }
-         	    
-         
-         
-         	   
+
                             // Send xcos file to server
                             var form = new FormData()  
                             form.append("file",blob);
