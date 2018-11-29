@@ -857,6 +857,27 @@
          
                 }
          
+                function createPortsWithGeometry(graph, block, dataArray, nodeDataObject) {
+                    for (var i in dataArray) {
+                        var dataPort = dataArray[i];
+                        var geometryCell = dataPort.geometryCell;
+                        var port = graph.insertVertex(block, null, dataPort.nodeName, geometryCell.x / block.geometry.width, geometryCell.y / block.geometry.height, geometryCell.width, geometryCell.height, dataPort.nodeName, true);
+                        port.ordering = dataPort.ordering;
+
+                        if (block.style == 'Split') {
+                            port.setVisible(false);
+                            port.setConnectable(false);
+                        }
+
+                        if (nodeDataObject != null) {
+                            var obj = new Object();
+                            obj.newId = port.id;
+                            obj.oldId = dataPort.id;
+                            nodeDataObject[dataPort.id] = obj;
+                        }
+                    }
+                }
+
                 function createInputPorts(graph, block, leftArray, topArray, parentObj, nodeDataObject) {
          
                     var topNumber = topArray.length;
