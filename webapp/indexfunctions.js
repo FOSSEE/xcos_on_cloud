@@ -1477,9 +1477,9 @@ function main(container, outline, toolbar, sidebar, status) {
                      * Handling SplitBlock in a different manner.
                      */
                     if (curNodeName == 'SplitBlock') {
-                        // (x-5, y-5.5) is the offset to correct the
-                        // position of split-block
-                        var v1 = graph.insertVertex(graph.getDefaultParent(), null, '', geometryCell.x - 5, geometryCell.y - 5.5, 10, 10, 'Split', false);
+                        // (-2, -2) is the offset to correct the position of
+                        // split-block
+                        var v1 = graph.insertVertex(graph.getDefaultParent(), null, '', geometryCell.x - 2, geometryCell.y - 2, geometryCell.width, geometryCell.height, 'Split', false);
                         temporaryMapObject.newId = v1.id;
                         nodeDataObject[curId] = temporaryMapObject;
                         v1.setConnectable(false);
@@ -1543,12 +1543,11 @@ function main(container, outline, toolbar, sidebar, status) {
 
                 var childNode = currentNode.firstChild;
                 if (childNode != null && childNode.nodeName == 'mxGeometry') {
-                    var tempNode = childNode.firstChild;
-                    if (tempNode == null) {
-                        ;
-                    } else if (tempNode.nodeName == 'mxPoint') {
-                        pointsArray.push(new mxPoint(tempNode.getAttribute('x'), tempNode.getAttribute('y')));
-                    } else if (tempNode.nodeName == 'Array') {
+                    for (var tempNode = childNode.firstChild;
+                            tempNode != null;
+                            tempNode = tempNode.nextSibling) {
+                        if (tempNode.nodeName != 'Array')
+                            continue;
                         for (var mxPointNode = tempNode.firstChild;
                             mxPointNode != null;
                             mxPointNode = mxPointNode.nextSibling) {
@@ -1559,7 +1558,7 @@ function main(container, outline, toolbar, sidebar, status) {
                     }
                 }
 
-                createEdgeObject(graph, newSourceCell, newTargetCell, null);
+                createEdgeObject(graph, newSourceCell, newTargetCell, pointsArray);
             }
         } finally {
             graph.model.endUpdate();
