@@ -1397,6 +1397,7 @@ function main(container, outline, toolbar, sidebar, status) {
                         var temp = enc.encode(parent);
                         var stylesheet = graph.getStylesheet();
                         var styleName = currentNode.getAttribute('style');
+                        var fullStyleName = styleName;
                         if (styleName!=null) {
                             var idx = styleName.indexOf(';');
                             if (idx != -1) {
@@ -1404,6 +1405,18 @@ function main(container, outline, toolbar, sidebar, status) {
                             }
                         }
                         var style = stylesheet.styles[styleName];
+                        var angle = currentNode.getAttribute('angle');
+                        var imageStyle = "";
+                        if (angle != null) {
+                            imageStyle = ' style="transform:rotate(' + angle + 'deg)"';
+                        }
+
+                        var height = 80;
+                        var width = 80;
+                        if (geometryCell.height != null)
+                            height = geometryCell.height;
+                        if (geometryCell.width != null)
+                            width = geometryCell.width;
 
                         /*
                          * When a particular block is loaded for the
@@ -1419,7 +1432,7 @@ function main(container, outline, toolbar, sidebar, status) {
                          */
                         if (style != null && style['image'] != null) {
                             // Make label as a image html element
-                            var label = '<img src="' + style['image'] + '" height="80" width="80">';
+                            var label = '<img src="' + style['image'] + '" height="' + (height*0.9) + '" width="' + (width*0.9) + '">';
 
                             // Set label
                             style['label'] = label;
@@ -1447,7 +1460,7 @@ function main(container, outline, toolbar, sidebar, status) {
                         }
                         node.setAttribute('parent', temp.getAttribute('id'));
 
-                        var v1 = graph.insertVertex(graph.getDefaultParent(), null, node, geometryCell.x, geometryCell.y, 80, 80, ifaceFuncName);
+                        var v1 = graph.insertVertex(graph.getDefaultParent(), null, node, geometryCell.x, geometryCell.y, width, height, fullStyleName);
                         // @Chhavi: Additional attribute to store the
                         // block's instance
                         v1.blockInstance = createInstanceTag(details_instance);
