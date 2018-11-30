@@ -545,8 +545,14 @@ def start_scilab():
         if "xcos_simulate: Error during block parameters update." in scilab_out:
             return "Error in block parameter. Please check block parameters"
 
+        if "xcosDiagramToScilab:" in scilab_out:
+            return "Error in xcos diagram. Please check diagram"
+
         if "Cannot find scilab-bin" in scilab_out:
             return "scilab has not been built. Follow the installation instructions"
+
+        if os.stat(runtime.log_name).st_size == 0:
+            return "log file is empty"
 
     # For processes taking more than 10 seconds
     except subprocess.TimeoutExpired:
@@ -575,6 +581,10 @@ def event_stream():
         return
     while os.stat(runtime.log_name).st_size == 0 and runtime.scilab_proc.poll() is None:
         gevent.sleep(LOOK_DELAY)
+    if os.stat(runtime.log_name).st_size == 0 and runtime.scilab_proc.poll() is not None:
+        print("log file is empty")
+        yield "event: ERROR\ndata: log file is empty\n\n"
+        return
 
     with open(runtime.log_name, "r") as log_file:
         # Start sending log
