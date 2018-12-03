@@ -290,25 +290,28 @@ function main(container, outline, toolbar, sidebar, status) {
                     edgeSource = edgeSource.source;
                 }
 
+                var edgeSourceNodeName = edgeSource.value.constructor.name;
+                var targetNodeName = target.value.constructor.name;
+
                 // If the edge violates any of the port constraints, don't
                 // create the edge
-                if (edgeSource.value == "ExplicitOutputPort" && target.value != "ExplicitInputPort") {
+                if (edgeSourceNodeName == "ExplicitOutputPort" && targetNodeName != "ExplicitInputPort") {
                     alert("Explicit data output port must be connected to explicit data input port");
                     return null;
-                } else if (edgeSource.value == "ExplicitInputPort" && target.value != "ExplicitOutputPort") {
+                } else if (edgeSourceNodeName == "ExplicitInputPort" && targetNodeName != "ExplicitOutputPort") {
                     alert("Explicit data input port must be connected to explicit data output port");
                     return null;
                 }
-                // else if (edgeSource.value == "ImplicitOutputPort" && target.value != "ImplicitInputPort") {
+                // else if (edgeSourceNodeName == "ImplicitOutputPort" && targetNodeName != "ImplicitInputPort") {
                 // alert("Implicit data output port must be connected to implicit data input port");
                 // return null;
-                // } else if (edgeSource.value == "ImplicitInputPort" && target.value != "ImplicitOutputPort") {
+                // } else if (edgeSourceNodeName == "ImplicitInputPort" && targetNodeName != "ImplicitOutputPort") {
                 // alert("Implicit data input port must be connected to implicit data output port");
                 // return null;
-                // } else if (edgeSource.value == "CommandPort" && target.value != "ControlPort") {
+                // } else if (edgeSourceNodeName == "CommandPort" && targetNodeName != "ControlPort") {
                 //    alert("Command port must be connected to control port");
                 //   return null;
-                // } else if (edgeSource.value == "ControlPort" && target.value != "CommandPort") {
+                // } else if (edgeSourceNodeName == "ControlPort" && targetNodeName != "CommandPort") {
                 //   alert("Control port must be connected to command port");
                 //   return null;
                 // }
@@ -342,9 +345,9 @@ function main(container, outline, toolbar, sidebar, status) {
 
                 // Set the type of ports for split-block according to type of
                 // source edge
-                if (edgeSource.value == 'ExplicitOutputPort') {
+                if (edgeSourceNodeName == 'ExplicitOutputPort') {
                     createPorts(graph, cell, ['E'], [], ['E'], ['E']);
-                } else if (edgeSource.value == 'ImplicitOutputPort') {
+                } else if (edgeSourceNodeName == 'ImplicitOutputPort') {
                     createPorts(graph, cell, ['I'], [], ['I', 'I'], []);
                 } else {
                     createPorts(graph, cell, ['CONTROL'], [], ['COMMAND', 'COMMAND'], []);
@@ -439,25 +442,28 @@ function main(container, outline, toolbar, sidebar, status) {
                     edgeSource = edgeSource.source;
                 }
 
+                var sourceNodeName = source.value.constructor.name;
+                var edgeSourceNodeName = edgeSource.value.constructor.name;
+
                 // If the edge violates any of the port constraints, don't
                 // create the edge
-                if (source.value == "ExplicitOutputPort" && edgeSource.value != "ExplicitInputPort") {
+                if (sourceNodeName == "ExplicitOutputPort" && edgeSourceNodeName != "ExplicitInputPort") {
                     alert("Explicit data output port must be connected to explicit data input port");
                     return null;
-                } else if (source.value == "ExplicitInputPort" && edgeSource.value != "ExplicitOutputPort") {
+                } else if (sourceNodeName == "ExplicitInputPort" && edgeSourceNodeName != "ExplicitOutputPort") {
                     alert("Explicit data input port must be connected to explicit data output port");
                     return null;
                 }
-                // else if (source.value == "ImplicitOutputPort" && edgeSource.value != "ImplicitInputPort") {
+                // else if (sourceNodeName == "ImplicitOutputPort" && edgeSourceNodeName != "ImplicitInputPort") {
                 //  alert("Implicit data output port must be connected to implicit data input port");
                 //  return null;
-                // } else if (source.value == "ImplicitInputPort" && edgeSource.value != "ImplicitOutputPort") {
+                // } else if (sourceNodeName == "ImplicitInputPort" && edgeSourceNodeName != "ImplicitOutputPort") {
                 //    alert("Implicit data input port must be connected to implicit data output port");
                 //    return null;
-                // } else if (source.value == "CommandPort" && edgeSource.value != "ControlPort") {
+                // } else if (sourceNodeName == "CommandPort" && edgeSourceNodeName != "ControlPort") {
                 //   alert("Command port must be connected to control port");
                 //   return null;
-                // } else if (source.value == "ControlPort" && edgeSource.value != "CommandPort") {
+                // } else if (sourceNodeName == "ControlPort" && edgeSourceNodeName != "CommandPort") {
                 //    alert("Control port must be connected to command port");
                 //    return null;
                 // }
@@ -485,9 +491,9 @@ function main(container, outline, toolbar, sidebar, status) {
                 var seg = mxUtils.findNearestSegment(sourceState, target.sourcePoint.x, target.sourcePoint.y);
                 var sourceTarget = target.target;
 
-                if (edgeSource.value == 'ExplicitOutputPort') {
+                if (edgeSourceNodeName == 'ExplicitOutputPort') {
                     createPorts(graph, cell, ['E'], [], ['E'], ['E']);
-                } else if (edgeSource.value == 'ImplicitOutputPort') {
+                } else if (edgeSourceNodeName == 'ImplicitOutputPort') {
                     createPorts(graph, cell, ['I'], [], ['I', 'I'], []);
                 } else {
                     createPorts(graph, cell, ['CONTROL'], [], ['COMMAND', 'COMMAND'], []);
@@ -583,22 +589,26 @@ function main(container, outline, toolbar, sidebar, status) {
             edgeSource = edgeSource.source;
         }
 
+        var sourceNodeName = source.value.constructor.name;
+        var edgeSourceNodeName = edgeSource.value.constructor.name;
+        var targetNodeName = target.value.constructor.name;
+
         // For port-to-port edges with port constraint violations, don't create
         // that edge
         if (source.getEdgeCount() > 0 || target.getEdgeCount() > 0) {
             alert("Port is already connected, please select an please select an unconnected port or a valid link");
-        } else if (edgeSource.value == "ExplicitOutputPort" && target.value != "ExplicitInputPort") {
+        } else if (edgeSourceNodeName == "ExplicitOutputPort" && targetNodeName != "ExplicitInputPort") {
             alert("Explicit data output port must be connected to explicit data input port");
-        } else if (edgeSource.value == "ExplicitInputPort" && target.value != "ExplicitOutputPort") {
+        } else if (edgeSourceNodeName == "ExplicitInputPort" && targetNodeName != "ExplicitOutputPort") {
             alert("Explicit data input port must be connected to explicit data output port");
         }
-        // else if (edgeSource.value == "ImplicitOutputPort" && target.value != "ImplicitInputPort") {
+        // else if (edgeSourceNodeName == "ImplicitOutputPort" && targetNodeName != "ImplicitInputPort") {
         //  alert("Implicit data output port must be connected to implicit data input port");
-        // } else if (edgeSource.value == "ImplicitInputPort" && target.value != "ImplicitOutputPort") {
+        // } else if (edgeSourceNodeName == "ImplicitInputPort" && targetNodeName != "ImplicitOutputPort") {
         //    alert("Implicit data input port must be connected to implicit data output port");
-        // } else if (edgeSource.value == "CommandPort" && target.value != "ControlPort") {
+        // } else if (edgeSourceNodeName == "CommandPort" && targetNodeName != "ControlPort") {
         //   alert("Command port must be connected to control port");
-        // } else if (edgeSource.value == "ControlPort" && target.value != "CommandPort") {
+        // } else if (edgeSourceNodeName == "ControlPort" && targetNodeName != "CommandPort") {
         //    alert("Control port must be connected to command port");
         // }
         else {
@@ -612,8 +622,8 @@ function main(container, outline, toolbar, sidebar, status) {
              * creates a identical new edge to replace the current edge.
              */
 
-            if ((source.value.indexOf('Input') != -1 && target.value.indexOf('Output') != -1) ||
-                (target.value == 'CommandPort' && source.value == 'ControlPort')) {
+            if ((sourceNodeName.indexOf('Input') != -1 && targetNodeName.indexOf('Output') != -1) ||
+                (targetNodeName == 'CommandPort' && sourceNodeName == 'ControlPort')) {
                 // Get points for the current edge from the global edgeState
                 // object
                 var waypoints = edgeState.absolutePoints;
@@ -799,9 +809,9 @@ function main(container, outline, toolbar, sidebar, status) {
     graph.convertValueToString = function(cell) {
         if (mxUtils.isNode(cell.value)) {
             var stylesheet = graph.getStylesheet();
-            var attribute = cell.value.getAttribute('style');
+            var attribute = cell.value.getAttribute('interfaceFunctionName');
             if (attribute == null) {
-                attribute = cell.value.getAttribute('interfaceFunctionName');
+                attribute = cell.value.nodeName;
             }
             var style = stylesheet.styles[attribute];
             var displayedLabel = style['displayedLabel'];
@@ -1489,8 +1499,9 @@ function main(container, outline, toolbar, sidebar, status) {
                     var ordering = currentNode.getAttribute('ordering');
                     var style = currentNode.getAttribute('style');
                     var newParentObj = nodeDataObject[oldParentId];
+                    var node = enc.encode(new window[curNodeName](currentNode, newParentObj.newId));
 
-                    var curNodeData = { nodeName: curNodeName, ordering: ordering, style: style, id: curId, geometryCell: geometryCell }
+                    var curNodeData = { node: node, ordering: ordering, style: style, id: curId, geometryCell: geometryCell }
                     newParentObj.inputDataArray.push(curNodeData);
                 }
             }

@@ -1255,6 +1255,114 @@ function SuperBlock() {
     }
 }
 
+function ImplicitInputPort(src, parentId) {
+    if (src === undefined)
+        return;
+    if (src.getAttribute('dataColumns') !== undefined)
+        this.dataColumns = src.getAttribute('dataColumns');
+    if (src.getAttribute('dataLines') !== undefined)
+        this.dataLines = src.getAttribute('dataLines');
+    if (src.getAttribute('dataType') !== undefined)
+        this.dataType = src.getAttribute('dataType');
+    this.id = src.getAttribute('id');
+    if (src.getAttribute('ordering') !== undefined)
+        this.ordering = src.getAttribute('ordering');
+    if (parentId !== undefined)
+        this.parent = parentId;
+    if (src.getAttribute('style') !== undefined)
+        this.style = src.getAttribute('style');
+}
+
+function ExplicitInputPort(src, parentId) {
+    if (src === undefined)
+        return;
+    if (src.getAttribute('dataColumns') !== undefined)
+        this.dataColumns = src.getAttribute('dataColumns');
+    if (src.getAttribute('dataLines') !== undefined)
+        this.dataLines = src.getAttribute('dataLines');
+    if (src.getAttribute('dataType') !== undefined)
+        this.dataType = src.getAttribute('dataType');
+    this.id = src.getAttribute('id');
+    if (src.getAttribute('ordering') !== undefined)
+        this.ordering = src.getAttribute('ordering');
+    if (parentId !== undefined)
+        this.parent = parentId;
+    if (src.getAttribute('style') !== undefined)
+        this.style = src.getAttribute('style');
+}
+
+function ImplicitOutputPort(src, parentId) {
+    if (src === undefined)
+        return;
+    if (src.getAttribute('dataColumns') !== undefined)
+        this.dataColumns = src.getAttribute('dataColumns');
+    if (src.getAttribute('dataLines') !== undefined)
+        this.dataLines = src.getAttribute('dataLines');
+    if (src.getAttribute('dataType') !== undefined)
+        this.dataType = src.getAttribute('dataType');
+    this.id = src.getAttribute('id');
+    if (src.getAttribute('ordering') !== undefined)
+        this.ordering = src.getAttribute('ordering');
+    if (parentId !== undefined)
+        this.parent = parentId;
+    if (src.getAttribute('style') !== undefined)
+        this.style = src.getAttribute('style');
+}
+
+function ExplicitOutputPort(src, parentId) {
+    if (src === undefined)
+        return;
+    if (src.getAttribute('dataColumns') !== undefined)
+        this.dataColumns = src.getAttribute('dataColumns');
+    if (src.getAttribute('dataLines') !== undefined)
+        this.dataLines = src.getAttribute('dataLines');
+    if (src.getAttribute('dataType') !== undefined)
+        this.dataType = src.getAttribute('dataType');
+    this.id = src.getAttribute('id');
+    if (src.getAttribute('ordering') !== undefined)
+        this.ordering = src.getAttribute('ordering');
+    if (parentId !== undefined)
+        this.parent = parentId;
+    if (src.getAttribute('style') !== undefined)
+        this.style = src.getAttribute('style');
+}
+
+function CommandPort(src, parentId) {
+    if (src === undefined)
+        return;
+    if (src.getAttribute('dataColumns') !== undefined)
+        this.dataColumns = src.getAttribute('dataColumns');
+    if (src.getAttribute('dataLines') !== undefined)
+        this.dataLines = src.getAttribute('dataLines');
+    if (src.getAttribute('dataType') !== undefined)
+        this.dataType = src.getAttribute('dataType');
+    this.id = src.getAttribute('id');
+    if (src.getAttribute('ordering') !== undefined)
+        this.ordering = src.getAttribute('ordering');
+    if (parentId !== undefined)
+        this.parent = parentId;
+    if (src.getAttribute('style') !== undefined)
+        this.style = src.getAttribute('style');
+}
+
+function ControlPort(src, parentId) {
+    if (src === undefined)
+        return;
+    if (src.getAttribute('dataColumns') !== undefined)
+        this.dataColumns = src.getAttribute('dataColumns');
+    if (src.getAttribute('dataLines') !== undefined)
+        this.dataLines = src.getAttribute('dataLines');
+    if (src.getAttribute('dataType') !== undefined)
+        this.dataType = src.getAttribute('dataType');
+    this.id = src.getAttribute('id');
+    if (src.getAttribute('ordering') !== undefined)
+        this.ordering = src.getAttribute('ordering');
+    if (parentId !== undefined)
+        this.parent = parentId;
+    if (src.getAttribute('style') !== undefined)
+        this.style = src.getAttribute('style');
+}
+
 function zeros() {
     if (arguments.length == 0) {
         return [0];
