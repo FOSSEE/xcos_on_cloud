@@ -91,7 +91,7 @@ IMAGEDIR = join(BASEDIR, 'res_imgs')
 # display limit for long strings
 DISPLAY_LIMIT = 10
 # handle scilab startup
-SCILAB_START = "errcatch(-1,'stop');clearfun('messagebox');function messagebox(msg,msgboxTitle,msgboxIcon,buttons,isModal),disp(msg),endfunction;loadXcosLibs();"
+SCILAB_START = "errcatch(-1,'stop');lines(0,120);clearfun('messagebox');function messagebox(msg,msgboxTitle,msgboxIcon,buttons,isModal),disp(msg),endfunction;loadXcosLibs();"
 SCILAB_END = "mode(2);quit();"
 
 RUNTIME = {}
@@ -536,11 +536,18 @@ def start_scilab():
     try:
         # For processes taking less than 10 seconds
         scilab_out, scilab_err = runtime.scilab_proc.communicate(timeout=4)
-        scilab_out = re.sub(r'^[ !-]*\n', r'', scilab_out, flags=re.MULTILINE)
-        print("Output from scilab console : ", scilab_out)
+        scilab_out = re.sub(r'^[ !\\-]*\n', r'', scilab_out, flags=re.MULTILINE)
+        print("=== Begin output from scilab console ===")
+        print(scilab_out, end='')
+        print("===== End output from scilab console ===")
         # Check for errors in Scilab
         if "Empty diagram" in scilab_out:
             return "Empty diagram"
+
+        m = re.search(r'Fatal error: exception Failure\("([^"]*)"\)', scilab_out)
+        if m:
+            msg = 'modelica error: ' + m.group(1)
+            return msg
 
         if "xcos_simulate: Error during block parameters update." in scilab_out:
             return "Error in block parameter. Please check block parameters"
