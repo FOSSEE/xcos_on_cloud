@@ -169,9 +169,14 @@ var create_new_chart_3d = function(id, no_of_graph,xmin,xmax,ymin,ymax,zmin,zmax
 	zmin = parseFloat(zmin);
 	zmax = parseFloat(zmax);
 
+    //For CSCOPXY3D block
 	var thickness = 1;
-	if(title_text.substring(0,9)=="CANIMXY3D")
+	var radiusvalue = 1;
+	//For CANIMXY3D block
+	if(title_text.substring(0,9)=="CANIMXY3D"){
 		thickness = 0;
+		radiusvalue = 4;
+	}	
 	
 	$('#charts').append("<div id='chart-"+id.toString()+"' style = 'height:200px'></div>");
 
@@ -186,11 +191,10 @@ var create_new_chart_3d = function(id, no_of_graph,xmin,xmax,ymin,ymax,zmin,zmax
 			zoomtype: 'xy',
 			options3d: {
 				enabled: true,
-				
-				alpha: alpha,
-				beta: beta,
-				depth: 200,
-				viewDistance: 5,
+                alpha: 15,      //to get same structure as scilab graph output.
+                beta: 5,
+				depth: 220,
+				viewDistance: 150,
 				frame: {
 					bottom: {
 						size: 0,
@@ -202,18 +206,46 @@ var create_new_chart_3d = function(id, no_of_graph,xmin,xmax,ymin,ymax,zmin,zmax
 		title: {
 			text: title_text
 		},
+		tooltip: {
+            enabled: false //For 3D graph tooltip is not needed
+        },
 		yAxis: {
-			min: ymin,
-			max: ymax
+		    //this is manipulation for showing z axis vertically instead of Y only for 3D graph.
+			min: zmin,
+			max: zmax,
+			title: {
+			rotation:0,
+			    style: {
+                    fontWeight: 'bold',
+                    fontSize: '15px'
+                },
+                text: 'z'
+            }
 		},
 		xAxis: {
 			min: xmin,
 			max: xmax,
-			gridLineWidth: 1
+			title: {
+			    style: {
+                    fontWeight: 'bold',
+                    fontSize: '15px'
+                },
+                text: 'x'   //title for X for differentiating axis
+            }
 		},
 		zAxis: {
-			min: zmin,
-			max: zmax
+		    //this is manipulation for showing y axis hortizonally instead of Z only for 3D graph.
+			min: ymin,
+			max: ymax,
+			title: {
+                rotation:300,
+                margin: -30,
+                style: {
+                    fontWeight: 'bold',
+                    fontSize: '15px'
+                },
+            text: 'y'
+            }
 		},
 		plotOptions : {
 			marker: {
@@ -229,7 +261,7 @@ var create_new_chart_3d = function(id, no_of_graph,xmin,xmax,ymin,ymax,zmin,zmax
         	},
 			scatter: {
 				marker: {
-					radius: 1,
+					radius: radiusvalue,
 					states: {
 						hover: {
 							enabled: true,
@@ -680,12 +712,14 @@ function chart_init(wnd, affichwnd, with_interval, with_interval2) {
 							series.removePoint(0, false);
 					}
 
-					// for 3d-charts, add 3d-points (xyz-coordinates)
-					if(block == 5)
-						series.addPoint([x,y,z], false);
+					// for 3d-charts, add 3d-points (xzy-coordinates)
+					if(block == 5){
+						series.addPoint([x,z,y], false); //manipulation for showing z axis on place y-axis only for CSCOPXY3D
 					// for 2d-charts, add 2d-points (xy-coordinates)
-					else
+					}else{
 						series.addPoint([x,y], false);
+					}
+				}
 
 
                                         if(block < 4||block==23){
@@ -722,12 +756,13 @@ function chart_init(wnd, affichwnd, with_interval, with_interval2) {
 						series_list[i].push(line_id);
 						chart.addSeries({
 							id : line_id.toString(),
-							data: []
+							data: [],
+							symbol: 'circle' //for getting differnt symbol for points of series
 						});
 					}
 					// Get chart data
 					var series = chart.get(line_id.toString());
-					series.addPoint([x,y,z], false);
+					series.addPoint([x,z,y], false); //manipulation for showing z axis on place y-axis only for CANIMXY3D
 					if(series.xData.length>buffer)
 						series.removePoint(0, false);
 
