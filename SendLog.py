@@ -454,10 +454,10 @@ def kill_scilab(diagram = None):
         # Remove xcos file
         remove(diagram.xcos_file_name)
         diagram.xcos_file_name = None
+        save_diagram()
 
     runtime = get_runtime(diagram.uid, remove=True)
     if runtime is None:
-        print('no runtime')
         return
     print('kill_scilab: runtime=', runtime)
 
@@ -577,7 +577,6 @@ def event_stream():
     (diagram, __) = get_diagram(get_request_id())
     runtime = get_runtime(diagram.uid)
     if runtime is None:
-        print('no runtime')
         yield "event: ERROR\ndata: no data found\n\n"
         return
 
@@ -655,7 +654,6 @@ def AppendtoTKfile(diagram, runtime):
 def getDetailsThread(diagram):
     runtime = get_runtime(diagram.uid)
     if runtime is None:
-        print('no runtime')
         return
 
     while runtime.tkbool:
@@ -1149,7 +1147,6 @@ def UpdateTKfile():
     createruntime = line == "Start"
     runtime = get_runtime(diagram.uid, create=createruntime)
     if runtime is None:
-        print('no runtime')
         return ""
 
     if line == "Start":
