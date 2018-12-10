@@ -11,6 +11,7 @@ var clientID;
 var interval;
 var interval2;
 var isDone = false;
+var firstPointAdded = false;
 // define variables for block event
 // fig_id, l_id - figure_id and line_id of blocks,   
 // pnts - Points list of the blocks
@@ -348,7 +349,7 @@ var create_draggable_points_chart = function(graphPoints, pointsHistory, xmin, x
 
 
 
-function chart_init(wnd,affichwnd){
+function chart_init(wnd, affichwnd, with_interval, with_interval2) {
        
 	var block;
 	// define buffer for CANIMXY3D
@@ -623,25 +624,30 @@ function chart_init(wnd,affichwnd){
 		isDone = true;
 	}, false);
 	
-
+    if (with_interval) {
 	interval = setInterval(function(){
 
-
+                var chart_count = 0;
 		for(var i=0;i<chart_id_list.length;i++){
 			// For each chart
 			// Get id and points queue
 			var figure_id = chart_id_list[i],
 			points = points_list[i];
+                        if (figure_id == -1)
+                            continue;
+                        chart_count++;
 			// get index of the chart
             var index= chart_id_list.indexOf(figure_id);
             var block=block_list[index];
+                        var pointAdded = false;
+                        var pointsAdded = 0;
 			
 			if(block != 10 && block!=9){
 
 				// Get chart container	
 				var chart = $('#chart-'+figure_id.toString()).highcharts();
 				// Add points
-				if(!points.isEmpty()){
+				while (!points.isEmpty() && pointsAdded++ < 100) {
 					var point = points.dequeue();
 					var line_id = point[0];
 					x = point[1],
@@ -688,20 +694,24 @@ function chart_init(wnd,affichwnd){
 					// for 2d-charts, add 2d-points (xy-coordinates)
 					else
 						series.addPoint([x,y], false);
+
+
+                                        if(block < 4||block==23){
+                                                // Shift chart axis to display new values(only for blocks requiring shift, i.e, blocks 1-3)
+                                                if(x>(RANGE[index]))
+                                                  chart.xAxis[0].setExtremes(Math.floor(x-(RANGE[index]-1.0)),Math.floor(x+1.0));
+                                        }
+
+                                        // do not redraw blocks >= 4 after plotting all points
+                                        if (block < 4)
+                                            chart.redraw();
+                                        else
+                                            pointAdded = true;
+
 				}
 
-			
-
-
-				if(block < 4||block==23){
-					// Shift chart axis to display new values(only for blocks requiring shift, i.e, blocks 1-3)
-					if(x>(RANGE[index])) 
-				 	  chart.xAxis[0].setExtremes(Math.floor(x-(RANGE[index]-1.0)),Math.floor(x+1.0));
-			   	}
-
-			   	// do not redraw blocks >= 4 after plotting all points 
-				if(!points.isEmpty() || block < 4)
-				 	chart.redraw();
+                                if (pointAdded)
+                                    chart.redraw();
 
 
 			}else if(block==10){
@@ -710,7 +720,7 @@ function chart_init(wnd,affichwnd){
 				// Get chart container	
 				var chart = $('#chart-'+figure_id.toString()).highcharts();
 
-				if(!points.isEmpty()){
+				while (!points.isEmpty() && pointsAdded++ < 100) {
 					var point = points.dequeue();
 					var line_id = point[0];
 					x = point[1];
@@ -740,7 +750,7 @@ function chart_init(wnd,affichwnd){
 				// Get chart container	
 				var chart = $('#chart-'+figure_id.toString()).highcharts();
 
-				if(!points.isEmpty()){
+				while (!points.isEmpty() && pointsAdded++ < 100) {
 					var point = points.dequeue();
 					var line_id = point[0];
 					x = point[1];
@@ -765,18 +775,27 @@ function chart_init(wnd,affichwnd){
 
 
 			}
+                        if (points.isEmpty() && isDone) {
+                            chart_id_list[i] = -1;
+                            chart_count--;
+                        }
 
 
 		}
 
-
+                if (chart_count == 0 && isDone) {
+                    clearInterval(interval);
+                    interval = null;
+                }
 	}, INTERVAL);
+    }
 
-
+    if (with_interval2) {
 	// Processing 'block' events
+        firstPointAdded = false;
 	interval2 = setInterval(function(){
 		// display the points for BARXY block
-		if(pnts.length>0){
+                if (pnts.length > 0) {
 
 			var chart = $('#chart-'+fig_id.toString()).highcharts();
 			// Get chart data
@@ -786,14 +805,20 @@ function chart_init(wnd,affichwnd){
 			series.addPoint(pnts.shift(), false);
 			chart.redraw(false);
 			// Keep last 2 points in Graph
-			if((pnts.length)>0){
+			if (firstPointAdded) {
 				series.removePoint(0, false);
 				series.removePoint(0, false);
-			}
-		}
-	},5);
+			} else {
+                            firstPointAdded = true;
+                        }
+                }
 
-
+                if (pnts.length == 0 && isDone) {
+                    clearInterval(interval2);
+                    interval2 = null;
+                }
+	}, 5);
+    }
 }
 
 /*
@@ -827,6 +852,7 @@ function chart_reset(){
 	RANGE = [];
 	pnts = [];
 	block_list = [];
+        isDone = false;
 
 }
 
