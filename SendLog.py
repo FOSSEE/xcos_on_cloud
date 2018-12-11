@@ -19,12 +19,13 @@ import webbrowser
 from datetime import datetime
 import bs4
 import flask
-from flask import request, Response, session
+from flask import request, Response, session, render_template, jsonify
 import flask_session
 from werkzeug import secure_filename
 from os.path import abspath, basename, exists, isfile, join, splitext
 from tempfile import mkdtemp, mkstemp
 import re
+from db_connection import connection
 
 # USER CONFIGURATION SECTION - Edit as per local settings
 
@@ -60,7 +61,7 @@ monkey.patch_all(aggressive=False, subprocess=False)
 makedirs(FLASKSESSIONDIR, 'top flask session')
 makedirs(SESSIONDIR, 'top session')
 
-app = flask.Flask(__name__, static_folder='webapp/')
+app = flask.Flask(__name__, static_folder='webapp/', template_folder='webapp')
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SESSION_FILE_DIR'] = FLASKSESSIONDIR
 # These are the extension that we are accepting to be uploaded
@@ -1282,9 +1283,127 @@ def run_scilab_func_request():
 
     return list_value
 
+################### example page start ###################
+@app.route('/example')
+def example_page():
+    try:
+        c, conn = connection()
+        cur = conn.cursor()
+        cur.execute("SELECT DISTINCT (loc.id), loc.category_name\
+                    FROM textbook_companion_preference pe\
+                    LEFT JOIN textbook_companion_proposal po ON\
+                    pe.proposal_id = po.id\
+                    LEFT JOIN list_of_category loc ON pe.category = loc.id\
+                    LEFT JOIN textbook_companion_chapter tcc ON\
+                    pe.id = tcc.preference_id\
+                    LEFT JOIN textbook_companion_example tce ON\
+                    tcc.id = tce.chapter_id\
+                    LEFT JOIN textbook_companion_example_files tcef ON\
+                    tce.id = tcef.example_id\
+                    WHERE tcef.filetype='X' AND po.proposal_status = 3 AND\
+                    pe.approval_status = 1\
+                    ORDER BY loc.id ASC")
+        data = cur.fetchall()
+    except Exception as e:
+        return(str(e))
+    return render_template('example.html', data=data)
 
+@app.route('/get_book', methods=['GET', 'POST'])
+def ajax_get_book():
+    cat_id = request.args.get('catid')
+    try:
+      data = []
+      c, conn = connection()
+      cur = conn.cursor()
+      cur.execute("SELECT DISTINCT (pe.id), pe.book as book, pe.author as author\
+                    FROM textbook_companion_preference pe \
+                    LEFT JOIN textbook_companion_proposal po ON \
+                    pe.proposal_id = po.id\
+                    LEFT JOIN list_of_category loc ON pe.category = loc.id\
+                    LEFT JOIN textbook_companion_chapter tcc ON \
+                    pe.id = tcc.preference_id\
+                    LEFT JOIN textbook_companion_example tce ON \
+                    tcc.id = tce.chapter_id\
+                    LEFT JOIN textbook_companion_example_files tcef ON \
+                    tce.id = tcef.example_id\
+                    WHERE tcef.filetype='X' AND po.proposal_status = 3 AND \
+                    pe.approval_status = 1\
+                    AND pe.category = %s ORDER BY pe.book ASC", [cat_id])
+      data = cur.fetchall()
+      return jsonify(data)
+    except Exception as e:
+        return(str(e))
+
+@app.route('/get_chapter', methods=['GET', 'POST'])
+def ajax_get_chapter():
+    book_id = request.args.get('bookid')
+    try:
+      chapter = []
+      c, conn = connection()
+      cur = conn.cursor()
+      cur.execute("SELECT DISTINCT (tcc.id), tcc.number, tcc.name\
+                  FROM textbook_companion_preference pe \
+                  LEFT JOIN textbook_companion_proposal po ON\
+                  pe.proposal_id = po.id\
+                  LEFT JOIN list_of_category loc ON pe.category = loc.id\
+                  LEFT JOIN textbook_companion_chapter tcc ON\
+                  pe.id = tcc.preference_id\
+                  LEFT JOIN textbook_companion_example tce ON\
+                  tcc.id = tce.chapter_id\
+                  LEFT JOIN textbook_companion_example_files tcef ON\
+                  tce.id = tcef.example_id\
+                  WHERE tcef.filetype='X' AND po.proposal_status = 3 AND\
+                  pe.approval_status = 1\
+                  AND tcc.preference_id = %s ORDER BY number ASC", [book_id])
+      chapter = cur.fetchall()
+      return jsonify(chapter)
+    except Exception as e:
+        return(str(e))
+
+@app.route('/get_example', methods=['GET', 'POST'])
+def ajax_get_example():
+    chapter_id = request.args.get('chapterid')
+    try:
+      example = []
+      c, conn = connection()
+      cur = conn.cursor()
+      cur.execute("SELECT DISTINCT (tce.id), tce.number, tce.caption\
+                   FROM textbook_companion_preference pe\
+                   LEFT JOIN textbook_companion_proposal po ON\
+                   pe.proposal_id = po.id\
+                   LEFT JOIN list_of_category loc ON pe.category = loc.id\
+                   LEFT JOIN textbook_companion_chapter tcc ON\
+                   pe.id = tcc.preference_id\
+                   LEFT JOIN textbook_companion_example tce ON\
+                   tcc.id = tce.chapter_id\
+                   LEFT JOIN textbook_companion_example_files tcef ON\
+                   tce.id = tcef.example_id\
+                   WHERE tcef.filetype='X' AND po.proposal_status = 3 AND\
+                   pe.approval_status = 1 AND tce.chapter_id =%s ORDER BY\
+                   tce.number", [chapter_id])
+      example = cur.fetchall()
+      return jsonify(example)
+    except Exception as e:
+        return(str(e))
+
+@app.route('/get_example_file', methods=['GET', 'POST'])
+def ajax_get_example_file():
+    example_id = request.args.get('exampleid')
+    try:
+      example_file = []
+      c, conn = connection()
+      cur = conn.cursor()
+      cur.execute("SELECT id as example_file_id, filename FROM\
+                   textbook_companion_example_files WHERE\
+                   filetype = 'X' AND example_id = %s", [example_id])
+      example_file = cur.fetchall()
+      return jsonify(example_file)
+    except Exception as e:
+        return(str(e))
+################### example page end     #################
 if __name__ == '__main__':
-    print('starting: flask=', flask.__version__, ', flask_session=', flask_session.__version__, sep='')
+    print('starting: flask=', flask.__version__, ', flask_session=',\
+    flask_session.__version__, sep='')
     os.chdir(SESSIONDIR)
     # Set server address 127.0.0.1:8001/
     http_server = WSGIServer(('127.0.0.1', 8001), app)
