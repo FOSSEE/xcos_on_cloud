@@ -5,3 +5,4 @@ hs_err_*.log
 /uploads/
 /values/
 /workspace*.dat
+__pycache__/
