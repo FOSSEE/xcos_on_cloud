@@ -13,6 +13,9 @@ $(function() {
       var catid = $('#category-list').val();
       if(catid != 0){
       $('#book').show();
+      $('#chapter').hide();
+      $('#example').hide();
+      $('#example-file').hide();
         $.ajax({
             url: '/get_book',
             data: {
@@ -51,6 +54,8 @@ $(function() {
       var bookid = $('#book-list').val();
       if(bookid != 0){
       $('#chapter').show();
+      $('#example').hide();
+      $('#example-file').hide();
         $.ajax({
             url: '/get_chapter',
             data: {
@@ -88,6 +93,7 @@ $(function() {
       var chapterid = $('#chapter-list').val();
       if(chapterid != 0){
       $('#example').show();
+      $('#example-file').hide();
         $.ajax({
             url: '/get_example',
             data: {
