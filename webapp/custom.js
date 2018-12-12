@@ -1,6 +1,6 @@
 $(function() {
   $(document).ready(function(){
-  
+
   //clear
   if($('#book-list').val() ==0){
     $('#book').hide();
@@ -32,7 +32,7 @@ $(function() {
                 for(var a = 0, len = data.length; a < len; a++) {
                 $options.push(
                 $('<option />', {
-                    "value": data[a][0], "text": i+") " + 
+                    "value": data[a][0], "text": i+") " +
                     data[a][1] + "(Author: "+ data[a][2] +") " }));
                 i++;
                 }
@@ -72,7 +72,7 @@ $(function() {
                 for(var a = 0, len = chapter.length; a < len; a++) {
                 $options.push(
                 $('<option />', {
-                    "value": chapter[a][0], "text": chapter[a][1]+") " + 
+                    "value": chapter[a][0], "text": chapter[a][1]+") " +
                     chapter[a][2] }));
                 i++;
                 }
@@ -124,7 +124,7 @@ $(function() {
             $('#example').hide();
             $('#example-file').hide();
         }
-    
+
     });
   //examples list
     $('#example-list').on('change',function() {
@@ -144,7 +144,7 @@ $(function() {
                 var i = 1;
                 for(var a = 0, len = example_file.length; a < len; a++) {
                 $('#example-file-list > tbody:last-child')
-                .append("<tr><td><a href='https://xcos.fossee.in?efid="+
+                .append("<tr><td><a href='/example_file?efid="+
                 example_file[a][0] + "' target='_blank'>" + example_file[a][1]
                 + "</a></td><td>" + "XCOS file" + "</td></tr>");
                 }
@@ -161,5 +161,3 @@ $(function() {
 
   });//document.ready
 });//function
-
-
