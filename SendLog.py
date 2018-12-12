@@ -319,7 +319,7 @@ LOGFILEFD = 123
 def run_scilab(command, createlogfile=False):
     cmd = SCILAB_START + command + SCILAB_END
     print('running command', cmd)
-    cmdarray = [SCI, "-nogui", "-noatomsautoload", "-nb", "-nw", "-e", cmd]
+    cmdarray = [SCI, "-nogui", "-noatomsautoload", "-nouserstartup", "-nb", "-nw", "-e", cmd]
     if not createlogfile:
         return subprocess.Popen(cmdarray, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, start_new_session=True, universal_newlines=True)
 
