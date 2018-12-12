@@ -1296,12 +1296,14 @@ def example_page():
                     LEFT JOIN list_of_category loc ON pe.category = loc.id\
                     LEFT JOIN textbook_companion_chapter tcc ON\
                     pe.id = tcc.preference_id\
+                    LEFT JOIN xcos_on_cloud_enable_book xceb ON\
+                    pe.id = xceb.book_id\
                     LEFT JOIN textbook_companion_example tce ON\
                     tcc.id = tce.chapter_id\
                     LEFT JOIN textbook_companion_example_files tcef ON\
                     tce.id = tcef.example_id\
                     WHERE tcef.filetype='X' AND po.proposal_status = 3 AND\
-                    pe.approval_status = 1\
+                    pe.approval_status = 1 AND pe.id = xceb.book_id\
                     ORDER BY loc.id ASC")
         data = cur.fetchall()
     except Exception as e:
@@ -1326,8 +1328,10 @@ def ajax_get_book():
                     tcc.id = tce.chapter_id\
                     LEFT JOIN textbook_companion_example_files tcef ON \
                     tce.id = tcef.example_id\
+                    LEFT JOIN xcos_on_cloud_enable_book xceb ON\
+                    pe.id = xceb.book_id\
                     WHERE tcef.filetype='X' AND po.proposal_status = 3 AND \
-                    pe.approval_status = 1\
+                    pe.approval_status = 1 AND pe.id = xceb.book_id\
                     AND pe.category = %s ORDER BY pe.book ASC", [cat_id])
       data = cur.fetchall()
       return jsonify(data)
