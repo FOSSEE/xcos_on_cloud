@@ -1338,6 +1338,12 @@ def ajax_get_example_file():
     except Exception as e:
         return str(e)
 
+@app.route('/example_file', methods=[ 'GET', 'POST' ])
+def open_example_file():
+    example_file_id = request.args.get('efid')
+    scilab_url = "https://scilab.in/download/file/" + example_file_id
+    return flask.redirect(scilab_url, code=302)
+
 ################### example page end     #################
 
 
