@@ -1,8 +1,25 @@
-DB_HOST = 'localhost'
+# The location of the extracted scilab_for_xcos_on_cloud. This can be either
+# relative to SendLog.py or an absolute path.
+SCILAB_DIR = '../scilab_for_xcos_on_cloud'
+
+# The location to keep the flask session data on server.
+FLASKSESSIONDIR = '/tmp/flask-sessiondir'
+
+# The location to keep the session data on server.
+SESSIONDIR = '/tmp/sessiondir'
+
+# the http server settings
+
+HTTP_SERVER_HOST = '127.0.0.1'
+HTTP_SERVER_PORT = 8001
+
+# the database server settings
+
+DB_HOST = '127.0.0.1'
 DB_USER = 'scilab'
 DB_PASS = ''
 DB_NAME = 'scilab'
-DB_PORT = 3128
+DB_PORT = 3306
 
 # the database queries
 
