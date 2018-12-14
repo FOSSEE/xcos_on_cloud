@@ -26,21 +26,10 @@ from os.path import abspath, basename, exists, isfile, join, splitext
 from tempfile import mkdtemp, mkstemp
 import re
 from db_connection import connection
-from config import QUERY_CATEGORY, QUERY_BOOK, QUERY_CHAPTER, QUERY_EXAMPLE, QUERY_EXAMPLE_FILE
+import config
+from config import FLASKSESSIONDIR, SESSIONDIR
 
-# USER CONFIGURATION SECTION - Edit as per local settings
-
-# The location of the extracted scilab_for_xcos_on_cloud. This can be either
-# relative to SendLog.py or an absolute path.
-SCIDIR = '../scilab_for_xcos_on_cloud'
-
-# The location to keep the flask session data on server.
-FLASKSESSIONDIR = '/tmp/flask-sessiondir'
-
-# The location to keep the session data on server.
-SESSIONDIR = '/tmp/sessiondir'
-
-# END OF USER CONFIGURATION SECTION
+monkey.patch_all(aggressive=False, subprocess=False)
 
 def makedirs(dirname, dirtype):
     if not exists(dirname):
@@ -56,8 +45,6 @@ def remove(filename):
     except:
         print("could not remove", filename)
         return False
-
-monkey.patch_all(aggressive=False, subprocess=False)
 
 makedirs(FLASKSESSIONDIR, 'top flask session')
 makedirs(SESSIONDIR, 'top session')
@@ -84,7 +71,7 @@ NOLINE = -1     # to indicate there is no line in log file further
 BLOCK_IDENTIFICATION = -2 # to indicate block id is present
 
 # Scilab dir
-SCIDIR = abspath(SCIDIR)
+SCIDIR = abspath(config.SCILAB_DIR)
 SCI = join(SCIDIR, "bin", "scilab-adv-cli")
 READCONTENTFILE = abspath("Read_Content.txt")
 CONT_FRM_WRITE = abspath("cont_frm_write.sci")
@@ -1288,7 +1275,7 @@ def run_scilab_func_request():
 def example_page():
     try:
         cur = connection()
-        cur.execute(QUERY_CATEGORY)
+        cur.execute(config.QUERY_CATEGORY)
         data = cur.fetchall()
         return render_template('example.html', data=data)
     except Exception as e:
@@ -1299,7 +1286,7 @@ def ajax_get_book():
     cat_id = request.args.get('catid')
     try:
         cur = connection()
-        cur.execute(QUERY_BOOK, [cat_id])
+        cur.execute(config.QUERY_BOOK, [cat_id])
         data = cur.fetchall()
         return jsonify(data)
     except Exception as e:
@@ -1310,7 +1297,7 @@ def ajax_get_chapter():
     book_id = request.args.get('bookid')
     try:
         cur = connection()
-        cur.execute(QUERY_CHAPTER, [book_id])
+        cur.execute(config.QUERY_CHAPTER, [book_id])
         chapter = cur.fetchall()
         return jsonify(chapter)
     except Exception as e:
@@ -1321,7 +1308,7 @@ def ajax_get_example():
     chapter_id = request.args.get('chapterid')
     try:
         cur = connection()
-        cur.execute(QUERY_EXAMPLE, [chapter_id])
+        cur.execute(config.QUERY_EXAMPLE, [chapter_id])
         example = cur.fetchall()
         return jsonify(example)
     except Exception as e:
@@ -1332,7 +1319,7 @@ def ajax_get_example_file():
     example_id = request.args.get('exampleid')
     try:
         cur = connection()
-        cur.execute(QUERY_EXAMPLE_FILE, [example_id])
+        cur.execute(config.QUERY_EXAMPLE_FILE, [example_id])
         example_file = cur.fetchall()
         return jsonify(example_file)
     except Exception as e:
@@ -1350,8 +1337,8 @@ def open_example_file():
 if __name__ == '__main__':
     print('starting')
     os.chdir(SESSIONDIR)
-    # Set server address 127.0.0.1:8001/
-    http_server = WSGIServer(('127.0.0.1', 8001), app)
+    # Set server address from config
+    http_server = WSGIServer((config.HTTP_SERVER_HOST, config.HTTP_SERVER_PORT), app)
     try:
         http_server.serve_forever()
     except KeyboardInterrupt:
