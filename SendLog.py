@@ -1348,7 +1348,7 @@ def open_example_file():
 
 
 if __name__ == '__main__':
-    print('starting: flask=', flask.__version__, ', flask_session=', flask_session.__version__, sep='')
+    print('starting')
     os.chdir(SESSIONDIR)
     # Set server address 127.0.0.1:8001/
     http_server = WSGIServer(('127.0.0.1', 8001), app)
