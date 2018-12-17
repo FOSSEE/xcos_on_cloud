@@ -1602,15 +1602,19 @@ function main(container, outline, toolbar, sidebar, status) {
         }
     }
 
-    function load_example_content(xmlDocument) {
+    function load_example_content(xmlDocument, filename) {
         if (/&lt;XcosDiagram .*&gt;.*&lt;\/XcosDiagram&gt;/.test(xmlDocument)) {
             var parser = new DOMParser();
             xmlDocument = '<!doctype html><body>' + xmlDocument + '</body>';
             var dom = parser.parseFromString(xmlDocument, 'text/html');
             xmlDocument = dom.body.textContent;
+            filename = '<!doctype html><body>' + filename + '</body>';
+            var dom2 = parser.parseFromString(filename, 'text/html');
+            filename = dom2.body.textContent;
         }
         if (/<XcosDiagram .*>.*<\/XcosDiagram>/.test(xmlDocument)) {
             xcosToDiagram(xmlDocument);
+            document.title = 'Xcos Example ' + filename;
         }
     }
 
@@ -2445,5 +2449,5 @@ function main(container, outline, toolbar, sidebar, status) {
         });
     }
 
-    load_example_content(example_content);
+    load_example_content(example_content, filename);
 }
