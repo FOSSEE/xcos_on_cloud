@@ -8,6 +8,9 @@ FLASKSESSIONDIR = '/tmp/flask-sessiondir'
 # The location to keep the session data on server.
 SESSIONDIR = '/tmp/sessiondir'
 
+# The location of the xcos files on server.
+XCOSSOURCEDIR = ''
+
 # the http server settings
 
 HTTP_SERVER_HOST = '127.0.0.1'
@@ -82,7 +85,7 @@ QUERY_EXAMPLE_FILE = (
         )
 
 QUERY_EXAMPLE_FILE_BY_ID = (
-        "SELECT filename "
+        "SELECT filename, filepath "
         "FROM textbook_companion_example_files "
         "WHERE id = %s"
         )
