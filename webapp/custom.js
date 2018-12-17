@@ -144,9 +144,11 @@ $(function() {
                 var i = 1;
                 for(var a = 0, len = example_file.length; a < len; a++) {
                 $('#example-file-list > tbody:last-child')
-                .append("<tr><td><a href='/example_file?efid="+
-                example_file[a][0] + "' target='_blank'>" + example_file[a][1]
-                + "</a></td><td>" + "XCOS file" + "</td></tr>");
+                .append("<tr>")
+                .append("<td><a href='/open?efid="+ example_file[a][0] + "' target='_blank'>" + example_file[a][1] + "</a></td>")
+                .append("<td>" + "XCOS file" + "</td>")
+                .append("<td><a href='/example_file?efid="+ example_file[a][0] + "' target='_blank'>" + example_file[a][1] + "</a></td>")
+                .append("</tr>");
                 }
             },
             error: function(error) {
