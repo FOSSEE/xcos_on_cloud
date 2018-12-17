@@ -1,31 +1,3 @@
-$.getScript('math.js');
-$.getScript('complex.min.js'); //Added for complex number handling
-
-// @Adhitya: 02-07-2016: Commented Jitesh's work to call Data Structures individually,
-// and combined all of them into combined.js using combine_script.bat
-
-/*
-$.ajax({
-    type: "POST",
-    // Invoke filenames.php
-    url: "filenames.php",
-    // Receive the resultant filenames from the php script in JSON format
-    dataType: "json",
-    // Add url for the required folder
-    data: {
-      url: "/data_structures_correct/"
-    },
-    success: function (data) {
-
-       // @Parameter: data will have the required filenames in the mentioned folder
-       // For each url, add the script to the body div element with getScript function
-      for (i in data) {
-          $.getScript(data[i]);
-      }
-    }
-});
-*/
-
 // Added to handle ordering for a few blocks.
 
 window.inBitMap='0';
