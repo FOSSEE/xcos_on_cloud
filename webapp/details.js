@@ -4,9 +4,6 @@
 /*
 Authors: Adhitya, Nimish, Chhavi, Saarang
 */
-var script = document.createElement("script");
-script.src = "dependencies.js";
-document.head.appendChild(script);
 var count = 1;
 
 function scicos_block() {
