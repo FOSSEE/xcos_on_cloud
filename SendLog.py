@@ -1,27 +1,5 @@
 #!/usr/bin/python3
 
-from config import FLASKSESSIONDIR, SESSIONDIR, XCOSSOURCEDIR
-import config
-from db_connection import connection
-from xml.dom import minidom
-from werkzeug import secure_filename
-import uuid
-from time import time
-from threading import Timer
-from tempfile import mkdtemp, mkstemp
-import subprocess
-import signal
-import requests
-import re
-from os.path import abspath, basename, exists, isfile, join, splitext
-import os
-import json
-import glob
-import flask_session
-from flask import request, Response, session, render_template, jsonify
-import flask
-import fileinput
-from datetime import datetime
 import gevent
 from gevent.lock import RLock
 from gevent.monkey import patch_all
@@ -29,6 +7,29 @@ from gevent.pywsgi import WSGIServer
 
 patch_all(aggressive=False, subprocess=False)
 
+from datetime import datetime
+import fileinput
+import flask
+from flask import request, Response, session, render_template, jsonify
+import flask_session
+import glob
+import json
+import os
+from os.path import abspath, basename, exists, isfile, join, splitext
+import re
+import requests
+import signal
+import subprocess
+from tempfile import mkdtemp, mkstemp
+from threading import Timer
+from time import time
+import uuid
+from werkzeug import secure_filename
+from xml.dom import minidom
+
+from db_connection import connection
+import config
+from config import FLASKSESSIONDIR, SESSIONDIR, XCOSSOURCEDIR
 
 def makedirs(dirname, dirtype):
     if not exists(dirname):
@@ -1543,6 +1544,10 @@ def ajax_get_example_file():
         return str(e)
 
 
+def clean_text(s):
+    return re.sub(r'[ \t]*[\r\n]+[ \t]*', r'', s)
+
+
 def get_example_file(example_file_id):
     filename = 'example.xcos'
     filepath = ''
@@ -1556,14 +1561,14 @@ def get_example_file(example_file_id):
         try:
             print('reading', filename, 'from', filepath)
             with open(join(XCOSSOURCEDIR, filepath), 'r') as f:
-                text = f.read()
+                text = clean_text(f.read())
                 return (text, filename)
         except Exception as e:
             print('Exception:', str(e))
 
     scilab_url = "https://scilab.in/download/file/" + example_file_id
     r = requests.get(scilab_url)
-    text = r.text
+    text = clean_text(r.text)
     return (text, filename)
 
 
