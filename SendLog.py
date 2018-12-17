@@ -1,35 +1,35 @@
 #!/usr/bin/python3
 
-import json
-from xml.dom import minidom
 import gevent
-from gevent import monkey
 from gevent.lock import RLock
+from gevent.monkey import patch_all
 from gevent.pywsgi import WSGIServer
-import fileinput
-import shutil
-import os
-import glob
-import uuid
-import signal
-from threading import Timer
-from time import time
-import subprocess
-import webbrowser
+
+patch_all(aggressive=False, subprocess=False)
+
 from datetime import datetime
-import bs4
+import fileinput
 import flask
 from flask import request, Response, session, render_template, jsonify
 import flask_session
-from werkzeug import secure_filename
+import glob
+import json
+import os
 from os.path import abspath, basename, exists, isfile, join, splitext
-from tempfile import mkdtemp, mkstemp
 import re
+import requests
+import signal
+import subprocess
+from tempfile import mkdtemp, mkstemp
+from threading import Timer
+from time import time
+import uuid
+from werkzeug import secure_filename
+from xml.dom import minidom
+
 from db_connection import connection
 import config
 from config import FLASKSESSIONDIR, SESSIONDIR
-
-monkey.patch_all(aggressive=False, subprocess=False)
 
 def makedirs(dirname, dirtype):
     if not exists(dirname):
@@ -1325,11 +1325,31 @@ def ajax_get_example_file():
     except Exception as e:
         return str(e)
 
+def get_example_file(example_file_id):
+    filename = 'example.xcos'
+    cur = connection()
+    cur.execute(config.QUERY_EXAMPLE_FILE_BY_ID, [example_file_id])
+    example_file = cur.fetchall()
+    for ef in example_file:
+        filename = ef[0]
+
+    scilab_url = "https://scilab.in/download/file/" + example_file_id
+    r = requests.get(scilab_url)
+    return (r.text, basename(filename))
+
 @app.route('/example_file', methods=[ 'GET', 'POST' ])
+def download_example_file():
+    example_file_id = request.args.get('efid')
+    (example_content, filename) = get_example_file(example_file_id)
+    return Response(example_content, mimetype='application/octet-stream', headers={
+        'Content-Disposition' : 'attachment; filename="' + filename + '"'
+        })
+
+@app.route('/open', methods=[ 'GET', 'POST' ])
 def open_example_file():
     example_file_id = request.args.get('efid')
-    scilab_url = "https://scilab.in/download/file/" + example_file_id
-    return flask.redirect(scilab_url, code=302)
+    (example_content, filename) = get_example_file(example_file_id)
+    return render_template('index.html', example_content=example_content, filename=filename)
 
 ################### example page end     #################
 
