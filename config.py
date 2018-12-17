@@ -80,3 +80,9 @@ QUERY_EXAMPLE_FILE = (
         "FROM textbook_companion_example_files "
         "WHERE filetype = 'X' AND example_id = %s"
         )
+
+QUERY_EXAMPLE_FILE_BY_ID = (
+        "SELECT filename "
+        "FROM textbook_companion_example_files "
+        "WHERE id = %s"
+        )
