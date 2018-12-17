@@ -29,7 +29,7 @@ from xml.dom import minidom
 
 from db_connection import connection
 import config
-from config import FLASKSESSIONDIR, SESSIONDIR
+from config import FLASKSESSIONDIR, SESSIONDIR, XCOSSOURCEDIR
 
 def makedirs(dirname, dirtype):
     if not exists(dirname):
@@ -1327,15 +1327,26 @@ def ajax_get_example_file():
 
 def get_example_file(example_file_id):
     filename = 'example.xcos'
+    filepath = ''
     cur = connection()
     cur.execute(config.QUERY_EXAMPLE_FILE_BY_ID, [example_file_id])
     example_file = cur.fetchall()
     for ef in example_file:
-        filename = ef[0]
+        (filename, filepath) = ef
+
+    if XCOSSOURCEDIR != '' and filepath != '':
+        try:
+            print('reading', filename, 'from', filepath)
+            with open(join(XCOSSOURCEDIR, filepath), 'r') as f:
+                text = f.read()
+                return (text, filename)
+        except Exception as e:
+            print('Exception:', str(e))
 
     scilab_url = "https://scilab.in/download/file/" + example_file_id
     r = requests.get(scilab_url)
-    return (r.text, basename(filename))
+    text = r.text
+    return (text, filename)
 
 @app.route('/example_file', methods=[ 'GET', 'POST' ])
 def download_example_file():
