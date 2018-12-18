@@ -35,7 +35,8 @@ QUERY_CATEGORY = (
     "JOIN xcos_on_cloud_enable_book xceb ON pe.id = xceb.book_id "
     "JOIN textbook_companion_example tce ON tcc.id = tce.chapter_id "
     "JOIN textbook_companion_example_files tcef ON tce.id = tcef.example_id "
-    "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND pe.approval_status = 1 "
+    "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND "
+    "pe.approval_status = 1 "
     "ORDER BY loc.id ASC")
 
 QUERY_BOOK = (
@@ -47,7 +48,8 @@ QUERY_BOOK = (
     "JOIN xcos_on_cloud_enable_book xceb ON pe.id = xceb.book_id "
     "JOIN textbook_companion_example tce ON tcc.id = tce.chapter_id "
     "JOIN textbook_companion_example_files tcef ON tce.id = tcef.example_id "
-    "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND pe.approval_status = 1 AND pe.category = %s "
+    "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND "
+    "pe.approval_status = 1 AND pe.category = %s "
     "ORDER BY pe.book ASC")
 
 QUERY_CHAPTER = (
@@ -59,7 +61,8 @@ QUERY_CHAPTER = (
     "JOIN xcos_on_cloud_enable_book xceb ON pe.id = xceb.book_id "
     "JOIN textbook_companion_example tce ON tcc.id = tce.chapter_id "
     "JOIN textbook_companion_example_files tcef ON tce.id = tcef.example_id "
-    "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND pe.approval_status = 1 AND tcc.preference_id = %s "
+    "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND "
+    "pe.approval_status = 1 AND tcc.preference_id = %s "
     "ORDER BY tcc.number ASC")
 
 QUERY_EXAMPLE = (
@@ -71,7 +74,8 @@ QUERY_EXAMPLE = (
     "JOIN xcos_on_cloud_enable_book xceb ON pe.id = xceb.book_id "
     "JOIN textbook_companion_example tce ON tcc.id = tce.chapter_id "
     "JOIN textbook_companion_example_files tcef ON tce.id = tcef.example_id "
-    "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND pe.approval_status = 1 AND tce.chapter_id = %s "
+    "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND "
+    "pe.approval_status = 1 AND tce.chapter_id = %s "
     "ORDER BY tce.number")
 
 QUERY_EXAMPLE_FILE = (
