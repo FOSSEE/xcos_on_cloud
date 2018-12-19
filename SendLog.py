@@ -1041,8 +1041,8 @@ def upload():
 
             if 'interfaceFunctionName=\"TKSCALE\"' in line:
                 # change the block ID
-                print('<BasicBlock blockType="d" '
-                      'id="', block_id[diagram.tk_count], '" '
+                i = diagram.tk_count
+                print('<BasicBlock blockType="d" id="', block_id[i], '" '
                       'interfaceFunctionName="RFILE_f" parent="1" '
                       'simulationFunctionName="readf" '
                       'simulationFunctionType="DEFAULT" style="RFILE_f">',
@@ -1053,12 +1053,9 @@ def upload():
                 # the file
                 print('<data column="0" line="1" value="2"/>')
                 # Path to the file from which read block obtains the values
-                print('<data column="0" line="2" '
-                      'value="', join(diagram.sessiondir,
-                                      VALUES_FOLDER,
-                                      diagram.diagram_id),
-                      '_tk', diagram.tk_count + 1, '.txt"'
-                      '/>',
+                fname = join(diagram.sessiondir, VALUES_FOLDER,
+                             diagram.diagram_id + "_tk" + str(i + 1) + ".txt")
+                print('<data column="0" line="2" value="', fname, '"/>',
                       sep='')
                 print('<data column="0" line="3" value="(2(e10.3,1x))"/>')
                 # (2(e10.3,1x)) The format in which numbers are written
@@ -1449,9 +1446,9 @@ def UpdateTKfile():
             runtime.tk_deltatimes.append(0.1)
             runtime.tk_values.append(0)
             runtime.tk_times.append(0)
-            open(join(diagram.sessiondir, VALUES_FOLDER,
-                      diagram.diagram_id + "_tk" + str(i + 1) + ".txt"),
-                 "w").close()
+            fname = join(diagram.sessiondir, VALUES_FOLDER,
+                         diagram.diagram_id + "_tk" + str(i + 1) + ".txt")
+            open(fname, "w").close()
             # create empty tk text files
         # starts the thread
         Timer(0.1, getDetailsThread, [diagram]).start()
