@@ -10,6 +10,7 @@ $(function() {
         }
         // books fetch
         $('#category-list').on('change', function() {
+            ajax_loader(this);
             var catid = $('#category-list').val();
             if (catid != 0) {
                 $('#book').show();
@@ -24,6 +25,7 @@ $(function() {
                     type: 'GET',
                     dataType: 'json',
                     success: function(data) {
+                        ajax_loader("clear");
                         var $options = [];
                         var i = 1;
                         $options.push(
@@ -55,6 +57,7 @@ $(function() {
         });
         // chapters fetch
         $('#book-list').on('change', function() {
+            ajax_loader(this);
             var bookid = $('#book-list').val();
             if (bookid != 0) {
                 $('#chapter').show();
@@ -68,6 +71,7 @@ $(function() {
                     type: 'GET',
                     dataType: 'json',
                     success: function(chapter) {
+                        ajax_loader("clear");
                         var $options = [];
                         var i = 1;
                         $options.push(
@@ -98,6 +102,7 @@ $(function() {
         });
         //examples fetch
         $('#chapter-list').on('change', function() {
+            ajax_loader(this);
             var chapterid = $('#chapter-list').val();
             if (chapterid != 0) {
                 $('#example').show();
@@ -110,6 +115,7 @@ $(function() {
                     type: 'GET',
                     dataType: 'json',
                     success: function(example) {
+                        ajax_loader("clear");
                         var $options = [];
                         var i = 1;
                         $options.push(
@@ -139,6 +145,7 @@ $(function() {
         });
         //examples list
         $('#example-list').on('change', function() {
+            ajax_loader(this);
             var exampleid = $('#example-list').val();
             if (exampleid != 0) {
                 $('#example-file').show();
@@ -151,6 +158,7 @@ $(function() {
                     type: 'GET',
                     dataType: 'json',
                     success: function(example_file) {
+                        ajax_loader("clear");
                         var $options = [];
                         var i = 1;
                         for (var a = 0, len = example_file.length; a < len; a++) {
@@ -173,3 +181,13 @@ $(function() {
 
     }); //document.ready
 }); //function
+
+/* Ajax loader */
+function ajax_loader(key) {
+    if (key == "clear") {
+        $(".ajax-loader").remove();
+    } else {
+        $(".ajax-loader").remove();
+        $(key).after("<span class='ajax-loader'></span>");
+    }
+}
