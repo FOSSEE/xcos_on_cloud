@@ -15,7 +15,7 @@ import flask_session
 import glob
 import json
 import os
-from os.path import abspath, basename, exists, isfile, join, splitext
+from os.path import abspath, basename, dirname, exists, isfile, join, splitext
 import re
 import requests
 import signal
@@ -48,6 +48,9 @@ def remove(filename):
         print("could not remove", filename)
         return False
 
+
+# change directory before using relative paths
+os.chdir(dirname(abspath(__file__)))
 
 makedirs(FLASKSESSIONDIR, 'top flask session')
 makedirs(SESSIONDIR, 'top session')
