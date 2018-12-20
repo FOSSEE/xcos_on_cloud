@@ -404,11 +404,8 @@ def uploadsci():
         ts = datetime.now()
         # file name is created with timestamp
         scifile.filename = join(
-            session['sessiondir'],
-            SCIFUNC_FILES_FOLDER,
-            str(ts) +
-            secure_filename(
-                file.filename))
+            session['sessiondir'], SCIFUNC_FILES_FOLDER,
+            str(ts) + secure_filename(file.filename))
         file.save(scifile.filename)  # file is saved in scifunc_files folder
         scifile.flag_sci = True  # flag for file saved
 
@@ -808,12 +805,9 @@ def getDetailsThread(diagram):
 def stopDetailsThread(diagram, runtime):
     runtime.tkbool = False  # stops the thread
     gevent.sleep(LOOK_DELAY)
-    for fn in glob.glob(
-            join(
-                diagram.sessiondir,
-                VALUES_FOLDER,
-                diagram.diagram_id) +
-            "_*"):
+    fname = join(diagram.sessiondir, VALUES_FOLDER,
+                 diagram.diagram_id + "_*")
+    for fn in glob.glob(fname):
         # deletes all files created under the 'diagram_id' name
         remove(fn)
 
@@ -991,10 +985,8 @@ def upload():
                 f.write('\n'.join(data))
                 f.truncate()
             diagram.xcos_file_name = join(
-                session['sessiondir'],
-                UPLOAD_FOLDER,
-                splitext(temp_file_xml_name)[0] +
-                ".xcos")
+                session['sessiondir'], UPLOAD_FOLDER,
+                splitext(temp_file_xml_name)[0] + ".xcos")
             os.rename(temp_file_xml_name, diagram.xcos_file_name)
             save_diagram()
             return diagram.diagram_id
@@ -1393,10 +1385,8 @@ def upload():
                     f.writelines(line)
         # Changing the file extension from xml to xcos
         diagram.xcos_file_name = join(
-            session['sessiondir'],
-            UPLOAD_FOLDER,
-            splitext(temp_file_xml_name)[0] +
-            ".xcos")
+            session['sessiondir'], UPLOAD_FOLDER,
+            splitext(temp_file_xml_name)[0] + ".xcos")
         # Move the xcos file to uploads directory
         os.rename(temp_file_xml_name, diagram.xcos_file_name)
         save_diagram()

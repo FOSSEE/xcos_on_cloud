@@ -1,0 +1,8 @@
+dist: xenial
+language: python
+
+python:
+    - "3.6"
+
+script:
+    - find . -name \*.py -print0 | xargs -r0 flake8 +
