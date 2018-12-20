@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>XCOS Example</title>
+    <title>Xcos examples</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="css/bootstrap.min.css">
@@ -12,6 +12,22 @@
     <style>
     body {
         font-family: 'Arial', sans-serif !important;
+    }
+    #cc:hover { 
+        color:blue; !important
+    }
+    #cc { 
+        color:white; !important
+    }
+    .ajax-loader {
+        position: relative;
+        display: inline-block;
+        top: 1px;
+        left: 5px;
+        width: 16px;
+        height: 11px;
+        background: url("images/ajax-loader.gif");
+        background-size: cover;
     }
         /* Remove the navbar's default margin-bottom and rounded borders */
     .navbar {
@@ -65,7 +81,7 @@
             </div>
             <div class="collapse navbar-collapse" id="myNavbar">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="https://xcos.fossee.in/">Home</a></li>
+                    <li class="active"><a href="https://xcos.fossee.in/">Xcos on Cloud</a></li>
                     <li><a href="#" data-toggle="modal" data-target="#contact_wrapper">Contact</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
@@ -78,7 +94,7 @@
             <div class="col-sm-2 sidenav">
             </div>
             <div class="col-sm-8 text-left">
-                <h3>Welcome to XCOS on Cloud</h3>
+                <h3>Xcos examples</h3><hr>
                 <br>
                 <div id="category" class="row">
                     <div class="col-sm-2"><h5><b>Category:</b></h5>
@@ -119,8 +135,7 @@
                             <thead>
                                 <tr>
                                     <th>Example File</th>
-                                    <th>File Type</th>
-                                    <th>Download</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tr>
@@ -132,12 +147,20 @@
                 </div>
             </div>
             <div class="col-sm-2 sidenav">
+                <div class="well">
+                    <p><a href="https://scilab.in" target="_blank"><img src="images/scilab-logo.png" alt="Scilab.in" style="width:100%;background-color:#000000 "></img></a></p>
+                </div>
+                <div class="well">
+                    <p><a href="https://fossee.in" target="_blank"><img src="images/fossee-logo.png" alt="FOSSEE" style="width:70%;background-color:#fff"></img></a></p>
+                </div>
+                <div class="well">
+                    <p><a href="https://www.iitb.ac.in/" target="_blank"><img src="images/iitb-logo.png" alt="IIT Bombay" style="width:60%;background-color:#fff"></img></a></p>
+                </div>
             </div>
         </div>
     </div>
     <footer class="container-fluid text-center">
-        <p><a href="https://fossee.in" target="_blank"><img src="images/fossee-logo.png" alt="FOSSEE" style="width:10%;background-color:#fff"></img></a>
-        </p>
+        <p><a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a id= "cc" rel="license"class="text-white bg-dark" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative Commons Attribution-ShareAlike 4.0 International License</a>.</p>
     </footer>
     <!-- contact us modal start -->
     <div class="modal" id="contact_wrapper">
