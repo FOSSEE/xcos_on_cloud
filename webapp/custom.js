@@ -49,6 +49,7 @@ $(function() {
                     }
                 });
             } else {
+                ajax_loader("clear");
                 $('#book').hide();
                 $('#chapter').hide();
                 $('#example').hide();
@@ -95,6 +96,7 @@ $(function() {
                     }
                 });
             } else {
+                ajax_loader("clear");
                 $('#chapter').hide();
                 $('#example').hide();
                 $('#example-file').hide();
@@ -138,6 +140,7 @@ $(function() {
                     }
                 });
             } else {
+                ajax_loader("clear");
                 $('#example').hide();
                 $('#example-file').hide();
             }
@@ -174,6 +177,7 @@ $(function() {
                     }
                 });
             } else {
+                ajax_loader("clear");
                 $('#example-file').hide();
             }
         });
