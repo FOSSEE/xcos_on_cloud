@@ -146,8 +146,9 @@ function main(container, outline, toolbar, sidebar, status) {
     // Creates a right-click menu
     graph.panningHandler.factoryMethod = function(menu, cell, evt) {
         if (cell != null) {
+            // @ToDo: Pooja: Different edge value cases.
             if (cell.value == "ExplicitInputPort" || cell.value == "ExplicitOutputPort" || cell.value == "CommandPort" || cell.value == "ControlPort") {
-            } else if (cell.isEdge() == true) // @ToDo: Pooja: Different edge value cases.
+            } else if (cell.isEdge() == true)
             {
                 menu.addItem('Delete', 'images/delete2.png', function() {
                     editor.execute('deleteBlock');
@@ -663,7 +664,10 @@ function main(container, outline, toolbar, sidebar, status) {
                         if (referenceModel.cells.hasOwnProperty(e))
                             if (referenceModel.cells[e].style)
                             {
-                                referenceModelProps[element_count++] = { id: e, style: referenceModel.cells[e].style };
+                                referenceModelProps[element_count++] = {
+                                    id: e,
+                                    style: referenceModel.cells[e].style
+                                };
                             }
                     }
                     modelNextId = referenceModel.nextId;
@@ -680,7 +684,8 @@ function main(container, outline, toolbar, sidebar, status) {
     // Returns a shorter label if the cell is collapsed and no label for
     // expanded groups
     graph.getLabel = function(cell) {
-        var tmp = mxGraph.prototype.getLabel.apply(this, arguments); // "supercall"
+        // "supercall"
+        var tmp = mxGraph.prototype.getLabel.apply(this, arguments);
         if (this.isCellLocked(cell)) {
             // Returns an empty label but makes sure an HTML element is created
             // for the label (for event processing wrt the parent label)
@@ -917,7 +922,8 @@ function main(container, outline, toolbar, sidebar, status) {
 
                                 // If the state of the edge is not null
                                 if (graph.view.getState(sourceEdge) != null) {
-                                    // Find waypoints for the first edge related to split-block
+                                    // Find waypoints for the first edge
+                                    // related to split-block
                                     var waypoints1 = graph.view.getState(sourceEdge).absolutePoints;
 
                                     // Find the waypoints for the second
@@ -934,7 +940,8 @@ function main(container, outline, toolbar, sidebar, status) {
                                     graph.getModel().setGeometry(sourceEdge, cloneGeometry);
                                     graph.refresh();
 
-                                    // Shift the target for the first edge related to splitBlock
+                                    // Shift the target for the first edge
+                                    // related to splitBlock
                                     graph.getModel().setTerminal(sourceEdge, target, false);
                                 }
                                 cells.push(tempEdgeObject.source.parent);
@@ -944,7 +951,8 @@ function main(container, outline, toolbar, sidebar, status) {
 
                                 // If the state of the edge is not null
                                 if (graph.view.getState(sourceEdge) != null) {
-                                    // Find waypoints for the first edge related to split-block
+                                    // Find waypoints for the first edge
+                                    // related to split-block
                                     var waypoints1 = graph.view.getState(sourceEdge).absolutePoints;
 
                                     // Find the waypoints for the second
@@ -962,7 +970,8 @@ function main(container, outline, toolbar, sidebar, status) {
                                     graph.getModel().setGeometry(sourceEdge, cloneGeometry);
                                     graph.refresh();
 
-                                    // Shift the target for the first edge related to splitBlock
+                                    // Shift the target for the first edge
+                                    // related to splitBlock
                                     graph.getModel().setTerminal(sourceEdge, target, false);
                                 }
                                 cells.push(tempEdgeObject.source.parent);
@@ -1187,7 +1196,8 @@ function main(container, outline, toolbar, sidebar, status) {
                 return false;
             }
             else {
-                var checkpat = new RegExp("^[^<>:\"/\|\\?*]+$");  // This RegExp is for a valid filename
+                // This RegExp is for a valid filename
+                var checkpat = new RegExp("^[^<>:\"/\|\\?*]+$");
 
                 if (checkpat.test(exportFilename)) {
                     // This branch will execute if filename is valid
@@ -1431,7 +1441,8 @@ function main(container, outline, toolbar, sidebar, status) {
                          * first time.
                          */
                         if (style != null && style['label'] != null) {
-                            // Set label from the label field in the style property
+                            // Set label from the label field in the style
+                            // property
                             node.setAttribute('label', style['label']);
                         }
                         node.setAttribute('parent', temp.getAttribute('id'));
@@ -1449,8 +1460,8 @@ function main(container, outline, toolbar, sidebar, status) {
                             var affich_details = importBlock(currentNode, cell, details_instance);
                         }
 
-                        //findAndCreatePorts(graph,v1,doc,curId,codec);
-                        //createPorts(graph, v1, inputPorts, controlPorts, outputPorts, commandPorts);
+                        // findAndCreatePorts(graph,v1,doc,curId,codec);
+                        // createPorts(graph, v1, inputPorts, controlPorts, outputPorts, commandPorts);
 
                         v1.setConnectable(false);
                     }
@@ -1668,10 +1679,13 @@ function main(container, outline, toolbar, sidebar, status) {
         fileNode.addEventListener('change', function(evt) {
             var f = evt.target.files[0];
 
-            if (!f.name.endsWith(".xcos")) {     // Checks if file extension is "xcos" or not
+            // Checks if file extension is "xcos" or not
+            if (!f.name.endsWith(".xcos")) {
                 alert("Choose proper file! Only xcos files can be uploaded!");
-                this.value = null;          // This will reset the file type input
-                return false;               // This will prevent any further actions if can occur
+                // This will reset the file type input
+                this.value = null;
+                // This will prevent any further actions if can occur
+                return false;
             }
 
             var r = new FileReader();
@@ -1729,7 +1743,8 @@ function main(container, outline, toolbar, sidebar, status) {
                         wnd.destroy(); // simulation window
                         affichwnd.destroy(); // affichm window
                     }
-                    stopSimulation(); // stop scilab for earlier execution is not stopped
+                    // stop scilab for earlier execution is not stopped
+                    stopSimulation();
                     StopTK();
                     graph.removeCells(graph.getChildVertices(graph.getDefaultParent()));
                 } finally {
@@ -1746,7 +1761,9 @@ function main(container, outline, toolbar, sidebar, status) {
         node.style.visibility = "visible";
         var wind = showModalWindow(graph, 'Set Context', div, 268, 162);
     }
-    editor.addAction('importXcos', importxcos = function(editor, cell) { xeditor = editor; xcell = cell; IMPORTxcos(xeditor,xcell) } );
+    editor.addAction('importXcos', importxcos = function(editor, cell) {
+        IMPORTxcos(editor, cell);
+    });
     // Stop simulation inbetween process
     function stopSimulation() {
         var xhr = new XMLHttpRequest();
@@ -1769,7 +1786,8 @@ function main(container, outline, toolbar, sidebar, status) {
     addToolbarButton(editor, toolbar, 'processStop', ' Stop', 'images/process-stop.png');
 
     editor.addAction('simulate', function(editor, cell) {
-        window.onunload = function(e) {    // when user leaves the page...the process will be stopped
+        // when user leaves the page, the process will be stopped
+        window.onunload = function(e) {
             StopTK();
         }
         var diagram = getXcosDiagram(editor, cell);
@@ -1822,17 +1840,23 @@ function main(container, outline, toolbar, sidebar, status) {
 
         var parser,xmlDoc;
         parser = new DOMParser();
-        xmlDoc=parser.parseFromString(xmlCode,"text/xml");   // coverts string to xmlcode ( in xmlDoc )
+        // converts string to xmlcode ( in xmlDoc )
+        xmlDoc = parser.parseFromString(xmlCode,"text/xml");
 
         var valArr = new Array();  // stores 'tkscale' parameters in an array
         var tkarr = new Array();
         var sliderArr = new Array();
 
-        var row=0,min,max,norm,num=1,cscount=0; // variables to store the values
-        var Bblock_tag=xmlDoc.getElementsByTagName("BasicBlock");   // get all 'BasicBlock' tags from xml code
-        var Ablock_tag=xmlDoc.getElementsByTagName("AfficheBlock");   // get all 'AfficheBlock' tags from xml code
-        var mx_tag = xmlDoc.getElementsByTagName("mxCell");     // get all 'mxCell' tags from xml code
-        var tkid  = new Array();    // array which stores the main id of each tkblock
+        // variables to store the values
+        var row = 0, min, max, norm, num = 1, cscount = 0;
+        // get all 'BasicBlock' tags from xml code
+        var Bblock_tag = xmlDoc.getElementsByTagName("BasicBlock");
+        // get all 'AfficheBlock' tags from xml code
+        var Ablock_tag = xmlDoc.getElementsByTagName("AfficheBlock");
+        // get all 'mxCell' tags from xml code
+        var mx_tag = xmlDoc.getElementsByTagName("mxCell");
+        // array which stores the main id of each tkblock
+        var tkid  = new Array();
         var affichmid  = new Array();
         var clkid = new Array();    // array which stores every CLOCK_c ids
         // array which stores the parameters of clock ('Period',
@@ -1841,8 +1865,10 @@ function main(container, outline, toolbar, sidebar, status) {
         // array which stores the port ids of every tk block ('control
         // port', 'explicit port')
         var tkarr = new Array();
-        var sparr = new Array();    // array which stores the 'child' id's of each split
-        var j=1,k=0,l=0,m=0,n=0,o=0,p=0,y=0,count=1;    // some variables to use as array indices
+        // array which stores the 'child' id's of each split
+        var sparr = new Array();
+        // some variables to use as array indices
+        var j=1, k=0, l=0, m=0, n=0, o=0, p=0, y=0, count=1;
         var with_interval = false;
         var with_interval2 = false;
 
@@ -1912,9 +1938,11 @@ function main(container, outline, toolbar, sidebar, status) {
                 var flag2 = true;
             }
 
-            if (Bblock_tag[i].attributes.blockElementName.value == "TKSCALE")    // if block is TKSCALE
+            // if block is TKSCALE
+            if (Bblock_tag[i].attributes.blockElementName.value == "TKSCALE")
             {
-                tkid[m++] = parseInt(Bblock_tag[i].attributes.id.value);    // a.store tk ids
+                // a.store tk ids
+                tkid[m++] = parseInt(Bblock_tag[i].attributes.id.value);
 
                 // b. under scilab double tag in real parameters attributes
                 // take the min,max,norm values
@@ -1930,12 +1958,16 @@ function main(container, outline, toolbar, sidebar, status) {
                     break;
                 }
                 valArr[row]=new Array();
-                valArr[row][0]=parseInt(Realpart_tag[0].attributes.realPart.value); // min value
-                valArr[row][1]=parseFloat(Realpart_tag[1].attributes.realPart.value);   // max value
-                valArr[row][2]=parseFloat(Realpart_tag[2].attributes.realPart.value);   // norm value
+                // min value
+                valArr[row][0] = parseInt(Realpart_tag[0].attributes.realPart.value);
+                // max value
+                valArr[row][1] = parseFloat(Realpart_tag[1].attributes.realPart.value);
+                // norm value
+                valArr[row][2] = parseFloat(Realpart_tag[2].attributes.realPart.value);
                 row++;
-            }// here is ValArr they are storing all the values of tkscale
-            if (Bblock_tag[i].attributes.blockElementName.value == "CSCOPE")     // finding total cscopes used
+            } // here is ValArr they are storing all the values of tkscale
+            // finding total cscopes used
+            if (Bblock_tag[i].attributes.blockElementName.value == "CSCOPE")
                 cscount++;
 
             if (Bblock_tag[i].attributes.blockElementName.value == "CLOCK_c")
@@ -1953,13 +1985,18 @@ function main(container, outline, toolbar, sidebar, status) {
                         {
                             var data_tag = Sstr[x].getElementsByTagName("data");
 
-                            if (data_tag.length == 2) // finding there are exactly two parameters
+                            // finding there are exactly two parameters
+                            if (data_tag.length == 2)
                             {
-                                if (count%2)  // parameters stored in array only 'once'
+                                // parameters stored in array only 'once'
+                                if (count % 2)
                                 {
                                     clkdetails[y] = new Array();
-                                    clkdetails[y][0] = data_tag[0].attributes.value.value;  // 'Period' parameter
-                                    clkdetails[y][1] = data_tag[1].attributes.value.value; y++; // 'Initialisation time' parameter
+                                    // 'Period' parameter
+                                    clkdetails[y][0] = data_tag[0].attributes.value.value;
+                                    // 'Initialisation time' parameter
+                                    clkdetails[y][1] = data_tag[1].attributes.value.value;
+                                    y++;
                                 }
                                 count++;
                             }
@@ -1972,7 +2009,8 @@ function main(container, outline, toolbar, sidebar, status) {
         // To loop to get id of block AFFICH from array of Ablock_Tag
         for (var i=0;i<Ablock_tag.length;i++)
         {
-            if (Ablock_tag[i].attributes.blockElementName.value == "AFFICH_m")        // if block is AFFICH_m
+            // if block is AFFICH_m
+            if (Ablock_tag[i].attributes.blockElementName.value == "AFFICH_m")
             {
                 /*
                  * affichmid : is used to store ids of affichm block which
@@ -1984,9 +2022,11 @@ function main(container, outline, toolbar, sidebar, status) {
         // To check if affichmid array is empty or not and create div with
         // ID with name append with block ID
         if (affichmid.length!=0) {
-            affichwnd.setVisible(true); // to make affich mxwindow visible only if affich block exist
+            // to make affich mxwindow visible only if affich block exist
+            affichwnd.setVisible(true);
             for (var i=0;i<affichmid.length;i++) {
-                $('#affich_div').append("<div id='affichdata-"+affichmid[i]+"' style='padding-bottom: 20px;'></div>"); // create div for displaying result of affichm blocks
+                // create div for displaying result of affichm blocks
+                $('#affich_div').append("<div id='affichdata-"+affichmid[i]+"' style='padding-bottom: 20px;'></div>");
             }
         }
 
@@ -1998,8 +2038,10 @@ function main(container, outline, toolbar, sidebar, status) {
                 if (parseInt(mx_tag[j].attributes.parent.value) == tkid[o])
                 {
                     tkarr[l]=new Array();
-                    tkarr[l][0]=parseInt(mx_tag[j].attributes.id.value); j++;
-                    tkarr[l][1]=parseInt(mx_tag[j].attributes.id.value); j++;
+                    tkarr[l][0]=parseInt(mx_tag[j].attributes.id.value);
+                    j++;
+                    tkarr[l][1]=parseInt(mx_tag[j].attributes.id.value);
+                    j++;
 
                     l=l+1;
                     o++;
@@ -2007,18 +2049,23 @@ function main(container, outline, toolbar, sidebar, status) {
 
                 if (parseInt(mx_tag[j].attributes.parent.value) == clkid[p])
                 {
-                    clkid[p]=parseInt(mx_tag[j].attributes.id.value);p++;   // clock parameter 'command port'
+                    // clock parameter 'command port'
+                    clkid[p]=parseInt(mx_tag[j].attributes.id.value);
+                    p++;
                 }
                 if (mx_tag[j].getAttribute('style') !=null)
                 {
-                    if (mx_tag[j].attributes.style.value == "Split")   // store the split details
+                    // store the split details
+                    if (mx_tag[j].attributes.style.value == "Split")
                     {
                         j=j+1;
                         sparr[k]= new Array();
                         // 2-D array, 1st column split id value, 2nd column
                         // indicates to which group split belongs to
                         sparr[k][0]=parseInt(mx_tag[j].attributes.id.value);
-                        sparr[k][1]=-1; // -1 indicates split does not grouped with any other group
+                        // -1 indicates split does not grouped with any other
+                        // group
+                        sparr[k][1]=-1;
                         k=k+1;
                     }
                 }
@@ -2027,10 +2074,13 @@ function main(container, outline, toolbar, sidebar, status) {
 
             j=1;
 
-            var sind,tind;  // index of present source,target in split array sparr
+            // index of present source,target in split array sparr
+            var sind, tind;
             var grouparr= new Array(); // get the details of different  groups
-            var clkgrp = new Array();  // get the details like clock stored in particular group
-            var tkgrp = new Array();   // get the details like tk stored in particular group
+            // get the details like clock stored in particular group
+            var clkgrp = new Array();
+            // get the details like tk stored in particular group
+            var tkgrp = new Array();
             var groupind=0; // index used for group
 
             for (var i=0;i<clkid.length;i++)
@@ -2047,8 +2097,10 @@ function main(container, outline, toolbar, sidebar, status) {
                 tind=-1;
                 if (mx_tag[j].getAttribute("source")!=null)
                 {
-                    var s = parseInt(mx_tag[j].attributes.source.value); // present source
-                    var t = parseInt(mx_tag[j].attributes.target.value); // present target
+                    // present source
+                    var s = parseInt(mx_tag[j].attributes.source.value);
+                    // present target
+                    var t = parseInt(mx_tag[j].attributes.target.value);
 
                     // note that split has 3 childs with consecutive ids
                     // (ex: 80,81,82)... we stored the first index (80 in
@@ -2065,9 +2117,11 @@ function main(container, outline, toolbar, sidebar, status) {
                         if ((sparr[i][0]<=t)&&(t<=sparr[i][0]+2))
                             tind=i;
                     }
-                    if (sind!=-1 && tind!=-1) // if both source and target belongs to splits...
+                    // if both source and target belongs to splits...
+                    if (sind!=-1 && tind!=-1)
                     {
-                        if (sparr[sind][1]==-1 && sparr[tind][1]==-1) // if both are not grouped to any other split
+                        // if both are not grouped to any other split
+                        if (sparr[sind][1]==-1 && sparr[tind][1]==-1)
                         {
                             grouparr[groupind] = new Array();
                             // create a new group in grouparr and push the
@@ -2121,12 +2175,17 @@ function main(container, outline, toolbar, sidebar, status) {
                             // index,target_grouped index
                             var max=(sparr[sind][1]>sparr[tind][1])?sparr[sind][1]:sparr[tind][1];
 
-                            for (var x=0;x<grouparr[max].length;x++) // iterating to every split in maximum group
+                            // iterating to every split in maximum group
+                            for (var x=0;x<grouparr[max].length;x++)
                             {
-                                var val = grouparr[max][0];   // getting the split id
-                                sparr[val][1] = min;         // making their group id with minimum index value.
+                                // getting the split id
+                                var val = grouparr[max][0];
+                                // making their group id with minimum index
+                                // value.
+                                sparr[val][1] = min;
                             }
-                            grouparr[min] = grouparr[min].concat(grouparr[max]); // concatenate all splits in max to min.
+                            // concatenate all splits in max to min.
+                            grouparr[min] = grouparr[min].concat(grouparr[max]);
                             sparr[tind][1] = min;    // changing the group id
                             sparr[sind][1] = min;    // changing the group id
                         }
@@ -2190,7 +2249,8 @@ function main(container, outline, toolbar, sidebar, status) {
                 {
                     if ((sparr[j][0]<=clkgrp[i])&&(clkgrp[i]<=sparr[j][0]+2))
                     {
-                        clkgrp[i]=sparr[j][1]; break;
+                        clkgrp[i]=sparr[j][1];
+                        break;
                     }
                 }
             }
@@ -2209,7 +2269,8 @@ function main(container, outline, toolbar, sidebar, status) {
                         {
                             if ((sparr[grouparr[gind][x]][0]<=tkgrp[i]) && (tkgrp[i]<=(sparr[grouparr[gind][x]][0]+2)))
                             {
-                                tkgrp[i] = j; temp=0;
+                                tkgrp[i] = j;
+                                temp = 0;
                                 break;
                             }
                         }
@@ -2334,7 +2395,8 @@ function main(container, outline, toolbar, sidebar, status) {
                     }
                     if ((row<=10 && row >= 1))
                     {
-                        CreateSlider();  // if tkblocks are <=10 then create slider else not
+                        // if tkblocks are <= 10 then create slider else not
+                        CreateSlider();
                     }
                     chart_init(wnd, affichwnd, with_interval, with_interval2);
                 });
@@ -2450,4 +2512,662 @@ function main(container, outline, toolbar, sidebar, status) {
     }
 
     load_example_content(example_content, filename);
+}
+
+/*
+ * @jiteshjha
+ * styleToObject(style) converts style string into an object.
+ * Format : First item in the object will be 'default: linkStyle',
+ * and the rest of items will be of the style 'mxConstants:value'
+ */
+
+function styleToObject(style) {
+    //To add semicolon at the end if it isn't already present.
+    if (style[style.length - 1] != ';') {
+        style = style + ';';
+    }
+    var defaultStyle = style.substring(0, style.indexOf(';'));
+    var styleObject = {
+        "default": defaultStyle
+    };
+    var remainingStyle = style.substring(style.indexOf(';') + 1);
+
+    /*
+     * remainingStyle is the string without the default style.
+     * For every key:value pair in the string,
+     * extract the key(string before '=') and the value
+     * (string before ';'), set the key:value pair into styleObject
+     * and remainingStyle is set to a string without the key:value pair.
+     */
+    while (remainingStyle.length > 0) {
+        var indexOfKey = remainingStyle.indexOf('=');
+        var key = remainingStyle.substring(0, indexOfKey);
+        remainingStyle = remainingStyle.substring(indexOfKey + 1);
+        var indexOfValue = remainingStyle.indexOf(';');
+        var value = remainingStyle.substring(0, indexOfValue);
+        styleObject[key] = value;
+        remainingStyle = remainingStyle.substring(indexOfValue + 1);
+    }
+
+    return styleObject;
+}
+
+/*
+ * @jiteshjha
+ * styleToObject(style) converts the object back to the style string.
+ */
+function objectToStyle(object) {
+    var style = "";
+    for (var key in object) {
+        if (key.toString() == "default") {
+            style += object[key] + ';';
+        } else {
+            style += (key + '=' + object[key] + ';');
+        }
+    }
+    return style;
+}
+
+/*
+ * Maverick
+ * The following function is used to define a tag for entire diagram.
+ * We can set context, model and setup parameters for the entire diagram
+ * using this function.
+ */
+
+
+function XcosDiagram(context, model, attributes) {
+    this.context = context;
+    this.model = model;
+    this.finalIntegrationTime = attributes;
+}
+
+
+/*
+ * @jiteshjha, @pooja
+ * setContext dialog box
+ * Includes a set context instruction text and input text area.
+ */
+
+/*
+ * Maverick
+ * Added 'diagRoot' parameter.
+ */
+function showSetContext(graph, diagRoot) {
+
+    // Create basic structure for the form
+    var content = document.createElement('div');
+    content.setAttribute("id", "setContext");
+
+    // Add Form
+    var myform = document.createElement("form");
+    myform.method = "";
+    myform.setAttribute("id", "formProperties");
+
+    // Add set context string
+    var descriptionSetContext = document.createElement("div");
+    descriptionSetContext.innerHTML = "You may enter here scilab instructions to define symbolic parameters used in block definitions using Scilab instructions. These instructions are evaluated once confirmed(i.e. you click on OK and every time the diagram is loaded)";
+    descriptionSetContext.setAttribute("id", "descriptionSetContext");
+    myform.appendChild(descriptionSetContext);
+
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    // input text area
+    var textareaSetContext = document.createElement("textarea");
+    textareaSetContext.setAttribute("id", "textareaSetContext");
+
+    myform.appendChild(textareaSetContext);
+
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    // Button - Submit
+    var btn = document.createElement("button");
+    btn.innerHTML = 'Ok';
+    btn.type = "button";
+    btn.name = "submit";
+    btn.setAttribute("id", "buttonSetContext");
+
+    var contextValue = handleContext("get");
+
+    var displayValue = "";
+
+    /*
+     * Maverick
+     * Modified the for loop because only requirement was to
+     * traverse the array of 'contextValue' and not all the
+     * elements of it.
+     */
+    for (var i = 0; i < contextValue.length; i++) {
+        displayValue += contextValue[i] + "\n";
+    }
+    if (contextValue != "") {
+        textareaSetContext.value = displayValue;
+    } else {
+        textareaSetContext.value = "";
+
+    }
+
+    // Executes when button 'btn' is clicked
+    btn.onclick = function() {
+
+        var input = document.getElementById('textareaSetContext').value;
+
+        /*
+         * Maverick
+         * Code to extract context parameter values from the text area
+         * containing the input.
+         */
+        var contextValues = [];
+        var i = 0,
+            temp = "";
+        for (i = 0; i < input.length; i++) {
+            if (input[i] == '\n') {
+                if (temp != "") {
+                    contextValues.push(temp);
+                }
+                temp = "";
+                continue;
+            }
+            temp += input[i];
+        }
+        if (temp != "") {
+            contextValues.push(temp);
+        }
+
+        diagRoot.context = contextValues;
+        diagRoot.context.scilabClass = "String[]";
+        handleContext("set", contextValues);
+        wind.destroy();
+    };
+
+    myform.appendChild(btn);
+    content.appendChild(myform);
+    var wind = showModalWindow(graph, 'Set Context', content, 450, 350);
+};
+
+function showPropertiesWindow(graph, cell, diagRoot) {
+
+    var name = cell.getAttribute('blockElementName');
+    if(name!="LOOKUP_f" && name!="CURV_f" && name != "scifunc_block_m") {
+        var defaultProperties = cell.blockInstance.instance.get();
+        //window[name]("get");
+        /*
+         * {
+         *   nbr_curves: ["Number of curves", 1],
+         *   clrs: ["color (>0) or mark (<0)", [1, 2, 3, 4, 5, 6, 7, 13]],
+         *   siz: ["line or mark size", [1, 1, 1, 1, 1, 1, 1, 1]],
+         *   win: ["Output window number (-1 for automatic)", -1],
+         *   wpos: ["Output window position", [-1, -1]],
+         *   wdim: ["Output window sizes", [-1, -1]],
+         *   vec_x: ["Xmin and Xmax", [-15, 15]],
+         *   vec_y: ["Ymin and Ymax", [-15, 15]],
+         *   vec_z: ["Zmin and Zmax", [-15, 15]],
+         *   param3ds: ["Alpha and Theta", [50, 280]],
+         *   N: ["Buffer size", 2]
+         * };
+         */
+
+        // var defaultProperties=window["CONST_m"]("get");
+
+        // Create basic structure for the form
+        var content = document.createElement('div');
+        content.setAttribute("id", "contentProperties");
+
+        // Heading of content
+        var heading = document.createElement('h3');
+        heading.innerHTML = cell.blockInstance.instance.get_popup_title();
+        heading.id = "headingProperties"
+        content.appendChild(heading);
+
+        // Add Form
+        var myform = document.createElement("form");
+        myform.method = "post";
+        myform.id = "formProperties";
+
+        // Line break
+        var linebreak = document.createElement('br');
+        myform.appendChild(linebreak);
+
+        for (var key in defaultProperties) {
+            if (defaultProperties.hasOwnProperty(key)) {
+
+                // Input Title
+                var fieldName = defaultProperties[key];
+                var namelabel = document.createElement('label');
+                namelabel.innerHTML = defaultProperties[key][0];
+                myform.appendChild(namelabel);
+
+                // Input
+                var input = document.createElement("input");
+                input.name = key;
+                input.value = defaultProperties[key][1];
+                input.setAttribute("id", key.toString());
+                input.setAttribute("class", "fieldInput");
+                myform.appendChild(input);
+
+                // Line break
+                var linebreak = document.createElement('br');
+                myform.appendChild(linebreak);
+
+                // Line break
+                var linebreak = document.createElement('br');
+                myform.appendChild(linebreak);
+            }
+        }
+
+        // Line break
+        var linebreak = document.createElement('br');
+        myform.appendChild(linebreak);
+
+        // Button - Submit
+        var btn = document.createElement("button");
+        btn.innerHTML = 'Submit';
+        btn.type = "button";
+        btn.name = "submit";
+        //btn.id = "submit";
+
+        // Executes when button 'btn' is clicked
+        btn.onclick = function() {
+
+            /*
+             * Loading XML of last graph configuration so that all the links
+             * nodes of the previous xml can be copied to the new XML
+             */
+
+            var encPrevXml = new mxCodec(mxUtils.createXmlDocument());
+            var nodePrevXml = encPrevXml.encode(diagRoot);
+            var strPrevXml = mxUtils.getPrettyXml(nodePrevXml);
+            strPrevXml = mxUtils.parseXml(strPrevXml);
+            var xslPrevXml = trySomething("finalmodsheet.xsl");
+            function trySomething(x) {
+                if (window.ActiveXObject) {
+                    xhttp = new ActiveXObject("Msxml2.XMLHTTP");
+                } else {
+                    xhttp = new XMLHttpRequest();
+                }
+                xhttp.open("GET", x, false);
+                try {
+                    xhttp.responseType = "msxml-document"
+                } catch (err) {}
+                xhttp.send("");
+                return xhttp.responseXML;
+            }
+            var xsltProcessorPrevXml = new XSLTProcessor();
+            xsltProcessorPrevXml.importStylesheet(xslPrevXml);
+            var resultDocumentPrevXml = xsltProcessorPrevXml.transformToDocument(strPrevXml);
+            /*
+             * Maverick
+             * Using resultDocument.documentElement to remove an additional tag
+             * "<#document>" created by the XSLTProcessor.
+             */
+            strPrevXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n" + mxUtils.getPrettyXml(resultDocumentPrevXml.documentElement);
+            strPrevXml = strPrevXml.replace(/\n\n/g, "\n");
+            strPrevXml = strPrevXml.replace(/\n*/, '');
+            strPrevXml = strPrevXml.replace(/>\s*</g, '><');
+            strPrevXml = strPrevXml.replace(/<!--[\s\S]*?-->/g, '');
+            var docPrevXml = mxUtils.parseXml(strPrevXml);
+            var codecPrevXml = new mxCodec(docPrevXml);
+            var rootNode = docPrevXml.documentElement;
+            while(rootNode.nodeName != 'root')
+            {
+                rootNode = rootNode.firstChild;
+            }
+            var currentNode = rootNode.firstChild;
+
+            // Updating model
+            var parent = graph.getDefaultParent();
+            var model = graph.getModel();
+            var v1 = null;
+            var doc = mxUtils.createXmlDocument();
+            model.beginUpdate();
+            try {
+
+                var propertiesObject = {
+                    id: cell.id
+                };
+
+                for (var key in defaultProperties) {
+                    if (defaultProperties.hasOwnProperty(key)) {
+                        propertiesObject[key] = document.getElementById(key.toString()).value;
+                    }
+                }
+                var geometry = cell.getGeometry();
+                var x=geometry.x;
+                var y=geometry.y;
+
+                var details_instance = new window[name]();
+                var details = cell.blockInstance.instance.set(propertiesObject);
+                // window[name]("set",cell.value,propertiesObject);
+                editor.execute('deleteBlock',(editor, cell));
+                var enc = new mxCodec(mxUtils.createXmlDocument());
+                var node = enc.encode(details);
+                var temp = enc.encode(parent);
+
+                // Get the stylesheet for the graph
+                var stylesheet = graph.getStylesheet();
+                // From the stylesheet, get the style of the particular block
+                var style = stylesheet.styles[name];
+
+                /*
+                 * When a particular block is loaded for the first time, the
+                 * image in the style of the block will be a path to the image.
+                 * Set the label in the style property of the block has a html
+                 * image, and set the image in the style property as null
+                 *
+                 * NOTE: Since the image of any block need not be changed for
+                 *       for every movement of that block, the image must be
+                 *       set only once.
+                 */
+
+                if (style != null && style['image'] != null) {
+
+                    // Make label as a image html element
+                    var label = '<img src="' + style['image'] + '" height="80" width="80">';
+                    // Set label
+                    style['label'] = label;
+
+                    style['imagePath'] = style['image'];
+
+                    // Set image as null
+                    style['image'] = null;
+
+                    // Add the label as a part of node
+                    node.setAttribute('label', label);
+                }
+
+                /*
+                 * If a particular block with image tag in it's style property
+                 * has been invoked already, the image tag would be null for
+                 * any successive instances of the same block. Hence, set the
+                 * label from the label tag in style which was set when that
+                 * blockModel was invoked on the first time.
+                 */
+
+                if (style != null && style['label'] != null) {
+
+                    // Set label from the label field in the style property
+                    node.setAttribute('label', style['label']);
+                }
+
+                node.setAttribute('parent', temp.getAttribute('id'));
+                var i, arr = [];
+                var details_instance=cell.blockInstance.instance;
+                var blockModel = details_instance.x.model;
+                var graphics = details_instance.x.graphics;
+
+                /* To determine number and type of Port*/
+                var inputPorts = [],
+                    outputPorts = [],
+                    controlPorts = [],
+                    commandPorts = [];
+                if (blockModel.in.height != null) {
+                    arr = getData(graphics.in_implicit);
+                    if (arr.length != 0) {
+                        inputPorts = arr;
+                    } else {
+                        for (i = 0; i < blockModel.in.height; i++) {
+                            inputPorts.push("E");
+                        }
+                    }
+                }
+                if (blockModel.out.height != null) {
+                    arr = getData(graphics.out_implicit);
+                    if (arr.length != 0) {
+                        outputPorts = arr;
+                    } else {
+                        for (i = 0; i < blockModel.out.height; i++) {
+                            outputPorts.push("E");
+                        }
+                    }
+                }
+                if (blockModel.evtin.height != null) {
+                    for (i = 0; i < blockModel.evtin.height; i++) {
+                        controlPorts.push("CONTROL");
+                    }
+                }
+                if (blockModel.evtout.height != null) {
+                    for (i = 0; i < blockModel.evtout.height; i++) {
+                        commandPorts.push("COMMAND");
+                    }
+                }
+                v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, name);
+
+                // @Chhavi: Additional attribute to store the block's instance
+                v1.blockInstance = createInstanceTag(details_instance);
+                v1.currentAngle = 0;
+                v1.flipX = 1;
+                v1.flipY = 1;
+                createPorts(graph, v1, inputPorts, controlPorts, outputPorts, commandPorts);
+                v1.setConnectable(false);
+            } finally {
+                model.endUpdate();
+            }
+
+            /*
+             * The code below is responsible for moving the new (non-links)
+             * node created after the set function is called back to their
+             * previous positions as in their previous XML.  This is done to
+             * retain the id's so that the Link node of previous XML can be
+             * used to create connecting wires for the new XML also.
+             */
+
+            var referenceModelCount = referenceModelProps.length;
+            var missingKeys = [];
+            var lastId = Math.max(...Object.keys(model.cells));
+
+            for( var i=0;i< referenceModelCount ; i++)
+            {
+                var present = false;
+                for(var key in model.cells)
+                {
+                    (model.cells.hasOwnProperty(key))
+                    {
+                        if(referenceModelProps[i].id == key)
+                        {
+                            present = true;
+                            break;
+                        }
+                    }
+                }
+                if(present == false)
+                    missingKeys.push(referenceModelProps[i].id);
+            }
+
+            var newIDs= [];
+            for(var i=modelNextId;i<=lastId;i++)
+                newIDs.push(i);
+            var j = 0;
+
+            for(var i = 0; i < missingKeys.length; i++)
+            {
+                // To find the style(name) of the block with the id equal to
+                // missingKeys[i]
+                var referenceModelStyle = referenceModelProps.find( function (obj) {
+                    return obj.id == missingKeys[i];
+                }).style;
+
+                if(model.cells[newIDs[j]].style.endsWith('Port')) {
+                    if( referenceModelStyle == model.cells[newIDs[j]].style ) {
+                        model.cells[missingKeys[i]] = model.cells[newIDs[j]];
+                        model.cells[missingKeys[i]].id = String(missingKeys[i]);
+                        delete model.cells[newIDs[j++]];
+                    }
+                    else {
+                        var tempId = j;
+                        while(newIDs[++j] <= lastId )
+                        {
+                            if(referenceModelStyle == model.cells[newIDs[j]].style) {
+                                model.cells[missingKeys[i]] = model.cells[newIDs[j]];
+                                model.cells[missingKeys[i]].id = String(missingKeys[i]);
+                                delete model.cells[newIDs[j]];
+                                newIDs.splice(j,1);
+                                j = tempId;
+                                break;
+                            }
+                        }
+                    }
+                }
+                else if (model.cells[newIDs[j]].style) {
+                    model.cells[missingKeys[i]] = model.cells[newIDs[j]];
+                    model.cells[missingKeys[i]].id = String(missingKeys[i]);
+                    delete model.cells[newIDs[j++]];
+                }
+            }
+            referenceModelProps = [];
+            newIDs = [];
+
+            model.beginUpdate();
+            try {
+                // Connecting the blocks by inserting link nodes
+                while(currentNode!=null)
+                {
+                    var curNodeName = currentNode.nodeName;
+                    if(curNodeName.endsWith('Link'))
+                    {
+                        var pointsArray = [];
+                        var newSourceCell = graph.getModel().getCell(currentNode.getAttribute('source'));
+                        var newTargetCell = graph.getModel().getCell(currentNode.getAttribute('target'));
+
+                        if(newSourceCell.getEdgeCount() <=0 && newTargetCell.getEdgeCount()<=0) {
+
+                            var childNode = currentNode.firstChild;
+                            if (childNode != null) {
+                                if (childNode.nodeName == 'mxGeometry') {
+                                    var tempNode = childNode.firstChild;
+                                    if (tempNode != null) {
+                                        if (tempNode.nodeName == 'mxPoint') {
+                                            pointsArray.push(new mxPoint(tempNode.getAttribute('x'), tempNode.getAttribute('y')));
+                                        } else {
+                                            if (tempNode.nodeName == 'Array') {
+                                                var mxPointNode = tempNode.firstChild;
+                                                while (mxPointNode != null) {
+                                                    pointsArray.push(new mxPoint(mxPointNode.getAttribute('x'), mxPointNode.getAttribute('y')));
+                                                    mxPointNode = mxPointNode.nextSibling;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            createEdgeObject(graph, newSourceCell, newTargetCell, null);
+                        }
+                    }
+                    currentNode=currentNode.nextSibling;
+                }
+
+            } finally {
+                model.endUpdate();
+            }
+            graph.setSelectionCell(v1);
+            graph.refresh();
+            wind.destroy();
+        };
+        myform.appendChild(btn);
+
+
+        // Button - Reset
+        var btn = document.createElement("button");
+        btn.innerHTML = 'Reset';
+        btn.type = "button";
+        btn.name = "submit";
+        btn.id = "resetButtonProperties";
+        btn.onclick = function() {
+            // Reset
+            for (var key in defaultProperties) {
+                if (defaultProperties.hasOwnProperty(key)) {
+                    var element = document.getElementById(key.toString());
+                    element.value = defaultProperties[key][1];
+                }
+            }
+        };
+
+        myform.appendChild(btn);
+        // Base height without fields : 135 px
+        height = 135 + 26 * defaultProperties.length + 15;
+
+        content.appendChild(myform);
+        var wind = showModalWindow(graph, 'Properties', content, 450, height);
+
+    }else{
+        //This function is specifically for sciFunc_block_m
+        if(name=="scifunc_block_m")
+        {
+            create_scifunc_popups(graph,cell,name,diagRoot);
+        }
+        else
+        {
+            /* Function is present inside LOOKUP_CURV.js */
+            showGraphWindow(graph,cell,diagRoot);
+        }
+    }
+
+    /*
+     * alert("lookup_f block ");
+     * // Create basic structure for the form
+     * var content = document.createElement('div');
+     * content.setAttribute("id", "lookup_f_Properties");
+
+     * // Heading of content
+     * var heading = document.createElement('div');
+     * heading.innerHTML = "<ul id='menu'><li><a href='#'>Main Tab</a><ul><li><a href='#'>This is link A</a></li><li><a href='#'>This is link B</a></li></ul></li></ul>";
+     * // heading.id = "headingProperties"
+     * height=300;
+     * content.appendChild(heading);
+     * var wind = showModalWindow(graph, 'edit_curv', content, 450, height);
+     */
+
+};
+
+/*
+ * @jiteshjha
+ * createEdgeObject(@parameters) creates an edge on the graph DOM
+ * @Parameters :
+ *              source -> source object for the edge
+ *              target -> destination object for the edge
+ *              points -> waypoints to be inserted in the geometry
+ */
+
+function createEdgeObject(graph, source, target, points) {
+
+    // Start the update on the graph
+    graph.getModel().beginUpdate();
+
+    try {
+
+        // Create an edge from the given source object and target object
+        var edge = graph.insertEdge(graph.getDefaultParent(), null, '', source, target);
+        // Get geometry of the edge
+        var geometry = graph.getModel().getGeometry(edge);
+        /*
+         * Clone the geometry object
+         * NOTE: Direct manipulation of the geometry object may not be
+         *       registered as an action for some cases, hence we clone the
+         *       geometry, manipulate it and set the geometry.
+         */
+        var cloneGeometry = geometry.clone();
+
+        // Add points in the cloned geometry
+        cloneGeometry.points = points;
+
+        // Set the changed geometry for the edge
+        graph.getModel().setGeometry(edge, cloneGeometry);
+
+        // Refresh to reflect changes made
+        graph.refresh();
+    } finally {
+
+        // End the update
+        graph.getModel().endUpdate();
+    }
+
+    return edge;
 }
