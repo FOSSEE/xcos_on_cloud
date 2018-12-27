@@ -1631,7 +1631,7 @@ function main(container, outline, toolbar, sidebar, status) {
                                 targetPoint = point;
                             continue;
                         }
-                        if (tempNode.nodeName != 'Array')
+                        if (tempNode.nodeName != 'Array' || tempNode.getAttribute('as') != 'points')
                             continue;
                         for (var mxPointNode = tempNode.firstChild;
                             mxPointNode != null;
@@ -3907,11 +3907,24 @@ function createPortsWithGeometry(graph, block, dataArray, nodeDataObject) {
     for (var i in dataArray) {
         var dataPort = dataArray[i];
         var geometryCell = dataPort.geometryCell;
-        var port;
-        if (geometryCell.relative == 1)
-            port = graph.insertVertex(block, null, dataPort.nodename, geometryCell.x, geometryCell.y, geometryCell.width, geometryCell.height, dataPort.style, true);
-        else
-            port = graph.insertVertex(block, null, dataPort.nodename, geometryCell.x / block.geometry.width, geometryCell.y / block.geometry.height, geometryCell.width, geometryCell.height, dataPort.style, true);
+        var offset = geometryCell.offset;
+        var offsetx = 0;
+        var offsety = 0;
+        if (offset != null) {
+            offsetx = offset.x;
+            offsety = offset.y;
+        }
+        var cellx;
+        var celly;
+        if (geometryCell.relative == 1) {
+            cellx = geometryCell.x + offsetx / block.geometry.width;
+            celly = geometryCell.y + offsety / block.geometry.height;
+        } else {
+            /* TODO: use offset here */
+            cellx = geometryCell.x / block.geometry.width;
+            celly = geometryCell.y / block.geometry.height;
+        }
+        var port = graph.insertVertex(block, null, dataPort.nodename, cellx, celly, geometryCell.width, geometryCell.height, dataPort.style, true);
         port.ordering = dataPort.ordering;
 
         if (block.style == 'Split') {
