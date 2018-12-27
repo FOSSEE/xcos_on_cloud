@@ -3167,11 +3167,11 @@ function createEdgeObject(graph, source, target, points, sourcePoint, targetPoin
         // Get geometry of the edge
         var geometry = edge.getGeometry();
         // Set the changed geometry for the edge
-        if (sourcePoint != null)
+        if (source == null && sourcePoint != null)
             geometry.setTerminalPoint(sourcePoint, true);
         if (points != null && points.length > 0)
             geometry.points = points;
-        if (targetPoint != null)
+        if (target == null && targetPoint != null)
             geometry.setTerminalPoint(targetPoint, false);
 
         // Refresh to reflect changes made
