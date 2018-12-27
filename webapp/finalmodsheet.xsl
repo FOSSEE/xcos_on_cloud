@@ -119,19 +119,37 @@ Look for TAG:Break1!!!
                     <xsl:when test="@style='ExplicitInputPort'">
                         <xsl:call-template name="ExplicitInputPort" />
                     </xsl:when>
+                    <xsl:when test="starts-with(@style, 'ExplicitInputPort;')">
+                        <xsl:call-template name="ExplicitInputPort" />
+                    </xsl:when>
                     <xsl:when test="@style='ExplicitOutputPort'">
+                        <xsl:call-template name="ExplicitOutputPort" />
+                    </xsl:when>
+                    <xsl:when test="starts-with(@style, 'ExplicitOutputPort;')">
                         <xsl:call-template name="ExplicitOutputPort" />
                     </xsl:when>
                     <xsl:when test="@style='ControlPort'">
                         <xsl:call-template name="ControlPort" />
                     </xsl:when>
+                    <xsl:when test="starts-with(@style, 'ControlPort;')">
+                        <xsl:call-template name="ControlPort" />
+                    </xsl:when>
                     <xsl:when test="@style='ImplicitInputPort'">
+                        <xsl:call-template name="ImplicitInputPort" />
+                    </xsl:when>
+                    <xsl:when test="starts-with(@style, 'ImplicitInputPort;')">
                         <xsl:call-template name="ImplicitInputPort" />
                     </xsl:when>
                     <xsl:when test="@style='ImplicitOutputPort'">
                         <xsl:call-template name="ImplicitOutputPort" />
                     </xsl:when>
+                    <xsl:when test="starts-with(@style, 'ImplicitOutputPort;')">
+                        <xsl:call-template name="ImplicitOutputPort" />
+                    </xsl:when>
                     <xsl:when test="@style='CommandPort'">
+                        <xsl:call-template name="CommandPort" />
+                    </xsl:when>
+                    <xsl:when test="starts-with(@style, 'CommandPort;')">
                         <xsl:call-template name="CommandPort" />
                     </xsl:when>
                     <xsl:when test="@style='Split'">

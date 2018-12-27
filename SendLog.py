@@ -1685,6 +1685,7 @@ if __name__ == '__main__':
     # Set server address from config
     http_server = WSGIServer(
         (config.HTTP_SERVER_HOST, config.HTTP_SERVER_PORT), app)
+    print('listening:', http_server)
     try:
         http_server.serve_forever()
     except KeyboardInterrupt:
