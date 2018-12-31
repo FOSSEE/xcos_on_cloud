@@ -874,9 +874,9 @@ function main(container, outline, toolbar, sidebar, status) {
     graph.convertValueToString = function(cell) {
         if (mxUtils.isNode(cell.value)) {
             var stylesheet = graph.getStylesheet();
-            var attribute = cell.value.getAttribute('style');
+            var attribute = cell.value.getAttribute('interfaceFunctionName');
             if (attribute == null) {
-                attribute = cell.value.getAttribute('interfaceFunctionName');
+                attribute = cell.value.nodeName;
             }
             var style = stylesheet.styles[attribute];
             var displayedLabel = style['displayedLabel'];
@@ -1431,14 +1431,7 @@ function main(container, outline, toolbar, sidebar, status) {
                      * subsequent mapping.
                      */
                     var temporaryMapObject = new Object();
-                    temporaryMapObject.inputArray = [];
-                    temporaryMapObject.outputArray = [];
-                    temporaryMapObject.controlArray = [];
-                    temporaryMapObject.commandArray = [];
-                    temporaryMapObject.inputIds = [];
-                    temporaryMapObject.outputIds = [];
-                    temporaryMapObject.controlIds = [];
-                    temporaryMapObject.commandIds = [];
+                    temporaryMapObject.inputDataArray = [];
 
                     switch(curNodeName) {
                         case 'EventInBlock': ifaceFuncName='CLKINV_f'; break;
@@ -1471,6 +1464,7 @@ function main(container, outline, toolbar, sidebar, status) {
                         var temp = enc.encode(parent);
                         var stylesheet = graph.getStylesheet();
                         var styleName = currentNode.getAttribute('style');
+                        var fullStyleName = styleName;
                         if (styleName!=null) {
                             var idx = styleName.indexOf(';');
                             if (idx != -1) {
@@ -1478,6 +1472,18 @@ function main(container, outline, toolbar, sidebar, status) {
                             }
                         }
                         var style = stylesheet.styles[styleName];
+                        var angle = currentNode.getAttribute('angle');
+                        var imageStyle = "";
+                        if (angle != null) {
+                            imageStyle = ' style="transform:rotate(' + angle + 'deg)"';
+                        }
+
+                        var height = 80;
+                        var width = 80;
+                        if (geometryCell.height != null)
+                            height = geometryCell.height;
+                        if (geometryCell.width != null)
+                            width = geometryCell.width;
 
                         /*
                          * When a particular block is loaded for the first
@@ -1492,7 +1498,7 @@ function main(container, outline, toolbar, sidebar, status) {
                          */
                         if (style != null && style['image'] != null) {
                             // Make label as a image html element
-                            var label = '<img src="' + style['image'] + '" height="80" width="80">';
+                            var label = '<img src="' + style['image'] + '" height="' + (height*0.9) + '" width="' + (width*0.9) + '">';
 
                             // Set label
                             style['label'] = label;
@@ -1520,7 +1526,7 @@ function main(container, outline, toolbar, sidebar, status) {
                         }
                         node.setAttribute('parent', temp.getAttribute('id'));
 
-                        var v1 = graph.insertVertex(graph.getDefaultParent(), null, node, geometryCell.x, geometryCell.y, 80, 80, ifaceFuncName);
+                        var v1 = graph.insertVertex(graph.getDefaultParent(), null, node, geometryCell.x, geometryCell.y, width, height, fullStyleName);
                         // @Chhavi: Additional attribute to store the
                         // block's instance
                         v1.blockInstance = createInstanceTag(details_instance);
@@ -1544,9 +1550,9 @@ function main(container, outline, toolbar, sidebar, status) {
                      * Handling SplitBlock in a different manner.
                      */
                     if (curNodeName == 'SplitBlock') {
-                        // (-5, -5.5) is the offset to correct the position of
+                        // (-2, -2) is the offset to correct the position of
                         // split-block
-                        var v1 = graph.insertVertex(graph.getDefaultParent(), null, '', geometryCell.x - 5, geometryCell.y - 5.5, 10, 10, 'Split', false);
+                        var v1 = graph.insertVertex(graph.getDefaultParent(), null, '', geometryCell.x - 2, geometryCell.y - 2, geometryCell.width, geometryCell.height, 'Split', false);
                         temporaryMapObject.newId = v1.id;
                         nodeDataObject[curId] = temporaryMapObject;
                         v1.setConnectable(false);
@@ -1554,64 +1560,11 @@ function main(container, outline, toolbar, sidebar, status) {
                 } else if (curNodeName.endsWith('Port')) {
                     var oldParentId = currentNode.getAttribute('parent');
                     var ordering = currentNode.getAttribute('ordering');
+                    var style = currentNode.getAttribute('style');
                     var newParentObj = nodeDataObject[oldParentId];
 
-                    switch (curNodeName) {
-                        case 'ExplicitInputPort':
-                            if (ordering === undefined) {
-                                newParentObj.inputArray.push('E');
-                                newParentObj.inputIds.push(curId);
-                            } else {
-                                newParentObj.inputArray[ordering-1] = 'E';
-                                newParentObj.inputIds[ordering-1] = curId;
-                            }
-                            break;
-                        case 'ImplicitInputPort':
-                            if (ordering === undefined) {
-                                newParentObj.inputArray.push('I');
-                                newParentObj.inputIds.push(curId);
-                            } else {
-                                newParentObj.inputArray[ordering-1] = 'I';
-                                newParentObj.inputIds[ordering-1] = curId;
-                            }
-                            break;
-                        case 'ExplicitOutputPort':
-                            if (ordering === undefined) {
-                                newParentObj.outputArray.push('E');
-                                newParentObj.outputIds.push(curId);
-                            } else {
-                                newParentObj.outputArray[ordering-1] = 'E';
-                                newParentObj.outputIds[ordering-1] = curId;
-                            }
-                            break;
-                        case 'ImplicitOutputPort':
-                            if (ordering === undefined) {
-                                newParentObj.outputArray.push('I');
-                                newParentObj.outputIds.push(curId);
-                            } else {
-                                newParentObj.outputArray[ordering-1] = 'I';
-                                newParentObj.outputIds[ordering-1] = curId;
-                            }
-                            break;
-                        case 'CommandPort':
-                            if (ordering === undefined) {
-                                newParentObj.commandArray.push('COMMAND');
-                                newParentObj.commandIds.push(curId);
-                            } else {
-                                newParentObj.commandArray[ordering-1] = 'COMMAND';
-                                newParentObj.commandIds[ordering-1] = curId;
-                            }
-                            break;
-                        case 'ControlPort':
-                            if (ordering === undefined) {
-                                newParentObj.controlArray.push('CONTROL');
-                                newParentObj.controlIds.push(curId);
-                            } else {
-                                newParentObj.controlArray[ordering-1] = 'CONTROL';
-                                newParentObj.controlIds[ordering-1] = curId;
-                            }
-                            break;
-                    }
+                    var curNodeData = { nodename: curNodeName, ordering: ordering, style: style, id: curId, geometryCell: geometryCell }
+                    newParentObj.inputDataArray.push(curNodeData);
                 }
             }
 
@@ -1637,7 +1590,7 @@ function main(container, outline, toolbar, sidebar, status) {
                     var newParentId = newParentObj.newId;
 
                     var newParentCell = graph.getModel().getCell(newParentId);
-                    createPorts(graph, newParentCell, newParentObj.inputArray, newParentObj.controlArray, newParentObj.outputArray, newParentObj.commandArray, newParentObj, nodeDataObject);
+                    createPortsWithGeometry(graph, newParentCell, newParentObj.inputDataArray, nodeDataObject);
                 }
             }
 
@@ -1690,7 +1643,7 @@ function main(container, outline, toolbar, sidebar, status) {
                     }
                 }
 
-                createEdgeObject(graph, newSourceCell, newTargetCell, null);
+                createEdgeObject(graph, newSourceCell, newTargetCell, pointsArray, sourcePoint, targetPoint);
             }
         } finally {
             graph.model.endUpdate();
