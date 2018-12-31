@@ -158,7 +158,10 @@ var create_new_chart_3d = function(id, no_of_graph,xmin,xmax,ymin,ymax,zmin,zmax
 	   ymin - minimum y-axis value, ymax - maximum y-axis value,
 	   xmin - minimum x-axis value, xmax - maximum x-axis value,
 	   zmin - minimum z-axis value, zmax - maximum z-axis value,
-	   type_chart - type of chart to be drawn, title_text - title to be given to the chart
+	   type_chart - type of chart to be drawn,
+	   title_text - title to be given to the chart,
+	   alpha - Angle of rotation for graph for 3D chart
+	   theta - Angle of rotation for graph for 3D chart
 	   */
 
 	// convert String values to desired datatype
@@ -168,6 +171,13 @@ var create_new_chart_3d = function(id, no_of_graph,xmin,xmax,ymin,ymax,zmin,zmax
 	ymax = parseFloat(ymax);
 	zmin = parseFloat(zmin);
 	zmax = parseFloat(zmax);
+	/*
+	Here Angle beta is calculate from angle theta as highcharts 3D chart has beta angle for rotation
+
+	we have used Math (built-in object that has properties and methods for mathematical constants and functions)
+	Math.cos() method - returns the cosine of a number 
+	Math.cos() and Math.PI is used along with some math to calculate beta rotation angle from theta rotation angle of block property.
+	*/
     beta = Math.cos(theta * Math.PI / 180);
 	var thickness = 1;
     var radiusvalue = 1;
@@ -194,16 +204,16 @@ var create_new_chart_3d = function(id, no_of_graph,xmin,xmax,ymin,ymax,zmin,zmax
 				viewDistance: 100,
 				frame: {
 					bottom: {
-						size: 0,
-						color: '#FFFFFF'
+						    size: 0,
+						    color: '#FFFFFF'
 					},
 					back: { 
-					    size: 0, 
-					    color: '#FFFFFF' 
+					        size: 0, 
+					        color: '#FFFFFF' 
 					},
                     side: { 
-                        size: 0, 
-                        color: '#FFFFFF' 
+                            size: 0, 
+                            color: '#FFFFFF' 
                     }
 				}
 			}
@@ -213,24 +223,25 @@ var create_new_chart_3d = function(id, no_of_graph,xmin,xmax,ymin,ymax,zmin,zmax
 		},
 		//Manipulation for showing tooltip according to axis change for 3D chart
 		tooltip: {
-        pointFormatter: function() {
-          var point = this;
-          return 'X : <b>' + point.x + '</b><br/>'+'Y : <b>' + point.z + '</b><br/>'+'Z : <b>' + point.y + '</b><br/>';
+            pointFormatter: function() {
+                 var point = this;
+                 return 'X : <b>' + point.x + '</b><br/>'+'Y : <b>' + point.z + '</b><br/>'+'Z : <b>' + point.y 
+                 + '</b><br/>';
             }
         },
         yAxis: {
-        //Manipulation for showing z axis vertically instead of Y axis (only for 3D graph).
+                //Manipulation for showing z axis vertically instead of Y axis (only for 3D graph).
 			min: zmin,
 			max: zmax,
 			gridLineWidth: 1,
 			tickInterval: 1,
 			title: {
-			rotation:0,
-			    style: {
-                    fontWeight: 'bold',
-                    fontSize: '15px'
-                },
-                text: 'z'
+			        rotation:0,
+			        style: {
+                             fontWeight: 'bold',
+                             fontSize: '15px'
+                    },
+                    text: 'z'
             }
 		},
 		xAxis: {
@@ -239,11 +250,11 @@ var create_new_chart_3d = function(id, no_of_graph,xmin,xmax,ymin,ymax,zmin,zmax
 			tickInterval: 1,
 			gridLineWidth: 1,
 			title: {
-			    style: {
-                    fontWeight: 'bold',
-                    fontSize: '15px'
-                },
-                text: 'x'   //title for X for differentiating axis
+			        style: {
+                             fontWeight: 'bold',
+                             fontSize: '15px'
+                    },
+                    text: 'x'   //title for X for differentiating axis
             }
 		},
 		zAxis: {
@@ -253,13 +264,13 @@ var create_new_chart_3d = function(id, no_of_graph,xmin,xmax,ymin,ymax,zmin,zmax
 			tickInterval: 1,
 			gridLineWidth: 1,
 			title: {
-                rotation:300,
-                margin: -30,
-                style: {
-                    fontWeight: 'bold',
-                    fontSize: '15px'
-                },
-            text: 'y'
+                    rotation:300,
+                    margin: -30,
+                    style: {
+                              fontWeight: 'bold',
+                              fontSize: '15px'
+                    },
+                    text: 'y'
             }
 		},
 		plotOptions : {
@@ -727,7 +738,7 @@ function chart_init(wnd, affichwnd, with_interval, with_interval2) {
 							series.removePoint(0, false);
 					}
 
-					// for 3d-charts, add 3d-points (xyz-coordinates)
+					// for 3d-charts, add 3d-points (xzy-coordinates)
 					if(block == 5)
 						series.addPoint([x,z,y], false);
 					// for 2d-charts, add 2d-points (xy-coordinates)
@@ -774,6 +785,7 @@ function chart_init(wnd, affichwnd, with_interval, with_interval2) {
 					}
 					// Get chart data
 					var series = chart.get(line_id.toString());
+					// for 3d-charts, add 3d-points (xzy-coordinates)
 					series.addPoint([x,z,y], false);
 					if(series.xData.length>buffer)
 						series.removePoint(0, false);
