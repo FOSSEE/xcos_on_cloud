@@ -259,3 +259,8 @@ td.mxPopupMenuIcon {
 .displayNone {
 	display: none;
 }
+
+foreignObject div table table td {
+    font-size: small;
+    font-family: "Roboto Mono", "Lucida Console", Monaco, monospace;
+}

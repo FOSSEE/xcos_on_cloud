@@ -1,5 +1,9 @@
 dist: xenial
 language: python
+cache: pip
+
+git:
+    quiet: true
 
 python:
     - "3.6"
