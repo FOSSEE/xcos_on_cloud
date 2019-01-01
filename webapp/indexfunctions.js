@@ -35,13 +35,44 @@ function httpGetAsync(theUrl, callback) {
     xmlHttp.send(null);
 }
 
+var simulationStarted = false;
+var wnd = null;
+var affichwnd = null;
+
 // function which deletes the sliders and related files which are created
-function StopTK() {
+// Stop simulation in between process
+function stopSimulation() {
     if (winArr.length > 0) {
         myAjaxreq("Stop", "/UpdateTKfile?id="+clientID);
         for (var i = 0; i < winArr.length; i++)
             winArr[i].close();
         winArr = new Array();
+    }
+
+    if (simulationStarted) {
+        simulationStarted = false;
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/stop?id="+clientID, true);
+        xhr.send();
+    }
+
+    if (eventSource != null) {
+        eventSource.close();
+        eventSource = null;
+    }
+}
+
+function stopSimulationWindows() {
+    chart_reset();
+
+    if (wnd != null) {
+        wnd.destroy(); // simulation window
+        wnd = null;
+    }
+    if (affichwnd != null) {
+        affichwnd.destroy(); // affichm window
+        affichwnd = null;
     }
 }
 
@@ -1765,24 +1796,19 @@ function main(container, outline, toolbar, sidebar, status) {
             }
 
             if (graph.getChildVertices(graph.getDefaultParent()).length != 0) {
-                // This branch will execute if there are no elements
-                // present in the canvas
+                // This branch will execute if there are elements present on
+                // the canvas
+                if (!confirm("Importing this file will remove the existing diagram. Are you sure you want to continue?"))
+                    return false;
+
                 graph.model.beginUpdate();
                 try {
-                    var confirmValue = confirm("Importing this file will remove the existing diagram. Are you sure you want to continue?");
-                    if (!confirmValue) {
-                        return false;
-                    }
-                    // Close simulation windows of earlier diagram for
-                    // graph and affich if exist
-
-                    if (typeof wnd !== 'undefined' && typeof affichwnd !== 'undefined' ) {
-                        wnd.destroy(); // simulation window
-                        affichwnd.destroy(); // affichm window
-                    }
                     // stop scilab for earlier execution is not stopped
                     stopSimulation();
-                    StopTK();
+                    // Close simulation windows of earlier diagram for
+                    // graph and affich if exist
+                    stopSimulationWindows();
+
                     graph.removeCells(graph.getChildVertices(graph.getDefaultParent()));
                 } finally {
                     graph.model.endUpdate();
@@ -1801,17 +1827,9 @@ function main(container, outline, toolbar, sidebar, status) {
     editor.addAction('importXcos', function(editor, cell) {
         IMPORTxcos(editor, cell);
     });
-    // Stop simulation inbetween process
-    function stopSimulation() {
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", "/stop?id="+clientID, true);
-        chart_reset();
-        xhr.send();
-    }
     // Button for stop
     editor.addAction('processStop', function(editor, cell) {
         stopSimulation();
-        StopTK();
     });
 
     addToolbarButton(editor, toolbar, 'importXcos', 'Import Xcos', 'images/export1.png');
@@ -1823,9 +1841,13 @@ function main(container, outline, toolbar, sidebar, status) {
     addToolbarButton(editor, toolbar, 'processStop', ' Stop', 'images/process-stop.png');
 
     editor.addAction('simulate', function(editor, cell) {
+        // stop previous simulation, if any
+        stopSimulation();
+        stopSimulationWindows();
+
         // when user leaves the page, the process will be stopped
         window.onunload = function(e) {
-            StopTK();
+            stopSimulation();
         }
         var diagram = getXcosDiagram(editor, cell);
         var blob = new Blob([diagram], {
@@ -1849,8 +1871,8 @@ function main(container, outline, toolbar, sidebar, status) {
         wnd.setClosable(true);
         // wnd.setVisible(true);
         wnd.addListener(mxEvent.CLOSE, function(e) {
-            chart_reset();
-            StopTK();
+            stopSimulation();
+            stopSimulationWindows();
         });
 
         // Create mxWindow for affich
@@ -1870,7 +1892,7 @@ function main(container, outline, toolbar, sidebar, status) {
         affichwnd.setClosable(true);
 
         affichwnd.addListener(mxEvent.CLOSE, function(e) {
-            StopTK();
+            stopSimulation();
         });
 
         // starting
@@ -1914,7 +1936,8 @@ function main(container, outline, toolbar, sidebar, status) {
         if (Bblock_tag.length == 0)  // if threre is no any single BasicBlock
         {
             alert("Empty Canvas");   // it implies Empty Canvas
-            wnd.destroy();  // destroy the simulation window
+            stopSimulationWindows();  // destroy the simulation window
+            return;
         }
 
         for (var i=0;i<Bblock_tag.length;i++)
@@ -1991,8 +2014,8 @@ function main(container, outline, toolbar, sidebar, status) {
                     // limit - only (maximum) 10 TKSCALE should use in an
                     // experiment
                     alert("maximum \"10\" TKSCALE blocks are allowed");
-                    wnd.destroy();
-                    break;
+                    stopSimulationWindows();
+                    return;
                 }
                 valArr[row]=new Array();
                 // min value
@@ -2336,7 +2359,7 @@ function main(container, outline, toolbar, sidebar, status) {
                 contentType: false,
                 success: function(name) {
                     if (name == "") {
-                        wnd.destroy();
+                        stopSimulationWindows();
                         alert("You have not uploaded a .sci file!\nUpload file to proceed further");
                         return false;
                     }
@@ -2349,7 +2372,7 @@ function main(container, outline, toolbar, sidebar, status) {
         }
 
         if (flag1 == true && flag2 == undefined) {
-            wnd.destroy();
+            stopSimulationWindows();
             $.ajax({
                 type:"post",
                 url: "/requestfilename",
@@ -2417,17 +2440,18 @@ function main(container, outline, toolbar, sidebar, status) {
                 clientID = this.responseText;
                 document.title = 'Xcos-' + clientID;
 
-                if ((row<=10 && row >= 1))
+                if (row<=10 && row>=1)
                 {
                     myAjaxreq("Start", "/UpdateTKfile?id="+clientID);
                 }
 
                 httpGetAsync("/start_scilab?id="+clientID, function(responseText) {
                     if (responseText != "") {
-                        wnd.destroy();
+                        stopSimulationWindows();
                         alert(responseText);
                         return;
                     }
+                    simulationStarted = true;
                     if ((row<=10 && row >= 1))
                     {
                         // if tkblocks are <= 10 then create slider else not

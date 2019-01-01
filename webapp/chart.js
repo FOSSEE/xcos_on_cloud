@@ -360,7 +360,6 @@ function chart_init(wnd, affichwnd, with_interval, with_interval2) {
 	var block_entry_BARXY = 1, block_entry_AFFICH = 1;
         
 	// Start listening to server
-	chart_reset();
 	eventSource = new EventSource("/SendLog?id="+clientID, { withCredentials: true });
         
 	eventSource.addEventListener("block", function(event){
@@ -586,40 +585,33 @@ function chart_init(wnd, affichwnd, with_interval, with_interval2) {
  	// stop scilab process on closing of window
 	wnd.addListener(mxEvent.CLOSE,function()
 	{
-	    var xhr = new XMLHttpRequest();
-	    xhr.open("GET", "/stop?id="+clientID, true);
-	 	chart_reset();
-                affichwnd.destroy();
-	 	xhr.send();
+            stopSimulation();
+            stopSimulationWindows();
 	});  
          // stop scilab process on closing of window
 	affichwnd.addListener(mxEvent.CLOSE,function()
 	{
-	    var xhr = new XMLHttpRequest();
-	    xhr.open("GET", "/stop?id="+clientID, true);
-	 	chart_reset();
-                wnd.destroy();
-	 	xhr.send();
+            stopSimulation();
+            stopSimulationWindows();
 	});  
 
 
 
 	// Error	
 	eventSource.addEventListener("ERROR", function(event){
-		chart_reset();
+                simulationStarted = false;
+                stopSimulation();
+                stopSimulationWindows();
 		if(event.data=="Empty diagram") alert(event.data);
 		else alert("Error occurred! "+event.data);
-		wnd.destroy();
-                affichwnd.destroy();
 		isDone = true;
 	}, false);
 	// Stop listening
 
 
 	eventSource.addEventListener("DONE", function(event){
-
-		eventSource.close(); 	// Close connection
-                eventSource = null;
+                simulationStarted = false;
+                stopSimulation();
                 $('#img_loader').html("");
 		isDone = true;
 	}, false);
@@ -840,10 +832,6 @@ function chart_reset(){
         if (interval2 != null) {
             clearInterval(interval2);
             interval2 = null;
-        }
-        if (eventSource != null) {
-            eventSource.close();
-            eventSource = null;
         }
 	chart_id_list = [];
 	points_list = [];
