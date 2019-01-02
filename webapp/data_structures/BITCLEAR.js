@@ -99,5 +99,9 @@ function BITCLEAR() {
         var set_param_popup_title="Set BITCLEAR block parameters <br> Clear a bit";
         return set_param_popup_title
     }
+    BITCLEAR.prototype.getDimensionForDisplay = function BITCLEAR(){
+        var dimension = { width: 80, height: 40 };
+        return dimension
+    }
 
 }

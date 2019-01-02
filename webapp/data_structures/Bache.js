@@ -78,5 +78,9 @@ Bache.prototype.set = function Bache() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    Bache.prototype.getDimensionForDisplay = function Bache(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 
 }

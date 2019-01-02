@@ -46,4 +46,8 @@ NRMSOM_f.prototype.set = function NRMSOM_f() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    NRMSOM_f.prototype.getDimensionForDisplay = function NRMSOM_f(){
+        var dimension = { width: 4, height: 40 };
+        return dimension
+    }
 }

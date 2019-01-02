@@ -76,5 +76,9 @@ MAXMIN.prototype.get_popup_title = function MAXMIN() {
         var set_param_popup_title="Set Max/Min block parameters";
         return set_param_popup_title
     }
+MAXMIN.prototype.getDimensionForDisplay = function MAXMIN(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 
 }

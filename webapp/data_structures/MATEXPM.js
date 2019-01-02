@@ -61,4 +61,8 @@ MATEXPM.prototype.get_popup_title = function MATEXPM() {
         var set_param_popup_title="Set EXPM Block";
         return set_param_popup_title
     }
+MATEXPM.prototype.getDimensionForDisplay = function MATEXPM(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 }

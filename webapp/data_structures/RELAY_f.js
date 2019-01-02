@@ -49,4 +49,8 @@ function RELAY_f() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    RELAY_f.prototype.getDimensionForDisplay = function RELAY_f(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 }

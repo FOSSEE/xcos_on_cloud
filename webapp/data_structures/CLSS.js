@@ -58,12 +58,16 @@ function CLSS () {
         return new BasicBlock(this.x)
      }
 
-CLSS.prototype.details = function CLSS() {
+    CLSS.prototype.details = function CLSS() {
     return this.x
     }
 
-CLSS.prototype.get_popup_title = function CLSS() {
+    CLSS.prototype.get_popup_title = function CLSS() {
         var set_param_popup_title="Set continuous linear system parameters";
         return set_param_popup_title
+    }
+    CLSS.prototype.getDimensionForDisplay = function CLSS(){
+        var dimension = { width: 80, height: 40 };
+        return dimension
     }
 }

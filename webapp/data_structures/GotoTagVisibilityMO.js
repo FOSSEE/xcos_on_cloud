@@ -49,5 +49,9 @@ GotoTagVisibilityMO.prototype.get_popup_title = function GotoTagVisibilityMO() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    GotoTagVisibilityMO.prototype.getDimensionForDisplay = function GotoTagVisibilityMO(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 
 }

@@ -74,5 +74,9 @@ Modulo_Count.prototype.set = function Modulo_Count() {
         var set_param_popup_title="Set Modulo_Count block parameters <br> Modulo counter (0 to N counter)<br>";
         return set_param_popup_title
     }
+    Modulo_Count.prototype.getDimensionForDisplay = function Modulo_Count(){
+        var dimension = { width: 60, height: 40 };
+        return dimension
+    }
 
 }

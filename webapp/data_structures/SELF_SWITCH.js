@@ -39,4 +39,8 @@ function SELF_SWITCH() {
         var set_param_popup_title="Set block parameters";
         return set_param_popup_title
     }
+    SELF_SWITCH.prototype.getDimensionForDisplay = function SELF_SWITCH(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 }

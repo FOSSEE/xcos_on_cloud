@@ -47,4 +47,8 @@ ConstantVoltage.prototype.get_popup_title = function ConstantVoltage() {
         var set_param_popup_title="Set ConstantVoltage block parameter";
         return set_param_popup_title
     }
+    ConstantVoltage.prototype.getDimensionForDisplay = function ConstantVoltage(){
+        var dimension = { width: 30, height: 22 };
+        return dimension
+    }
 }
