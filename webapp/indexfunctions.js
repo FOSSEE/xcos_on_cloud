@@ -1842,6 +1842,8 @@ function main(container, outline, toolbar, sidebar, status) {
 
     editor.addAction('simulate', function(editor, cell) {
         // stop previous simulation, if any
+        if (simulationStarted)
+            return;
         stopSimulation();
         stopSimulationWindows();
 
