@@ -54,4 +54,8 @@ SampleCLK.prototype.set = function SampleCLK() {
         var set_param_popup_title="Set block parameters";
         return set_param_popup_title
     }
+    SampleCLK.prototype.getDimensionForDisplay = function SampleCLK(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 }

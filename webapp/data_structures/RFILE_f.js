@@ -138,4 +138,9 @@ RFILE_f.prototype.set = function RFILE_f() {
         var set_param_popup_title="Set RFILE_f block parameters<br><br>Read is done on: <br>- A binary file if no format given<br>- A formatted text file if a  format (fortran type) is given";
         return set_param_popup_title
     }
+    RFILE_f.prototype.getDimensionForDisplay = function RFILE_f(){
+        var dimension = { width: 60, height: 40 };
+        return dimension
+    }
+
 }

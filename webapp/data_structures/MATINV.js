@@ -68,4 +68,8 @@ MATINV.prototype.set = function MATINV() {
         var set_param_popup_title="Set MATINV Block";
         return set_param_popup_title
     }
+    MATINV.prototype.getDimensionForDisplay = function MATINV(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 }

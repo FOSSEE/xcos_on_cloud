@@ -2052,4 +2052,8 @@ function DFLIPFLOP() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    DFLIPFLOP.prototype.getDimensionForDisplay = function DFLIPFLOP(){
+        var dimension = { width: 40, height: 60 };
+        return dimension
+    }
 }

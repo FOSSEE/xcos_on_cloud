@@ -233,5 +233,9 @@ function EXTRACTBITS() {
         var set_param_popup_title="Set EXTRACTBITS block parameters <br> Bits Extraction <br> - Bits to Extract: <br> 1 Upper Half <br> 2 Lower Half <br> 3 Range from MSB <br> 4 Range to LSB <br> 5 Range of Bits <br> - Number of Bits or Index of bit : Index 0 is LSB. <br> If \"Bits to Extract\" is set to \"Range of bits\": [Start, End]";
         return set_param_popup_title
     }
+    EXTRACTBITS.prototype.getDimensionForDisplay = function EXTRACTBITS(){
+        var dimension = { width: 80, height: 40 };
+        return dimension
+    }
 
 }

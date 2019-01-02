@@ -58,4 +58,8 @@ function CLR() {
         var set_param_popup_title="Set continuous SISO transfer parameters";
         return set_param_popup_title
     }
+    CLR.prototype.getDimensionForDisplay = function CLR(){
+        var dimension = { width: 60, height: 40 };
+        return dimension
+    }
 }

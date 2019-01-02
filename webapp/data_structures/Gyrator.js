@@ -78,4 +78,8 @@ Gyrator.prototype.get_popup_title = function Gyrator() {
         var set_param_popup_title="Set Gyrator block parameters: <br> G1: Gyration conductance <br> G2: Gyration conductance";
         return set_param_popup_title
     }
+    Gyrator.prototype.getDimensionForDisplay = function Gyrator(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 }

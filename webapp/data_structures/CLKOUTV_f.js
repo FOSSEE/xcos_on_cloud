@@ -65,5 +65,9 @@ CLKOUTV_f.prototype.set = function CLKOUTV_f() {
         var set_param_popup_title="Set CLKOUTV_f block parameters";
         return set_param_popup_title
     }
+    CLKOUTV_f.prototype.getDimensionForDisplay = function CLKOUTV_f(){
+        var dimension = { width: 20, height: 20 };
+        return dimension
+    }
 
 }

@@ -44,4 +44,8 @@ ABS_VALUE.prototype.get_popup_title = function ABS_VALUE() {
         var set_param_popup_title="Set block parameters";
         return set_param_popup_title
     }
+    ABS_VALUE.prototype.getDimensionForDisplay = function ABS_VALUE(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 }

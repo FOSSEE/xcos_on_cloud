@@ -77,5 +77,9 @@ var model = scicos_model();
         var set_param_popup_title="Set READC_f block parameters <br>Read from C binary file";
         return set_param_popup_title
     }
+    READC_f.prototype.getDimensionForDisplay = function READC_f(){
+        var dimension = { width: 80, height: 40 };
+        return dimension
+    }
 
 }

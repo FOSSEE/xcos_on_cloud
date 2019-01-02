@@ -64,5 +64,9 @@ CLKINV_f.prototype.get_popup_title = function CLKINV_f() {
         var set_param_popup_title="Set CLKINV_f block parameters";
         return set_param_popup_title
     }
+    CLKINV_f.prototype.getDimensionForDisplay = function CLKINV_f(){
+        var dimension = { width: 20, height: 20 };
+        return dimension
+    }
 
 }

@@ -48,4 +48,8 @@ Inductor.prototype.get_popup_title = function Inductor() {
         var set_param_popup_title="Set Inductor block parameter";
         return set_param_popup_title
     }
+    Inductor.prototype.getDimensionForDisplay = function Inductor(){
+        var dimension = { width: 40, height: 18 };
+        return dimension
+    }
 }

@@ -71,4 +71,8 @@ NMOS.prototype.set = function NMOS() {
         var set_param_popup_title="Set NMOS Transistor block parameters";
         return set_param_popup_title
     }
+    NMOS.prototype.getDimensionForDisplay = function NMOS(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 }

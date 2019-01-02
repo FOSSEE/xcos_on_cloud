@@ -36,5 +36,9 @@ function c_block() {
         var set_param_popup_title="Set C_block parameters";
         return set_param_popup_title
     }
+    c_block.prototype.getDimensionForDisplay = function c_block(){
+        var dimension = { width: 60, height: 40 };
+        return dimension
+    }
 
 }
