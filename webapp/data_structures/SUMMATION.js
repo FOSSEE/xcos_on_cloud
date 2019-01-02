@@ -185,4 +185,8 @@ function SUMMATION() {
         var set_param_popup_title="Set sum block parameters";
         return set_param_popup_title
     }
+    SUMMATION.prototype.getDimensionForDisplay = function SUMMATION(){
+        var dimension = { width: 40, height: 60 };
+        return dimension
+    }
 }

@@ -113,5 +113,9 @@ CSCOPXY.prototype.set = function CSCOPXY() {
         var set_param_popup_title="Set Scope parameters";
         return set_param_popup_title
     }
+    CSCOPXY.prototype.getDimensionForDisplay = function CSCOPXY(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 
 }

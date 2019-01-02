@@ -100,4 +100,8 @@ function CLOCK_c() {
         var set_param_popup_title="Set CLOCK_c block parameters <br> Event clock generator <br> Do not start if \"Initialisation Time\" is negative";
         return set_param_popup_title
     }
+    CLOCK_c.prototype.getDimensionForDisplay = function CLOCK_c(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 }

@@ -134,4 +134,8 @@ function Extract_Activation() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    Extract_Activation.prototype.getDimensionForDisplay = function Extract_Activation(){
+        var dimension = { width: 60, height: 40 };
+        return dimension
+    }
 }

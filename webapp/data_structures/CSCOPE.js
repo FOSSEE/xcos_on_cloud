@@ -120,5 +120,10 @@ CSCOPE.prototype.set = function CSCOPE() {
         var set_param_popup_title="Set Scope parameters";
         return set_param_popup_title
     }
+    CSCOPE.prototype.getDimensionForDisplay = function CSCOPE(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
+
 
 }

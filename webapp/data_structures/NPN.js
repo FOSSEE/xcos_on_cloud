@@ -122,4 +122,8 @@ NPN.prototype.set = function NPN() {
         var set_param_popup_title="Set NPN block parameters:";
         return set_param_popup_title
     }
+    NPN.prototype.getDimensionForDisplay = function NPN(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 }

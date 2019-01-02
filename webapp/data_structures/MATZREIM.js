@@ -72,4 +72,8 @@ MATZREIM.prototype.set = function MATZREIM() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    MATZREIM.prototype.getDimensionForDisplay = function MATZREIM(){
+        var dimension = { width: 60, height: 40 };
+        return dimension
+    }
 }

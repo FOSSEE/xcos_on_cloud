@@ -65,5 +65,9 @@ function ISELECT_m() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    ISELECT_m.prototype.getDimensionForDisplay = function ISELECT_m(){
+        var dimension = { width: 60, height: 40 };
+        return dimension
+    }
 
 }

@@ -67,4 +67,8 @@ function TOWS_c() {
         var set_param_popup_title="Set Xcos Buffer Block";
         return set_param_popup_title
     }
+        TOWS_c.prototype.getDimensionForDisplay = function TOWS_c(){
+        var dimension = { width: 80, height: 40 };
+        return dimension
+    }
 }

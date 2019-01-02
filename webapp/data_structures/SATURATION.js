@@ -62,4 +62,8 @@ function SATURATION() {
         var set_param_popup_title="Set Saturation parameters";
         return set_param_popup_title
         }
+    SATURATION.prototype.getDimensionForDisplay = function SATURATION(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 }

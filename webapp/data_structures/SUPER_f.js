@@ -47,4 +47,8 @@ function SUPER_f() {
         var set_param_popup_title="Set Parameters";
         return set_param_popup_title
     }
+    SUPER_f.prototype.getDimensionForDisplay = function SUPER_f(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 }

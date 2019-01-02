@@ -95,4 +95,8 @@ function CEVENTSCOPE() {
         var set_param_popup_title="Set Scope parameters";
         return set_param_popup_title
     }
+    CEVENTSCOPE.prototype.getDimensionForDisplay = function CEVENTSCOPE(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 }

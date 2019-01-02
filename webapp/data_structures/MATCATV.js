@@ -72,4 +72,8 @@ function MATCATV() {
         var set_param_popup_title="Set MATCATV block parameters";
         return set_param_popup_title
     }
+    MATCATV.prototype.getDimensionForDisplay = function MATCATV(){
+        var dimension = { width: 40, height: 60 };
+        return dimension
+    }
 }

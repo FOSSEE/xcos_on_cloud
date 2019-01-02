@@ -56,6 +56,10 @@ RICC.prototype.get_popup_title = function RICC() {
         var set_param_popup_title="Set RICC block";
         return set_param_popup_title
     }
+    RICC.prototype.getDimensionForDisplay = function RICC(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 
 
 }

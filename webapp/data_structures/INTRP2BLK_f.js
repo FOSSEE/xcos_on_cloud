@@ -80,5 +80,9 @@ INTRP2BLK_f.prototype.set = function INTRP2BLK_f() {
         var set_param_popup_title="Set Interpolation block parameters";
         return set_param_popup_title
     }
+    INTRP2BLK_f.prototype.getDimensionForDisplay = function INTRP2BLK_f(){
+        var dimension = { width: 60, height: 40 };
+        return dimension
+    }
 
 }

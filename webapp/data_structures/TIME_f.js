@@ -23,4 +23,8 @@ function TIME_f() {
         var set_param_popup_title="Set Parameters";
         return set_param_popup_title
     }
+    TIME_f.prototype.getDimensionForDisplay = function TIME_f(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 }

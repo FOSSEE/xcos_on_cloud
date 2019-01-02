@@ -64,4 +64,8 @@ function Switch() {
         var set_param_popup_title="Set non-ideal electrical switch parameters";
         return set_param_popup_title
     }
+    Switch.prototype.getDimensionForDisplay = function Switch(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 }
