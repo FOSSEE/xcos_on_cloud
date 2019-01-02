@@ -171,14 +171,8 @@ var create_new_chart_3d = function(id, no_of_graph,xmin,xmax,ymin,ymax,zmin,zmax
 	ymax = parseFloat(ymax);
 	zmin = parseFloat(zmin);
 	zmax = parseFloat(zmax);
-	/*
-	Here Angle beta is calculate from angle theta as highcharts 3D chart has beta angle for rotation
-
-	we have used Math (built-in object that has properties and methods for mathematical constants and functions)
-	Math.cos() method - returns the cosine of a number 
-	Math.cos() and Math.PI is used along with some math to calculate beta rotation angle from theta rotation angle of block property.
-	*/
-    beta = Math.cos(theta * Math.PI / 180);
+	//Assigning angle theta of 3D block to beta angle of highchart ( Can be modified later)
+    beta = theta;
 	var thickness = 1;
     var radiusvalue = 1;
 	if(title_text.substring(0,9)=="CANIMXY3D"){
