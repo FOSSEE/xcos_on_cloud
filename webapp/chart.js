@@ -599,7 +599,7 @@ function chart_init(wnd, affichwnd, with_interval, with_interval2) {
 
 	// Error	
 	eventSource.addEventListener("ERROR", function(event){
-                simulationStarted = false;
+                setSimulationFlags(false);
                 stopSimulation();
                 stopSimulationWindows();
 		if(event.data=="Empty diagram") alert(event.data);
@@ -610,7 +610,7 @@ function chart_init(wnd, affichwnd, with_interval, with_interval2) {
 
 
 	eventSource.addEventListener("DONE", function(event){
-                simulationStarted = false;
+                setSimulationFlags(false);
                 stopSimulation();
                 $('#img_loader').html("");
 		isDone = true;

@@ -38,6 +38,14 @@ function httpGetAsync(theUrl, callback) {
 var simulationStarted = false;
 var wnd = null;
 var affichwnd = null;
+var simulateButton = null;
+var stopButton = null;
+
+function setSimulationFlags(flag) {
+    simulationStarted = flag;
+    stopButton.disabled = !flag;
+    simulateButton.disabled = flag;
+}
 
 // function which deletes the sliders and related files which are created
 // Stop simulation in between process
@@ -50,7 +58,7 @@ function stopSimulation() {
     }
 
     if (simulationStarted) {
-        simulationStarted = false;
+        setSimulationFlags(false);
 
         var xhr = new XMLHttpRequest();
         xhr.open("GET", "/stop?id="+clientID, true);
@@ -1837,8 +1845,9 @@ function main(container, outline, toolbar, sidebar, status) {
     addToolbarButton(editor, toolbar, 'exportXcos', 'Export Xcos', 'images/export1.png');
     toolbar.appendChild(spacer.cloneNode(true));
 
-    addToolbarButton(editor, toolbar, 'simulate', 'Simulate', 'images/ScilabExecute.png');
-    addToolbarButton(editor, toolbar, 'processStop', ' Stop', 'images/process-stop.png');
+    simulateButton = addToolbarButton(editor, toolbar, 'simulate', 'Simulate', 'images/ScilabExecute.png');
+    stopButton = addToolbarButton(editor, toolbar, 'processStop', ' Stop', 'images/process-stop.png');
+    stopButton.disabled = true;
 
     editor.addAction('simulate', function(editor, cell) {
         // stop previous simulation, if any
@@ -2430,6 +2439,8 @@ function main(container, outline, toolbar, sidebar, status) {
             }
         }
 
+        simulateButton.disabled = true;
+
         // Send xcos file to server
         var form = new FormData()
         form.append("file",blob);
@@ -2453,7 +2464,7 @@ function main(container, outline, toolbar, sidebar, status) {
                         alert(responseText);
                         return;
                     }
-                    simulationStarted = true;
+                    setSimulationFlags(true);
                     if ((row<=10 && row >= 1))
                     {
                         // if tkblocks are <= 10 then create slider else not
@@ -3744,6 +3755,7 @@ function addToolbarButton(editor, toolbar, action, label, image, isTransparent) 
     mxUtils.write(button, label);
     button.setAttribute('id', action);
     toolbar.appendChild(button);
+    return button;
 }
 
 function showModalWindow(graph, title, content, width, height) {
