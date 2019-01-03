@@ -1,9 +1,11 @@
 // All arrays - separated by ',' or ';' or ' ' are taken to be 1 Dimensional
 // Only during printing, their nomenclature will change
 // Good read: http://javascript.info/tutorial/arguments#keyword-arguments
+
 /*
-Authors: Adhitya, Nimish, Chhavi, Saarang
-*/
+ * Authors: Adhitya, Nimish, Chhavi, Saarang
+ */
+
 var count = 1;
 
 function scicos_block() {
@@ -78,7 +80,8 @@ function scicos_graphics() {
     var graphics_type = ["graphics", "orig", "sz", "flip", "theta", "exprs", "pin", "pout", "pein", "peout", "gr_i", "id", "in_implicit", "out_implicit", "in_style", "out_style", "in_label", "out_label", "style"];
     this.graphics = new ScilabString(graphics_type);
     this.orig = options.orig || new ScilabDouble([0, 0]);
-    this.sz = options.sz || new ScilabDouble([80, 80]); // Space and comma works the same!
+    // Space and comma works the same!
+    this.sz = options.sz || new ScilabDouble([80, 80]);
     this.flip = options.flip || new ScilabBoolean([false]);
     this.theta = options.theta || new ScilabDouble([0]);
     this.exprs = options.exprs || new ScilabDouble();
@@ -89,7 +92,8 @@ function scicos_graphics() {
     this.gr_i = options.gr_i || new ScilabString();
     this.id = options.id || new ScilabString([""]);
     this.in_implicit = options.in_implicit || new ScilabDouble();
-    this.out_implicit = options.out_implicit || new ScilabDouble(); // There is only one!
+    // There is only one!
+    this.out_implicit = options.out_implicit || new ScilabDouble();
     this.in_style = options.in_style || new ScilabDouble();
     this.out_style = options.out_style || new ScilabDouble();
     this.in_label = options.in_label || new ScilabDouble();
@@ -121,7 +125,8 @@ function scicos_model() {
     this.blocktype = options.blocktype || new ScilabString(["c"]);
     this.firing = options.firing || new ScilabDouble();
     this.dep_ut = options.dep_ut || new ScilabBoolean([false, false]);
-    this.label = options.label || new ScilabString([""]); // If label not available, use image
+    // If label not available, use image
+    this.label = options.label || new ScilabString([""]);
     this.nzcross = options.nzcross || new ScilabDouble([0]);
     this.nmode = options.nmode || new ScilabDouble([0]);;
     this.equations = options.equations || list();
@@ -180,8 +185,8 @@ function scicos_link() {
     var options = arguments[0];
     var link_type = ["Link", "xx", "yy", "id", "thick", "ct", "from", "to"];
     this.Link = new ScilabString(link_type);
-    this.xx = options.xx || new ScilabDouble(); //inverse array
-    this.yy = options.yy || new ScilabDouble(); //inverse array
+    this.xx = options.xx || new ScilabDouble(); // inverse array
+    this.yy = options.yy || new ScilabDouble(); // inverse array
     this.id = options.id || new ScilabString(["drawlink"]); // changed
     this.thick = options.thick || new ScilabDouble([0, 0]);
     this.ct = options.ct || new ScilabDouble([1, 1]);
@@ -225,8 +230,8 @@ function tlist() {
 
 
 function ScilabString() {
-    var i = 0,
-        j = 0;
+    var i = 0;
+    var j = 0;
     if (arguments.length) {
         var array = arguments;
         this.height = array.length;
@@ -250,8 +255,8 @@ ScilabString.prototype.push = function() {
 }
 
 function ScilabBoolean() {
-    var i = 0,
-        j = 0;
+    var i = 0;
+    var j = 0;
     if (arguments.length) {
         var array = arguments;
         this.height = array.length;
@@ -275,8 +280,8 @@ ScilabBoolean.prototype.push = function() {
 }
 
 function ScilabDouble() {
-    var i = 0,
-        j = 0;
+    var i = 0;
+    var j = 0;
     if (arguments.length) {
         var array = arguments;
         this.height = array.length;
@@ -286,8 +291,7 @@ function ScilabDouble() {
                 this["data" + i + j] = new data();
                 if(array[i][j] % 1 == 0) {
                     this["data" + i + j].realPart = parseFloat(array[i][j]).toFixed(1);
-                }
-                else {
+                } else {
                     this["data" + i + j].realPart = array[i][j];
                 }
                 this["data" + i + j].line = i;
@@ -308,8 +312,8 @@ ScilabDouble.prototype.push = function() {
 }
 
 function ScilabInteger() {
-    var i = 0,
-        j = 0;
+    var i = 0;
+    var j = 0;
     if (arguments.length) {
         var array = arguments;
         this.height = array.length;
@@ -408,22 +412,22 @@ function modelica_function() {
     this.model = [];
     this.inputs = [];
     this.outputs = [];
-   // this.parameters = list([], list());
-   this.parameters = list(new ScilabDouble(), list());
+    // this.parameters = list([], list());
+    this.parameters = list(new ScilabDouble(), list());
     var mo = tlist(modelica_type, this.modelica, this.model, this.inputs, this.outputs, this.parameters);
     return mo;
 }
 
-//28 june 2017
-//Ritveeka vashistha
-function set_io(){
+// 28 june 2017
+// Ritveeka vashistha
+function set_io() {
     var model = arguments[0]
     var graphics = arguments[1]
     var inp = arguments[2]
     var out = arguments[3]
     var clkin = arguments[4]
     var clkout = arguments[5]
-    if(arguments.length <= 6 ){
+    if (arguments.length <= 6 ) {
         var in_implicit = []
         var out_implicit = []
     }
@@ -489,10 +493,9 @@ function set_io(){
 
     this.n1 = size(in1,1)
     this.n = inp.length/2
-    if(this.n1 > this.n){
+    if (this.n1 > this.n) {
         ip1 = ip1.slice(0,n)
-    }
-    else{
+    } else {
         for (var i = 0; i < this.n-this.n1; i++) {
             ip1.push([0])
         }
@@ -500,51 +503,46 @@ function set_io(){
 
     this.n1 = size(out1,1)
     this.n = out.length/2
-    if(this.n1 > this.n){
+    if (this.n1 > this.n) {
         op1 = op1.slice(0,n)
-    }
-    else{
+    } else {
         for (var i = 0; i < this.n-this.n1; i++) {
             op1.push([0])
         }
     }
     this.n1 = size(clkin1,"*")
     this.n = size(clkin,"*")
-    if(this.n1 > this.n){
+    if (this.n1 > this.n) {
         cip1 = cip1.slice(0,n)
-    }
-    else{
+    } else {
         for (var i = 0; i < this.n-this.n1; i++) {
             cip1.push([0])
         }
     }
     this.n1 = size(clkout1,"*")
     this.n = size(clkout,"*")
-    if(this.n1 > this.n){
+    if (this.n1 > this.n) {
         cop1 = cop1.slice(0,n)
-    }
-    else{
+    } else {
         for (var i = 0; i < this.n-this.n1; i++) {
             cop1.push([0])
         }
     }
     var I = "E"
-    if(ip1.length != 0){
+    if (ip1.length != 0) {
         var in_impl = ones(ip1.length,1)
         for (var i = in_impl.length - 1; i >= 0; i--) {
             in_impl[i][0] = "E"
         }
-    }
-    else{
+    } else {
         var in_impl = []
     }
-    if(op1.length != 0){
+    if (op1.length != 0) {
         var out_impl = ones(op1.length,1)
         for (var i = out_impl.length - 1; i >= 0; i--) {
             out_impl[i][0] = "E"
         }
-    }
-    else{
+    } else {
         var out_impl = []
     }
 
@@ -588,16 +586,16 @@ function set_io(){
     return [model,graphics]
 }
 
-//28 june 2017
-//Ritveeka vashistha
-function check_io(){
+// 28 june 2017
+// Ritveeka vashistha
+function check_io() {
     var model = arguments[0]
     var graphics = arguments[1]
     var inp = arguments[2]
     var out = arguments[3]
     var clkin = arguments[4]
     var clkout = arguments[5]
-    if(arguments.length <= 6 ){
+    if (arguments.length <= 6 ) {
         var in_implicit = []
         var out_implicit = []
     }
@@ -662,10 +660,9 @@ function check_io(){
 
     this.n1 = size(in1,1)
     this.n = size(inp,"*")
-    if(this.n1 > this.n){
+    if (this.n1 > this.n) {
         ip1 = ip1.slice(0,n)
-    }
-    else{
+    } else {
         for (var i = 0; i < this.n-this.n1; i++) {
             ip1.push([0])
         }
@@ -673,51 +670,46 @@ function check_io(){
 
     this.n1 = size(out1,"*")
     this.n = size(out,"*")
-    if(this.n1 > this.n){
+    if (this.n1 > this.n) {
         op1 = op1.slice(0,n)
-    }
-    else{
+    } else {
         for (var i = 0; i < this.n-this.n1; i++) {
             op1.push([0])
         }
     }
     this.n1 = size(clkin1,"*")
     this.n = size(clkin,"*")
-    if(this.n1 > this.n){
+    if (this.n1 > this.n) {
         cip1 = cip1.slice(0,n)
-    }
-    else{
+    } else {
         for (var i = 0; i < this.n-this.n1; i++) {
             cip1.push([0])
         }
     }
     this.n1 = size(clkout1,"*")
     this.n = size(clkout,"*")
-    if(this.n1 > this.n){
+    if (this.n1 > this.n) {
         cop1 = cop1.slice(0,n)
-    }
-    else{
+    } else {
         for (var i = 0; i < this.n-this.n1; i++) {
             cop1.push([0])
         }
     }
     var I = "E"
-    if(ip1.length != 0){
+    if (ip1.length != 0) {
         var in_impl = ones(ip1.length,1)
         for (var i = in_impl.length - 1; i >= 0; i--) {
             in_impl[i][0] = I
         }
-    }
-    else{
+    } else {
         var in_impl = []
     }
-    if(op1.length != 0){
+    if (op1.length != 0) {
         var out_impl = ones(op1.length,1)
         for (var i = out_impl.length - 1; i >= 0; i--) {
             out_impl[i][0] = I
         }
-    }
-    else{
+    } else {
         var out_impl = []
     }
 
@@ -730,7 +722,7 @@ function check_io(){
     this.in = []
     this.out = []
     for (var i = 0; i <= inp.length - 1; i++) {
-            this.in.push([parseInt(inp[i][0])])
+        this.in.push([parseInt(inp[i][0])])
     }
 
     for (var i = 0; i <= out.length - 1; i++) {
@@ -768,7 +760,7 @@ function CLKIN_f() {
         var port = 1;
 
         model.sim = new ScilabString(["input"]);
-        model.outtyp = new ScilabDouble(); //changed
+        model.outtyp = new ScilabDouble(); // changed
         model.evtout = new ScilabDouble([-1]); // 1, 1 -> -1, -1
         model.ipar = new ScilabDouble([port]);
         model.blocktype = new ScilabString(["d"]);
@@ -777,7 +769,8 @@ function CLKIN_f() {
 
         var exprs = new ScilabString([port]);
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"CLKIN_f\",sz(1),sz(2));"]);
-        var block = new standard_define(new ScilabDouble([80, 80]), model, exprs, gr_i); // 1 -> 80
+        // 1 -> 80
+        var block = new standard_define(new ScilabDouble([80, 80]), model, exprs, gr_i);
 
         block.graphics.style = new ScilabString(["CLKIN_f"]);
         return block;
@@ -800,7 +793,8 @@ function CLKOUT_f() {
 
         var exprs = ScilabString(["" + port]);
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"CLKOUT_f\",sz(1),sz(2));"]);
-        var block = new standard_define(new ScilabDouble([80, 80]), model, exprs, gr_i); // 1 -> 80
+        // 1 -> 80
+        var block = new standard_define(new ScilabDouble([80, 80]), model, exprs, gr_i);
 
         block.graphics.style = new ScilabString(["CLKOUT_f"]);
         return block;
@@ -821,46 +815,20 @@ function CLKSPLIT_f() {
 
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"CLKSPLIT_f\",sz(1),sz(2));"]);
 
-        var block = new standard_define(new ScilabDouble([80, 80]), model, new ScilabDouble(), gr_i); // 1 -> 80
+        // 1 -> 80
+        var block = new standard_define(new ScilabDouble([80, 80]), model, new ScilabDouble(), gr_i);
         block.graphics.style = new ScilabString(["CLKSPLIT_f"]);
         return block;
     }
 }
 
-function STEP(){
-    STEP.prototype.internal = function STEP(arg1,arg2,arg3){	
-	this.a = arg1	
-	this.b = arg2;
-	this.c = arg3;		
-	this.rpar = [[this.b],[this.c]];
+function STEP() {
+    STEP.prototype.internal = function STEP(arg1,arg2,arg3) {
+        this.a = arg1
+        this.b = arg2;
+        this.c = arg3;
+        this.rpar = [[this.b],[this.c]];
 
-	var model = scicos_model();
-        model.sim = list(new ScilabString(["step_func"]),new ScilabDouble([4]));
-        model.evtin = new ScilabDouble([1]);
-        model.evtout = new ScilabDouble([1]);
-        model.out = new ScilabDouble([1]);
-        model.out2 = new ScilabDouble([1]);
-	model.outtyp = new ScilabDouble([1]);
-	model.firing = new ScilabDouble([1]);
-	model.rpar = new ScilabDouble(...convertarray(convertarray(this.rpar)).map( x => [x]));
-	model.blocktype = new ScilabString(["c"]);
-        model.dep_ut = new ScilabBoolean([false, false]);
-
-        var exprs = new ScilabString([this.a],...this.rpar);
-	var gr_i = new ScilabString(["xs	tringb(orig(1),orig(2),\"STEP\",sz(1),sz(2));"]);
-        var block=new standard_define(new ScilabDouble([2,2]),model,exprs,gr_i);
-
-	block.graphics.style = new ScilabString(["STEP"]);       
-	block.graphics.in_style = new ScilabString(["ExplicitInputPort;align=left;verticalAlign=middle;spacing=10.0;rotation=0"]);
-        block.graphics.in_label = new ScilabString([""]);
-        return block;
-    }
-}
-
-/*function STEP() {
-
-    STEP.prototype.internal = function STEP() {
-        this.rpar=[[0],[1]];
         var model = scicos_model();
         model.sim = list(new ScilabString(["step_func"]),new ScilabDouble([4]));
         model.evtin = new ScilabDouble([1]);
@@ -869,19 +837,20 @@ function STEP(){
         model.out2 = new ScilabDouble([1]);
         model.outtyp = new ScilabDouble([1]);
         model.firing = new ScilabDouble([1]);
-        model.rpar = new ScilabDouble(...this.rpar);
+        model.rpar = new ScilabDouble(...convertarray(convertarray(this.rpar)).map( x => [x]));
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([false, false]);
 
-        var exprs = new ScilabString([1],...this.rpar);
-        var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"STEP\",sz(1),sz(2));"]);
+        var exprs = new ScilabString([this.a],...this.rpar);
+        var gr_i = new ScilabString(["xs	tringb(orig(1),orig(2),\"STEP\",sz(1),sz(2));"]);
+        var block=new standard_define(new ScilabDouble([2,2]),model,exprs,gr_i);
 
-        var block = new standard_define(new ScilabDouble([80, 80]), model,exprs, gr_i); // 1 -> 80
         block.graphics.style = new ScilabString(["STEP"]);
+        block.graphics.in_style = new ScilabString(["ExplicitInputPort;align=left;verticalAlign=middle;spacing=10.0;rotation=0"]);
+        block.graphics.in_label = new ScilabString([""]);
         return block;
     }
-}*/
-
+}
 
 function BasicBlock() {
     if (arguments.length > 0) {
@@ -897,7 +866,9 @@ function BasicBlock() {
         this.id = options.id;
         this.interfaceFunctionName = arguments.callee.caller.name;
         this.ordering = options.ordering;
-        this.parent = "1"; // modified_shank : earlier : this.parent = options.parent;
+        // modified_shank : earlier :
+        // this.parent = options.parent;
+        this.parent = "1";
         if (options.model.sim instanceof Array) {
             this.simulationFunctionName = getData(options.model.sim[0])[0];
             var func_type;
@@ -1016,13 +987,13 @@ function transpose(a) {
     });
 }
 
-function array_matrix(){
+function array_matrix() {
     var array = arguments[0]
     var newArray = []
     for (var i = array.length - 1; i >= 0; i--) {
         if(array[i].length == undefined)
             newArray[i] = [array[i]]
-        else{
+        else {
             newArray[i] = array[i]
         }
     }
@@ -1033,12 +1004,11 @@ function colon_operator() {
     var array = arguments[0];
     var new_arr = [];
     var i, j;
-    if(array[0].length == undefined){
+    if (array[0].length == undefined) {
         for (j = 0; j < array.length; j++) {
             new_arr.push([array[j]]);
         }
-    }
-    else{
+    } else {
         for (i = 0; i < array[0].length; i++) {
             for (j = 0; j < array.length; j++) {
                 new_arr.push([array[j][i]]);
@@ -1048,24 +1018,12 @@ function colon_operator() {
     return new_arr;
 }
 
-// Returns ScilabDouble which contains a list with size = n and all values = 0
-/*function zeros(n) {
-    var arg = new Array(n + 1).join("0").split("").map(parseFloat);
-    var port = new ScilabDouble();
-    var i = 0;
-
-    for (i = 0; i < arg[0].length; i++)
-        port.list.push(arg[0][i]);
-
-    return port;
-}*/
-
 /*
-date - 16 june 2017
-author - Ritveeka Vashistha
-edited - Mit Katwala (To make it more generalised and scalable)
-*/
-function linspace(){
+ * date - 16 june 2017
+ * author - Ritveeka Vashistha
+ * edited - Mit Katwala (To make it more generalised and scalable)
+ */
+function linspace() {
     var a = parseFloat(arguments[0]);
     var b = parseFloat(arguments[1]);
     var n = parseFloat(arguments[2]);
@@ -1078,17 +1036,18 @@ function linspace(){
     }
     return result;
 }
+
 /*
-date - 16 june 2017
-author - Ritveeka Vashistha
-*/
-function interpolation(){
+ * date - 16 june 2017
+ * author - Ritveeka Vashistha
+ */
+function interpolation() {
     var x = arguments[0];
     var color = arguments[1];
     var y = new Array(x.length);
-    for( i=0;i<x.length;i++){
-        if(x[i] >= 0.000 && x[i] <= 0.125){
-            switch(color){
+    for (i=0;i<x.length;i++) {
+        if (x[i] >= 0.000 && x[i] <= 0.125) {
+            switch (color) {
                 case 'r':
                     y[i] = 0.000;
                     break;
@@ -1100,9 +1059,8 @@ function interpolation(){
                     break;
 
             }
-        }
-        else if(x[i] <= 0.375){
-            switch(color){
+        } else if(x[i] <= 0.375) {
+            switch (color) {
                 case 'r':
                     y[i] = 0.000;
                     break;
@@ -1114,9 +1072,8 @@ function interpolation(){
                     break;
 
             }
-        }
-        else if(x[i] <= 0.625){
-            switch(color){
+        } else if(x[i] <= 0.625) {
+            switch (color) {
                 case 'r':
                     y[i] = (x[i]-0.375)*4.000;
                     break;
@@ -1128,9 +1085,8 @@ function interpolation(){
                     break;
 
             }
-        }
-        else if(x[i] <= 0.875){
-            switch(color){
+        } else if(x[i] <= 0.875) {
+            switch (color) {
                 case 'r':
                     y[i] = 1.000;
                     break;
@@ -1142,9 +1098,8 @@ function interpolation(){
                     break;
 
             }
-        }
-        else{
-            switch(color){
+        } else {
+            switch (color) {
                 case 'r':
                     y[i] = 0.400*(1.000-x[i])+0.500;
                     break;
@@ -1160,105 +1115,109 @@ function interpolation(){
     }
     return y;
 }
+
 /*
-date - 16 june 2017
-author - Ritveeka Vashistha
-*/
-function jetcolormap(){
+ * date - 16 june 2017
+ * author - Ritveeka Vashistha
+ */
+function jetcolormap() {
     if(arguments.length != 1)
         alert('enter one integer argument');
-    else{
+    else {
         if(arguments.length != 0 || arguments.length == undefined)
             var n = parseInt(arguments[0]);
-            if(n==0){
-                return new Array(0);
-            }
-            else{
-                var d = 0.5/Math.max(n,1);
-                var x = linspace(d,1.000-d,n);
-                var y = new Array(3);
-                y[0] = interpolation(x,'r');
-                y[1] = interpolation(x,'g');
-                y[2] = interpolation(x,'b');
-            }
+        if (n==0) {
+            return new Array(0);
+        } else {
+            var d = 0.5/Math.max(n,1);
+            var x = linspace(d,1.000-d,n);
+            var y = new Array(3);
+            y[0] = interpolation(x,'r');
+            y[1] = interpolation(x,'g');
+            y[2] = interpolation(x,'b');
+        }
     }
     return y;
 }
 
 function multiply(a, b) {
-  var aNumRows = a.length, aNumCols = a[0].length,
-      bNumRows = b.length, bNumCols = b[0].length,
-      m = new Array(aNumRows);  // initialize array of rows
-  for (var r = 0; r < aNumRows; ++r) {
-    m[r] = new Array(bNumCols); // initialize the current row
-    for (var c = 0; c < bNumCols; ++c) {
-      m[r][c] = 0;             // initialize the current cell
-      for (var i = 0; i < aNumCols; ++i) {
-        m[r][c] += a[r][i] * b[i][c];
-      }
+    var aNumRows = a.length, aNumCols = a[0].length;
+    var bNumRows = b.length, bNumCols = b[0].length;
+    var m = new Array(aNumRows); // initialize array of rows
+    for (var r = 0; r < aNumRows; ++r) {
+        m[r] = new Array(bNumCols); // initialize the current row
+        for (var c = 0; c < bNumCols; ++c) {
+            m[r][c] = 0; // initialize the current cell
+            for (var i = 0; i < aNumCols; ++i) {
+                m[r][c] += a[r][i] * b[i][c];
+            }
+        }
     }
-  }
-  return m;
+    return m;
 }
 
 /*
-date - 26 june 2017
-author - Ritveeka Vashistha
-*/
-function sign(){
-    var value  = arguments[0]
-    if(value > 0){
-        return 1
-    }
-    else if(value < 0){
-        return -1
-    }
-    else{
-        return 0
+ * date - 26 june 2017
+ * author - Ritveeka Vashistha
+ */
+function sign() {
+    var value = arguments[0];
+    if (value > 0) {
+        return 1;
+    } else if (value < 0) {
+        return -1;
+    } else {
+        return 0;
     }
 }
 
 /*
  * date : 26 November 2017
  * Author - Dipti G
- * This function is used in const_m and const block for passing string function value like parameters and return actual
+ * This function is used in const_m and const block for passing string function
+ * value like parameters and return actual
  * compute value
  */
-  function getValueOfImaginaryInput(inputvalue){
-         var actualDoubleValue=null;
+function getValueOfImaginaryInput(inputvalue) {
+    var actualDoubleValue=null;
 
-         if(inputvalue.includes("pi")){
-		    inputvalue=inputvalue.replace("%pi", Math.PI);
-		    actualDoubleValue=math.eval(inputvalue);
-         }else if(inputvalue.includes("e")){
-            inputvalue=inputvalue.replace("%e", Math.E);
-		    actualDoubleValue=math.eval(inputvalue);
-         }else if(inputvalue.includes("%i")){   //For imaginary inputs used in complex
-            //Diffrent condition of using imaginary and operators (More condition will be added in future)
-		    if(inputvalue.includes("*%i")){
-			    inputvalue=inputvalue.replace("*%i","i");
-		    }else if(inputvalue.includes("%i*")){
-			    inputvalue=inputvalue.replace("%i*","i");
-		    }else if(inputvalue.includes("/%i")){
-			    inputvalue=inputvalue.replace("/%i","i");
-		    }else if(inputvalue.includes("%i/")){
-			    inputvalue=inputvalue.replace("%i/","i");
-		    }else{
-                inputvalue=inputvalue.replace("%i","i");
-		    }
-		    //As complex doesnt accepts array format [], those bracket are removed 
-		    if(inputvalue.includes("[")||inputvalue.includes("]")){
-		        inputvalue=inputvalue.replace("[","");
-		        inputvalue=inputvalue.replace("]","");
-		    }
-            var complexnumber=inputvalue.toString();
-            const b = math.complex(complexnumber); //convert into const to extract real part from complex number for passing it to rpar/opar
-		    actualDoubleValue=b.re;
-         }else{
-		    actualDoubleValue=math.eval(inputvalue);
-	     }
-         return actualDoubleValue;
- }
+    if (inputvalue.includes("pi")) {
+        inputvalue=inputvalue.replace("%pi", Math.PI);
+        actualDoubleValue=math.eval(inputvalue);
+    } else if (inputvalue.includes("e")) {
+        inputvalue=inputvalue.replace("%e", Math.E);
+        actualDoubleValue=math.eval(inputvalue);
+    } else if (inputvalue.includes("%i")) {
+        // For imaginary inputs used in complex
+        // Different condition of using imaginary and operators (More condition
+        // will be added in future)
+        if (inputvalue.includes("*%i")) {
+            inputvalue=inputvalue.replace("*%i","i");
+        } else if (inputvalue.includes("%i*")) {
+            inputvalue=inputvalue.replace("%i*","i");
+        } else if (inputvalue.includes("/%i")) {
+            inputvalue=inputvalue.replace("/%i","i");
+        } else if (inputvalue.includes("%i/")) {
+            inputvalue=inputvalue.replace("%i/","i");
+        } else {
+            inputvalue=inputvalue.replace("%i","i");
+        }
+        // As complex doesn't accepts array format [], those bracket are
+        // removed
+        if (inputvalue.includes("[")||inputvalue.includes("]")) {
+            inputvalue=inputvalue.replace("[","");
+            inputvalue=inputvalue.replace("]","");
+        }
+        var complexnumber=inputvalue.toString();
+        // convert into const to extract real part from complex number for
+        // passing it to rpar/opar
+        const b = math.complex(complexnumber);
+        actualDoubleValue=b.re;
+    } else {
+        actualDoubleValue=math.eval(inputvalue);
+    }
+    return actualDoubleValue;
+}
 
 // To convert graph points to array which have been converted
 // to objects because of dragging the points
@@ -1267,9 +1226,8 @@ function objToArrayList(graphPoints) {
     for (var i=0;i< graphPoints.length; i++)
     {
         if(graphPoints[i].x) {
-                tempPoints.push([graphPoints[i].x,graphPoints[i].y]);
-            }
-        else    {
+            tempPoints.push([graphPoints[i].x,graphPoints[i].y]);
+        } else {
             tempPoints.push(graphPoints[i]);
         }
     }
