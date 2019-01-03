@@ -11,13 +11,10 @@ function myAjaxreq(k,functionName) {
     var xhrq = new XMLHttpRequest();
     xhrq.open("POST",functionName, true);
     xhrq.onload = function() {
-        if(this.responseText!='error')
-        {
+        if (this.responseText!='error') {
             // response can be used further if needed
             var response = this.responseText;
-        }
-        else
-        {
+        } else {
             alert("Error");
         }
     };
@@ -250,8 +247,7 @@ function main(container, outline, toolbar, sidebar, status) {
         if (cell != null) {
             // @ToDo: Pooja: Different edge value cases.
             if (cell.value == "ExplicitInputPort" || cell.value == "ExplicitOutputPort" || cell.value == "CommandPort" || cell.value == "ControlPort") {
-            } else if (cell.isEdge() == true)
-            {
+            } else if (cell.isEdge() == true) {
                 menu.addItem('Delete', 'images/delete2.png', function() {
                     editor.execute('deleteBlock');
                 });
@@ -403,8 +399,7 @@ function main(container, outline, toolbar, sidebar, status) {
                 } else if (edgeSourceNodeName == "ExplicitInputPort" && targetNodeName != "ExplicitOutputPort") {
                     alert("Explicit data input port must be connected to explicit data output port");
                     return null;
-                }
-                // else if (edgeSourceNodeName == "ImplicitOutputPort" && targetNodeName != "ImplicitInputPort") {
+                // } else if (edgeSourceNodeName == "ImplicitOutputPort" && targetNodeName != "ImplicitInputPort") {
                 // alert("Implicit data output port must be connected to implicit data input port");
                 // return null;
                 // } else if (edgeSourceNodeName == "ImplicitInputPort" && targetNodeName != "ImplicitOutputPort") {
@@ -416,7 +411,7 @@ function main(container, outline, toolbar, sidebar, status) {
                 // } else if (edgeSourceNodeName == "ControlPort" && targetNodeName != "CommandPort") {
                 //   alert("Control port must be connected to command port");
                 //   return null;
-                // }
+                }
 
                 // Create the splitBlock
                 // (-5, -5.5) is the offset to correct the position of
@@ -555,8 +550,7 @@ function main(container, outline, toolbar, sidebar, status) {
                 } else if (sourceNodeName == "ExplicitInputPort" && edgeSourceNodeName != "ExplicitOutputPort") {
                     alert("Explicit data input port must be connected to explicit data output port");
                     return null;
-                }
-                // else if (sourceNodeName == "ImplicitOutputPort" && edgeSourceNodeName != "ImplicitInputPort") {
+                // } else if (sourceNodeName == "ImplicitOutputPort" && edgeSourceNodeName != "ImplicitInputPort") {
                 //  alert("Implicit data output port must be connected to implicit data input port");
                 //  return null;
                 // } else if (sourceNodeName == "ImplicitInputPort" && edgeSourceNodeName != "ImplicitOutputPort") {
@@ -568,7 +562,7 @@ function main(container, outline, toolbar, sidebar, status) {
                 // } else if (sourceNodeName == "ControlPort" && edgeSourceNodeName != "CommandPort") {
                 //    alert("Control port must be connected to command port");
                 //    return null;
-                // }
+                }
 
                 // Create the splitBlock
                 // (-5, -5.5) is the offset to correct the position of
@@ -703,8 +697,7 @@ function main(container, outline, toolbar, sidebar, status) {
             alert("Explicit data output port must be connected to explicit data input port");
         } else if (edgeSourceNodeName == "ExplicitInputPort" && targetNodeName != "ExplicitOutputPort") {
             alert("Explicit data input port must be connected to explicit data output port");
-        }
-        // else if (edgeSourceNodeName == "ImplicitOutputPort" && targetNodeName != "ImplicitInputPort") {
+        // } else if (edgeSourceNodeName == "ImplicitOutputPort" && targetNodeName != "ImplicitInputPort") {
         //  alert("Implicit data output port must be connected to implicit data input port");
         // } else if (edgeSourceNodeName == "ImplicitInputPort" && targetNodeName != "ImplicitOutputPort") {
         //    alert("Implicit data input port must be connected to implicit data output port");
@@ -712,8 +705,7 @@ function main(container, outline, toolbar, sidebar, status) {
         //   alert("Command port must be connected to control port");
         // } else if (edgeSourceNodeName == "ControlPort" && targetNodeName != "CommandPort") {
         //    alert("Control port must be connected to command port");
-        // }
-        else {
+        } else {
             /*
              * For reverse edges, (that is, edges from input port to outport) :
              * If the source is input port, and target is an output port
@@ -773,11 +765,9 @@ function main(container, outline, toolbar, sidebar, status) {
                      */
                     var referenceModel = graph.getModel();
                     var element_count = 0;
-                    for (var e in referenceModel.cells)
-                    {
+                    for (var e in referenceModel.cells) {
                         if (referenceModel.cells.hasOwnProperty(e))
-                            if (referenceModel.cells[e].style)
-                            {
+                            if (referenceModel.cells[e].style) {
                                 referenceModelProps[element_count++] = {
                                     id: e,
                                     style: referenceModel.cells[e].style
@@ -862,8 +852,8 @@ function main(container, outline, toolbar, sidebar, status) {
                         commandPort = cellvar.model.evtout.height;
                     }
 
-                    var flip = false,
-                        mirror = false;
+                    var flip = false;
+                    var mirror = false;
                     var style = cell.style;
                     var styleObject = styleToObject(style);
                     if (styleObject['stencilFlipV'] == null) {
@@ -1259,14 +1249,14 @@ function main(container, outline, toolbar, sidebar, status) {
 
     // Defines a new export action
 
-    function EXPORTxml(editor,cell)
-    {
+    function EXPORTxml(editor,cell) {
         displayXMLorXcos(true);
     }
 
     editor.addAction('exportXML', function(editor,cell) { EXPORTxml(editor, cell) });
 
-    /* Maverick
+    /*
+     * Maverick
      * Reference: http://www.w3schools.com/xsl/xsl_client.asp
      */
 
@@ -1308,8 +1298,7 @@ function main(container, outline, toolbar, sidebar, status) {
             if (exportFilename === "") {
                 alert("Enter filename!");
                 return false;
-            }
-            else {
+            } else {
                 // This RegExp is for a valid filename
                 var checkpat = new RegExp("^[^<>:\"/\|\\?*]+$");
 
@@ -1318,8 +1307,7 @@ function main(container, outline, toolbar, sidebar, status) {
                     downloadLink.download = exportFilename + ".xcos";
                     wind.destroy();
                     return true;
-                }
-                else {
+                } else {
                     // This branch will execute if filename is invalid
                     alert("Insert valid filename! < > : \" / \| \\ ? * not allowed in filename!");
                     return false;
@@ -1432,8 +1420,7 @@ function main(container, outline, toolbar, sidebar, status) {
 
                 var cell = codec.decode(currentNode);
 
-                if (cell.style)
-                {
+                if (cell.style) {
                     if (cell.style.startsWith("scifunc_block_m")) {
                         alert("Double click on scifunc_block_m to choose .sci file and set parameters");
                     }
@@ -1472,7 +1459,7 @@ function main(container, outline, toolbar, sidebar, status) {
                     var temporaryMapObject = new Object();
                     temporaryMapObject.inputDataArray = [];
 
-                    switch(curNodeName) {
+                    switch (curNodeName) {
                         case 'EventInBlock': ifaceFuncName='CLKINV_f'; break;
                         case 'EventOutBlock': ifaceFuncName='CLKOUTV_f'; break;
                         case 'ExplicitInBlock': ifaceFuncName='IN_f'; break;
@@ -1658,8 +1645,8 @@ function main(container, outline, toolbar, sidebar, status) {
                 var childNode = currentNode.firstChild;
                 if (childNode != null && childNode.nodeName == 'mxGeometry') {
                     for (var tempNode = childNode.firstChild;
-                            tempNode != null;
-                            tempNode = tempNode.nextSibling) {
+                        tempNode != null;
+                        tempNode = tempNode.nextSibling) {
                         if (tempNode.nodeName == 'mxPoint') {
                             var attributeAs = tempNode.getAttribute('as');
                             var point = new mxPoint(tempNode.getAttribute('x'), tempNode.getAttribute('y'));
@@ -1944,17 +1931,16 @@ function main(container, outline, toolbar, sidebar, status) {
 
         // loop which iterates every 'BasicBlock' tag and take the required
         // details
-        if (Bblock_tag.length == 0)  // if threre is no any single BasicBlock
-        {
+        if (Bblock_tag.length == 0) { // if there is no single BasicBlock
             alert("Empty Canvas");   // it implies Empty Canvas
             stopSimulationWindows();  // destroy the simulation window
             return;
         }
 
-        for (var i=0;i<Bblock_tag.length;i++)
-        {
+        for (var i=0;i<Bblock_tag.length;i++) {
             // if block is Trash_f
-            /* if (Bblock_tag[i].attributes.blockElementName.value == "TRASH_f")
+            /*
+             * if (Bblock_tag[i].attributes.blockElementName.value == "TRASH_f")
              * {
              * wnd.setVisible(false);
              * }
@@ -2010,8 +1996,7 @@ function main(container, outline, toolbar, sidebar, status) {
             }
 
             // if block is TKSCALE
-            if (Bblock_tag[i].attributes.blockElementName.value == "TKSCALE")
-            {
+            if (Bblock_tag[i].attributes.blockElementName.value == "TKSCALE") {
                 // a.store tk ids
                 tkid[m++] = parseInt(Bblock_tag[i].attributes.id.value);
 
@@ -2020,8 +2005,7 @@ function main(container, outline, toolbar, sidebar, status) {
                 var Sdouble_tag=Bblock_tag[i].getElementsByTagName("ScilabDouble");
                 var Realpart_tag=Sdouble_tag[0].getElementsByTagName("data");
 
-                if (row>10)
-                {
+                if (row>10) {
                     // limit - only (maximum) 10 TKSCALE should use in an
                     // experiment
                     alert("maximum \"10\" TKSCALE blocks are allowed");
@@ -2041,27 +2025,21 @@ function main(container, outline, toolbar, sidebar, status) {
             if (Bblock_tag[i].attributes.blockElementName.value == "CSCOPE")
                 cscount++;
 
-            if (Bblock_tag[i].attributes.blockElementName.value == "CLOCK_c")
-            {
+            if (Bblock_tag[i].attributes.blockElementName.value == "CLOCK_c") {
                 clkid[n++]= parseInt(Bblock_tag[i].attributes.id.value);
 
                 // in clock_c tag under 'scilab string' with 'exprs'
                 // attribute store its parameters
                 var Sstr = Bblock_tag[i].getElementsByTagName("ScilabString");
-                for (var x=0;x<Sstr.length;x++)
-                {
-                    if (Sstr[x].getAttribute('as')!=null)
-                    {
-                        if (Sstr[x].attributes.as.value == "exprs")
-                        {
+                for (var x=0;x<Sstr.length;x++) {
+                    if (Sstr[x].getAttribute('as')!=null) {
+                        if (Sstr[x].attributes.as.value == "exprs") {
                             var data_tag = Sstr[x].getElementsByTagName("data");
 
                             // finding there are exactly two parameters
-                            if (data_tag.length == 2)
-                            {
+                            if (data_tag.length == 2) {
                                 // parameters stored in array only 'once'
-                                if (count % 2)
-                                {
+                                if (count % 2) {
                                     clkdetails[y] = new Array();
                                     // 'Period' parameter
                                     clkdetails[y][0] = data_tag[0].attributes.value.value;
@@ -2078,11 +2056,9 @@ function main(container, outline, toolbar, sidebar, status) {
         }
 
         // To loop to get id of block AFFICH from array of Ablock_Tag
-        for (var i=0;i<Ablock_tag.length;i++)
-        {
+        for (var i=0;i<Ablock_tag.length;i++) {
             // if block is AFFICH_m
-            if (Ablock_tag[i].attributes.blockElementName.value == "AFFICH_m")
-            {
+            if (Ablock_tag[i].attributes.blockElementName.value == "AFFICH_m") {
                 /*
                  * affichmid : is used to store ids of affichm block which
                  * will be used for creating div for display result
@@ -2104,10 +2080,8 @@ function main(container, outline, toolbar, sidebar, status) {
         // finding splits from every link, TKSCALE parameter values
 
         if (row<=10 && row >= 1) {
-            while (j<mx_tag.length)
-            {
-                if (parseInt(mx_tag[j].attributes.parent.value) == tkid[o])
-                {
+            while (j<mx_tag.length) {
+                if (parseInt(mx_tag[j].attributes.parent.value) == tkid[o]) {
                     tkarr[l]=new Array();
                     tkarr[l][0]=parseInt(mx_tag[j].attributes.id.value);
                     j++;
@@ -2118,17 +2092,14 @@ function main(container, outline, toolbar, sidebar, status) {
                     o++;
                 }
 
-                if (parseInt(mx_tag[j].attributes.parent.value) == clkid[p])
-                {
+                if (parseInt(mx_tag[j].attributes.parent.value) == clkid[p]) {
                     // clock parameter 'command port'
                     clkid[p]=parseInt(mx_tag[j].attributes.id.value);
                     p++;
                 }
-                if (mx_tag[j].getAttribute('style') !=null)
-                {
+                if (mx_tag[j].getAttribute('style') !=null) {
                     // store the split details
-                    if (mx_tag[j].attributes.style.value == "Split")
-                    {
+                    if (mx_tag[j].attributes.style.value == "Split") {
                         j=j+1;
                         sparr[k]= new Array();
                         // 2-D array, 1st column split id value, 2nd column
@@ -2162,12 +2133,10 @@ function main(container, outline, toolbar, sidebar, status) {
 
             // using the splits and their connections we will find the
             // connection between tkscale and clock
-            while (j<mx_tag.length)
-            {
+            while (j<mx_tag.length) {
                 sind=-1;
                 tind=-1;
-                if (mx_tag[j].getAttribute("source")!=null)
-                {
+                if (mx_tag[j].getAttribute("source")!=null) {
                     // present source
                     var s = parseInt(mx_tag[j].attributes.source.value);
                     // present target
@@ -2176,24 +2145,21 @@ function main(container, outline, toolbar, sidebar, status) {
                     // note that split has 3 childs with consecutive ids
                     // (ex: 80,81,82)... we stored the first index (80 in
                     // ex.) in the array
-                    for (var i=0;i<k;i++)
-                    {
+                    for (var i=0;i<k;i++) {
                         // find source (index value of split) if it belongs
                         // to one of the splits childs (80<=s<=82 ex.)
-                        if ((sparr[i][0]<=s)&&(s<=sparr[i][0]+2))
+                        if (sparr[i][0]<=s && s<=sparr[i][0]+2)
                             sind=i;
                         // find targets (index value of split) if it
                         // belongs to one of the splits childs (80<=t<=82
                         // ex.)
-                        if ((sparr[i][0]<=t)&&(t<=sparr[i][0]+2))
+                        if (sparr[i][0]<=t && t<=sparr[i][0]+2)
                             tind=i;
                     }
                     // if both source and target belongs to splits...
-                    if (sind!=-1 && tind!=-1)
-                    {
-                        // if both are not grouped to any other split
-                        if (sparr[sind][1]==-1 && sparr[tind][1]==-1)
-                        {
+                    if (sind!=-1 && tind!=-1) {
+                        if (sparr[sind][1]==-1 && sparr[tind][1]==-1) {
+                            // if both are not grouped to any other split
                             grouparr[groupind] = new Array();
                             // create a new group in grouparr and push the
                             // two indices (of sparr)
@@ -2208,31 +2174,25 @@ function main(container, outline, toolbar, sidebar, status) {
                             sparr[tind][1]=groupind;
 
                             groupind++;
-                        }
-                        // if source is not grouped and target is grouped
-                        // to another split
-                        else if ((sparr[sind][1]==-1 && sparr[tind][1]!=-1))
-                        {
+                        } else if (sparr[sind][1]==-1 && sparr[tind][1]!=-1) {
+                            // if source is not grouped and target is grouped
+                            // to another split
                             // add source split to the grouparr (group
                             // where target belongs to)
                             grouparr[sparr[tind][1]].push(sind);
                             // change the group value of the split
                             sparr[sind][1]=sparr[tind][1];
-                        }
-                        // if target is not grouped and source is grouped
-                        // to another split
-                        else if ((sparr[sind][1]!=-1 && sparr[tind][1]==-1))
-                        {
+                        } else if (sparr[sind][1]!=-1 && sparr[tind][1]==-1) {
+                            // if target is not grouped and source is grouped
+                            // to another split
                             // add target split to the grouparr (group
                             // where source belongs to)
                             grouparr[sparr[sind][1]].push(tind);
                             // change the group value of the split
                             sparr[tind][1]=sparr[sind][1];
-                        }
-                        // if source,target both are grouped with some other
-                        // splits
-                        else
-                        {
+                        } else {
+                            // if source,target both are grouped with some
+                            // other splits
                             // here we will find the minimum group index value
                             // and merge the maximum group into minimum. ex:
                             // group indices- 2,4.. then take all splits in
@@ -2246,8 +2206,7 @@ function main(container, outline, toolbar, sidebar, status) {
                             var max=(sparr[sind][1]>sparr[tind][1])?sparr[sind][1]:sparr[tind][1];
 
                             // iterating to every split in maximum group
-                            for (var x=0;x<grouparr[max].length;x++)
-                            {
+                            for (var x=0;x<grouparr[max].length;x++) {
                                 // getting the split id
                                 var val = grouparr[max][0];
                                 // making their group id with minimum index
@@ -2262,18 +2221,15 @@ function main(container, outline, toolbar, sidebar, status) {
                     }
                     // if source  does not belongs to splits then it belongs to
                     // one of the clock id's
-                    if (sind==-1 && tind!=-1)
-                    {
+                    if (sind==-1 && tind!=-1) {
                         for (var i=0;i<p;i++)
                             if (s==clkid[i])
                                 break;
                         if (i!=p)
                             sind = i;
-                        if (sind!=-1)
-                        {
+                        if (sind!=-1) {
                             clkgrp[i]=t; // adding the target in the clkgroup
-                            if (sparr[sind][1]==-1)
-                            {
+                            if (sparr[sind][1]==-1) {
                                 grouparr[groupind] = new Array();
                                 grouparr[groupind].push(sind);
                                 sparr[sind][1]=groupind;
@@ -2283,19 +2239,16 @@ function main(container, outline, toolbar, sidebar, status) {
                     }
                     // if target  does not belongs to splits then it belongs to
                     // one of the tkscale id's
-                    if (tind==-1 && sind!=-1)
-                    {
+                    if (tind==-1 && sind!=-1) {
                         for (var i=0;i<l;i++)
                             if (t==tkarr[i][0])
                                 break;
                         if (i!=l)
                             tind = i;
-                        if (tind!=-1)
-                        {
+                        if (tind!=-1) {
                             tkgrp[i] = s;
 
-                            if (sparr[tind][1]==-1)
-                            {
+                            if (sparr[tind][1]==-1) {
                                 grouparr[groupind] = new Array();
                                 grouparr[groupind].push(tind);
                                 sparr[tind][1]=groupind;
@@ -2312,12 +2265,9 @@ function main(container, outline, toolbar, sidebar, status) {
             // be a source) when the below loop ends, the clkgrp contains the
             // 'group index' of 'which split belongs to ith clock'
 
-            for (var i=0;i<n;i++)
-            {
-                for (var j=0;j<k ;j++)
-                {
-                    if ((sparr[j][0]<=clkgrp[i])&&(clkgrp[i]<=sparr[j][0]+2))
-                    {
+            for (var i=0;i<n;i++) {
+                for (var j=0;j<k ;j++) {
+                    if (sparr[j][0]<=clkgrp[i] && clkgrp[i]<=sparr[j][0]+2) {
                         clkgrp[i]=sparr[j][1];
                         break;
                     }
@@ -2326,18 +2276,15 @@ function main(container, outline, toolbar, sidebar, status) {
 
             // this loop iterate all the tkscales and finally gives details of
             // 'which tkscale belongs to which clock'
-            for (var i=0;i<tkgrp.length;i++)
-            {
-                for (var j=0;j<clkgrp.length;j++) // iterate from every clkgrp
-                {
+            for (var i=0;i<tkgrp.length;i++) {
+                // iterate from every clkgrp
+                for (var j=0;j<clkgrp.length;j++) {
                     var gind = clkgrp[j];
 
                     var temp=-1;
                     if (gind!=-1) {
-                        for (var x=0;x<grouparr[gind].length;x++)
-                        {
-                            if ((sparr[grouparr[gind][x]][0]<=tkgrp[i]) && (tkgrp[i]<=(sparr[grouparr[gind][x]][0]+2)))
-                            {
+                        for (var x=0;x<grouparr[gind].length;x++) {
+                            if (sparr[grouparr[gind][x]][0]<=tkgrp[i] && tkgrp[i]<=sparr[grouparr[gind][x]][0]+2) {
                                 tkgrp[i] = j;
                                 temp = 0;
                                 break;
@@ -2419,17 +2366,14 @@ function main(container, outline, toolbar, sidebar, status) {
         }
 
         /* function which creates a slider for the tkscale data */
-        function CreateSlider()
-        {
+        function CreateSlider() {
             tkchange.innerHTML=0;
 
-            for (var i=0;i<row;i++)
-            {
+            for (var i=0;i<row;i++) {
                 min=valArr[i][0];
                 max=valArr[i][1];
                 norm=valArr[i][2];
-                if (!((min<=norm && norm<=max) || (min>max)))
-                {
+                if (!((min<=norm && norm<=max) || (min>max))) {
                     norm=(min+max)/2;
                 }
                 num=i+1;
@@ -2453,8 +2397,7 @@ function main(container, outline, toolbar, sidebar, status) {
                 clientID = this.responseText;
                 document.title = 'Xcos-' + clientID;
 
-                if (row<=10 && row>=1)
-                {
+                if (row<=10 && row>=1) {
                     myAjaxreq("Start", "/UpdateTKfile?id="+clientID);
                 }
 
@@ -2465,8 +2408,7 @@ function main(container, outline, toolbar, sidebar, status) {
                         return;
                     }
                     setSimulationFlags(true);
-                    if ((row<=10 && row >= 1))
-                    {
+                    if (row<=10 && row >= 1) {
                         // if tkblocks are <= 10 then create slider else not
                         CreateSlider();
                     }
@@ -2732,8 +2674,8 @@ function showSetContext(graph, diagRoot) {
          * containing the input.
          */
         var contextValues = [];
-        var i = 0,
-            temp = "";
+        var i = 0;
+        var temp = "";
         for (i = 0; i < input.length; i++) {
             if (input[i] == '\n') {
                 if (temp != "") {
@@ -2761,7 +2703,7 @@ function showSetContext(graph, diagRoot) {
 
 function showPropertiesWindow(graph, cell, diagRoot) {
     var name = cell.getAttribute('blockElementName');
-    if(name!="LOOKUP_f" && name!="CURV_f" && name != "scifunc_block_m") {
+    if (name!="LOOKUP_f" && name!="CURV_f" && name != "scifunc_block_m") {
         var defaultProperties = cell.blockInstance.instance.get();
         // window[name]("get");
         /*
@@ -2879,8 +2821,7 @@ function showPropertiesWindow(graph, cell, diagRoot) {
             var docPrevXml = mxUtils.parseXml(strPrevXml);
             var codecPrevXml = new mxCodec(docPrevXml);
             var rootNode = docPrevXml.documentElement;
-            while(rootNode.nodeName != 'root')
-            {
+            while (rootNode.nodeName != 'root') {
                 rootNode = rootNode.firstChild;
             }
             var currentNode = rootNode.firstChild;
@@ -2964,10 +2905,10 @@ function showPropertiesWindow(graph, cell, diagRoot) {
                 var graphics = details_instance.x.graphics;
 
                 /* To determine number and type of Port */
-                var inputPorts = [],
-                    outputPorts = [],
-                    controlPorts = [],
-                    commandPorts = [];
+                var inputPorts = [];
+                var outputPorts = [];
+                var controlPorts = [];
+                var commandPorts = [];
                 if (blockModel.in.height != null) {
                     arr = getData(graphics.in_implicit);
                     if (arr.length != 0) {
@@ -3023,48 +2964,41 @@ function showPropertiesWindow(graph, cell, diagRoot) {
             var missingKeys = [];
             var lastId = Math.max(...Object.keys(model.cells));
 
-            for( var i=0;i< referenceModelCount ; i++)
-            {
+            for (var i=0;i< referenceModelCount ; i++) {
                 var present = false;
-                for(var key in model.cells)
-                {
-                    (model.cells.hasOwnProperty(key))
-                    {
-                        if(referenceModelProps[i].id == key)
-                        {
+                for (var key in model.cells) {
+                    if (model.cells.hasOwnProperty(key)) {
+                        if (referenceModelProps[i].id == key) {
                             present = true;
                             break;
                         }
                     }
                 }
-                if(present == false)
+                if (present == false)
                     missingKeys.push(referenceModelProps[i].id);
             }
 
             var newIDs= [];
-            for(var i=modelNextId;i<=lastId;i++)
+            for (var i=modelNextId;i<=lastId;i++)
                 newIDs.push(i);
             var j = 0;
 
-            for(var i = 0; i < missingKeys.length; i++)
-            {
+            for (var i = 0; i < missingKeys.length; i++) {
                 // To find the style(name) of the block with the id equal to
                 // missingKeys[i]
                 var referenceModelStyle = referenceModelProps.find( function (obj) {
                     return obj.id == missingKeys[i];
                 }).style;
 
-                if(model.cells[newIDs[j]].style.endsWith('Port')) {
-                    if( referenceModelStyle == model.cells[newIDs[j]].style ) {
+                if (model.cells[newIDs[j]].style.endsWith('Port')) {
+                    if (referenceModelStyle == model.cells[newIDs[j]].style) {
                         model.cells[missingKeys[i]] = model.cells[newIDs[j]];
                         model.cells[missingKeys[i]].id = String(missingKeys[i]);
                         delete model.cells[newIDs[j++]];
-                    }
-                    else {
+                    } else {
                         var tempId = j;
-                        while(newIDs[++j] <= lastId )
-                        {
-                            if(referenceModelStyle == model.cells[newIDs[j]].style) {
+                        while (newIDs[++j] <= lastId) {
+                            if (referenceModelStyle == model.cells[newIDs[j]].style) {
                                 model.cells[missingKeys[i]] = model.cells[newIDs[j]];
                                 model.cells[missingKeys[i]].id = String(missingKeys[i]);
                                 delete model.cells[newIDs[j]];
@@ -3074,8 +3008,7 @@ function showPropertiesWindow(graph, cell, diagRoot) {
                             }
                         }
                     }
-                }
-                else if (model.cells[newIDs[j]].style) {
+                } else if (model.cells[newIDs[j]].style) {
                     model.cells[missingKeys[i]] = model.cells[newIDs[j]];
                     model.cells[missingKeys[i]].id = String(missingKeys[i]);
                     delete model.cells[newIDs[j++]];
@@ -3087,16 +3020,14 @@ function showPropertiesWindow(graph, cell, diagRoot) {
             model.beginUpdate();
             try {
                 // Connecting the blocks by inserting link nodes
-                while(currentNode!=null)
-                {
+                while (currentNode!=null) {
                     var curNodeName = currentNode.nodeName;
-                    if(curNodeName.endsWith('Link'))
-                    {
+                    if (curNodeName.endsWith('Link')) {
                         var pointsArray = [];
                         var newSourceCell = graph.getModel().getCell(currentNode.getAttribute('source'));
                         var newTargetCell = graph.getModel().getCell(currentNode.getAttribute('target'));
 
-                        if(newSourceCell.getEdgeCount() <=0 && newTargetCell.getEdgeCount()<=0) {
+                        if (newSourceCell.getEdgeCount() <=0 && newTargetCell.getEdgeCount()<=0) {
                             var childNode = currentNode.firstChild;
                             if (childNode != null) {
                                 if (childNode.nodeName == 'mxGeometry') {
@@ -3155,12 +3086,9 @@ function showPropertiesWindow(graph, cell, diagRoot) {
         var wind = showModalWindow(graph, 'Properties', content, 450, height);
     } else {
         // This function is specifically for sciFunc_block_m
-        if(name=="scifunc_block_m")
-        {
+        if (name=="scifunc_block_m") {
             create_scifunc_popups(graph,cell,name,diagRoot);
-        }
-        else
-        {
+        } else {
             /* Function is present inside LOOKUP_CURV.js */
             showGraphWindow(graph,cell,diagRoot);
         }
@@ -3856,10 +3784,10 @@ function addSidebarIcon(graph, sidebar, name, image) {
             var graphics = details_instance.x.graphics;
 
             /* To determine number and type of Port */
-            var inputPorts = [],
-                outputPorts = [],
-                controlPorts = [],
-                commandPorts = [];
+            var inputPorts = [];
+            var outputPorts = [];
+            var controlPorts = [];
+            var commandPorts = [];
             if (blockModel.in.height != null) {
                 arr = getData(graphics.in_implicit);
                 if (arr.length != 0) {
@@ -4138,8 +4066,7 @@ mxGraphView.prototype.updateFixedTerminalPoint = function(edge, terminal, source
 
         // Computes edge-to-edge connection point
         if (pt != null) {
-            pt = new mxPoint(s * (tr.x + pt.x + orig.x),
-                s * (tr.y + pt.y + orig.y));
+            pt = new mxPoint(s * (tr.x + pt.x + orig.x), s * (tr.y + pt.y + orig.y));
 
             // Finds nearest segment on edge and computes intersection
             if (terminal != null && terminal.absolutePoints != null) {
@@ -4169,8 +4096,7 @@ mxGraphView.prototype.updateFixedTerminalPoint = function(edge, terminal, source
         }
         // Computes constraint connection points on vertices and ports
         else if (terminal != null && terminal.cell.geometry.relative) {
-            pt = new mxPoint(this.getRoutingCenterX(terminal),
-                this.getRoutingCenterY(terminal));
+            pt = new mxPoint(this.getRoutingCenterX(terminal), this.getRoutingCenterY(terminal));
         }
     }
 
@@ -4188,8 +4114,7 @@ mxConnectionHandler.prototype.createEdgeState = function(me) {
     } else if (this.graph.model.isEdge(me.getCell())) {
         var scale = this.graph.view.scale;
         var tr = this.graph.view.translate;
-        var pt = new mxPoint(this.graph.snap(me.getGraphX() / scale) - tr.x,
-            this.graph.snap(me.getGraphY() / scale) - tr.y);
+        var pt = new mxPoint(this.graph.snap(me.getGraphX() / scale) - tr.x, this.graph.snap(me.getGraphY() / scale) - tr.y);
         edge.geometry.setTerminalPoint(pt, true);
     }
 
@@ -4212,8 +4137,7 @@ mxConnectionHandler.prototype.updateCurrentState = function(me) {
             this.currentState.view.graph.model.isEdge(this.currentState.cell)) {
             var scale = this.graph.view.scale;
             var tr = this.graph.view.translate;
-            var pt = new mxPoint(this.graph.snap(me.getGraphX() / scale) - tr.x,
-                this.graph.snap(me.getGraphY() / scale) - tr.y);
+            var pt = new mxPoint(this.graph.snap(me.getGraphX() / scale) - tr.x, this.graph.snap(me.getGraphY() / scale) - tr.y);
             this.edgeState.cell.geometry.setTerminalPoint(pt, false);
         }
     }
@@ -4339,8 +4263,10 @@ mxEdgeStyle.WireConnector = function(state, source, target, hints, result) {
     // Adds the first point
     var pt = pts[0];
 
-    /* @jiteshjha splitBlock
-    */
+    /*
+     * @jiteshjha
+     * splitBlock
+     */
     if (state.cell.getGeometry().getTerminalPoint(true) != null) {
         source.cell['sourcePoint'] = state.cell.getGeometry().getTerminalPoint(true);
     }
