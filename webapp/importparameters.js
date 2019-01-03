@@ -1,7 +1,8 @@
 /*
-	This function is used to extract the values of the properties of a block from the XML.
-	The values are either present under the "exprs" node or are scattered over different nodes.
-*/
+ * This function is used to extract the values of the properties of a block
+ * from the XML. The values are either present under the "exprs" node or are
+ * scattered over different nodes.
+ */
 function importBlock(currentNode, cell, details_instance) {
     details_instance.define();
     var model = details_instance.x.model;
