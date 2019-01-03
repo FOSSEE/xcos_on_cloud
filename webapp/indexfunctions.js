@@ -3863,8 +3863,8 @@ function addSidebarIcon(graph, sidebar, name, image) {
 
     var dragElt = document.createElement('div');
     dragElt.style.border = 'dashed black 1px';
-    dragElt.style.width = width;
-    dragElt.style.height = height;
+    dragElt.style.width = width + 'px';
+    dragElt.style.height = height + 'px';
 
     // Creates the image which is used as the drag icon (preview)
     var ds = mxUtils.makeDraggable(img, graph, funct, dragElt, 0, 0, true, true);
