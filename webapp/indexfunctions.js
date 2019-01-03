@@ -1503,9 +1503,10 @@ function main(container, outline, toolbar, sidebar, status) {
                         if (angle != null) {
                             imageStyle = ' style="transform:rotate(' + angle + 'deg)"';
                         }
-
-                        var height = 80;
-                        var width = 80;
+                        // To get dimension(height,width) of a block
+                        var dimensionForBlock = details_instance.getDimensionForDisplay();
+                        var height = dimensionForBlock["height"];//return height of the block
+                        var width = dimensionForBlock["width"]; //return width of the block
                         if (geometryCell.height != null)
                             height = geometryCell.height;
                         if (geometryCell.width != null)
@@ -2859,6 +2860,14 @@ function showPropertiesWindow(graph, cell, diagRoot) {
                 var stylesheet = graph.getStylesheet();
                 // From the stylesheet, get the style of the particular block
                 var style = stylesheet.styles[name];
+                // To get dimension(height,width) of a block
+                var dimensionForBlock = cell.blockInstance.instance.getDimensionForDisplay();
+                var height = dimensionForBlock["height"]; // return height of block
+                var width = dimensionForBlock["width"]; // return width of block
+                if (geometry.height != null)
+                    height = geometry.height;
+                if (geometry.width != null)
+                    width = geometry.width;
 
                 /*
                  * When a particular block is loaded for the first time, the
@@ -2873,7 +2882,7 @@ function showPropertiesWindow(graph, cell, diagRoot) {
 
                 if (style != null && style['image'] != null) {
                     // Make label as a image html element
-                    var label = '<img src="' + style['image'] + '" height="80" width="80">';
+                    var label = '<img src="' + style['image'] + '" height="' + (height*0.9) + '" width="' + (width*0.9) + '">';
                     // Set label
                     style['label'] = label;
 
@@ -2940,7 +2949,7 @@ function showPropertiesWindow(graph, cell, diagRoot) {
                         commandPorts.push("COMMAND");
                     }
                 }
-                v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, name);
+                v1 = graph.insertVertex(parent, null, node, x, y, width, height, name);
 
                 // @Chhavi: Additional attribute to store the block's instance
                 v1.blockInstance = createInstanceTag(details_instance);
@@ -3724,6 +3733,8 @@ var flag = 0;
 function addSidebarIcon(graph, sidebar, name, image) {
     // Function that is executed when the image is dropped on the graph. The
     // cell argument points to the cell under the mousepointer if there is one.
+    var height = 80;
+    var width = 80;
     var funct = function(graph, evt, cell, x, y) {
         var parent = graph.getDefaultParent();
         var model = graph.getModel();
@@ -3741,6 +3752,10 @@ function addSidebarIcon(graph, sidebar, name, image) {
             var stylesheet = graph.getStylesheet();
             // From the stylesheet, get the style of the particular block
             var style = stylesheet.styles[name];
+            // To get dimension(height,width) of a block
+            var dimensionForBlock = details_instance.getDimensionForDisplay();
+            height = dimensionForBlock["height"]; //returns height of block
+            width = dimensionForBlock["width"]; //returns width of block
 
             /*
              * When a particular block is loaded for the first time, the image
@@ -3753,7 +3768,7 @@ function addSidebarIcon(graph, sidebar, name, image) {
              */
             if (style != null && style['image'] != null) {
                 // Make label as a image html element
-                var label = '<img src="' + style['image'] + '" height="80" width="80">';
+                var label = '<img src="' + style['image'] + '" height="' + (height*0.9) + '" width="' + (width*0.9) + '">';
 
                 // Set label
                 style['label'] = label;
@@ -3819,7 +3834,7 @@ function addSidebarIcon(graph, sidebar, name, image) {
                     commandPorts.push("COMMAND");
                 }
             }
-            v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, name);
+            v1 = graph.insertVertex(parent, null, node, x, y, width, height, name);
 
             // @Chhavi: Additional attribute to store the block's instance
             v1.blockInstance = createInstanceTag(details_instance);
@@ -3848,8 +3863,8 @@ function addSidebarIcon(graph, sidebar, name, image) {
 
     var dragElt = document.createElement('div');
     dragElt.style.border = 'dashed black 1px';
-    dragElt.style.width = '80px';
-    dragElt.style.height = '80px';
+    dragElt.style.width = width;
+    dragElt.style.height = height;
 
     // Creates the image which is used as the drag icon (preview)
     var ds = mxUtils.makeDraggable(img, graph, funct, dragElt, 0, 0, true, true);
