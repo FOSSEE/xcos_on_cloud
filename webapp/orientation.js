@@ -1,8 +1,8 @@
 /*
-    @pooja,
-    orientation.js contains the implementation of
-    block tranformation functions (rotation, flip and mirror)
-*/
+ * @pooja,
+ * orientation.js contains the implementation of
+ * block tranformation functions (rotation, flip and mirror)
+ */
 function transformBlockImage(graph, cell) {
     var imageName = cell.style;
     if (imageName.indexOf(";") != -1) {
@@ -18,7 +18,8 @@ function transformBlockImage(graph, cell) {
     var geometry = cell.getGeometry();
     var point_x = geometry.x;
     var point_y = geometry.y;
-    //IS_GC is to check if browser is Google Chrome, IS_FF is for Firefox. Updating the image style.
+    // IS_GC is to check if browser is Google Chrome, IS_FF is for Firefox.
+    // Updating the image style.
     if (mxClient.IS_GC == true) {
         details['label'] = '<img src="' + style['imagePath'] + '" height=80px; width=80px; style="  transform:translate(' + point_x + 'px,' + point_y + 'px) rotate(' + cell.currentAngle + 'deg) scale(' + cell.flipX + ',' + cell.flipY + '); "/>';
     } else {
@@ -55,16 +56,20 @@ function rotateCustom(editor, graph, cell) {
                             geo.width = geo.height;
                             geo.height = tmp;
                             graph.getModel().setGeometry(cell, geo);
-                            // Reads the current direction and advances by 90 degrees
+                            // Reads the current direction and advances by 90
+                            // degrees
                             var state = graph.view.getState(cell);
                             if (state != null) {
                                 if (cell.isConnectable() == true) {
                                     var dir = state.style[mxConstants.STYLE_ROTATION] || '0';
                                     var geoCell = cell.getGeometry();
                                     /*
-                                        To rotate the ports in sync with the block rotation.
-                                        A rotate makes port directing east direct to south, south direct to west, west direct to north and north direct to east.
-                                    */
+                                     * To rotate the ports in sync with the
+                                     * block rotation. A rotate makes port
+                                     * directing east direct to south, south
+                                     * direct to west, west direct to north and
+                                     * north direct to east.
+                                     */
                                     if (cell.value == "ExplicitOutputPort" || cell.value == "ImplicitOutputPort") {
                                         if (dir == '0' || dir == '180') {
                                             var temp = geoCell.x;
@@ -212,10 +217,13 @@ function flipCustom(editor, graph, cell) {
                                     var geoCell = cell.getGeometry();
 
                                     /*
-                                        To flip the ports in sync with the block flip.
-                                        A flip makes port directing north direct to south and vice versa.
-                                        A port directing east or west will have to aligh with the other ports which have same direction.
-                                    */
+                                     * To flip the ports in sync with the block
+                                     * flip. A flip makes port directing north
+                                     * direct to south and vice versa. A port
+                                     * directing east or west will have to
+                                     * aligh with the other ports which have
+                                     * same direction.
+                                     */
 
                                     if (cell.value == 'CommandPort' || cell.value == 'ControlPort') {
                                         if (dir == '90' || dir == '270') {
@@ -339,7 +347,8 @@ function mirrorCustom(editor, graph, cell) {
                             geo.width = geo.height;
                             geo.height = tmp;
                             graph.getModel().setGeometry(cell, geo);
-                            // Reads the current direction and mirrors the ports
+                            // Reads the current direction and mirrors the
+                            // ports
                             var state = graph.view.getState(cell);
                             if (state != null) {
                                 var dir = state.style[mxConstants.STYLE_ROTATION] || '0';
@@ -348,10 +357,13 @@ function mirrorCustom(editor, graph, cell) {
                                     var geoCell = cell.getGeometry();
 
                                     /*
-                                  To mirror the ports in sync with the block mirror.
-                                  A mirror makes port directing east direct to west and vice versa.
-                                  A port directing north or south will have to aligh with the other ports which have same direction.
-                              */
+                                     * To mirror the ports in sync with the
+                                     * block mirror. A mirror makes port
+                                     * directing east direct to west and vice
+                                     * versa. A port directing north or south
+                                     * will have to align with the other ports
+                                     * which have same direction.
+                                     */
 
                                     if (cell.value == "ExplicitOutputPort" || cell.value == "ImplicitOutputPort" || cell.value == "ExplicitInputPort" || cell.value == "ImplicitInputPort") {
                                         if (dir == '180' || dir == '0') {
