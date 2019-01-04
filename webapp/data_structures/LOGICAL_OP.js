@@ -138,4 +138,8 @@ function LOGICAL_OP() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    LOGICAL_OP.prototype.getDimensionForDisplay = function LOGICAL_OP(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 }
