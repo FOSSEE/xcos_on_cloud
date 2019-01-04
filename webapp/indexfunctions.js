@@ -3649,6 +3649,19 @@ function createButtonImage(button, image) {
 }
 
 function addIcons(graph, sidebar) {
+    var blockDimensions = {};
+
+    var req2 = mxUtils.load('palettes/blockdimensions.xml');
+    var blocks = req2.getDocumentElement().getElementsByTagName('block');
+    var blocksLength = blocks.length;
+    for (var i = 0; i < blocksLength; i++) {
+        var block = blocks[i];
+        var name = block.getAttribute("name");
+        var width = block.getAttribute("width");
+        var height = block.getAttribute("height");
+        blockDimensions[name] = { width: width, height: height }
+    }
+
     var req = mxUtils.load('palettes/palettes.xml');
     var root = req.getDocumentElement();
     var x = root.getElementsByTagName('node')[0];
@@ -3670,7 +3683,7 @@ function addIcons(graph, sidebar) {
             var name = blocks[j].getAttribute('name');
             var icon = blocks[j].getElementsByTagName('icon')[0];
             var iconPath = icon.getAttribute('path');
-            addSidebarIcon(graph, newImages, name, iconPath);
+            addSidebarIcon(graph, newImages, name, iconPath, blockDimensions[name]);
         }
         sidebar.appendChild(newImages);
     }
@@ -3730,7 +3743,7 @@ function showModalWindow(graph, title, content, width, height) {
 
 var flag = 0;
 
-function addSidebarIcon(graph, sidebar, name, image) {
+function addSidebarIcon(graph, sidebar, name, image, dimensions) {
     // Function that is executed when the image is dropped on the graph. The
     // cell argument points to the cell under the mousepointer if there is one.
     var height = 80;
@@ -3863,8 +3876,13 @@ function addSidebarIcon(graph, sidebar, name, image) {
 
     var dragElt = document.createElement('div');
     dragElt.style.border = 'dashed black 1px';
-    dragElt.style.width = img.naturalWidth + 'px'; //width of image element is used
-    dragElt.style.height = img.naturalHeight + 'px'; //height of image is used
+    var w, h;
+    if (dimensions != null)
+        w = dimensions.width, h = dimensions.height;
+    else
+        w = img.naturalWidth, h = img.naturalHeight;
+    dragElt.style.width = w + 'px'; // width of image is used
+    dragElt.style.height = h + 'px'; // height of image is used
 
     // Creates the image which is used as the drag icon (preview)
     var ds = mxUtils.makeDraggable(img, graph, funct, dragElt, 0, 0, true, true);
