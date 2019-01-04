@@ -2403,6 +2403,7 @@ function main(container, outline, toolbar, sidebar, status) {
 
                 httpGetAsync("/start_scilab?id="+clientID, function(responseText) {
                     if (responseText != "") {
+                        setSimulationFlags(false);
                         stopSimulationWindows();
                         alert(responseText);
                         return;
