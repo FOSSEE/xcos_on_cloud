@@ -3863,8 +3863,8 @@ function addSidebarIcon(graph, sidebar, name, image) {
 
     var dragElt = document.createElement('div');
     dragElt.style.border = 'dashed black 1px';
-    dragElt.style.width = width + 'px';
-    dragElt.style.height = height + 'px';
+    dragElt.style.width = img.naturalWidth + 'px'; //width of image element is used
+    dragElt.style.height = img.naturalHeight + 'px'; //height of image is used
 
     // Creates the image which is used as the drag icon (preview)
     var ds = mxUtils.makeDraggable(img, graph, funct, dragElt, 0, 0, true, true);
@@ -3984,19 +3984,19 @@ function createOutputPorts(graph, block, rightArray, bottomArray, parentObj, nod
 function createInputPort(graph, block, x, y, portType, position, ordering, nodeDataObject, idArray) {
     var port = null;
     if (portType == 'COMMAND') {
-        port = graph.insertVertex(block, null, 'CommandPort', x, y, 10, 10, 'CommandPort', true);
+        port = graph.insertVertex(block, null, 'CommandPort', x, y, 8, 8, 'CommandPort', true);
     } else if (portType == 'CONTROL') {
-        port = graph.insertVertex(block, null, 'ControlPort', x, y, 10, 10, 'ControlPort', true);
+        port = graph.insertVertex(block, null, 'ControlPort', x, y, 8, 8, 'ControlPort', true);
     } else if (portType == 'I') {
-        port = graph.insertVertex(block, null, 'ImplicitInputPort', x, y, 10, 10, 'ImplicitInputPort', true);
+        port = graph.insertVertex(block, null, 'ImplicitInputPort', x, y, 8, 8, 'ImplicitInputPort', true);
     } else if (portType == 'E') {
-        port = graph.insertVertex(block, null, 'ExplicitInputPort', x, y, 10, 10, 'ExplicitInputPort', true);
+        port = graph.insertVertex(block, null, 'ExplicitInputPort', x, y, 8, 8, 'ExplicitInputPort', true);
     }
     if (port != null) {
         if (position == 'top') {
-            port.geometry.offset = new mxPoint(-6, -10);
+            port.geometry.offset = new mxPoint(-6, -8);
         } else if (position == 'left') {
-            port.geometry.offset = new mxPoint(-10, -6);
+            port.geometry.offset = new mxPoint(-8, -6);
         }
         port.ordering = ordering;
 
@@ -4018,13 +4018,13 @@ function createOutputPort(graph, block, x, y, portType, position, ordering, node
     var port = null;
 
     if (portType == 'COMMAND') {
-        port = graph.insertVertex(block, null, 'CommandPort', x, y, 10, 10, 'CommandPort', true);
+        port = graph.insertVertex(block, null, 'CommandPort', x, y, 8, 8, 'CommandPort', true);
     } else if (portType == 'CONTROL') {
-        port = graph.insertVertex(block, null, 'ControlPort', x, y, 10, 10, 'ControlPort', true);
+        port = graph.insertVertex(block, null, 'ControlPort', x, y, 8, 8, 'ControlPort', true);
     } else if (portType == 'I') {
-        port = graph.insertVertex(block, null, 'ImplicitOutputPort', x, y, 10, 10, 'ImplicitOutputPort', true);
+        port = graph.insertVertex(block, null, 'ImplicitOutputPort', x, y, 8, 8, 'ImplicitOutputPort', true);
     } else if (portType == 'E') {
-        port = graph.insertVertex(block, null, 'ExplicitOutputPort', x, y, 10, 10, 'ExplicitOutputPort', true);
+        port = graph.insertVertex(block, null, 'ExplicitOutputPort', x, y, 8, 8, 'ExplicitOutputPort', true);
     }
     if (port != null) {
         if (position == 'bottom') {
