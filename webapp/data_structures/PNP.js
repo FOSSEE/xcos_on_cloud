@@ -115,11 +115,7 @@ PNP.prototype.set = function PNP() {
     this.Vt = parseFloat((arguments[0]["Vt"]))
     this.EMinMax = parseFloat((arguments[0]["EMinMax"]))
     this.ParametersName = [["Bf"],["Br"],["Is"],["Vak"],["Tauf"],["Taur"],["Ccs"],["Cje"],["Cjc"],["Phie"],["Me"],["Phic"],["Mc"],["Gbc"],["Gbe"],["Vt"],["EMinMax"]];
-    //this.ParametersValue = new ScilabDouble([this.Bf],[this.Br],[this.Is],[this.Vak],[this.Tauf],[this.Taur],[this.Ccs],[this.Cje],[this.Cjc],[this.Phie],[this.Me],[this.Phic],[this.Mc],[this.Gbc],[this.Gbe],[this.Vt],[this.EMinMax])
-    var arr = [];
-    arr.push(zeros(getData(this.ParametersName)));
-    this.x.model.equations.parameters = list(new ScilabString(...this.ParametersName),this.ParametersValue = list(new ScilabDouble([this.Bf]),new ScilabDouble([this.Br]),new ScilabDouble([this.Is]),new ScilabDouble([this.Vak]),new ScilabDouble([this.Tauf]),new ScilabDouble([this.Taur]),new ScilabDouble([this.Ccs]),new ScilabDouble([this.Cje]),new ScilabDouble([this.Cjc]),new ScilabDouble([this.Phie]),new ScilabDouble([this.Me]),new ScilabDouble([this.Phic]),new ScilabDouble([this.Mc]),new ScilabDouble([this.Gbc]),new ScilabDouble([this.Gbe]),new ScilabDouble([this.Vt]),new ScilabDouble([this.EMinMax])), new ScilabDouble(...zeros(this.ParametersName)))
-   // this.x.model.equations.parameters = list(new ScilabString(...this.ParametersName), new ScilabDouble(...this.PrametersValue), new ScilabDouble(...math.transpose(arr)));
+    this.x.model.equations.parameters = list(new ScilabString(...this.ParametersName),this.ParametersValue = list(new ScilabDouble([this.Bf]),new ScilabDouble([this.Br]),new ScilabDouble([this.Is]),new ScilabDouble([this.Vak]),new ScilabDouble([this.Tauf]),new ScilabDouble([this.Taur]),new ScilabDouble([this.Ccs]),new ScilabDouble([this.Cje]),new ScilabDouble([this.Cjc]),new ScilabDouble([this.Phie]),new ScilabDouble([this.Me]),new ScilabDouble([this.Phic]),new ScilabDouble([this.Mc]),new ScilabDouble([this.Gbc]),new ScilabDouble([this.Gbe]),new ScilabDouble([this.Vt]),new ScilabDouble([this.EMinMax])), new ScilabDouble(...zeros(this.ParametersName)));
     var exprs = new ScilabString([this.Bf],[this.Br],[this.Is],[this.Vak],[this.Tauf],[this.Taur],[this.Ccs],[this.Cje],[this.Cjc],[this.Phie],[this.Me],[this.Phic],[this.Mc],[this.Gbc],[this.Gbe],[this.Vt],[this.EMinMax])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
