@@ -28,4 +28,8 @@ function generic_block3() {
         var set_param_popup_title="Set Generic block parameters";
         return set_param_popup_title
     }
+    generic_block3.prototype.getDimensionForDisplay = function generic_block3(){
+        var dimension = { width: 80, height: 40 };
+        return dimension
+    }
 }

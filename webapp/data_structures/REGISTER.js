@@ -101,4 +101,8 @@ z0:["Register initial condition",this.z0],
         var set_param_popup_title="Set delay parameters";
         return set_param_popup_title
     }
+    REGISTER.prototype.getDimensionForDisplay = function REGISTER(){
+        var dimension = { width: 60, height: 40 };
+        return dimension
+    }
 }

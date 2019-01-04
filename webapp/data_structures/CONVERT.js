@@ -384,5 +384,9 @@ function CONVERT() {
         var set_param_popup_title="Set CONVERT block parameters <br> Type conversion";
         return set_param_popup_title
     }
+    CONVERT.prototype.getDimensionForDisplay = function CONVERT(){
+        var dimension = { width: 60, height: 40 };
+        return dimension
+    }
 
 }

@@ -95,4 +95,8 @@ function AFFICH_m() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    AFFICH_m.prototype.getDimensionForDisplay = function AFFICH_m(){
+        var dimension = { width: 60, height: 40 };
+        return dimension
+    }
 }

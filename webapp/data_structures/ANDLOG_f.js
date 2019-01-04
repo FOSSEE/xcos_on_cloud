@@ -53,4 +53,8 @@ function ANDLOG_f() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    ANDLOG_f.prototype.getDimensionForDisplay = function ANDLOG_f(){
+        var dimension = { width: 60, height: 60 };
+        return dimension
+    }
 }

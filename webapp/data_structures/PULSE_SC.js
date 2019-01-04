@@ -406,4 +406,8 @@ function PULSE_SC() {
         var set_param_popup_title="Set Pulse Generator parameters";
         return set_param_popup_title
     }
+    PULSE_SC.prototype.getDimensionForDisplay = function PULSE_SC(){
+        var dimension = { width: 60, height: 40 };
+        return dimension
+    }
 }

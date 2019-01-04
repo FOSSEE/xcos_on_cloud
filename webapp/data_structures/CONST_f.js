@@ -48,5 +48,9 @@ CONST_f.prototype.set = function CONST_f() {
         var set_param_popup_title="Set Contant Block";
         return set_param_popup_title
     }
+    CONST_f.prototype.getDimensionForDisplay = function CONST_f(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 
 }

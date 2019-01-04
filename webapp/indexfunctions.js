@@ -1503,9 +1503,10 @@ function main(container, outline, toolbar, sidebar, status) {
                         if (angle != null) {
                             imageStyle = ' style="transform:rotate(' + angle + 'deg)"';
                         }
-
-                        var height = 80;
-                        var width = 80;
+                        // To get dimension(height,width) of a block
+                        var dimensionForBlock = details_instance.getDimensionForDisplay();
+                        var height = dimensionForBlock["height"];//return height of the block
+                        var width = dimensionForBlock["width"]; //return width of the block
                         if (geometryCell.height != null)
                             height = geometryCell.height;
                         if (geometryCell.width != null)
@@ -2859,6 +2860,14 @@ function showPropertiesWindow(graph, cell, diagRoot) {
                 var stylesheet = graph.getStylesheet();
                 // From the stylesheet, get the style of the particular block
                 var style = stylesheet.styles[name];
+                // To get dimension(height,width) of a block
+                var dimensionForBlock = cell.blockInstance.instance.getDimensionForDisplay();
+                var height = dimensionForBlock["height"]; // return height of block
+                var width = dimensionForBlock["width"]; // return width of block
+                if (geometry.height != null)
+                    height = geometry.height;
+                if (geometry.width != null)
+                    width = geometry.width;
 
                 /*
                  * When a particular block is loaded for the first time, the
@@ -2873,7 +2882,7 @@ function showPropertiesWindow(graph, cell, diagRoot) {
 
                 if (style != null && style['image'] != null) {
                     // Make label as a image html element
-                    var label = '<img src="' + style['image'] + '" height="80" width="80">';
+                    var label = '<img src="' + style['image'] + '" height="' + (height*0.9) + '" width="' + (width*0.9) + '">';
                     // Set label
                     style['label'] = label;
 
@@ -2940,7 +2949,7 @@ function showPropertiesWindow(graph, cell, diagRoot) {
                         commandPorts.push("COMMAND");
                     }
                 }
-                v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, name);
+                v1 = graph.insertVertex(parent, null, node, x, y, width, height, name);
 
                 // @Chhavi: Additional attribute to store the block's instance
                 v1.blockInstance = createInstanceTag(details_instance);
@@ -3724,6 +3733,8 @@ var flag = 0;
 function addSidebarIcon(graph, sidebar, name, image) {
     // Function that is executed when the image is dropped on the graph. The
     // cell argument points to the cell under the mousepointer if there is one.
+    var height = 80;
+    var width = 80;
     var funct = function(graph, evt, cell, x, y) {
         var parent = graph.getDefaultParent();
         var model = graph.getModel();
@@ -3741,6 +3752,10 @@ function addSidebarIcon(graph, sidebar, name, image) {
             var stylesheet = graph.getStylesheet();
             // From the stylesheet, get the style of the particular block
             var style = stylesheet.styles[name];
+            // To get dimension(height,width) of a block
+            var dimensionForBlock = details_instance.getDimensionForDisplay();
+            height = dimensionForBlock["height"]; //returns height of block
+            width = dimensionForBlock["width"]; //returns width of block
 
             /*
              * When a particular block is loaded for the first time, the image
@@ -3753,7 +3768,7 @@ function addSidebarIcon(graph, sidebar, name, image) {
              */
             if (style != null && style['image'] != null) {
                 // Make label as a image html element
-                var label = '<img src="' + style['image'] + '" height="80" width="80">';
+                var label = '<img src="' + style['image'] + '" height="' + (height*0.9) + '" width="' + (width*0.9) + '">';
 
                 // Set label
                 style['label'] = label;
@@ -3819,7 +3834,7 @@ function addSidebarIcon(graph, sidebar, name, image) {
                     commandPorts.push("COMMAND");
                 }
             }
-            v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, name);
+            v1 = graph.insertVertex(parent, null, node, x, y, width, height, name);
 
             // @Chhavi: Additional attribute to store the block's instance
             v1.blockInstance = createInstanceTag(details_instance);
@@ -3848,8 +3863,8 @@ function addSidebarIcon(graph, sidebar, name, image) {
 
     var dragElt = document.createElement('div');
     dragElt.style.border = 'dashed black 1px';
-    dragElt.style.width = '80px';
-    dragElt.style.height = '80px';
+    dragElt.style.width = img.naturalWidth + 'px'; //width of image element is used
+    dragElt.style.height = img.naturalHeight + 'px'; //height of image is used
 
     // Creates the image which is used as the drag icon (preview)
     var ds = mxUtils.makeDraggable(img, graph, funct, dragElt, 0, 0, true, true);
@@ -3969,19 +3984,19 @@ function createOutputPorts(graph, block, rightArray, bottomArray, parentObj, nod
 function createInputPort(graph, block, x, y, portType, position, ordering, nodeDataObject, idArray) {
     var port = null;
     if (portType == 'COMMAND') {
-        port = graph.insertVertex(block, null, 'CommandPort', x, y, 10, 10, 'CommandPort', true);
+        port = graph.insertVertex(block, null, 'CommandPort', x, y, 8, 8, 'CommandPort', true);
     } else if (portType == 'CONTROL') {
-        port = graph.insertVertex(block, null, 'ControlPort', x, y, 10, 10, 'ControlPort', true);
+        port = graph.insertVertex(block, null, 'ControlPort', x, y, 8, 8, 'ControlPort', true);
     } else if (portType == 'I') {
-        port = graph.insertVertex(block, null, 'ImplicitInputPort', x, y, 10, 10, 'ImplicitInputPort', true);
+        port = graph.insertVertex(block, null, 'ImplicitInputPort', x, y, 8, 8, 'ImplicitInputPort', true);
     } else if (portType == 'E') {
-        port = graph.insertVertex(block, null, 'ExplicitInputPort', x, y, 10, 10, 'ExplicitInputPort', true);
+        port = graph.insertVertex(block, null, 'ExplicitInputPort', x, y, 8, 8, 'ExplicitInputPort', true);
     }
     if (port != null) {
         if (position == 'top') {
-            port.geometry.offset = new mxPoint(-6, -10);
+            port.geometry.offset = new mxPoint(-6, -8);
         } else if (position == 'left') {
-            port.geometry.offset = new mxPoint(-10, -6);
+            port.geometry.offset = new mxPoint(-8, -6);
         }
         port.ordering = ordering;
 
@@ -4003,13 +4018,13 @@ function createOutputPort(graph, block, x, y, portType, position, ordering, node
     var port = null;
 
     if (portType == 'COMMAND') {
-        port = graph.insertVertex(block, null, 'CommandPort', x, y, 10, 10, 'CommandPort', true);
+        port = graph.insertVertex(block, null, 'CommandPort', x, y, 8, 8, 'CommandPort', true);
     } else if (portType == 'CONTROL') {
-        port = graph.insertVertex(block, null, 'ControlPort', x, y, 10, 10, 'ControlPort', true);
+        port = graph.insertVertex(block, null, 'ControlPort', x, y, 8, 8, 'ControlPort', true);
     } else if (portType == 'I') {
-        port = graph.insertVertex(block, null, 'ImplicitOutputPort', x, y, 10, 10, 'ImplicitOutputPort', true);
+        port = graph.insertVertex(block, null, 'ImplicitOutputPort', x, y, 8, 8, 'ImplicitOutputPort', true);
     } else if (portType == 'E') {
-        port = graph.insertVertex(block, null, 'ExplicitOutputPort', x, y, 10, 10, 'ExplicitOutputPort', true);
+        port = graph.insertVertex(block, null, 'ExplicitOutputPort', x, y, 8, 8, 'ExplicitOutputPort', true);
     }
     if (port != null) {
         if (position == 'bottom') {

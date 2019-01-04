@@ -25,4 +25,8 @@ function COSBLK_f() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    COSBLK_f.prototype.getDimensionForDisplay = function COSBLK_f(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 }

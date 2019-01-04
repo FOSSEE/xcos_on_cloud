@@ -28,4 +28,8 @@ function SAWTOOTH_f() {
         var set_param_popup_title="Set SAWTOOTH_f block";
         return set_param_popup_title
     }
+    SAWTOOTH_f.prototype.getDimensionForDisplay = function SAWTOOTH_f(){
+        var dimension = { width: 60, height: 40 };
+        return dimension
+    }
 }

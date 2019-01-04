@@ -34,4 +34,8 @@ function DEBUG() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    DEBUG.prototype.getDimensionForDisplay = function DEBUG(){
+        var dimension = { width: 160, height: 40 };
+        return dimension
+    }
 }

@@ -58,5 +58,9 @@ function LOOKUP_f() {
         var set_param_popup_title="Set block parameters";
         return set_param_popup_title
     }
+    LOOKUP_f.prototype.getDimensionForDisplay = function LOOKUP_f(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 
 }

@@ -130,5 +130,9 @@ function CONST_m() {
         var set_param_popup_title="Set CONST_m block parameters <br> Constant value generator<br>";
         return set_param_popup_title
         }
+        CONST_m.prototype.getDimensionForDisplay = function CONST_m(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 
 }

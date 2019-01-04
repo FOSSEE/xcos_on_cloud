@@ -55,4 +55,8 @@ OUTIMPL_f.prototype.set = function OUTIMPL_f() {
         var set_param_popup_title="Set OUTIMPL_f block parameters:";
         return set_param_popup_title
     }
+    OUTIMPL_f.prototype.getDimensionForDisplay = function OUTIMPL_f(){
+        var dimension = { width: 20, height: 20 };
+        return dimension
+    }
 }

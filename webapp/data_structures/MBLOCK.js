@@ -46,4 +46,8 @@ function MBLOCK() {
         var set_param_popup_title="Set Modelica generic block parameters";
         return set_param_popup_title
     }
+    MBLOCK.prototype.getDimensionForDisplay = function MBLOCK(){
+        var dimension = { width: 60, height: 40 };
+        return dimension
+    }
 }

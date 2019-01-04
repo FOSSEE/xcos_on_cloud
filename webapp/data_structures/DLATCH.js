@@ -709,4 +709,8 @@ function DLATCH() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    DLATCH.prototype.getDimensionForDisplay = function DLATCH(){
+        var dimension = { width: 40, height: 60 };
+        return dimension
+    }
 }

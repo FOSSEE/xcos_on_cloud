@@ -77,5 +77,9 @@ INTRPLBLK_f.prototype.set = function INTRPLBLK_f() {
         var set_param_popup_title="Set Interpolation block parameters";
         return set_param_popup_title
     }
+    INTRPLBLK_f.prototype.getDimensionForDisplay = function INTRPLBLK_f(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 
 }

@@ -63,4 +63,8 @@ function CVS() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    CVS.prototype.getDimensionForDisplay = function CVS(){
+        var dimension = { width: 42, height: 60 };
+        return dimension
+    }
 }
