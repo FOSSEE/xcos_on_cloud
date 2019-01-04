@@ -204,4 +204,8 @@ function STEP_FUNCTION() {
         var set_param_popup_title="Set STEP_FUNCTION block parameters<br><br> Step function";
         return set_param_popup_title
     }
+    STEP_FUNCTION.prototype.getDimensionForDisplay = function STEP_FUNCTION(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 }

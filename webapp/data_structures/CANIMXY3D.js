@@ -140,4 +140,8 @@ CANIMXY3D.prototype.set = function CANIMXY3D() {
         var set_param_popup_title="Set Scope parameters";
         return set_param_popup_title
     }
+    CANIMXY3D.prototype.getDimensionForDisplay = function CANIMXY3D(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 }

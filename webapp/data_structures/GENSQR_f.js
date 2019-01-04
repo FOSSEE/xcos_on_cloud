@@ -46,4 +46,8 @@ GENSQR_f.prototype.set = function GENSQR_f() {
         var set_param_popup_title="Set Square generator block parameters";
         return set_param_popup_title
     }
+    GENSQR_f.prototype.getDimensionForDisplay = function GENSQR_f(){
+        var dimension = { width: 60, height: 40 };
+        return dimension
+    }
 }

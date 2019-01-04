@@ -75,5 +75,9 @@ IdealTransformer.prototype.get_popup_title = function IdealTransformer() {
         var set_param_popup_title="Set Transformer block parameters: <br> N: Turn ratio (N1/N2)";
         return set_param_popup_title
     }
+    IdealTransformer.prototype.getDimensionForDisplay = function IdealTransformer(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 
 }

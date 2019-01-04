@@ -73,4 +73,8 @@ OUT_f.prototype.set = function OUT_f() {
         var set_param_popup_title="Set OUT_f block parameters:";
         return set_param_popup_title
     }
+    OUT_f.prototype.getDimensionForDisplay = function OUT_f(){
+        var dimension = { width: 20, height: 20 };
+        return dimension
+    }
 }

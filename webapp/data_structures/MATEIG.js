@@ -99,4 +99,8 @@ MATEIG.prototype.set = function MATEIG() {
         var set_param_popup_title="Set MATEIG block parameters";
         return set_param_popup_title
     }
+    MATEIG.prototype.getDimensionForDisplay = function MATEIG(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 }

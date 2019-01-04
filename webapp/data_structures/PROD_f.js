@@ -36,4 +36,8 @@ PROD_f.prototype.set = function PROD_f() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    PROD_f.prototype.getDimensionForDisplay = function PROD_f(){
+        var dimension = { width: 20, height: 20 };
+        return dimension
+    }
 }

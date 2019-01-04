@@ -56,4 +56,8 @@ function VARIABLE_DELAY() {
         var set_param_popup_title="Set delay parameters";
         return set_param_popup_title
     }
+    VARIABLE_DELAY.prototype.getDimensionForDisplay = function VARIABLE_DELAY(){
+        var dimension = { width: 60, height: 40 };
+        return dimension
+    }
 }

@@ -46,4 +46,8 @@ LOGBLK_f.prototype.get_popup_title = function LOGBLK_f() {
         var set_param_popup_title="Set log block parameters";
         return set_param_popup_title
     }
+LOGBLK_f.prototype.getDimensionForDisplay = function LOGBLK_f(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 }

@@ -101,5 +101,9 @@ function BITSET() {
         var set_param_popup_title="Set BITSET block parameters <br> Set a bit";
         return set_param_popup_title
     }
+    BITSET.prototype.getDimensionForDisplay = function BITSET(){
+        var dimension = { width: 80, height: 40 };
+        return dimension
+    }
 
 }

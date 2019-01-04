@@ -106,5 +106,9 @@ MATSUM.prototype.set = function MATSUM() {
         var set_param_popup_title="Set MATSUM block parameters";
         return set_param_popup_title
     }
+    MATSUM.prototype.getDimensionForDisplay = function MATSUM(){
+        var dimension = { width: 60, height: 40 };
+        return dimension
+    }
 
 }

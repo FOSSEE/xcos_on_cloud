@@ -71,5 +71,9 @@ var model = scicos_model();
         var set_param_popup_title="Set DEMUX block parameters";
         return set_param_popup_title
     }
+    DEMUX.prototype.getDimensionForDisplay = function DEMUX(){
+        var dimension = { width: 10, height: 40 };
+        return dimension
+    }
 
 }

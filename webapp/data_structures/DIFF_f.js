@@ -47,5 +47,9 @@ DIFF_f.prototype.get_popup_title = function DIFF_f() {
         var set_param_popup_title="Set continuous linear system parameters";
         return set_param_popup_title
     }
+    DIFF_f.prototype.getDimensionForDisplay = function DIFF_f(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 
 }
