@@ -63,4 +63,8 @@ SineVoltage.prototype.set = function SineVoltage() {
         var set_param_popup_title="Set voltage source parameter";
         return set_param_popup_title
     }
+    SineVoltage.prototype.getDimensionForDisplay = function SineVoltage(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 }

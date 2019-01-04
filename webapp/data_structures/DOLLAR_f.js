@@ -58,4 +58,8 @@ function DOLLAR_f() {
         var set_param_popup_title="Set 1/z block parameters";
         return set_param_popup_title
     }
+    DOLLAR_f.prototype.getDimensionForDisplay = function DOLLAR_f(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 }

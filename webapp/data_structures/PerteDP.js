@@ -65,5 +65,9 @@ PerteDP.prototype.set = function PerteDP() {
         var set_param_popup_title="Set block parameters:";
         return set_param_popup_title
     }
+    PerteDP.prototype.getDimensionForDisplay = function PerteDP(){
+        var dimension = { width: 40, height: 20 };
+        return dimension
+    }
 
 }

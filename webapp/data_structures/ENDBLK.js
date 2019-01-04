@@ -220,4 +220,8 @@ function ENDBLK() {
         var set_param_popup_title="Set final simulation time";
         return set_param_popup_title
         }
+        ENDBLK.prototype.getDimensionForDisplay = function ENDBLK(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+        }
 }

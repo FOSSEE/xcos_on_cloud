@@ -42,4 +42,8 @@ SCALAR2VECTOR.prototype.set = function SCALAR2VECTOR() {
         var set_param_popup_title="Set block parameters";
         return set_param_popup_title
     }
+    SCALAR2VECTOR.prototype.getDimensionForDisplay = function SCALAR2VECTOR(){
+        var dimension = { width: 60, height: 40 };
+        return dimension
+    }
 }

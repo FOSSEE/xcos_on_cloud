@@ -25,4 +25,8 @@ function DERIV() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    DERIV.prototype.getDimensionForDisplay = function DERIV(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 }

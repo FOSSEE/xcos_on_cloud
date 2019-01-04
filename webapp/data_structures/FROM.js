@@ -48,5 +48,9 @@ FROM.prototype.get_popup_title = function FROM() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }
+    FROM.prototype.getDimensionForDisplay = function FROM(){
+        var dimension = { width: 40, height: 20 };
+        return dimension
+    }
 
 }

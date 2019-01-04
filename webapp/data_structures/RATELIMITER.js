@@ -46,4 +46,8 @@ function RATELIMITER() {
         var set_param_popup_title="Set rate limiter parameters";
         return set_param_popup_title
     }
+    RATELIMITER.prototype.getDimensionForDisplay = function RATELIMITER(){
+        var dimension = { width: 70, height: 40 };
+        return dimension
+    }
 }

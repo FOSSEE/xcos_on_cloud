@@ -59,4 +59,8 @@ VsourceAC.prototype.get_popup_title = function VsourceAC() {
         var set_param_popup_title="Set voltage source parameter";
         return set_param_popup_title
     }
+    VsourceAC.prototype.getDimensionForDisplay = function VsourceAC(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 }

@@ -101,4 +101,8 @@ function CFSCOPE() {
         var set_param_popup_title="Set Scope parameters";
         return set_param_popup_title
     }
+    CFSCOPE.prototype.getDimensionForDisplay = function CFSCOPE(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 }

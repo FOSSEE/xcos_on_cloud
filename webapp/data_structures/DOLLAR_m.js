@@ -62,4 +62,8 @@ DOLLAR_m.prototype.set = function DOLLAR_m() {
         var set_param_popup_title="Set 1/z block parameters";
         return set_param_popup_title
     }
+    DOLLAR_m.prototype.getDimensionForDisplay = function DOLLAR_m(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 }

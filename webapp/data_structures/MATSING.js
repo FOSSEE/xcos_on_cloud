@@ -107,5 +107,9 @@ MATSING.prototype.set = function MATSING() {
         var set_param_popup_title="Set MATSVD block parameters";
         return set_param_popup_title
     }
+    MATSING.prototype.getDimensionForDisplay = function MATSING(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 
 }

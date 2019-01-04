@@ -52,4 +52,9 @@ FROMMO.prototype.get_popup_title = function FROMMO() {
         var set_param_popup_title="Set parameters <br>";
         return set_param_popup_title
     }
+    FROMMO.prototype.getDimensionForDisplay = function FROMMO(){
+        var dimension = { width: 40, height: 20 };
+        return dimension
+    }
+
 }

@@ -71,4 +71,8 @@ MATMAGPHI.prototype.set = function MATMAGPHI() {
         var set_param_popup_title="Set MATMAGPHI block parameters";
         return set_param_popup_title
     }
+    MATMAGPHI.prototype.getDimensionForDisplay = function MATMAGPHI(){
+        var dimension = { width: 60, height: 40 };
+        return dimension
+    }
 }

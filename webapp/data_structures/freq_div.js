@@ -161,5 +161,9 @@ function freq_div() {
         var set_param_popup_title="Set frequency division block parameters";
         return set_param_popup_title
     }
+    freq_div.prototype.getDimensionForDisplay = function freq_div(){
+        var dimension = { width: 60, height: 40 };
+        return dimension
+    }
 
 }
