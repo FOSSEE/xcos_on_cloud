@@ -2081,7 +2081,7 @@ function cont_frm(num, den) {
     form.append('den', den);
     var xhr = new XMLHttpRequest();
     var test;
-    xhr.open("POST", "/getOutput", false);
+    xhr.open("POST", "/getOutput?id=0", false);
     xhr.onload = function() {
         if (this.status==200) {
         }
