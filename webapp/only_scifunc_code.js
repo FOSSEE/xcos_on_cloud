@@ -1131,23 +1131,7 @@ function create_scifunc_popups(graph,cell,name,diagRoot) {
                 var nodePrevXml = encPrevXml.encode(diagRoot);
                 var strPrevXml = mxUtils.getPrettyXml(nodePrevXml);
                 strPrevXml = mxUtils.parseXml(strPrevXml);
-                var xslPrevXml = trySomething("finalmodsheet.xsl");
-                function trySomething(x) {
-                    if (window.ActiveXObject) {
-                        xhttp = new ActiveXObject("Msxml2.XMLHTTP");
-                    } else {
-                        xhttp = new XMLHttpRequest();
-                    }
-                    xhttp.open("GET", x, false);
-                    try {
-                        xhttp.responseType = "msxml-document"
-                    } catch (err) {}
-                    xhttp.send("");
-                    return xhttp.responseXML;
-                }
-                var xsltProcessorPrevXml = new XSLTProcessor();
-                xsltProcessorPrevXml.importStylesheet(xslPrevXml);
-                var resultDocumentPrevXml = xsltProcessorPrevXml.transformToDocument(strPrevXml);
+                var resultDocumentPrevXml = getXsltProcessor().transformToDocument(strPrevXml);
                 /*
                  * Maverick
                  * Using resultDocument.documentElement to remove an additional
