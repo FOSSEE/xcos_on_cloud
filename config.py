@@ -85,7 +85,13 @@ QUERY_EXAMPLE_FILE = (
 )
 
 QUERY_EXAMPLE_FILE_BY_ID = (
-    "SELECT filename, filepath "
+    "SELECT filename, filepath, example_id "
     "FROM textbook_companion_example_files "
-    "WHERE id = %s"
+    "WHERE filetype = 'X' AND id = %s"
+)
+
+QUERY_PREREQUISITE_FILE_BY_EXAMPLE_ID = (
+    "SELECT filename, filepath, id as prerequisite_file_id "
+    "FROM textbook_companion_example_files "
+    "WHERE filetype = 'S' AND example_id = %s"
 )
