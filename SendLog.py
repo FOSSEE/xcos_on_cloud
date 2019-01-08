@@ -1522,7 +1522,11 @@ def endBlock(fig_id):
 
 @app.route('/')
 def page():
-    return app.send_static_file('index.html')
+    return render_template('index.html',
+                           example_content='',
+                           example_filename='',
+                           prerequisite_content='',
+                           prerequisite_filename='')
 
 
 @app.route('/getOutput', methods=['POST'])
@@ -1637,44 +1641,88 @@ def get_example_file(example_file_id):
     filepath = ''
     cur = connection()
     cur.execute(config.QUERY_EXAMPLE_FILE_BY_ID, [example_file_id])
-    example_file = cur.fetchall()
-    for ef in example_file:
-        (filename, filepath) = ef
+    for (filename, filepath, example_id) in cur.fetchall():
+        pass
 
     if XCOSSOURCEDIR != '' and filepath != '':
         try:
             print('reading', filename, 'from', filepath)
             with open(join(XCOSSOURCEDIR, filepath), 'r') as f:
                 text = clean_text(f.read())
-                return (text, filename)
+                return (text, filename, example_id)
         except Exception as e:
             print('Exception:', str(e))
 
     scilab_url = "https://scilab.in/download/file/" + example_file_id
     r = requests.get(scilab_url)
     text = clean_text(r.text)
+    return (text, filename, example_id)
+
+
+def clean_text_2(s):
+    # handle whitespace
+    s = re.sub(r'[\a\b\f\r\v]', r'', s)
+    s = re.sub(r'\t', r'    ', s)
+    s = re.sub(r' +(\n|$)', r'\n', s)
+    s = re.sub(r'\n+$', r'', s)
+    # double each backslash
+    s = re.sub(r'\\', r'\\\\', s)
+    # replace each newline with '\n'
+    s = re.sub(r'\n', r'\\n', s)
+    return s
+
+
+def get_prerequisite_file(example_id):
+    filename = ''
+    filepath = ''
+    prerequisite_file_id = None
+    cur = connection()
+    cur.execute(config.QUERY_PREREQUISITE_FILE_BY_EXAMPLE_ID, [example_id])
+    for (filename, filepath, prerequisite_file_id) in cur.fetchall():
+        pass
+
+    if prerequisite_file_id is None:
+        return ('', filename)
+
+    if XCOSSOURCEDIR != '' and filepath != '':
+        try:
+            print('reading', filename, 'from', filepath)
+            with open(join(XCOSSOURCEDIR, filepath), 'r') as f:
+                text = clean_text_2(f.read())
+                return (text, filename)
+        except Exception as e:
+            print('Exception:', str(e))
+
+    scilab_url = "https://scilab.in/download/file/" + str(prerequisite_file_id)
+    r = requests.get(scilab_url)
+    text = clean_text_2(r.text)
     return (text, filename)
 
 
 @app.route('/example_file', methods=['GET', 'POST'])
 def download_example_file():
     example_file_id = request.args.get('efid')
-    (example_content, filename) = get_example_file(example_file_id)
+    (example_content, example_filename, example_id) = get_example_file(
+        example_file_id)
     return Response(
         example_content,
         mimetype='application/octet-stream',
-        headers={
-            'Content-Disposition': 'attachment; filename="' + filename + '"'})
+        headers={'Content-Disposition':
+                 'attachment; filename="%s"' % example_filename})
 
 
 @app.route('/open', methods=['GET', 'POST'])
 def open_example_file():
     example_file_id = request.args.get('efid')
-    (example_content, filename) = get_example_file(example_file_id)
-    return render_template(
-        'index.html',
-        example_content=example_content,
-        filename=filename)
+    (example_content, example_filename, example_id) = get_example_file(
+        example_file_id)
+    (prerequisite_content, prerequisite_filename) = get_prerequisite_file(
+        str(example_id))
+    return render_template('index.html',
+                           example_content=example_content,
+                           example_filename=example_filename,
+                           prerequisite_content=prerequisite_content,
+                           prerequisite_filename=prerequisite_filename)
 
 # example page end     #################
 
