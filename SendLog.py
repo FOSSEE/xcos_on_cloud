@@ -1531,7 +1531,7 @@ def run_scilab_func_request():
     if diagram is None:
         print('no diagram')
         return
-    runtime = get_runtime(diagram.uid, True)
+    runtime = get_runtime(diagram.uid, create=True)
 
     num = request.form['num']
     den = request.form['den']
