@@ -32,6 +32,33 @@ function httpGetAsync(theUrl, callback) {
     xmlHttp.send(null);
 }
 
+/*
+ * Maverick
+ * This method is used for loading the stylesheet from the file.
+ * Reference: http://www.w3schools.com/xsl/xsl_client.asp
+ */
+
+function loadXMLDoc(filename) {
+    if (window.ActiveXObject) {
+        xhttp = new ActiveXObject("Msxml2.XMLHTTP");
+    } else {
+        xhttp = new XMLHttpRequest();
+    }
+    xhttp.open("GET", filename, false);
+    try {
+        xhttp.responseType = "msxml-document"
+    } catch (err) {}
+    xhttp.send("");
+    return xhttp.responseXML;
+}
+
+function getXsltProcessor() {
+    var xsl = loadXMLDoc("finalmodsheet.xsl");
+    var xsltProcessor = new XSLTProcessor();
+    xsltProcessor.importStylesheet(xsl);
+    return xsltProcessor;
+}
+
 var simulationStarted = false;
 var wnd = null;
 var affichwnd = null;
@@ -1159,7 +1186,6 @@ function main(container, outline, toolbar, sidebar, status) {
     addToolbarButton(editor, toolbar, 'cut', 'Cut', 'images/cut.png');
     addToolbarButton(editor, toolbar, 'copy', 'Copy', 'images/copy.png');
     addToolbarButton(editor, toolbar, 'paste', 'Paste', 'images/paste.png');
-
     toolbar.appendChild(spacer.cloneNode(true));
 
     addToolbarButton(editor, toolbar, 'deleteBlock', 'Delete', 'images/delete2.png');
@@ -1167,30 +1193,8 @@ function main(container, outline, toolbar, sidebar, status) {
     addToolbarButton(editor, toolbar, 'redo', '', 'images/redo.png');
     toolbar.appendChild(spacer.cloneNode(true));
 
-    // addToolbarButton(editor, toolbar, 'show', 'Show', 'images/camera.png');
     addToolbarButton(editor, toolbar, 'print', 'Print Xcos', 'images/printer.png');
-
     toolbar.appendChild(spacer.cloneNode(true));
-
-    /*
-     * Maverick
-     * This method is used for loading the stylesheet from the file.
-     * Reference: http://www.w3schools.com/xsl/xsl_client.asp
-     */
-
-    function loadXMLDoc(filename) {
-        if (window.ActiveXObject) {
-            xhttp = new ActiveXObject("Msxml2.XMLHTTP");
-        } else {
-            xhttp = new XMLHttpRequest();
-        }
-        xhttp.open("GET", filename, false);
-        try {
-            xhttp.responseType = "msxml-document"
-        } catch (err) {}
-        xhttp.send("");
-        return xhttp.responseXML;
-    }
 
     /*
      * Maverick
@@ -1230,11 +1234,7 @@ function main(container, outline, toolbar, sidebar, status) {
         else {
             var xml = mxUtils.parseXml(xmlFromExportXML);
 
-            var xsl = loadXMLDoc("finalmodsheet.xsl");
-
-            xsltProcessor = new XSLTProcessor();
-            xsltProcessor.importStylesheet(xsl);
-            resultDocument = xsltProcessor.transformToDocument(xml);
+            resultDocument = getXsltProcessor().transformToDocument(xml);
             /*
              * Maverick
              * Using resultDocument.documentElement to remove an additional
@@ -1829,7 +1829,6 @@ function main(container, outline, toolbar, sidebar, status) {
     });
 
     addToolbarButton(editor, toolbar, 'importXcos', 'Import Xcos', 'images/export1.png');
-    // addToolbarButton(editor, toolbar, 'exportXML', 'Export XML', 'images/export1.png');
     addToolbarButton(editor, toolbar, 'exportXcos', 'Export Xcos', 'images/export1.png');
     toolbar.appendChild(spacer.cloneNode(true));
 
@@ -2793,23 +2792,7 @@ function showPropertiesWindow(graph, cell, diagRoot) {
             var nodePrevXml = encPrevXml.encode(diagRoot);
             var strPrevXml = mxUtils.getPrettyXml(nodePrevXml);
             strPrevXml = mxUtils.parseXml(strPrevXml);
-            var xslPrevXml = trySomething("finalmodsheet.xsl");
-            function trySomething(x) {
-                if (window.ActiveXObject) {
-                    xhttp = new ActiveXObject("Msxml2.XMLHTTP");
-                } else {
-                    xhttp = new XMLHttpRequest();
-                }
-                xhttp.open("GET", x, false);
-                try {
-                    xhttp.responseType = "msxml-document"
-                } catch (err) {}
-                xhttp.send("");
-                return xhttp.responseXML;
-            }
-            var xsltProcessorPrevXml = new XSLTProcessor();
-            xsltProcessorPrevXml.importStylesheet(xslPrevXml);
-            var resultDocumentPrevXml = xsltProcessorPrevXml.transformToDocument(strPrevXml);
+            var resultDocumentPrevXml = getXsltProcessor().transformToDocument(strPrevXml);
             /*
              * Maverick
              * Using resultDocument.documentElement to remove an additional tag
