@@ -2527,7 +2527,7 @@ function main(container, outline, toolbar, sidebar, status) {
         });
     }
 
-    load_example_content(example_content, filename);
+    load_example_content(example_content, example_filename);
 }
 
 /*
