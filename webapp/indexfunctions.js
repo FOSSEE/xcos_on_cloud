@@ -32,6 +32,33 @@ function httpGetAsync(theUrl, callback) {
     xmlHttp.send(null);
 }
 
+/*
+ * Maverick
+ * This method is used for loading the stylesheet from the file.
+ * Reference: http://www.w3schools.com/xsl/xsl_client.asp
+ */
+
+function loadXMLDoc(filename) {
+    if (window.ActiveXObject) {
+        xhttp = new ActiveXObject("Msxml2.XMLHTTP");
+    } else {
+        xhttp = new XMLHttpRequest();
+    }
+    xhttp.open("GET", filename, false);
+    try {
+        xhttp.responseType = "msxml-document"
+    } catch (err) {}
+    xhttp.send("");
+    return xhttp.responseXML;
+}
+
+function getXsltProcessor() {
+    var xsl = loadXMLDoc("finalmodsheet.xsl");
+    var xsltProcessor = new XSLTProcessor();
+    xsltProcessor.importStylesheet(xsl);
+    return xsltProcessor;
+}
+
 var simulationStarted = false;
 var wnd = null;
 var affichwnd = null;
@@ -1159,7 +1186,6 @@ function main(container, outline, toolbar, sidebar, status) {
     addToolbarButton(editor, toolbar, 'cut', 'Cut', 'images/cut.png');
     addToolbarButton(editor, toolbar, 'copy', 'Copy', 'images/copy.png');
     addToolbarButton(editor, toolbar, 'paste', 'Paste', 'images/paste.png');
-
     toolbar.appendChild(spacer.cloneNode(true));
 
     addToolbarButton(editor, toolbar, 'deleteBlock', 'Delete', 'images/delete2.png');
@@ -1167,30 +1193,8 @@ function main(container, outline, toolbar, sidebar, status) {
     addToolbarButton(editor, toolbar, 'redo', '', 'images/redo.png');
     toolbar.appendChild(spacer.cloneNode(true));
 
-    // addToolbarButton(editor, toolbar, 'show', 'Show', 'images/camera.png');
     addToolbarButton(editor, toolbar, 'print', 'Print Xcos', 'images/printer.png');
-
     toolbar.appendChild(spacer.cloneNode(true));
-
-    /*
-     * Maverick
-     * This method is used for loading the stylesheet from the file.
-     * Reference: http://www.w3schools.com/xsl/xsl_client.asp
-     */
-
-    function loadXMLDoc(filename) {
-        if (window.ActiveXObject) {
-            xhttp = new ActiveXObject("Msxml2.XMLHTTP");
-        } else {
-            xhttp = new XMLHttpRequest();
-        }
-        xhttp.open("GET", filename, false);
-        try {
-            xhttp.responseType = "msxml-document"
-        } catch (err) {}
-        xhttp.send("");
-        return xhttp.responseXML;
-    }
 
     /*
      * Maverick
@@ -1230,11 +1234,7 @@ function main(container, outline, toolbar, sidebar, status) {
         else {
             var xml = mxUtils.parseXml(xmlFromExportXML);
 
-            var xsl = loadXMLDoc("finalmodsheet.xsl");
-
-            xsltProcessor = new XSLTProcessor();
-            xsltProcessor.importStylesheet(xsl);
-            resultDocument = xsltProcessor.transformToDocument(xml);
+            resultDocument = getXsltProcessor().transformToDocument(xml);
             /*
              * Maverick
              * Using resultDocument.documentElement to remove an additional
@@ -1829,7 +1829,6 @@ function main(container, outline, toolbar, sidebar, status) {
     });
 
     addToolbarButton(editor, toolbar, 'importXcos', 'Import Xcos', 'images/export1.png');
-    // addToolbarButton(editor, toolbar, 'exportXML', 'Export XML', 'images/export1.png');
     addToolbarButton(editor, toolbar, 'exportXcos', 'Export Xcos', 'images/export1.png');
     toolbar.appendChild(spacer.cloneNode(true));
 
@@ -2793,23 +2792,7 @@ function showPropertiesWindow(graph, cell, diagRoot) {
             var nodePrevXml = encPrevXml.encode(diagRoot);
             var strPrevXml = mxUtils.getPrettyXml(nodePrevXml);
             strPrevXml = mxUtils.parseXml(strPrevXml);
-            var xslPrevXml = trySomething("finalmodsheet.xsl");
-            function trySomething(x) {
-                if (window.ActiveXObject) {
-                    xhttp = new ActiveXObject("Msxml2.XMLHTTP");
-                } else {
-                    xhttp = new XMLHttpRequest();
-                }
-                xhttp.open("GET", x, false);
-                try {
-                    xhttp.responseType = "msxml-document"
-                } catch (err) {}
-                xhttp.send("");
-                return xhttp.responseXML;
-            }
-            var xsltProcessorPrevXml = new XSLTProcessor();
-            xsltProcessorPrevXml.importStylesheet(xslPrevXml);
-            var resultDocumentPrevXml = xsltProcessorPrevXml.transformToDocument(strPrevXml);
+            var resultDocumentPrevXml = getXsltProcessor().transformToDocument(strPrevXml);
             /*
              * Maverick
              * Using resultDocument.documentElement to remove an additional tag
@@ -3668,16 +3651,21 @@ function addIcons(graph, sidebar) {
     var categories = x.getElementsByTagName('node');
     for (var i = 0, nodeLength = categories.length; i < nodeLength; i++) {
         var categoryName = categories[i].getAttribute('name');
-        var title = document.createElement('h3');
+        var title = document.createElement('div');
         title.setAttribute('class', 'accordion-header ui-accordion-header ui-helper-reset ui-state-default ui-accordion-icons ui-corner-all');
         var span = document.createElement('span');
         span.setAttribute('class', 'ui-accordion-header-icon ui-icon ui-icon-triangle-1-e');
         var titleName = document.createTextNode(categoryName);
         title.appendChild(span);
-        title.appendChild(titleName);
+        var titleStyle = document.createElement('span');
+        titleStyle.setAttribute('style', 'font-size: medium');
+        titleStyle.appendChild(titleName);
+        title.appendChild(titleStyle);
         sidebar.appendChild(title);
-        var newImages = document.createElement('div');
+        previousRow = null;
+        var newImages = document.createElement('table');
         newImages.setAttribute('class', 'ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom');
+        newImages.setAttribute('style', 'border: 0; padding: 8px; border-spacing: 8px');
         var blocks = categories[i].getElementsByTagName('block');
         for (var j = 0, blockLength = blocks.length; j < blockLength; j++) {
             var name = blocks[j].getAttribute('name');
@@ -3742,6 +3730,7 @@ function showModalWindow(graph, title, content, width, height) {
 }
 
 var flag = 0;
+var previousRow = null;
 
 function addSidebarIcon(graph, sidebar, name, image, dimensions) {
     // Function that is executed when the image is dropped on the graph. The
@@ -3862,17 +3851,35 @@ function addSidebarIcon(graph, sidebar, name, image, dimensions) {
         graph.setSelectionCell(v1);
     }
 
-    var para = document.createElement('p');
-    var blockFigure = document.createElement('figure');
+    var blockFigure = document.createElement('td');
+    blockFigure.setAttribute('style', 'vertical-align: bottom');
     var img = document.createElement('img');
     img.setAttribute('src', image);
-    var caption = document.createElement('figcaption');
+    blockFigure.appendChild(img);
+    var br = document.createElement('br');
+    blockFigure.appendChild(br);
+    var caption = document.createElement('span');
+    caption.setAttribute('style', 'font-size: small');
     var blockName = document.createTextNode(name);
     caption.appendChild(blockName);
-    blockFigure.appendChild(img);
     blockFigure.appendChild(caption);
-    para.appendChild(blockFigure);
-    sidebar.appendChild(para);
+
+    if (name.length > 12) {
+        blockFigure.setAttribute('colspan', '2');
+        previousRow = document.createElement('tr');
+        previousRow.appendChild(blockFigure);
+        sidebar.appendChild(previousRow);
+        previousRow = null;
+    } else if (previousRow == null) {
+        blockFigure.setAttribute('width', '50%');
+        previousRow = document.createElement('tr');
+        previousRow.appendChild(blockFigure);
+        sidebar.appendChild(previousRow);
+    } else {
+        blockFigure.setAttribute('width', '50%');
+        previousRow.appendChild(blockFigure);
+        previousRow = null;
+    }
 
     var dragElt = document.createElement('div');
     dragElt.style.border = 'dashed black 1px';
@@ -4402,6 +4409,9 @@ function accordionLoad() {
     headers.click(function() {
         var panel = $(this).next();
         var isOpen = panel.is(':visible');
+        var span = $(this)[0].firstChild;
+        var spanClass = isOpen ? 'ui-accordion-header-icon ui-icon ui-icon-triangle-1-e' :  'ui-accordion-header-icon ui-icon ui-icon-triangle-1-s';
+        span.setAttribute('class', spanClass);
 
         // open or close as necessary
         panel[isOpen ? 'slideUp' : 'slideDown']()
@@ -4415,9 +4425,11 @@ function accordionLoad() {
     // hook up the expand/collapse all
     expandLink.click(function() {
         var isAllOpen = $(this).data('isAllOpen');
+        var spanClass = isAllOpen ? 'ui-accordion-header-icon ui-icon ui-icon-triangle-1-e' :  'ui-accordion-header-icon ui-icon ui-icon-triangle-1-s';
 
         contentAreas[isAllOpen ? 'hide' : 'show']()
             .trigger(isAllOpen ? 'hide' : 'show');
+        headers.each(function(){$(this)[0].firstChild.setAttribute('class', spanClass);});
     });
 
     // when panels open or close, check to see if they're all open
