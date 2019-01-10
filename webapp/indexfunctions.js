@@ -3664,8 +3664,8 @@ function addIcons(graph, sidebar) {
         sidebar.appendChild(title);
         previousRow = null;
         var newImages = document.createElement('table');
-        newImages.setAttribute('border', '0');
         newImages.setAttribute('class', 'ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom');
+        newImages.setAttribute('style', 'border: 0; padding: 8px; border-spacing: 8px');
         var blocks = categories[i].getElementsByTagName('block');
         for (var j = 0, blockLength = blocks.length; j < blockLength; j++) {
             var name = blocks[j].getAttribute('name');
