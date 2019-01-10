@@ -4452,6 +4452,12 @@ function accordionLoad() {
             if (isAllOpen) {
                 expandLink.text('Collapse All')
                     .data('isAllOpen', true);
+            } else {
+                var positionTop = $(this).prev().position().top;
+                if (positionTop != 0) {
+                    var parent = $(this).parent();
+                    parent.scrollTop(parent.scrollTop() + positionTop);
+                }
             }
         },
         // whenever we close a panel, check to see if they're all open
