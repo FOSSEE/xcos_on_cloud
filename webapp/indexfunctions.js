@@ -3663,6 +3663,7 @@ function addIcons(graph, sidebar) {
         title.appendChild(titleStyle);
         sidebar.appendChild(title);
         previousRow = null;
+        previousCell = null;
         var newImages = document.createElement('table');
         newImages.setAttribute('class', 'ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom');
         newImages.setAttribute('style', 'border: 0; padding: 8px; border-spacing: 8px');
@@ -3672,6 +3673,9 @@ function addIcons(graph, sidebar) {
             var icon = blocks[j].getElementsByTagName('icon')[0];
             var iconPath = icon.getAttribute('path');
             addSidebarIcon(graph, newImages, name, iconPath, blockDimensions[name]);
+        }
+        if (previousCell != null) {
+            previousCell.setAttribute('colspan', '2');
         }
         sidebar.appendChild(newImages);
     }
@@ -3731,6 +3735,7 @@ function showModalWindow(graph, title, content, width, height) {
 
 var flag = 0;
 var previousRow = null;
+var previousCell = null;
 
 function addSidebarIcon(graph, sidebar, name, image, dimensions) {
     // Function that is executed when the image is dropped on the graph. The
@@ -3852,7 +3857,7 @@ function addSidebarIcon(graph, sidebar, name, image, dimensions) {
     }
 
     var blockFigure = document.createElement('td');
-    blockFigure.setAttribute('style', 'vertical-align: bottom');
+    blockFigure.setAttribute('style', 'text-align: center; vertical-align: bottom');
     var img = document.createElement('img');
     img.setAttribute('src', image);
     blockFigure.appendChild(img);
@@ -3865,20 +3870,26 @@ function addSidebarIcon(graph, sidebar, name, image, dimensions) {
     blockFigure.appendChild(caption);
 
     if (name.length > 12) {
+        if (previousCell != null) {
+            previousCell.setAttribute('colspan', '2');
+        }
         blockFigure.setAttribute('colspan', '2');
         previousRow = document.createElement('tr');
         previousRow.appendChild(blockFigure);
         sidebar.appendChild(previousRow);
         previousRow = null;
+        previousCell = null;
     } else if (previousRow == null) {
-        blockFigure.setAttribute('width', '50%');
         previousRow = document.createElement('tr');
         previousRow.appendChild(blockFigure);
         sidebar.appendChild(previousRow);
+        previousCell = blockFigure;
     } else {
+        previousCell.setAttribute('width', '50%');
         blockFigure.setAttribute('width', '50%');
         previousRow.appendChild(blockFigure);
         previousRow = null;
+        previousCell = null;
     }
 
     var dragElt = document.createElement('div');
