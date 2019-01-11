@@ -1827,10 +1827,6 @@ function main(container, outline, toolbar, sidebar, status) {
     editor.addAction('processStop', function(editor, cell) {
         stopSimulation();
     });
-    //Temprorary button for display file
-    editor.addAction('showFile', function(editor,cell) { 
-    displayPrerequisiteFile(graph);
-    });
 
     addToolbarButton(editor, toolbar, 'importXcos', 'Import Xcos', 'images/export1.png');
     addToolbarButton(editor, toolbar, 'exportXcos', 'Export Xcos', 'images/export1.png');
@@ -1860,7 +1856,6 @@ function main(container, outline, toolbar, sidebar, status) {
     stopButton = addToolbarButton(editor, toolbar, 'processStop', ' Stop', 'images/process-stop.png');
     stopButton.disabled = true;
     toolbar.appendChild(spacer.cloneNode(true));
-    addToolbarButton(editor, toolbar, 'showFile', 'Edit File', 'images/edit.png');
 
     editor.addAction('simulate', function(editor, cell) {
         // stop previous simulation, if any
