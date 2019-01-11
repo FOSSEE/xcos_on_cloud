@@ -1842,7 +1842,7 @@ function main(container, outline, toolbar, sidebar, status) {
         executePrerequisiteFile();
     });
 
-    editor.addAction('showScript', function(editor, cell) {
+    editor.addAction('stopScript', function(editor, cell) {
         stopPrerequisiteFile();
     });
 
