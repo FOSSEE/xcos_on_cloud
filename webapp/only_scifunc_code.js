@@ -32,7 +32,6 @@ function create_scifunc_popups(graph,cell,name,diagRoot) {
     var browser = showModalWindow(graph,"File Browser",upload,350,180);
 
     cancel_btn.onclick = function() {
-        alert("Choose a .sci file to proceed!");
         browser.destroy();
     }
 
@@ -1146,7 +1145,13 @@ function create_scifunc_popups(graph,cell,name,diagRoot) {
                 var codecPrevXml = new mxCodec(docPrevXml);
                 var rootNode = docPrevXml.documentElement;
                 while (rootNode.nodeName != 'root') {
-                    rootNode = rootNode.firstChild;
+                    if (rootNode.nodeName == 'Array') {
+                        rootNode = rootNode.nextSibling;
+                    } else if (rootNode.nodeName == '#comment') {
+                        rootNode = rootNode.nextSibling;
+                    } else {
+                        rootNode = rootNode.firstChild;
+                    }
                 }
                 var currentNode = rootNode.firstChild;
 
