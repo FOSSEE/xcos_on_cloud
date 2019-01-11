@@ -1254,50 +1254,6 @@ function main(container, outline, toolbar, sidebar, status) {
     function EXPORTxml(editor,cell) {
         displayXMLorXcos(true);
     }
-    
-    //Function to display content of pre file.
-    
-    function displayPrerequisiteFile(){
-     var editorTextArea = null;
-     var resultTextArea = null;
-     if(prerequisite_filename != null && prerequisite_content != null){
-       var file_content = prerequisite_content;
-       var maindiv = document.createElement('div');
-       maindiv.style.width = '100%';
-       maindiv.style.height = '100%';
-       maindiv.style.padding ='10px 10px 10px 10px';
-       maindiv.innerHTML ="<table width = '100%'>"+
-       "<tr align='left'><th>Scilab Code :</th><th>Result :</th></tr>"+
-       "<tr><td><textarea id ='editorTextArea' ></textarea></td>"+
-       "<td><textarea id='resultTextArea'></textarea></td></tr></table>";
-       showModalWindow(graph, 'Prerequisite File', maindiv, 900, 500);
-       editorTextArea = document.getElementById("editorTextArea");
-       resultTextArea = document.getElementById("resultTextArea");
-       editorTextArea.value = file_content;
-     }else{
-       var default_content = "Write a new code...";
-       var maindiv = document.createElement('div');
-       maindiv.style.width = '100%';
-       maindiv.style.height = '100%';
-       maindiv.style.padding ='10px 10px 10px 10px';
-       maindiv.innerHTML ="<table width = '100%'>"+
-       "<tr align='left'><th>Scilab Code</th><th>Result:</th></tr>"+
-       "<tr><td><textarea id ='editorTextArea' ></textarea></td>"+
-       "<td><textarea id='resultTextArea'></textarea></td></tr></table>";
-       showModalWindow(graph, 'Prerequisite File', maindiv, 900, 600); 
-       editorTextArea = document.getElementById("editorTextArea");
-       resultTextArea = document.getElementById("resultTextArea");
-       editorTextArea.value = default_content;
-     }
-        CodeMirror.fromTextArea(editorTextArea, {
-        lineNumbers: true
-        });
-        CodeMirror.fromTextArea(resultTextArea, {
-        lineNumbers: false,
-        readOnly: true
-        });
-    }
-
 
     /*
      * Maverick
@@ -1873,7 +1829,7 @@ function main(container, outline, toolbar, sidebar, status) {
     });
     //Temprorary button for display file
     editor.addAction('showFile', function(editor,cell) { 
-    displayPrerequisiteFile();
+    displayPrerequisiteFile(graph);
     });
 
     addToolbarButton(editor, toolbar, 'importXcos', 'Import Xcos', 'images/export1.png');
