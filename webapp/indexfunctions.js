@@ -62,6 +62,8 @@ function getXsltProcessor() {
 var simulationStarted = false;
 var wnd = null;
 var affichwnd = null;
+var executeScriptButton = null;
+var stopScriptButton = null;
 var simulateButton = null;
 var stopButton = null;
 
@@ -1830,6 +1832,26 @@ function main(container, outline, toolbar, sidebar, status) {
 
     addToolbarButton(editor, toolbar, 'importXcos', 'Import Xcos', 'images/export1.png');
     addToolbarButton(editor, toolbar, 'exportXcos', 'Export Xcos', 'images/export1.png');
+    toolbar.appendChild(spacer.cloneNode(true));
+
+    editor.addAction('showScript', function(editor, cell) {
+        displayPrerequisiteFile(graph);
+    });
+
+    editor.addAction('executeScript', function(editor, cell) {
+        executePrerequisiteFile();
+    });
+
+    editor.addAction('showScript', function(editor, cell) {
+        stopPrerequisiteFile();
+    });
+
+    addToolbarButton(editor, toolbar, 'showScript', 'Show Script', 'images/script.png');
+    executeScriptButton = addToolbarButton(editor, toolbar, 'executeScript', 'Execute Script', 'images/script.png');
+    if (prerequisite_content.length == 0)
+        executeScriptButton.disabled = true;
+    stopScriptButton = addToolbarButton(editor, toolbar, 'stopScript', 'Stop Script', 'images/script.png');
+    stopScriptButton.disabled = true;
     toolbar.appendChild(spacer.cloneNode(true));
 
     simulateButton = addToolbarButton(editor, toolbar, 'simulate', 'Simulate', 'images/ScilabExecute.png');
