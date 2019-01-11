@@ -3,10 +3,11 @@
 .CodeMirror {
   /* Set height, width, borders, and global font properties here */
   font-family: Arial, Helvetica, sans-serif;
-  height: 400px;
-  width: 400px;
+  /*height: 400px;
+  width: 400px;*/
   color: black;
   font-size:16px;
+  top:10px
 }
 
 /* PADDING */
