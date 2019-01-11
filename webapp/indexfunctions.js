@@ -1181,11 +1181,7 @@ function main(container, outline, toolbar, sidebar, status) {
             graph.getModel().endUpdate();
         }
     });
-    
-    //Function will be called onload if Prerequisite File exist
-    
-    //displayPrerequisiteFile(graph);
-    
+
     addToolbarButton(editor, toolbar, 'toggle', 'Expand All', 'images/navigate_plus.png');
     toolbar.appendChild(spacer.cloneNode(true));
 
@@ -2390,7 +2386,7 @@ function main(container, outline, toolbar, sidebar, status) {
                 content.id = "image_display";
                 var img_disp = document.createElement('img');
                 img_disp.id = 'img';
-                img_disp.src = '/res_imgs/img_test' + name + '.jpg';
+                img_disp.src = '/res_imgs/' + name;
                 content.appendChild(img_disp);
                 var wind = showModalWindow(graph, "Output", content, 610, 480);
             }
@@ -2448,6 +2444,8 @@ function main(container, outline, toolbar, sidebar, status) {
                 });
             } else {
                 document.title = 'Xcos';
+                setSimulationFlags(false);
+                stopSimulationWindows();
                 alert("Error");
             }
         };
@@ -2838,7 +2836,13 @@ function showPropertiesWindow(graph, cell, diagRoot) {
             var codecPrevXml = new mxCodec(docPrevXml);
             var rootNode = docPrevXml.documentElement;
             while (rootNode.nodeName != 'root') {
-                rootNode = rootNode.firstChild;
+                if (rootNode.nodeName == 'Array') {
+                    rootNode = rootNode.nextSibling;
+                } else if (rootNode.nodeName == '#comment') {
+                    rootNode = rootNode.nextSibling;
+                } else {
+                    rootNode = rootNode.firstChild;
+                }
             }
             var currentNode = rootNode.firstChild;
 

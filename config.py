@@ -95,3 +95,10 @@ QUERY_PREREQUISITE_FILE_BY_EXAMPLE_ID = (
     "FROM textbook_companion_example_files "
     "WHERE filetype = 'S' AND example_id = %s"
 )
+
+# Following are system command which are not permitted in sci files
+# (Reference scilab-on-cloud project)
+SYSTEM_COMMANDS = (
+    r'unix\(.*\)|unix_g\(.*\)|unix_w\(.*\)|unix_x\(.*\)|unix_s\(.*\)|host'
+    r'|newfun|execstr|ascii|mputl|dir\(\)'
+)
