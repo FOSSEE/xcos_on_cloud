@@ -12,9 +12,7 @@
         showModalWindow(graph, 'Prerequisite File', maindiv, 900, 500);
         var editorTextArea = document.getElementById("editorTextArea");
         var resultTextArea = document.getElementById("resultTextArea");
-        var parser = new DOMParser();
-        var parse_content = parser.parseFromString(file_content, "text/html");
-        editorTextArea.value = parse_content.body.textContent;
+        editorTextArea.value = prerequisite_content;
         
         CodeMirror.fromTextArea(editorTextArea, {
         lineNumbers: true,
