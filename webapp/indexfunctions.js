@@ -1686,6 +1686,11 @@ function main(container, outline, toolbar, sidebar, status) {
             filename = '<!doctype html><body>' + filename + '</body>';
             var dom2 = parser.parseFromString(filename, 'text/html');
             filename = dom2.body.textContent;
+            // For Prerequisite file if exist
+            if(prerequisite_content.length != 0){
+                var parse_content = parser.parseFromString(prerequisite_content, "text/html");
+                prerequisite_content = parse_content.body.textContent;
+            }
         }
         if (/<XcosDiagram .*>.*<\/XcosDiagram>/.test(xmlDocument)) {
             xcosToDiagram(xmlDocument);
