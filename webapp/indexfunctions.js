@@ -1181,7 +1181,11 @@ function main(container, outline, toolbar, sidebar, status) {
             graph.getModel().endUpdate();
         }
     });
-
+    
+    //Function will be called onload if Prerequisite File exist
+    
+    //displayPrerequisiteFile(graph);
+    
     addToolbarButton(editor, toolbar, 'toggle', 'Expand All', 'images/navigate_plus.png');
     toolbar.appendChild(spacer.cloneNode(true));
 
@@ -1690,6 +1694,7 @@ function main(container, outline, toolbar, sidebar, status) {
             if(prerequisite_content.length != 0){
                 var parse_content = parser.parseFromString(prerequisite_content, "text/html");
                 prerequisite_content = parse_content.body.textContent;
+                displayPrerequisiteFile(graph);//onload open prerequisite file
             }
         }
         if (/<XcosDiagram .*>.*<\/XcosDiagram>/.test(xmlDocument)) {
