@@ -346,3 +346,14 @@ div.CodeMirror-dragcursors {
 
 /* Help users use markselection to safely style text background */
 span.CodeMirror-selectedtext { background: none; }
+
+/*Class for maindiv which act as main container for codemirror windows */
+.maindiv {
+  height: 100%;
+  width: 95%;
+  padding: 10px;
+}
+.insidelabel {
+  font-size:18px;
+  font-weight:bold;
+}
