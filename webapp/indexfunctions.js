@@ -1181,7 +1181,11 @@ function main(container, outline, toolbar, sidebar, status) {
             graph.getModel().endUpdate();
         }
     });
-
+    
+    //Function will be called onload if Prerequisite File exist
+    
+    //displayPrerequisiteFile(graph);
+    
     addToolbarButton(editor, toolbar, 'toggle', 'Expand All', 'images/navigate_plus.png');
     toolbar.appendChild(spacer.cloneNode(true));
 
@@ -1254,8 +1258,6 @@ function main(container, outline, toolbar, sidebar, status) {
     function EXPORTxml(editor,cell) {
         displayXMLorXcos(true);
     }
-
-    editor.addAction('exportXML', function(editor,cell) { EXPORTxml(editor, cell) });
 
     /*
      * Maverick
@@ -1688,6 +1690,12 @@ function main(container, outline, toolbar, sidebar, status) {
             filename = '<!doctype html><body>' + filename + '</body>';
             var dom2 = parser.parseFromString(filename, 'text/html');
             filename = dom2.body.textContent;
+            // For Prerequisite file if exist
+            if(prerequisite_content.length != 0){
+                var parse_content = parser.parseFromString(prerequisite_content, "text/html");
+                prerequisite_content = parse_content.body.textContent;
+                displayPrerequisiteFile(graph);//onload open prerequisite file
+            }
         }
         if (/<XcosDiagram .*>.*<\/XcosDiagram>/.test(xmlDocument)) {
             xcosToDiagram(xmlDocument);
@@ -1857,6 +1865,7 @@ function main(container, outline, toolbar, sidebar, status) {
     simulateButton = addToolbarButton(editor, toolbar, 'simulate', 'Simulate', 'images/ScilabExecute.png');
     stopButton = addToolbarButton(editor, toolbar, 'processStop', ' Stop', 'images/process-stop.png');
     stopButton.disabled = true;
+    toolbar.appendChild(spacer.cloneNode(true));
 
     editor.addAction('simulate', function(editor, cell) {
         // stop previous simulation, if any
