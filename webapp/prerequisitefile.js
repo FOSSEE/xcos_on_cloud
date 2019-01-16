@@ -1,49 +1,95 @@
-    //Function to display content of prerequisite file
+//Function to display content of prerequisite file
 
-    function displayPrerequisiteFile(graph){
-
-        var file_content = prerequisite_content;
-        var maindiv = document.createElement('div');
-        maindiv.className = "maindiv";
-        maindiv.innerHTML ="<table width = '100%'>"+
+function displayPrerequisiteFile(graph) {
+    var file_content = prerequisite_content;
+    var maindiv = document.createElement('div');
+    maindiv.className = "maindiv";
+    maindiv.innerHTML ="<table width = '100%'>"+
         "<tr><td><div id ='codediv' style='width:800px; height:350px'><label class='insidelabel'>Scilab Code : </label><textarea id ='editorTextArea' placeholder= 'Write a new code...'></textarea></div></td>"+
         "<td><div id ='resultdiv' style='display:none'><label class='insidelabel'>Result : </label><img src='images/close.gif' style='float:right;' onclick='displayResultforCode(false);' title='Close result window'><textarea id='resultTextArea'></textarea></div></td></tr>"+
         "<tr><td style ='padding-top:60px'><button id='executePrerequisite' onclick='displayResultforCode(true);' title='Start execution'>Execute</button><button id='executePrerequisite' style='margin-left:60px' onclick='displayResultforCode(false);' title='Stop execution'>Stop</button></td></tr></table>";
-        showModalWindow(graph, 'Prerequisite File', maindiv, 900, 500);
-        var editorTextArea = document.getElementById("editorTextArea");
-        var resultTextArea = document.getElementById("resultTextArea");
-        editorTextArea.value = prerequisite_content;
-        
-        CodeMirror.fromTextArea(editorTextArea, {
+    showModalWindow(graph, 'Prerequisite File', maindiv, 900, 500);
+    var editorTextArea = document.getElementById("editorTextArea");
+    var resultTextArea = document.getElementById("resultTextArea");
+    editorTextArea.value = prerequisite_content;
+
+    CodeMirror.fromTextArea(editorTextArea, {
         lineNumbers: true,
         lineWrapping : false,
         matchBrackets: true
-        });
-        
-        CodeMirror.fromTextArea(resultTextArea, {
+    });
+
+    CodeMirror.fromTextArea(resultTextArea, {
         lineNumbers: false,
         lineWrapping : false,
         readOnly: true
-        });
+    });
+}
 
+//Function to display/hide result window of scilab code
+function displayResultforCode(visible_flag) {
+
+    var codediv = document.getElementById("codediv");
+    var resultdiv = document.getElementById("resultdiv");
+    if (visible_flag) {
+        codediv.style.width="420px";
+        codediv.style.height="350px";
+        resultdiv.style.display = "block";
+        resultdiv.style.width="410px";
+        resultdiv.style.height="350px";
+    } else {
+        codediv.style.width="800px";
+        codediv.style.height="350px";
+        resultdiv.style.display = "none";
     }
-    
-    //Function to display/hide result window of scilab code
-    function displayResultforCode(visible_flag){
 
-        var codediv = document.getElementById("codediv");
-        var resultdiv = document.getElementById("resultdiv");
-        if(visible_flag){
-            codediv.style.width="420px"; 
-            codediv.style.height="350px";
-            resultdiv.style.display = "block";
-            resultdiv.style.width="410px"; 
-            resultdiv.style.height="350px";
-        }else{
-            codediv.style.width="800px"; 
-            codediv.style.height="350px";
-            resultdiv.style.display = "none";
+}
+
+function executePrerequisiteFile() {
+    executeScriptButton.disabled = true;
+    stopScriptButton.disabled = false;
+
+    var blob = new Blob([prerequisite_content], {
+        type: 'application/x-scilab'
+    });
+    var formData = new FormData();
+    formData.set('file', blob);
+    $.ajax({
+        type: "POST",
+        url: "/uploadscript",
+        async: true,
+        processData: false,
+        contentType: false,
+        data: formData,
+        dataType: "json",
+        success: function(rv) {
+            var msg = rv.msg;
+            if (msg != '') {
+                alert("Error while executing script:\n" + msg);
+            }
+            var id = rv.script_id;
+            if (id !== null) {
+                script_id = id;
+            }
+            var output = rv.output;
+            if (output !== null) {
+                /* TODO: save the output here */
+                /* TODO: if code window is open, show the output window */
+            }
+            executeScriptButton.disabled = false;
+            stopScriptButton.disabled = true;
+        },
+        error: function(xhr, textStatus, errorThrown) {
+            var msg = "Error while executing script:\n";
+            if (textStatus != null) {
+                msg += textStatus + "\n";
+            }
+            if (errorThrown != null) {
+                msg += errorThrown + "\n";
+            }
+            alert(msg);
+            executeScriptButton.disabled = false;
+            stopScriptButton.disabled = true;
         }
-
-    }
-
+    });
+}
