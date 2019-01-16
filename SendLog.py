@@ -66,6 +66,8 @@ flask_session.Session(app)
 UPLOAD_FOLDER = 'uploads'  # to store xcos file
 VALUES_FOLDER = 'values'  # to store files related to tkscale block
 # to store uploaded sci files for sci-func block
+SCRIPT_FILES_FOLDER = 'script_files'
+# to store uploaded sci files for sci-func block
 SCIFUNC_FILES_FOLDER = 'scifunc_files'
 
 # Delay time to look for new line (in s)
@@ -135,6 +137,24 @@ class Diagram:
                 self.log_name, self.tkbool, self.figure_list)
 
 
+class Script:
+    script_id = None
+    sessiondir = None
+    filename = None
+    status = 0
+    proc = None
+    workspace_filename = None
+
+    def __str__(self):
+        return (
+            "{ script_id: %s, filename: %s, status: %d, "
+            "script_pid: %s, "
+            "workspace_filename: %s }") % (
+                self.script_id, self.filename, self.status,
+                self.proc.pid if self.proc is not None else None,
+                self.workspace_filename)
+
+
 class SciFile:
     '''Variables used in sci-func block'''
     filename = ''
@@ -145,6 +165,7 @@ class SciFile:
 class UserData:
     sessiondir = None
     diagrams = None
+    scripts = None
     scifile = None
     diagramlock = None
 
@@ -152,6 +173,7 @@ class UserData:
         self.sessiondir = mkdtemp(
             prefix=datetime.now().strftime('%Y%m%d.'), dir=SESSIONDIR)
         self.diagrams = []
+        self.scripts = []
         self.scifile = SciFile()
         self.diagramlock = RLock()
 
@@ -195,9 +217,10 @@ def init_session():
     makedirs(sessiondir, 'session')
     makedirs(join(sessiondir, UPLOAD_FOLDER), 'upload')
     makedirs(join(sessiondir, VALUES_FOLDER), 'values')
+    makedirs(join(sessiondir, SCRIPT_FILES_FOLDER), 'script files')
     makedirs(join(sessiondir, SCIFUNC_FILES_FOLDER), 'scifunc files')
 
-    return (ud.diagrams, ud.scifile, sessiondir, ud.diagramlock)
+    return (ud.diagrams, ud.scripts, ud.scifile, sessiondir, ud.diagramlock)
 
 
 def get_diagram(xcos_file_id, remove=False):
@@ -206,7 +229,7 @@ def get_diagram(xcos_file_id, remove=False):
         return (None, None)
     xcos_file_id = int(xcos_file_id)
 
-    (diagrams, scifile, __, __) = init_session()
+    (diagrams, __, scifile, __, __) = init_session()
 
     if xcos_file_id < 0 or xcos_file_id >= len(diagrams):
         print("id", xcos_file_id, "not in diagrams")
@@ -221,7 +244,7 @@ def get_diagram(xcos_file_id, remove=False):
 
 
 def add_diagram():
-    (diagrams, scifile, sessiondir, diagramlock) = init_session()
+    (diagrams, scripts, scifile, sessiondir, diagramlock) = init_session()
 
     diagramlock.acquire()
     diagram = Diagram()
@@ -230,7 +253,7 @@ def add_diagram():
     diagrams.append(diagram)
     diagramlock.release()
 
-    return (diagram, scifile, sessiondir)
+    return (diagram, scripts, scifile, sessiondir)
 
 
 def parse_line(line):
@@ -354,13 +377,79 @@ def is_unsafe_script(filename):
     return msg
 
 
+@app.route('/uploadscript', methods=['POST'])
+def uploadscript():
+    '''
+    Below route is called for uploading script file.
+    '''
+    (__, scripts, __, sessiondir, diagramlock) = init_session()
+
+    file = request.files['file']
+    if not file:
+        msg = "Upload Error"
+        return msg
+
+    diagramlock.acquire()
+    script = Script()
+    script.script_id = str(len(scripts))
+    script.sessiondir = sessiondir
+    scripts.append(script)
+    diagramlock.release()
+
+    fname = join(sessiondir, SCRIPT_FILES_FOLDER,
+                 script.script_id + '_script.sce')
+    file.save(fname)
+    script.filename = fname
+
+    if is_unsafe_script(fname):
+        msg = ("System calls are not allowed in script.\n"
+               "Please edit the script again.")
+        script.status = -1
+        return msg
+
+    wfname = join(sessiondir, SCRIPT_FILES_FOLDER,
+                  script.script_id + '_script_workspace.dat')
+    script.workspace_filename = wfname
+    command = "exec('" + fname + "');save('" + wfname + "');"
+
+    try:
+        proc = run_scilab(command)
+    except FileNotFoundError:
+        msg = "scilab not found. Follow the installation instructions"
+        script.status = -2
+        return msg
+    script.proc = proc
+
+    try:
+        # output from scilab terminal is saved for checking error msg
+        out = proc.communicate(timeout=30)[0]
+
+        # if error is encountered while execution of script file, then error
+        # message is returned to the user
+        if '!--error' in out:
+            error_index = out.index('!')
+            msg = out[error_index:-9]
+            script.status = -3
+            return msg
+
+        print('workspace for', script.script_id, 'saved in', wfname)
+        script.status = 0
+        return script.script_id
+    except subprocess.TimeoutExpired:
+        if not kill_scilab_with(proc, signal.SIGTERM):
+            kill_scilab_with(proc, signal.SIGKILL)
+        msg = 'Timeout'
+        script.status = -4
+        return msg
+
+
 @app.route('/uploadsci', methods=['POST'])
 def uploadsci():
     '''
     Below route is called for uploading sci file which is required in sci-func
     block (called in Javscript only_scifunc_code.js)
     '''
-    (__, scifile, sessiondir, __) = init_session()
+    (__, __, scifile, sessiondir, __) = init_session()
 
     file = request.files['file']  # to get uploaded file
     if file and request.method == 'POST':
@@ -420,7 +509,7 @@ def sendfile():
     if sci file is uploaded for sci-func block diagram imported directly using
     import (will confirm again)
     '''
-    (__, scifile, __, __) = init_session()
+    (__, __, scifile, __, __) = init_session()
 
     if scifile.flag_sci:
         scifile.file_image = ('img_test%s.jpg' %
@@ -594,7 +683,7 @@ def start_scilab():
     # Start sending log to chart function for creating chart
     try:
         # For processes taking less than 10 seconds
-        scilab_out, scilab_err = diagram.scilab_proc.communicate(timeout=4)
+        scilab_out = diagram.scilab_proc.communicate(timeout=4)[0]
         scilab_out = re.sub(r'^[ !\\-]*\n', r'',
                             scilab_out, flags=re.MULTILINE)
         print("=== Begin output from scilab console ===")
@@ -743,7 +832,7 @@ def upload():
     # Check if the file is not null
     if file:
         # Make the filename safe, remove unsupported chars
-        (diagram, scifile, sessiondir) = add_diagram()
+        (diagram, scripts, scifile, sessiondir) = add_diagram()
         # Save the file in xml extension and using it for further modification
         # by using xml parser
         temp_file_xml_name = diagram.diagram_id + ".xml"
@@ -1461,7 +1550,7 @@ def run_scilab_func_request():
     except FileNotFoundError:
         return "scilab not found. Follow the installation instructions"
 
-    scilab_out, scilab_err = diagram.scilab_proc.communicate()
+    diagram.scilab_proc.communicate()
 
     file_name = "cont_frm_value.txt"
     with open(file_name) as f:
