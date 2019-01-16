@@ -256,6 +256,39 @@ def add_diagram():
     return (diagram, scripts, scifile, sessiondir)
 
 
+def get_script(script_id, remove=False):
+    if len(script_id) == 0:
+        print("no id")
+        return (None, None)
+    script_id = int(script_id)
+
+    (__, scripts, __, __, __) = init_session()
+
+    if script_id < 0 or script_id >= len(scripts):
+        print("id", script_id, "not in scripts")
+        return None
+
+    script = scripts[script_id]
+
+    if remove:
+        scripts[script_id] = Script()
+
+    return script
+
+
+def add_script():
+    (__, scripts, __, sessiondir, diagramlock) = init_session()
+
+    diagramlock.acquire()
+    script = Script()
+    script.script_id = str(len(scripts))
+    script.sessiondir = sessiondir
+    scripts.append(script)
+    diagramlock.release()
+
+    return (script, sessiondir)
+
+
 def parse_line(line):
     '''
     Function to parse the line
@@ -382,20 +415,13 @@ def uploadscript():
     '''
     Below route is called for uploading script file.
     '''
-    (__, scripts, __, sessiondir, diagramlock) = init_session()
+    (script, sessiondir) = add_script()
 
     file = request.files['file']
     if not file:
         msg = "Upload Error"
         rv = {'msg': msg}
         return Response(json.dumps(rv), mimetype='application/json')
-
-    diagramlock.acquire()
-    script = Script()
-    script.script_id = str(len(scripts))
-    script.sessiondir = sessiondir
-    scripts.append(script)
-    diagramlock.release()
 
     fname = join(sessiondir, SCRIPT_FILES_FOLDER,
                  script.script_id + '_script.sce')
@@ -443,12 +469,42 @@ def uploadscript():
               'msg': msg, 'output': output, 'returncode': proc.returncode}
         return Response(json.dumps(rv), mimetype='application/json')
     except subprocess.TimeoutExpired:
-        if not kill_scilab_with(proc, signal.SIGTERM):
-            kill_scilab_with(proc, signal.SIGKILL)
+        kill_script(script)
         msg = 'Timeout'
         script.status = -4
         rv = {'status': script.status, 'msg': msg}
         return Response(json.dumps(rv), mimetype='application/json')
+
+
+@app.route('/stopscript', methods=['POST'])
+def kill_script(script=None):
+    '''Below route is called for stopping a running script file.'''
+    if script is None:
+        script = get_script(get_request_id('script_id'), True)
+
+    if script is None:
+        print('no script')
+        return
+    print('kill_script: script=', script.__dict__)
+
+    if script.filename is None:
+        print('empty script')
+    else:
+        remove(script.filename)
+        script.filename = None
+
+    if script.proc is None:
+        print('no scilab proc')
+    else:
+        if not kill_scilab_with(script.proc, signal.SIGTERM):
+            kill_scilab_with(script.proc, signal.SIGKILL)
+        script.proc = None
+
+    if script.workspace_filename is None:
+        print('empty workspace')
+    else:
+        remove(script.workspace_filename)
+        script.workspace_filename = None
 
 
 @app.route('/uploadsci', methods=['POST'])
