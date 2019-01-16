@@ -4,6 +4,13 @@ function EXPRESSION () {
         this.in = [[1], [1]];
         this.out = 1;
         this.txt = "(u1>0)*sin(u2)^2";
+        /*
+        call for scilab function
+        
+        deff("%foo(u1,u2)",txt)
+        [%ok1,ipar,rpar,nz]=compile_expr(%foo)
+        
+        */
         var model = scicos_model();
         model.sim = list(new ScilabString(["evaluate_expr"]), new ScilabDouble([4]));
         model.in = new ScilabDouble([this.in]);
@@ -22,15 +29,67 @@ function EXPRESSION () {
     }
     EXPRESSION.prototype.set = function EXPRESSION() {
         this.in = parseFloat((arguments[0]["in"]))
-
-
+        this.exx = arguments[0]["exx"]
+        this.usenz = parseFloat((arguments[0]["usenz"]))
+        
+        if(this.exx.length == 0){
+            this.exx = "0";
+        }
+        
+        if(this.in == 1){
+            this.nini = 8;
+        }else{
+            this.nini = this.in;
+        }
+        
+        this.head="%foo(";
+        for(var i = 1; i <= this.nini-1; i++){
+        
+            this.head=this.head+"u"+i.toString()+",";
+            
+        }
+        this.head=this.head+"u"+this.nini.toString()+")";
+        var ok = null;
+        /*
+        need to put in other 
+         ok=execstr("deff(%head,%exx)","errcatch")==0
+        */
+        if(!ok){
+            alert("Erroneous expression "+output);
+        }else{
+            if(this.in>1){
+                //[model,graphics,ok]=check_io(model,graphics,ones(1,%nin),1,[],...[])
+            }else{
+                //[model,graphics,ok]=check_io(model,graphics,-1,1,[],...[])
+            }
+            if(ok){
+               // [ok,%ok1,ipar,rpar,%nz]=compiler_expression(%foo) need to put other code
+               if(!ok){
+                    alert("Erroneous expression"+output);
+               }else{
+                    if(ok1){
+                        this.x.model.rpar=rpar;
+                        this.x.model.ipar=ipar;
+                        if(this.usenz){
+                            this.x.model.nzcross=nz;
+                            this.x.model.nmode=nz;
+                        }else{
+                            this.x.model.nzcross=0;
+                            this.x.model.nmode=0;
+                        }
+                        this.x.graphics.exprs=exprs;
+                    }
+               }
+            }
+        }
+        
 
 
     }
     EXPRESSION.prototype.get = function EXPRESSION() {
          var options={
             in:["number of inputs",this.in],
-            exx:["scilab expression",this.exx],
+            exx:["scilab expression",this.exx.toString()],
             usenz:["use zero-crossing (0: no, 1 yes)",this.usenz],
         }
         return options
