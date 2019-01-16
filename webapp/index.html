@@ -1,141 +1,127 @@
 <html>
-    <head>
-        <meta content="text/html;charset=utf-8" http-equiv="Content-Type"/>
-        <meta content="utf-8" http-equiv="encoding"/>
-        <title>
-            Xcos
-        </title>
-        <!-- Loads and initializes the library -->
-        <script src="jquery/jquery-1.8.2.js" type="text/javascript"></script>
-        <script src="mxClient.min.js" type="text/javascript"></script>
-        <script src="jquery/farbtastic.js" type="text/javascript"></script>
-        <link href="jquery/farbtastic.css" rel="stylesheet" type="text/css"/>
-        <link href="jquery/jquery-ui.css" rel="stylesheet"/>
-        <script src="math.js" type="text/javascript"></script>
-        <script src="complex.min.js" type="text/javascript"></script>
-        <script src="indexfunctions.js" type="text/javascript"></script>
-        <script src="dependencies.js" type="text/javascript"></script>
-        <script src="details.js" type="text/javascript"></script>
-        <script src="setup.js" type="text/javascript"></script>
-        <script src="combined.js" type="text/javascript"></script>
-        <script src="orientation.js" type="text/javascript"></script>
-        <script src="only_scifunc_code.js" type="text/javascript"></script>
-        <script src="importparameters.js" type="text/javascript"></script>
-        <script src="LOOKUP_CURV.js" type="text/javascript"></script>
-        <script type="text/javascript" src="prerequisitefile.js" ></script>
-        <script type="text/javascript" src="highcharts/highcharts.js"></script> <!-- Used for producing 2d-highcharts -->
-        <script type="text/javascript" src="highcharts/highcharts-3d.js"></script> <!-- Used for producing 3d-highcharts in output if required --> 
-        <script type="text/javascript" src="highcharts/exporting.js"></script> <!-- Used for the exporting feature of highcharts -->
-        <script type="text/javascript" src="highcharts/draggable-points.js"></script><!-- Used for dragging graph points -->
-        <script src="Queue.js" type="text/javascript"></script>
-        <script src="chart.js" type="text/javascript"></script>
-        <!--Libraries related to Editor for prerequisite file -->
-        <script type="text/javascript" src="codemirror/lib/codemirror.js"></script>
-        <script type="text/javascript" src="codemirror/mode/javascript/javascript.js"></script>
-        <link href="codemirror/lib/codemirror.css" rel="stylesheet" type="text/css"/>
-        <script type="text/javascript" src="codemirror/display/placeholder.js"></script>
-        <!--End of importing libraries for Editor -->
-        <script type="text/javascript">
+  <head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <meta content="utf-8" http-equiv="encoding" />
+    <title>Xcos</title>
 
-        var example_content = "{{ example_content }}";
-        var example_filename = "{{ example_filename }}";
-        var prerequisite_content = "{{ prerequisite_content }}";
-        var prerequisite_filename = "{{ prerequisite_filename }}";
-         var editor ;
-         var listofAffichCell = [];
-         var winArr = new Array();
+    <script src="jquery/jquery-1.8.2.js" type="text/javascript"></script>
+    <script src="mxClient.min.js" type="text/javascript"></script>
+    <script src="jquery/farbtastic.js" type="text/javascript"></script>
+    <link href="jquery/farbtastic.css" rel="stylesheet" type="text/css" />
+    <link href="jquery/jquery-ui.css" rel="stylesheet" type="text/css" />
+    <script src="math.js" type="text/javascript"></script>
+    <script src="complex.min.js" type="text/javascript"></script>
+    <script src="indexfunctions.js" type="text/javascript"></script>
+    <script src="dependencies.js" type="text/javascript"></script>
+    <script src="details.js" type="text/javascript"></script>
+    <script src="setup.js" type="text/javascript"></script>
+    <script src="combined.js" type="text/javascript"></script>
+    <script src="orientation.js" type="text/javascript"></script>
+    <script src="only_scifunc_code.js" type="text/javascript"></script>
+    <script src="importparameters.js" type="text/javascript"></script>
+    <script src="LOOKUP_CURV.js" type="text/javascript"></script>
+    <script src="prerequisitefile.js" type="text/javascript"></script>
+    <script src="highcharts/highcharts.js" type="text/javascript"></script>
+    <script src="highcharts/highcharts-3d.js" type="text/javascript"></script>
+    <script src="highcharts/exporting.js" type="text/javascript"></script>
+    <script src="highcharts/draggable-points.js" type="text/javascript"></script>
+    <script src="Queue.js" type="text/javascript"></script>
+    <script src="chart.js" type="text/javascript"></script>
+    <script src="codemirror/lib/codemirror.js" type="text/javascript"></script>
+    <script src="codemirror/mode/javascript/javascript.js" type="text/javascript"></script>
+    <link href="codemirror/lib/codemirror.css" rel="stylesheet" type="text/css" />
+    <script src="codemirror/display/placeholder.js" type="text/javascript"></script>
 
-         /*
-            referenceModelProp is an array of objects used for saving ids and names of all nodes present in the xml (once properties window is opened) so that
-            when set function is called this array can be used for comparison for setting up link nodes and connecting wires
-         */
-         var referenceModelProps = [];
-         var modelNextId;             // Stores ID of next Key    
+    <script type="text/javascript">
+var example_content = "{{ example_content }}";
+var example_filename = "{{ example_filename }}";
+var prerequisite_content = "{{ prerequisite_content }}";
+var prerequisite_filename = "{{ prerequisite_filename }}";
+var editor;
+var listofAffichCell = [];
+var winArr = new Array();
 
-         window.onbeforeunload = checkOnBeforeUnload;
-              // Stores edgeState for every recently created edge in updateFixedTerminalPoint() function  
-                var edgeState = {};
-         var xmlCode;  			// we store the xml code obtained after pressing simulate button
-         var valueArr = new Array();	// stores the updated values of each tk block
-         var tkclk = new Array();	// stores the clock (Period) parameter value of individual tkscale 
-         
-         for(var i=0;i<10;i++)    	// initialising to zero
-         	tkclk[i]=0;
-         
-      </script>
-   </head>
-   <!-- Creating p'id for each tkblock -->
-   <!-- tkchange will call GetcurVal() if any one of the slider value is updated -->
-   <p hidden id="tkchange"></p>
-   <p hidden id="tk1"></p>
-   <p hidden id="tk2"></p>
-   <p hidden id="tk3"></p>
-   <p hidden id="tk4"></p>
-   <p hidden id="tk5"></p>
-   <p hidden id="tk6"></p>
-   <p hidden id="tk7"></p>
-   <p hidden id="tk8"></p>
-   <p hidden id="tk9"></p>
-   <p hidden id="tk10"></p>
-   <!-- Page passes the container for the graph to the program -->
-   <body onload="main(document.getElementById('graphContainer'),
+/*
+ * referenceModelProp is an array of objects used for saving ids and names of
+ * all nodes present in the xml (once properties window is opened) so that when
+ * set function is called this array can be used for comparison for setting up
+ * link nodes and connecting wires
+ */
+var referenceModelProps = [];
+var modelNextId; // Stores ID of next Key
+
+window.onbeforeunload = checkOnBeforeUnload;
+// Stores edgeState for every recently created edge in
+// updateFixedTerminalPoint() function
+var edgeState = {};
+var xmlCode; // we store the xml code obtained after pressing simulate button
+var valueArr = new Array(); // stores the updated values of each tk block
+// stores the clock (Period) parameter value of individual tkscale
+var tkclk = new Array();
+
+for (var i=0; i<10; i++) // initialising to zero
+  tkclk[i]=0;
+    </script>
+  </head>
+  <!-- Creating p'id for each tkblock. tkchange will call GetcurVal() if -->
+  <!-- any one of the slider value is updated -->
+  <p hidden id="tkchange"></p>
+  <p hidden id="tk1"></p>
+  <p hidden id="tk2"></p>
+  <p hidden id="tk3"></p>
+  <p hidden id="tk4"></p>
+  <p hidden id="tk5"></p>
+  <p hidden id="tk6"></p>
+  <p hidden id="tk7"></p>
+  <p hidden id="tk8"></p>
+  <p hidden id="tk9"></p>
+  <p hidden id="tk10"></p>
+  <!-- Page passes the container for the graph to the program -->
+  <body onload="main(document.getElementById('graphContainer'),
       document.getElementById('outlineContainer'),
       document.getElementById('toolbarContainer'),
       document.getElementById('sidebarContainer'),
       document.getElementById('statusContainer'));" style="margin:0px;">
-      <!-- Creates a container for the splash screen -->
-      <div id="splash" style="position:absolute;top:0px;left:0px;width:100%;height:100%;background:white;z-index:1;">
-         <center id="splash" style="padding-top:230px;">
-            <img src="images/loading.gif"/>
-         </center>
+    <!-- Creates a container for the splash screen -->
+    <div id="splash" style="position:absolute;top:0px;left:0px;width:100%;height:100%;background:white;z-index:1;">
+      <center id="splash" style="padding-top:230px;">
+        <img src="images/loading.gif" />
+      </center>
+    </div>
+    <!-- Creates a container for the toolbox -->
+    <div id="toolbarContainer" style="position:absolute;white-space:nowrap;overflow:hidden;top:0px;left:0px;max-height:24px;height:36px;right:0px;padding:6px;background-image:url('images/toolbar_bg.gif');"></div>
+    <!-- Creates a container for the sidebar -->
+    <div class="ui-accordion ui-widget ui-helper-reset" id="sidebarContainer" style="position:absolute;overflow:scroll;top:36px;left:0px;bottom:36px;max-width:266px;width:270px;padding-top:10px;padding-left:4px;"></div>
+    <!-- Creates a container for the graph -->
+    <div id="graphContainer" style="position:absolute;overflow:hidden;top:36px;left:270px;bottom:36px;right:0px;background-image:url('images/grid.gif');cursor:default;"></div>
+    <!-- Creates a container for the outline -->
+    <div id="outlineContainer" style="position:absolute;overflow:hidden;top:36px;right:0px;width:200px;height:140px;background:transparent;border-style:solid;border-color:black;"></div>
+    <!-- Creates a container for the status bar -->
+    <div id="statusContainer" style="text-align:right;position:absolute;overflow:hidden;bottom:0px;left:0px;max-height:24px;height:36px;right:0px;color:white;padding:6px;background-image:url('images/toolbar_bg.gif');">
+      <div style="font-size:10pt;float:left;">
+        <a href="http://fossee.in/" target="_tab">FOSSEE</a>
       </div>
-      <!-- Creates a container for the sidebar -->
-      <div id="toolbarContainer" style="position:absolute;white-space:nowrap;overflow:hidden;top:0px;left:0px;max-height:24px;height:36px;right:0px;padding:6px;background-image:url('images/toolbar_bg.gif');"></div>
-      <!-- Creates a container for the toolbox -->
-      <div class="ui-accordion ui-widget ui-helper-reset" id="sidebarContainer" style="position:absolute;overflow:scroll;top:36px;left:0px;bottom:36px;max-width:266px;width:270px;padding-top:10px;padding-left:4px;"></div>
-      <!-- Creates a container for the graph -->
-      <div id="graphContainer" style="position:absolute;overflow:hidden;top:36px;left:270px;bottom:36px;right:0px;background-image:url('images/grid.gif');cursor:default;"></div>
-      <!-- Creates a container for the outline -->
-      <div id="outlineContainer" style="position:absolute;overflow:hidden;top:36px;right:0px;width:200px;height:140px;background:transparent;border-style:solid;border-color:black;"></div>
-      <!-- Creates a container for the sidebar -->
-      <div id="statusContainer" style="text-align:right;position:absolute;overflow:hidden;bottom:0px;left:0px;max-height:24px;height:36px;right:0px;color:white;padding:6px;background-image:url('images/toolbar_bg.gif');">
-         <div style="font-size:10pt;float:left;">
-            <a href="http://fossee.in/" target="_tab">
-            FOSSEE
-            </a>
-         </div>
-      </div>
-      <!-- Secret -->
-      <p class="accordion-expand-holder" style="display:none">
-         <a class="accordion-expand-all" id="toggleBlocks">
-         Expand All
-         </a>
-      </p>
-   </body>
-   <!-- It's good if this part happens after the entire page has loaded-->
-   <script type="text/javascript">
-      // Preload all images
-        var directory = ["/blocks/", "/images/", "/palettes/"];
-        for (folder in directory) {
-            $.ajax({
-                type: "POST",
-      
-                // Invoke filenames.php
-                url: "filenames.php",
-      
-                // Receive the resultant filenames from the php script in JSON format
-                dataType: "json",
-      
-                // Add url for the required folder
-                data: {
-                    url: directory[folder]
-                },
-                success: preload
-            });
-        }
-      
-        $(window).load(accordionLoad);
-   </script>
+    </div>
+    <!-- Secret -->
+    <p class="accordion-expand-holder" style="display:none">
+      <a class="accordion-expand-all" id="toggleBlocks">Expand All</a>
+    </p>
+  </body>
+  <!-- It's good if this part happens after the entire page has loaded-->
+  <script type="text/javascript">
+// Preload all images
+var directory = ["/blocks/", "/images/", "/palettes/"];
+for (folder in directory) {
+  $.ajax({
+    type: "POST",
+    url: "filenames.php", // Invoke filenames.php
+    // Receive the resultant filenames from the php script in JSON format
+    dataType: "json",
+    data: { url: directory[folder] }, // Add url for the required folder
+    success: preload
+  });
+}
+
+$(window).load(accordionLoad);
+  </script>
 </html>
-
-
