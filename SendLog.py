@@ -66,6 +66,8 @@ flask_session.Session(app)
 UPLOAD_FOLDER = 'uploads'  # to store xcos file
 VALUES_FOLDER = 'values'  # to store files related to tkscale block
 # to store uploaded sci files for sci-func block
+SCRIPT_FILES_FOLDER = 'script_files'
+# to store uploaded sci files for sci-func block
 SCIFUNC_FILES_FOLDER = 'scifunc_files'
 
 # Delay time to look for new line (in s)
@@ -98,10 +100,19 @@ SCILAB_START = (
     "disp(msg),endfunction;loadXcosLibs();")
 SCILAB_END = "mode(2);quit();"
 
-RUNTIME = {}
+USER_DATA = {}
 
 
-class Runtime:
+class Diagram:
+    diagram_id = None
+    # session dir
+    sessiondir = None
+    # store uploaded filename
+    xcos_file_name = None
+    # type of uploaded file
+    workspace_counter = 0
+    # tk count
+    tk_count = 0
     scilab_proc = None
     # store log name
     log_name = None
@@ -126,60 +137,51 @@ class Runtime:
                 self.log_name, self.tkbool, self.figure_list)
 
 
-class Diagram:
-    diagram_id = None
-    # session dir
+class Script:
+    script_id = None
     sessiondir = None
-    # store uploaded filename
-    xcos_file_name = None
-    # type of uploaded file
-    workspace_counter = 0
-    # tk count
-    tk_count = 0
-    # link to runtime
-    uid = None
+    filename = None
+    status = 0
+    proc = None
+    workspace_filename = None
 
-    def toDict(self):
-        return self.__dict__
-
-    def fromDict(self, d):
-        if 'diagram_id' in d:
-            self.diagram_id = d['diagram_id']
-        if 'sessiondir' in d:
-            self.sessiondir = d['sessiondir']
-        if 'xcos_file_name' in d:
-            self.xcos_file_name = d['xcos_file_name']
-        if 'workspace_counter' in d:
-            self.workspace_counter = d['workspace_counter']
-        if 'tk_count' in d:
-            self.tk_count = d['tk_count']
-        if 'uid' in d:
-            self.uid = d['uid']
-        else:
-            self.uid = str(uuid.uuid1())
+    def __str__(self):
+        return (
+            "{ script_id: %s, filename: %s, status: %d, "
+            "script_pid: %s, "
+            "workspace_filename: %s }") % (
+                self.script_id, self.filename, self.status,
+                self.proc.pid if self.proc is not None else None,
+                self.workspace_filename)
 
 
 class SciFile:
-    # Variables used in sci-func block
+    '''Variables used in sci-func block'''
     filename = ''
     file_image = ''
     flag_sci = False
 
-    def toDict(self):
-        return self.__dict__
 
-    def fromDict(self, d):
-        if 'filename' in d:
-            self.filename = d['filename']
-        if 'file_image' in d:
-            self.file_image = d['file_image']
-        if 'flag_sci' in d:
-            self.flag_sci = d['flag_sci']
+class UserData:
+    sessiondir = None
+    diagrams = None
+    scripts = None
+    scifile = None
+    diagramlock = None
 
-# Class to store the line and its state (Used in reading data from log file)
+    def __init__(self):
+        self.sessiondir = mkdtemp(
+            prefix=datetime.now().strftime('%Y%m%d.'), dir=SESSIONDIR)
+        self.diagrams = []
+        self.scripts = []
+        self.scifile = SciFile()
+        self.diagramlock = RLock()
 
 
 class line_and_state:
+    '''
+    Class to store the line and its state (Used in reading data from log file)
+    '''
     line = None  # initial line to none(Nothing is present)
     state = NOLINE  # initial state to NOLINE ie
 
@@ -200,29 +202,25 @@ class line_and_state:
 
 
 def init_session():
-    if 'sessiondir' not in session:
-        session['sessiondir'] = mkdtemp(
-            prefix=datetime.now().strftime('%Y%m%d.'), dir=SESSIONDIR)
+    if 'uid' not in session:
+        session['uid'] = str(uuid.uuid1())
 
-    sessiondir = session['sessiondir']
+    uid = session['uid']
+
+    if uid not in USER_DATA:
+        USER_DATA[uid] = UserData()
+
+    ud = USER_DATA[uid]
+
+    sessiondir = ud.sessiondir
 
     makedirs(sessiondir, 'session')
     makedirs(join(sessiondir, UPLOAD_FOLDER), 'upload')
     makedirs(join(sessiondir, VALUES_FOLDER), 'values')
+    makedirs(join(sessiondir, SCRIPT_FILES_FOLDER), 'script files')
     makedirs(join(sessiondir, SCIFUNC_FILES_FOLDER), 'scifunc files')
 
-    if 'diagrams' not in session:
-        session['diagrams'] = []
-    if 'scifile' not in session:
-        session['scifile'] = SciFile().toDict()
-
-    diagrams = session['diagrams']
-
-    s = session['scifile']
-    scifile = SciFile()
-    scifile.fromDict(s)
-
-    return (diagrams, scifile)
+    return (ud.diagrams, ud.scripts, ud.scifile, sessiondir, ud.diagramlock)
 
 
 def get_diagram(xcos_file_id, remove=False):
@@ -231,67 +229,41 @@ def get_diagram(xcos_file_id, remove=False):
         return (None, None)
     xcos_file_id = int(xcos_file_id)
 
-    (diagrams, scifile) = init_session()
+    (diagrams, __, scifile, __, __) = init_session()
 
     if xcos_file_id < 0 or xcos_file_id >= len(diagrams):
         print("id", xcos_file_id, "not in diagrams")
         return (None, None)
 
-    d = diagrams[xcos_file_id]
-    diagram = Diagram()
-    diagram.fromDict(d)
-    if diagram.diagram_id is None:
-        diagram.diagram_id = str(xcos_file_id)
-    if diagram.sessiondir is None:
-        diagram.sessiondir = session['sessiondir']
+    diagram = diagrams[xcos_file_id]
 
     if remove:
-        diagrams[xcos_file_id] = Diagram().toDict()
-    else:
-        diagrams[xcos_file_id] = diagram.toDict()
-    save_diagram()
+        diagrams[xcos_file_id] = Diagram()
 
     return (diagram, scifile)
 
 
 def add_diagram():
-    (diagrams, scifile) = init_session()
+    (diagrams, scripts, scifile, sessiondir, diagramlock) = init_session()
 
+    diagramlock.acquire()
     diagram = Diagram()
     diagram.diagram_id = str(len(diagrams))
-    diagram.sessiondir = session['sessiondir']
-    diagram.uid = str(uuid.uuid1())
-    diagrams.append(diagram.toDict())
+    diagram.sessiondir = sessiondir
+    diagrams.append(diagram)
+    diagramlock.release()
 
-    return (diagram, scifile)
-
-
-def get_runtime(uid, *, create=False, remove=False):
-    if uid in RUNTIME:
-        return RUNTIME.pop(uid) if remove else RUNTIME[uid]
-    if create:
-        runtime = RUNTIME[uid] = Runtime()
-        print('added runtime[', uid, ']=', runtime, sep='')
-        return runtime
-    print('not found runtime: uid=', uid, sep='')
-    return None
-
-
-def save_diagram():
-    session.modified = True
-
-
-def save_scifile(scifile):
-    session['scifile'] = scifile.toDict()
-
-# Function to parse the line
-# Returns tuple of figure ID and state
-# state = INITIALIZATION if new figure is created
-#         ENDING if current fig end
-#         DATA otherwise
+    return (diagram, scripts, scifile, sessiondir)
 
 
 def parse_line(line):
+    '''
+    Function to parse the line
+    Returns tuple of figure ID and state
+    state = INITIALIZATION if new figure is created
+            ENDING if current fig end
+            DATA otherwise
+    '''
     line_words = line.split(' ')  # Each line is split to read condition
     # The below condition determines the block ID
     if line_words[2] == "Block":
@@ -317,9 +289,11 @@ def parse_line(line):
         return (figure_id, DATA)
 
 
-def get_line_and_state_modified(file, figure_list):
-    # Function to get a new line from file
-    # This also parses the line and appends new figures to figure List
+def get_line_and_state(file, figure_list):
+    '''
+    Function to get a new line from file
+    This also parses the line and appends new figures to figure List
+    '''
     line = file.readline()  # read line by line from log
     if not line:            # if line is empty then return noline
         return (None, NOLINE)
@@ -352,22 +326,18 @@ LOGFILEFD = 123
 def run_scilab(command, createlogfile=False):
     cmd = SCILAB_START + command + SCILAB_END
     print('running command', cmd)
-    cmdarray = [
-        SCI,
-        "-nogui",
-        "-noatomsautoload",
-        "-nouserstartup",
-        "-nb",
-        "-nw",
-        "-e",
-        cmd]
+    cmdarray = [SCI,
+                "-nogui",
+                "-noatomsautoload",
+                "-nouserstartup",
+                "-nb",
+                "-nw",
+                "-e", cmd]
     if not createlogfile:
         return subprocess.Popen(
             cmdarray,
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            start_new_session=True,
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE, start_new_session=True,
             universal_newlines=True)
 
     logfilefd, log_name = mkstemp(prefix=datetime.now().strftime(
@@ -379,45 +349,130 @@ def run_scilab(command, createlogfile=False):
         os.close(logfilefd)
     proc = subprocess.Popen(
         cmdarray,
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        start_new_session=True,
-        universal_newlines=True,
-        pass_fds=(
-            LOGFILEFD,
-        ))
+        stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE, start_new_session=True,
+        universal_newlines=True, pass_fds=(LOGFILEFD, ))
     os.close(LOGFILEFD)
     logfilefdrlock.release()
 
     return (proc, log_name)
 
 
-# Below route is called for uploading sci file which is required in
-# sci-func block (called in Javscript only_scifunc_code.js)
+SYSTEM_COMMANDS = re.compile(config.SYSTEM_COMMANDS)
+
+
+def is_unsafe_script(filename):
+    '''
+    Read file and check for system commands and return error if file contains
+    system commands
+    '''
+    with open(filename, 'r') as f:
+        if not re.search(SYSTEM_COMMANDS, f.read()):
+            return False
+
+    # Delete saved file if system commands are encountered in that file
+    remove(filename)
+    msg = ("System calls are not allowed in script file!\n"
+           "Please upload another script file!!")
+    return msg
+
+
+@app.route('/uploadscript', methods=['POST'])
+def uploadscript():
+    '''
+    Below route is called for uploading script file.
+    '''
+    (__, scripts, __, sessiondir, diagramlock) = init_session()
+
+    file = request.files['file']
+    if not file:
+        msg = "Upload Error"
+        rv = {'msg': msg}
+        return Response(json.dumps(rv), mimetype='application/json')
+
+    diagramlock.acquire()
+    script = Script()
+    script.script_id = str(len(scripts))
+    script.sessiondir = sessiondir
+    scripts.append(script)
+    diagramlock.release()
+
+    fname = join(sessiondir, SCRIPT_FILES_FOLDER,
+                 script.script_id + '_script.sce')
+    file.save(fname)
+    script.filename = fname
+
+    if is_unsafe_script(fname):
+        msg = ("System calls are not allowed in script.\n"
+               "Please edit the script again.")
+        script.status = -1
+        rv = {'status': script.status, 'msg': msg}
+        return Response(json.dumps(rv), mimetype='application/json')
+
+    wfname = join(sessiondir, SCRIPT_FILES_FOLDER,
+                  script.script_id + '_script_workspace.dat')
+    script.workspace_filename = wfname
+    command = "exec('" + fname + "');save('" + wfname + "');"
+
+    try:
+        proc = run_scilab(command)
+    except FileNotFoundError:
+        msg = "scilab not found. Follow the installation instructions"
+        script.status = -2
+        rv = {'status': script.status, 'msg': msg}
+        return Response(json.dumps(rv), mimetype='application/json')
+    script.proc = proc
+
+    try:
+        # output from scilab terminal is saved for checking error msg
+        output = proc.communicate(timeout=30)[0]
+
+        # if error is encountered while execution of script file, then error
+        # message is returned to the user
+        if '!--error' in output:
+            error_index = output.index('!')
+            msg = output[error_index:-9]
+            script.status = -3
+            rv = {'status': script.status, 'msg': msg, 'output': output}
+            return Response(json.dumps(rv), mimetype='application/json')
+
+        print('workspace for', script.script_id, 'saved in', wfname)
+        msg = ''
+        script.status = 0
+        rv = {'script_id': script.script_id, 'status': script.status,
+              'msg': msg, 'output': output, 'returncode': proc.returncode}
+        return Response(json.dumps(rv), mimetype='application/json')
+    except subprocess.TimeoutExpired:
+        if not kill_scilab_with(proc, signal.SIGTERM):
+            kill_scilab_with(proc, signal.SIGKILL)
+        msg = 'Timeout'
+        script.status = -4
+        rv = {'status': script.status, 'msg': msg}
+        return Response(json.dumps(rv), mimetype='application/json')
+
+
 @app.route('/uploadsci', methods=['POST'])
 def uploadsci():
-    (diagrams, scifile) = init_session()
+    '''
+    Below route is called for uploading sci file which is required in sci-func
+    block (called in Javscript only_scifunc_code.js)
+    '''
+    (__, __, scifile, sessiondir, __) = init_session()
 
     file = request.files['file']  # to get uploaded file
     if file and request.method == 'POST':
         ts = datetime.now()
         # file name is created with timestamp
-        scifile.filename = join(
-            session['sessiondir'], SCIFUNC_FILES_FOLDER,
-            str(ts) + secure_filename(file.filename))
-        file.save(scifile.filename)  # file is saved in scifunc_files folder
+        fname = join(sessiondir, SCIFUNC_FILES_FOLDER,
+                     str(ts) + secure_filename(file.filename))
+        file.save(fname)  # file is saved in scifunc_files folder
+        scifile.filename = fname
         scifile.flag_sci = True  # flag for file saved
 
-        # Following are system command which are not permitted in sci files
-        # (Reference scilab-on-cloud project)
-        system_commands = re.compile(
-            r'unix\(.*\)|unix_g\(.*\)|unix_w\(.*\)|unix_x\(.*\)|unix_s\(.*\)|'
-            r'host|newfun|execstr|ascii|mputl|dir\(\)')
         # Read file and check for system commands and return error if file
         # contain system commands
-        match = re.findall(system_commands, open(scifile.filename, 'r').read())
-        if(match):
+        match = re.findall(SYSTEM_COMMANDS, open(scifile.filename, 'r').read())
+        if match:
             msg = ("System calls are not allowed in .sci file!\n"
                    "Please upload another .sci file!!")
             # Delete saved file if system commands are encountered in that file
@@ -441,7 +496,7 @@ def uploadsci():
         # if error is encountered while execution of sci file, then error msg
         # is returned to user. in case no error is encountered, file uploaded
         # successful msg is sent to user.
-        if('!--error' in out):
+        if '!--error' in out:
             error_index = out.index('!')
             msg = out[error_index:-9]
             # Delete saved file if error is encountered while executing sci
@@ -451,28 +506,25 @@ def uploadsci():
             scifile.flag_sci = False
             return msg
         else:
-            save_scifile(scifile)
             msg = "File is uploaded successfully!!"
             return msg
 
 
-'''
-This route is used in index.html for checking condition
-if sci file is uploaded for sci-func block diagram imported directly using
-import (will confirm again)
-'''
-
-
 @app.route('/requestfilename', methods=['POST'])
 def sendfile():
-    (diagrams, scifile) = init_session()
+    '''
+    This route is used in index.html for checking condition
+    if sci file is uploaded for sci-func block diagram imported directly using
+    import (will confirm again)
+    '''
+    (__, __, scifile, __, __) = init_session()
 
     if scifile.flag_sci:
-        scifile.file_image = splitext(basename(scifile.filename))[0]
+        scifile.file_image = ('img_test%s.jpg' %
+                              splitext(basename(scifile.filename))[0])
     else:
         scifile.file_image = ''
     scifile.flag_sci = False
-    save_scifile(scifile)
     return scifile.file_image
 
 
@@ -517,17 +569,16 @@ def get_request_id(key='id'):
     print('Invalid value', displayvalue, 'for', key, 'in request.args')
     return ''
 
-# Define function to kill scilab(if still running) and remove files
-
 
 def kill_scilab(diagram=None):
+    '''Define function to kill scilab(if still running) and remove files'''
     if diagram is None:
         (diagram, __) = get_diagram(get_request_id(), True)
 
     if diagram is None:
         print('no diagram')
         return
-    print('kill_scilab: diagram=', diagram.toDict())
+    print('kill_scilab: diagram=', diagram.__dict__)
 
     if diagram.xcos_file_name is None:
         print('empty diagram')
@@ -535,60 +586,50 @@ def kill_scilab(diagram=None):
         # Remove xcos file
         remove(diagram.xcos_file_name)
         diagram.xcos_file_name = None
-        save_diagram()
 
-    runtime = get_runtime(diagram.uid, remove=True)
-    if runtime is None:
-        return
-    print('kill_scilab: runtime=', runtime)
-
-    if runtime.scilab_proc is None:
+    if diagram.scilab_proc is None:
         print('no scilab proc')
     else:
-        if not kill_scilab_with(runtime.scilab_proc, signal.SIGTERM):
-            kill_scilab_with(runtime.scilab_proc, signal.SIGKILL)
-        runtime.scilab_proc = None
+        if not kill_scilab_with(diagram.scilab_proc, signal.SIGTERM):
+            kill_scilab_with(diagram.scilab_proc, signal.SIGKILL)
+        diagram.scilab_proc = None
 
-    if runtime.log_name is None:
-        print('empty runtime')
+    if diagram.log_name is None:
+        print('empty diagram')
     else:
         # Remove log file
-        remove(runtime.log_name)
-        runtime.log_name = None
+        remove(diagram.log_name)
+        diagram.log_name = None
 
-    stopDetailsThread(diagram, runtime)
-
-
-'''
-function to execute xcos file using scilab (scilab-adv-cli), access log file
-written by scilab
-
-This function is called in app route 'start_scilab' below
-'''
+    stopDetailsThread(diagram)
 
 
 @app.route('/start_scilab')
 def start_scilab():
+    '''
+    function to execute xcos file using scilab (scilab-adv-cli), access log
+    file written by scilab
+
+    This function is called in app route 'start_scilab' below
+    '''
     (diagram, scifile) = get_diagram(get_request_id())
     if diagram is None:
         print('no diagram')
         return "error"
-    runtime = get_runtime(diagram.uid, create=True)
 
     # name of workspace file
     workspace = "workspace.dat"
 
-    ''' Scilab Commands for running of scilab based on existence of different
-    blocks in same diagram from workpace_counter's value
-        1: Indicate TOWS_c exist
-        2: Indicate FROMWSB exist
-        3: Both TOWS_c and FROMWSB exist
-        4: Indicate AFFICH_m exist (We dont want graphic window to open so
-        xs2jpg() command is removed)
-        5: Indicate Sci-func block as it some time return image as output
-        rather than Sinks's log file.
-        0/No-condition : For all other blocks
-    '''
+    # Scilab Commands for running of scilab based on existence of different
+    # blocks in same diagram from workpace_counter's value
+    #    1: Indicate TOWS_c exist
+    #    2: Indicate FROMWSB exist
+    #    3: Both TOWS_c and FROMWSB exist
+    #    4: Indicate AFFICH_m exist (We dont want graphic window to open so
+    #    xs2jpg() command is removed)
+    #    5: Indicate Sci-func block as it some time return image as output
+    #    rather than Sinks's log file.
+    #    0/No-condition : For all other blocks
     if diagram.workspace_counter == 3 and exists(workspace):
         # 3 - for both TOWS_c and FROMWSB and also workspace dat file exist
         # In this case workspace is saved in format of dat file (Scilab way of
@@ -628,10 +669,10 @@ def start_scilab():
             "importXcosDiagram('" + diagram.xcos_file_name + "');"
             "xcos_simulate(scs_m,4);"
             "xs2jpg(gcf(),"
-            "'" + IMAGEDIR + "/img_test" + scifile.file_image + ".jpg');")
-        t = Timer(15.0, delete_image)
+            "'" + IMAGEDIR + "/" + scifile.file_image + "');")
+        t = Timer(15.0, delete_image, [scifile])
         t.start()
-        t1 = Timer(10.0, delete_scifile)
+        t1 = Timer(10.0, delete_scifile, [scifile])
         t1.start()
     else:
         # For all other block
@@ -641,21 +682,18 @@ def start_scilab():
             "xs2jpg(gcf(),'" + IMAGEDIR + "/img_test.jpg');")
 
     try:
-        runtime.scilab_proc, runtime.log_name = run_scilab(command, True)
+        diagram.scilab_proc, diagram.log_name = run_scilab(command, True)
     except FileNotFoundError:
         return "scilab not found. Follow the installation instructions"
 
-    print('log_name=', runtime.log_name)
+    print('log_name=', diagram.log_name)
 
     # Start sending log to chart function for creating chart
     try:
         # For processes taking less than 10 seconds
-        scilab_out, scilab_err = runtime.scilab_proc.communicate(timeout=4)
-        scilab_out = re.sub(
-            r'^[ !\\-]*\n',
-            r'',
-            scilab_out,
-            flags=re.MULTILINE)
+        scilab_out = diagram.scilab_proc.communicate(timeout=4)[0]
+        scilab_out = re.sub(r'^[ !\\-]*\n', r'',
+                            scilab_out, flags=re.MULTILINE)
         print("=== Begin output from scilab console ===")
         print(scilab_out, end='')
         print("===== End output from scilab console ===")
@@ -663,9 +701,8 @@ def start_scilab():
         if "Empty diagram" in scilab_out:
             return "Empty diagram"
 
-        m = re.search(
-            r'Fatal error: exception Failure\("([^"]*)"\)',
-            scilab_out)
+        m = re.search(r'Fatal error: exception Failure\("([^"]*)"\)',
+                      scilab_out)
         if m:
             msg = 'modelica error: ' + m.group(1)
             return msg
@@ -681,7 +718,7 @@ def start_scilab():
             return ("scilab has not been built. "
                     "Follow the installation instructions")
 
-        if os.stat(runtime.log_name).st_size == 0:
+        if os.stat(diagram.log_name).st_size == 0:
             return "log file is empty"
 
     # For processes taking more than 10 seconds
@@ -691,44 +728,35 @@ def start_scilab():
     return ""
 
 
-'''
-Read log file and return data to eventscource function of javascript for
-displaying chart.
-
-This function is called in app route 'SendLog' below
-'''
-
-
 @flask.stream_with_context
 def event_stream():
+    '''
+    Read log file and return data to eventscource function of javascript for
+    displaying chart.
+
+    This function is called in app route 'SendLog' below
+    '''
     (diagram, __) = get_diagram(get_request_id())
-    runtime = get_runtime(diagram.uid)
-    if runtime is None:
-        yield "event: ERROR\ndata: no data found\n\n"
-        return
 
     # Open the log file
-    if not isfile(runtime.log_name):
+    if not isfile(diagram.log_name):
         print("log file does not exist")
         yield "event: ERROR\ndata: no log file found\n\n"
         return
-    while os.stat(runtime.log_name).st_size == 0 and \
-            runtime.scilab_proc.poll() is None:
+    while os.stat(diagram.log_name).st_size == 0 and \
+            diagram.scilab_proc.poll() is None:
         gevent.sleep(LOOK_DELAY)
-    if os.stat(runtime.log_name).st_size == 0 and \
-            runtime.scilab_proc.poll() is not None:
+    if os.stat(diagram.log_name).st_size == 0 and \
+            diagram.scilab_proc.poll() is not None:
         print("log file is empty")
         yield "event: ERROR\ndata: log file is empty\n\n"
         return
 
-    with open(runtime.log_name, "r") as log_file:
+    with open(diagram.log_name, "r") as log_file:
         # Start sending log
         line = line_and_state(None, NOLINE)
-        while line.set(
-            get_line_and_state_modified(
-                log_file,
-                runtime.figure_list)) or len(
-                runtime.figure_list) > 0:
+        while line.set(get_line_and_state(log_file, diagram.figure_list)) or \
+                len(diagram.figure_list) > 0:
             # Get the line and loop until the state is ENDING and figure_list
             # empty. Determine if we get block id and give it to chart.js
             if line.get_state() == BLOCK_IDENTIFICATION:
@@ -747,33 +775,26 @@ def event_stream():
     yield "event: DONE\ndata: None\n\n"
 
 
-def delete_image():
-    (diagrams, scifile) = init_session()
-
+def delete_image(scifile):
     if scifile.file_image == '':
         return
 
-    image_path = IMAGEDIR + '/img_test' + scifile.file_image + '.jpg'
+    image_path = IMAGEDIR + '/' + scifile.file_image
     remove(image_path)
     scifile.file_image = ''
-    save_scifile(scifile)
 
 
-def delete_scifile():
-    (diagrams, scifile) = init_session()
-
+def delete_scifile(scifile):
     if scifile.filename == '':
         return
 
     remove(scifile.filename)
     scifile.filename = ''
-    save_scifile(scifile)
-
-# function which appends the 'updated' ('new') value to the file
 
 
-def AppendtoTKfile(diagram, runtime):
-    starttime = runtime.tk_starttime
+def AppendtoTKfile(diagram):
+    '''function which appends the updated (new) value to the file'''
+    starttime = diagram.tk_starttime
 
     for i in range(diagram.tk_count):
         fname = join(diagram.sessiondir, VALUES_FOLDER,
@@ -782,28 +803,22 @@ def AppendtoTKfile(diagram, runtime):
         # append data to the tk.txt
         with open(fname, 'a') as w:
             while time() > starttime + \
-                    runtime.tk_times[i] + runtime.tk_deltatimes[i]:
+                    diagram.tk_times[i] + diagram.tk_deltatimes[i]:
                 # update the time
-                runtime.tk_times[i] += runtime.tk_deltatimes[i]
-                w.write(
-                    '%10.3E %10.3E\n' %
-                    (runtime.tk_times[i],
-                     runtime.tk_values[i]))
+                diagram.tk_times[i] += diagram.tk_deltatimes[i]
+                w.write('%10.3E %10.3E\n' %
+                        (diagram.tk_times[i], diagram.tk_values[i]))
 
 
-# function which makes the initialisation of thread
 def getDetailsThread(diagram):
-    runtime = get_runtime(diagram.uid)
-    if runtime is None:
-        return
-
-    while runtime.tkbool:
-        AppendtoTKfile(diagram, runtime)
+    '''function which makes the initialisation of thread'''
+    while diagram.tkbool:
+        AppendtoTKfile(diagram)
         gevent.sleep(0.1)
 
 
-def stopDetailsThread(diagram, runtime):
-    runtime.tkbool = False  # stops the thread
+def stopDetailsThread(diagram):
+    diagram.tkbool = False  # stops the thread
     gevent.sleep(LOOK_DELAY)
     fname = join(diagram.sessiondir, VALUES_FOLDER,
                  diagram.diagram_id + "_*")
@@ -811,11 +826,10 @@ def stopDetailsThread(diagram, runtime):
         # deletes all files created under the 'diagram_id' name
         remove(fn)
 
-# Route that will process the file upload
-
 
 @app.route('/upload', methods=['POST'])
 def upload():
+    '''Route that will process the file upload'''
     # Get the file
     file = request.files['file']
     # flags to check if both TOWS_c and FROMWSB are present
@@ -826,7 +840,7 @@ def upload():
     # Check if the file is not null
     if file:
         # Make the filename safe, remove unsupported chars
-        (diagram, scifile) = add_diagram()
+        (diagram, scripts, scifile, sessiondir) = add_diagram()
         # Save the file in xml extension and using it for further modification
         # by using xml parser
         temp_file_xml_name = diagram.diagram_id + ".xml"
@@ -984,11 +998,10 @@ def upload():
                 f.seek(0)
                 f.write('\n'.join(data))
                 f.truncate()
-            diagram.xcos_file_name = join(
-                session['sessiondir'], UPLOAD_FOLDER,
-                splitext(temp_file_xml_name)[0] + ".xcos")
-            os.rename(temp_file_xml_name, diagram.xcos_file_name)
-            save_diagram()
+            fname = join(sessiondir, UPLOAD_FOLDER,
+                         splitext(temp_file_xml_name)[0] + ".xcos")
+            os.rename(temp_file_xml_name, fname)
+            diagram.xcos_file_name = fname
             return diagram.diagram_id
 
         # List to contain all affich blocks
@@ -1017,7 +1030,7 @@ def upload():
             if block.getAttribute("interfaceFunctionName") == "FROMWSB":
                 diagram.workspace_counter = 2
                 flag2 = 1
-        if (flag1 and flag2):
+        if flag1 and flag2:
             # Both TOWS_c and FROMWSB are present
             diagram.workspace_counter = 3
         # Hardcoded the real time scaling to 1.0 (i.e., no scaling of time
@@ -1384,12 +1397,11 @@ def upload():
                 for line in newline:
                     f.writelines(line)
         # Changing the file extension from xml to xcos
-        diagram.xcos_file_name = join(
-            session['sessiondir'], UPLOAD_FOLDER,
-            splitext(temp_file_xml_name)[0] + ".xcos")
+        fname = join(sessiondir, UPLOAD_FOLDER,
+                     splitext(temp_file_xml_name)[0] + ".xcos")
         # Move the xcos file to uploads directory
-        os.rename(temp_file_xml_name, diagram.xcos_file_name)
-        save_diagram()
+        os.rename(temp_file_xml_name, fname)
+        diagram.xcos_file_name = fname
         return diagram.diagram_id
     else:
         return "error"
@@ -1422,23 +1434,19 @@ def UpdateTKfile():
 
     # saves the file in values folder
     line = file.read().decode()
-    createruntime = line == "Start"
-    runtime = get_runtime(diagram.uid, create=createruntime)
-    if runtime is None:
-        return ""
 
     if line == "Start":
         # at first the val.txt contains "Start" indicating the starting of the
         # process
-        runtime.tkbool = True
-        runtime.tk_starttime = time()
-        runtime.tk_deltatimes = []
-        runtime.tk_values = []
-        runtime.tk_times = []
+        diagram.tkbool = True
+        diagram.tk_starttime = time()
+        diagram.tk_deltatimes = []
+        diagram.tk_values = []
+        diagram.tk_times = []
         for i in range(diagram.tk_count):
-            runtime.tk_deltatimes.append(0.1)
-            runtime.tk_values.append(0)
-            runtime.tk_times.append(0)
+            diagram.tk_deltatimes.append(0.1)
+            diagram.tk_values.append(0)
+            diagram.tk_times.append(0)
             fname = join(diagram.sessiondir, VALUES_FOLDER,
                          diagram.diagram_id + "_tk" + str(i + 1) + ".txt")
             open(fname, "w").close()
@@ -1448,7 +1456,7 @@ def UpdateTKfile():
     elif line == "Stop":
         # at last the val.txt contains "Stop" indicating the ending process
         # stops the thread
-        stopDetailsThread(diagram, runtime)
+        stopDetailsThread(diagram)
     else:
         tklist = line.split(',')
 
@@ -1456,14 +1464,14 @@ def UpdateTKfile():
             tl = tklist[i].split('  ')
             if len(tl) == 1 or tl[1] == '':
                 continue
-            runtime.tk_deltatimes[i] = float(tl[0])
-            runtime.tk_values[i] = float(tl[1])
+            diagram.tk_deltatimes[i] = float(tl[0])
+            diagram.tk_values[i] = float(tl[1])
     return ""
 
 
-# route for download of binary and audio
 @app.route('/downloadfile', methods=['POST'])
 def DownloadFile():
+    '''route for download of binary and audio'''
     fn = request.form['path']
     if fn == '' or fn[0] == '.' or '/' in fn:
         print('downloadfile=', fn)
@@ -1477,9 +1485,9 @@ def DownloadFile():
         SESSIONDIR, fn, as_attachment=True, mimetype=mimetype)
 
 
-# route for deletion of binary and audio file
 @app.route('/deletefile', methods=['POST'])
 def DeleteFile():
+    '''route for deletion of binary and audio file'''
     fn = request.form['path']
     if fn == '' or fn[0] == '.' or '/' in fn:
         print('deletefile=', fn)
@@ -1490,7 +1498,7 @@ def DeleteFile():
 
 @app.route('/SendLog')
 def sse_request():
-    # Set response method to event-stream
+    '''Set response method to event-stream'''
     return Response(event_stream(), mimetype='text/event-stream')
 
 
@@ -1499,24 +1507,22 @@ def static_file(path):
     return app.send_static_file(path)
 
 
-# route to kill scilab on closing of chart
 @app.route('/stop')
 def stop():
+    '''route to kill scilab on closing of chart'''
     kill_scilab()
     return "done"
-
-# route ro end blocks with no Ending parameter
 
 
 @app.route('/endBlock/<fig_id>')
 def endBlock(fig_id):
+    '''route to end blocks with no Ending parameter'''
     (diagram, __) = get_diagram(get_request_id())
     if diagram is None:
         print('no diagram')
         return
-    runtime = get_runtime(diagram.uid)
 
-    runtime.figure_list.remove(fig_id)
+    diagram.figure_list.remove(fig_id)
     return "done"
 
 
@@ -1535,7 +1541,6 @@ def run_scilab_func_request():
     if diagram is None:
         print('no diagram')
         return
-    runtime = get_runtime(diagram.uid, create=True)
 
     num = request.form['num']
     den = request.form['den']
@@ -1549,11 +1554,11 @@ def run_scilab_func_request():
             "');calculate_cont_frm(" + num + "," + den + ");"
 
     try:
-        runtime.scilab_proc = run_scilab(command)
+        diagram.scilab_proc = run_scilab(command)
     except FileNotFoundError:
         return "scilab not found. Follow the installation instructions"
 
-    scilab_out, scilab_err = runtime.scilab_proc.communicate()
+    diagram.scilab_proc.communicate()
 
     file_name = "cont_frm_value.txt"
     with open(file_name) as f:
@@ -1563,7 +1568,7 @@ def run_scilab_func_request():
         list_value = "[["
         for i in range(len(file_rows)):
             value = file_rows[i]
-            if(i == (len(file_rows) - 1)):
+            if i == len(file_rows) - 1:
                 list_value = list_value + value + "]]"
             else:
                 list_value = list_value + value + "],["
@@ -1660,7 +1665,7 @@ def get_example_file(example_file_id):
 
 
 def clean_text_2(s):
-    # handle whitespace
+    '''handle whitespace'''
     s = re.sub(r'[\a\b\f\r\v]', r'', s)
     s = re.sub(r'\t', r'    ', s)
     s = re.sub(r' +(\n|$)', r'\n', s)
