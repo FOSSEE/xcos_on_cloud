@@ -387,7 +387,8 @@ def uploadscript():
     file = request.files['file']
     if not file:
         msg = "Upload Error"
-        return msg
+        rv = {'msg': msg}
+        return Response(json.dumps(rv), mimetype='application/json')
 
     diagramlock.acquire()
     script = Script()
@@ -405,7 +406,8 @@ def uploadscript():
         msg = ("System calls are not allowed in script.\n"
                "Please edit the script again.")
         script.status = -1
-        return msg
+        rv = {'status': script.status, 'msg': msg}
+        return Response(json.dumps(rv), mimetype='application/json')
 
     wfname = join(sessiondir, SCRIPT_FILES_FOLDER,
                   script.script_id + '_script_workspace.dat')
@@ -417,30 +419,36 @@ def uploadscript():
     except FileNotFoundError:
         msg = "scilab not found. Follow the installation instructions"
         script.status = -2
-        return msg
+        rv = {'status': script.status, 'msg': msg}
+        return Response(json.dumps(rv), mimetype='application/json')
     script.proc = proc
 
     try:
         # output from scilab terminal is saved for checking error msg
-        out = proc.communicate(timeout=30)[0]
+        output = proc.communicate(timeout=30)[0]
 
         # if error is encountered while execution of script file, then error
         # message is returned to the user
-        if '!--error' in out:
-            error_index = out.index('!')
-            msg = out[error_index:-9]
+        if '!--error' in output:
+            error_index = output.index('!')
+            msg = output[error_index:-9]
             script.status = -3
-            return msg
+            rv = {'status': script.status, 'msg': msg, 'output': output}
+            return Response(json.dumps(rv), mimetype='application/json')
 
         print('workspace for', script.script_id, 'saved in', wfname)
+        msg = ''
         script.status = 0
-        return script.script_id
+        rv = {'script_id': script.script_id, 'status': script.status,
+              'msg': msg, 'output': output, 'returncode': proc.returncode}
+        return Response(json.dumps(rv), mimetype='application/json')
     except subprocess.TimeoutExpired:
         if not kill_scilab_with(proc, signal.SIGTERM):
             kill_scilab_with(proc, signal.SIGKILL)
         msg = 'Timeout'
         script.status = -4
-        return msg
+        rv = {'status': script.status, 'msg': msg}
+        return Response(json.dumps(rv), mimetype='application/json')
 
 
 @app.route('/uploadsci', methods=['POST'])
