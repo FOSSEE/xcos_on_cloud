@@ -45,7 +45,19 @@ function displayResultforCode(visible_flag) {
 
 }
 
+var old_script_id = null;
+var script_id = null;
+
+function saveAndExecutePrerequisiteFile() {
+    var editorTextArea = document.getElementById("editorTextArea");
+    prerequisite_content = editorTextArea.value;
+    executePrerequisiteFile();
+}
+
 function executePrerequisiteFile() {
+    if (prerequisite_content == "")
+        return;
+
     executeScriptButton.disabled = true;
     stopScriptButton.disabled = false;
 
@@ -69,6 +81,7 @@ function executePrerequisiteFile() {
             }
             var id = rv.script_id;
             if (id !== null) {
+                old_script_id = script_id;
                 script_id = id;
             }
             var output = rv.output;
@@ -90,6 +103,27 @@ function executePrerequisiteFile() {
             alert(msg);
             executeScriptButton.disabled = false;
             stopScriptButton.disabled = true;
+        }
+    });
+}
+
+function stopPrerequisiteFile() {
+    if (script_id === null)
+        return;
+
+    stopScriptButton.disabled = true;
+
+    var formData = new FormData();
+    formData.set('script_id', script_id);
+    $.ajax({
+        type: "POST",
+        url: "/stopscript",
+        async: true,
+        processData: false,
+        contentType: false,
+        data: formData,
+        success: function(rv) {
+            script_id = old_script_id;
         }
     });
 }
