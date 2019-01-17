@@ -271,7 +271,7 @@ def get_script(script_id, remove=False):
     script = scripts[script_id]
 
     if remove:
-        scripts[script_id] = Script()
+        scripts[script_id] = None
 
     return script
 
@@ -481,10 +481,11 @@ def kill_script(script=None):
     '''Below route is called for stopping a running script file.'''
     if script is None:
         script = get_script(get_request_id('script_id'), True)
+        if script is None:
+            # when called with same script_id again or with incorrect script_id
+            print('no script')
+            return
 
-    if script is None:
-        print('no script')
-        return
     print('kill_script: script=', script.__dict__)
 
     if script.filename is None:
