@@ -99,6 +99,15 @@ SCILAB_START = (
     "function messagebox(msg,msgboxTitle,msgboxIcon,buttons,isModal),"
     "disp(msg),endfunction;loadXcosLibs();")
 SCILAB_END = "mode(2);quit();"
+SCILAB_VARS = [
+    "%p_r_p",
+    "canon",
+    "close",
+    "extractDatatip",
+    "extractLight",
+    "syslin",
+    "tf2ss",
+]
 
 USER_DATA = {}
 
@@ -693,10 +702,14 @@ def start_scilab():
     if loadfile:
         # ignore import errors
         command += "errcatch(-1,'continue');"
-        command += "funcprot(0);"
 
         if workspace_filename is not None:
-            command += "load('" + workspace_filename + "');"
+            command += "[__V1,__V2]=listvarinfile('%s');" % workspace_filename
+            command += "__V3=['%s'];" % ("';'".join(SCILAB_VARS))
+            command += "__V4=setdiff(__V1,__V3);"
+            command += "__V5=''''+strcat(__V4,''',''')+'''';"
+            command += "__V6='load(''%s'','+__V5+');';" % workspace_filename
+            command += "eval(__V6);"
 
         if diagram.workspace_counter in (2, 3) and exists(workspace):
             # 3 - for both TOWS_c and FROMWSB and also workspace dat file exist
@@ -709,7 +722,6 @@ def start_scilab():
             command += "exec('" + scifile.filename + "');"
 
         command += "errcatch(-1,'stop');"
-        command += "funcprot(1);"
 
     # Scilab Commands for running of scilab based on existence of different
     # blocks in same diagram from workspace_counter's value
