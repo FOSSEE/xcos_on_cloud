@@ -92,6 +92,7 @@ SCIDIR = abspath(config.SCILAB_DIR)
 SCI = join(SCIDIR, "bin", "scilab-adv-cli")
 READCONTENTFILE = abspath("Read_Content.txt")
 CONT_FRM_WRITE = abspath("cont_frm_write.sci")
+EXP_SCI_FUNC_WRITE = abspath("expression-sci-function.sci")
 BASEDIR = abspath('webapp')
 IMAGEDIR = join(BASEDIR, 'res_imgs')
 # display limit for long strings
@@ -1716,6 +1717,38 @@ def run_scilab_func_request():
 
     return list_value
 
+# App route for getting scilab expression output for Expression Block
+
+@app.route('/getExpressionOutput', methods=['POST'])
+def run_scilab_func_expr_request():
+    (diagram, __) = get_diagram(get_request_id())
+    if diagram is None:
+        print('no diagram')
+        return
+    runtime = get_runtime(diagram.uid, create=True)
+    pathfortxtfile=session['sessiondir']
+    head = request.form['head']
+    exx = request.form['exx']
+    command = "exec('" + EXP_SCI_FUNC_WRITE + "');callFunctionAcctoMethod('" + pathfortxtfile + \
+    "','" + head +"','" + exx + "');"
+
+    try:
+        runtime.scilab_proc = run_scilab(command)
+    except FileNotFoundError:
+        return "scilab not found. Follow the installation instructions"
+
+    scilab_out, scilab_err = runtime.scilab_proc.communicate()
+
+    file_name = pathfortxtfile + "/" + "expr_set_value.txt"
+    exprs_value = {}                       # create a dictionary
+    var_array = ["ok","ok1","ipar","rpar","nz"] # create a array containing value for set parameters
+    with open(file_name) as f:
+        data = f.read()  # Read the data into a variable
+        valuesfromfile=data.splitlines()
+    for i in range(len(valuesfromfile)):
+        exprs_value[var_array[i]] = valuesfromfile[i]
+
+    return jsonify(exprs_value)
 
 # example page start ###################
 
