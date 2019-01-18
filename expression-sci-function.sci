@@ -108,17 +108,11 @@ function [ok,%ok1,ipar,rpar,%nz]=compiler_expression(%foo)
 endfunction
 
 
-function callFunctionAcctoMethod(methodname,filename,head,exx)
-    if (methodname == 'define') then
-        txt="(u1>0)*sin(u2)^2"
-        deff("%foo(u1,u2)",txt)
-        [%ok1,ipar,rpar,nz]=compile_expr(%foo)
-        writeValueToFileFromVars(%ok1,ipar,rpar,nz,filename)
-    else
+function callFunctionAcctoMethod(filepath,head,exx)
         cal_exp=strcat(["deff(",head,",",exx,")"]);
         ok=execstr(cal_exp,"errcatch")==0
-        if (ok==%t) then
-            fileid = strcat([pwd(), "/",filename,".txt"]);
+        if (ok==%t) thenx
+            fileid = strcat([filepath, "/", "expr_set_value.txt"]);
             f_temp = mopen(fileid, 'wt');
             mfprintf(f_temp, ' %s :',  "Erroneous expression");
             mfprintf(f_temp, ' %s',  lasterror());
@@ -126,31 +120,34 @@ function callFunctionAcctoMethod(methodname,filename,head,exx)
         else
             deff(head,exx)
             [ok,%ok1,ipar,rpar,%nz]=compiler_expression(%foo)
-            writeValueToFileFromVars(ok,%ok1,ipar,rpar,%nz,filename)
+            completefileloc = strcat([filepath, "/", "expr_set_value.txt"]);
+            writeValueToFileFromVars(ok,%ok1,ipar,rpar,%nz,completefileloc)
         end
-    end
 endfunction
 
 
 function writeValueToFileFromVars(varargin)
     loop = argn(2);
-    filename=varargin(loop);
-    d=string(filename+'');
-    fileid = strcat([pwd(), "/",d,".txt"]);
-    f_temp = mopen(fileid, 'wt');
+    completefileloc=varargin(loop);
+    f_temp = mopen(completefileloc, 'wt');
     mclose(f_temp);
     for k= 1:(loop-1)
-            fid = mopen(fileid, 'at');
+            fid = mopen(completefileloc, 'at');
             if (varargin(k)==%t) then
-                mfprintf(fid, ' %s',  "true");
+                mfprintf(fid, '%s',  "true");
                 mfprintf(fid, '\n');
             elseif (varargin(k)==%f) then
-                mfprintf(fid, ' %s',  "false");
+                mfprintf(fid, '%s',  "false");
                 mfprintf(fid, '\n');
             else 
                 variable= varargin(k) // Storing variable one at a time
+                mfprintf(fid, '[[');
                 for i = 1:length(variable)
-                    mfprintf(fid, ' %d',  variable(i));
+                    if (i == length(variable)) then
+                        mfprintf(fid, '%d]]',  variable(i));
+                    else
+                        mfprintf(fid, '%d],[',  variable(i));
+                    end
                 end
                 mfprintf(fid, '\n');
             end

@@ -21,7 +21,7 @@ function EXPRESSION () {
 	    model.nmode=nz;
 	    model.dep_ut = new ScilabBoolean([true,false]);
 
-	    var exprs = [string(size(in1,"*"));txt;"1"];
+	    var exprs = [string(size(this.in,"*"));txt;"1"];
 
 	    var gr_i = [];
 	    this.x=new standard_define(new ScilabDouble([5,2]),model,exprs,gr_i);
@@ -49,41 +49,38 @@ function EXPRESSION () {
             
         }
         this.head=this.head+"u"+this.nini.toString()+")";
-        var ok = null;
-        /*
-        need to put in other 
-         ok=execstr("deff(%head,%exx)","errcatch")==0
-        */
-        if(!ok){
+        var get_values = get_expr_output_for_DefineandSet(this.head,this.exx);
+        rpar = get_values.rpar;
+        ipar = get_values.ipar;
+        nz = get_values.nz;
+        var ok = get_values.ok;
+        var ok1 = get_values.ok1;
+        if(ok=="false"){
             alert("Erroneous expression "+output);
         }else{
             if(this.in>1){
-                //[model,graphics,ok]=check_io(model,graphics,ones(1,%nin),1,[],...[])
+            ones(this.nin,1)
+                var io = check_io(this.x.model,this.x.graphics,ones(1,this.in),[1],[],...[]);
             }else{
-                //[model,graphics,ok]=check_io(model,graphics,-1,1,[],...[])
+                 var io = check_io(this.x.model,this.x.graphics,[-1],[1],[],...[]);
             }
-            if(ok){
-               // [ok,%ok1,ipar,rpar,%nz]=compiler_expression(%foo) need to put other code
-               if(!ok){
-                    alert("Erroneous expression"+output);
-               }else{
-                    if(ok1){
-                        this.x.model.rpar=rpar;
-                        this.x.model.ipar=ipar;
-                        if(this.usenz){
-                            this.x.model.nzcross=nz;
-                            this.x.model.nmode=nz;
-                        }else{
-                            this.x.model.nzcross=0;
-                            this.x.model.nmode=0;
-                        }
-                        this.x.graphics.exprs=exprs;
+            if(ok=="false"){
+                alert("Erroneous expression"+output);
+            }else{
+                if(ok1=="true"){
+                    this.x.model.rpar=rpar;
+                    this.x.model.ipar=ipar;
+                    if(this.usenz){
+                        this.x.model.nzcross=nz;
+                        this.x.model.nmode=nz;
+                    }else{
+                        this.x.model.nzcross=0;
+                        this.x.model.nmode=0;
                     }
-               }
+                    this.x.graphics.exprs=exprs;
+                 }
             }
         }
-        
-
 
     }
     EXPRESSION.prototype.get = function EXPRESSION() {
