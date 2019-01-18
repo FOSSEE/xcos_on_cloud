@@ -679,24 +679,40 @@ def start_scilab():
         print('no diagram')
         return "error"
 
-    command = ""
-
     # name of primary workspace file
     workspace_filename = diagram.workspace_filename
-    if workspace_filename is not None:
-        command += "load('" + workspace_filename + "');"
-
     # name of workspace file
     workspace = "workspace.dat"
-    if diagram.workspace_counter in (2, 3) and exists(workspace):
-        # 3 - for both TOWS_c and FROMWSB and also workspace dat file exist
-        # In this case workspace is saved in format of dat file (Scilab way of
-        # saying workpsace)
-        # For FROMWSB block and also workspace dat file exist
-        command += "load('" + workspace + "');"
+
+    loadfile = workspace_filename is not None or \
+        (diagram.workspace_counter in (2, 3) and exists(workspace)) or \
+        diagram.workspace_counter == 5
+
+    command = ""
+
+    if loadfile:
+        # ignore import errors
+        command += "errcatch(-1,'continue');"
+        command += "funcprot(0);"
+
+        if workspace_filename is not None:
+            command += "load('" + workspace_filename + "');"
+
+        if diagram.workspace_counter in (2, 3) and exists(workspace):
+            # 3 - for both TOWS_c and FROMWSB and also workspace dat file exist
+            # In this case workspace is saved in format of dat file (Scilab way
+            # of saying workpsace)
+            # For FROMWSB block and also workspace dat file exist
+            command += "load('" + workspace + "');"
+
+        if diagram.workspace_counter == 5:
+            command += "exec('" + scifile.filename + "');"
+
+        command += "errcatch(-1,'stop');"
+        command += "funcprot(1);"
 
     # Scilab Commands for running of scilab based on existence of different
-    # blocks in same diagram from workpace_counter's value
+    # blocks in same diagram from workspace_counter's value
     #    1: Indicate TOWS_c exist
     #    2: Indicate FROMWSB exist
     #    3: Both TOWS_c and FROMWSB exist
@@ -705,9 +721,6 @@ def start_scilab():
     #    5: Indicate Sci-func block as it some time return image as output
     #    rather than Sinks's log file.
     #    0/No-condition : For all other blocks
-
-    if diagram.workspace_counter == 5:
-        command += "exec('" + scifile.filename + "');"
 
     command += "importXcosDiagram('" + diagram.xcos_file_name + "');"
     command += "xcos_simulate(scs_m,4);"
@@ -1713,6 +1726,7 @@ def get_example_file(example_file_id):
             print('Exception:', str(e))
 
     scilab_url = "https://scilab.in/download/file/" + example_file_id
+    print('downloading', scilab_url)
     r = requests.get(scilab_url)
     text = clean_text(r.text)
     return (text, filename, example_id)
@@ -1753,6 +1767,7 @@ def get_prerequisite_file(example_id):
             print('Exception:', str(e))
 
     scilab_url = "https://scilab.in/download/file/" + str(prerequisite_file_id)
+    print('downloading', scilab_url)
     r = requests.get(scilab_url)
     text = clean_text_2(r.text)
     return (text, filename)
