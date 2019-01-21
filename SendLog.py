@@ -29,7 +29,7 @@ from xml.dom import minidom
 
 from db_connection import connection
 import config
-from config import FLASKSESSIONDIR, SESSIONDIR, XCOSSOURCEDIR
+from config import FLASKSESSIONDIR, SESSIONDIR, XCOSSOURCEDIR, REMOVEFILE
 
 
 def makedirs(dirname, dirtype):
@@ -41,6 +41,9 @@ def makedirs(dirname, dirtype):
 def remove(filename):
     if filename is None:
         return False
+    if not REMOVEFILE:
+        print("not removing", filename)
+        return True
     try:
         os.remove(filename)
         return True
