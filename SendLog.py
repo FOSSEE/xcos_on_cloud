@@ -99,6 +99,15 @@ SCILAB_START = (
     "function messagebox(msg,msgboxTitle,msgboxIcon,buttons,isModal),"
     "disp(msg),endfunction;loadXcosLibs();")
 SCILAB_END = "mode(2);quit();"
+SCILAB_VARS = [
+    "%p_r_p",
+    "canon",
+    "close",
+    "extractDatatip",
+    "extractLight",
+    "syslin",
+    "tf2ss",
+]
 
 USER_DATA = {}
 
@@ -111,6 +120,8 @@ class Diagram:
     xcos_file_name = None
     # type of uploaded file
     workspace_counter = 0
+    # workspace from script
+    workspace_filename = None
     # tk count
     tk_count = 0
     scilab_proc = None
@@ -256,13 +267,16 @@ def add_diagram():
     return (diagram, scripts, scifile, sessiondir)
 
 
-def get_script(script_id, remove=False):
+def get_script(script_id, scripts=None, remove=False):
+    if script_id is None:
+        return None
     if len(script_id) == 0:
         print("no id")
-        return (None, None)
+        return None
     script_id = int(script_id)
 
-    (__, scripts, __, __, __) = init_session()
+    if scripts is None:
+        (__, scripts, __, __, __) = init_session()
 
     if script_id < 0 or script_id >= len(scripts):
         print("id", script_id, "not in scripts")
@@ -480,7 +494,7 @@ def uploadscript():
 def kill_script(script=None):
     '''Below route is called for stopping a running script file.'''
     if script is None:
-        script = get_script(get_request_id('script_id'), True)
+        script = get_script(get_request_id('script_id'), remove=True)
         if script is None:
             # when called with same script_id again or with incorrect script_id
             print('no script')
@@ -674,11 +688,43 @@ def start_scilab():
         print('no diagram')
         return "error"
 
+    # name of primary workspace file
+    workspace_filename = diagram.workspace_filename
     # name of workspace file
     workspace = "workspace.dat"
 
+    loadfile = workspace_filename is not None or \
+        (diagram.workspace_counter in (2, 3) and exists(workspace)) or \
+        diagram.workspace_counter == 5
+
+    command = ""
+
+    if loadfile:
+        # ignore import errors
+        command += "errcatch(-1,'continue');"
+
+        if workspace_filename is not None:
+            command += "[__V1,__V2]=listvarinfile('%s');" % workspace_filename
+            command += "__V3=['%s'];" % ("';'".join(SCILAB_VARS))
+            command += "__V4=setdiff(__V1,__V3);"
+            command += "__V5=''''+strcat(__V4,''',''')+'''';"
+            command += "__V6='load(''%s'','+__V5+');';" % workspace_filename
+            command += "eval(__V6);"
+
+        if diagram.workspace_counter in (2, 3) and exists(workspace):
+            # 3 - for both TOWS_c and FROMWSB and also workspace dat file exist
+            # In this case workspace is saved in format of dat file (Scilab way
+            # of saying workpsace)
+            # For FROMWSB block and also workspace dat file exist
+            command += "load('" + workspace + "');"
+
+        if diagram.workspace_counter == 5:
+            command += "exec('" + scifile.filename + "');"
+
+        command += "errcatch(-1,'stop');"
+
     # Scilab Commands for running of scilab based on existence of different
-    # blocks in same diagram from workpace_counter's value
+    # blocks in same diagram from workspace_counter's value
     #    1: Indicate TOWS_c exist
     #    2: Indicate FROMWSB exist
     #    3: Both TOWS_c and FROMWSB exist
@@ -687,56 +733,25 @@ def start_scilab():
     #    5: Indicate Sci-func block as it some time return image as output
     #    rather than Sinks's log file.
     #    0/No-condition : For all other blocks
-    if diagram.workspace_counter == 3 and exists(workspace):
-        # 3 - for both TOWS_c and FROMWSB and also workspace dat file exist
-        # In this case workspace is saved in format of dat file (Scilab way of
-        # saying workpsace)
-        command = (
-            "load('" + workspace + "');"
-            "importXcosDiagram('" + diagram.xcos_file_name + "');"
-            "xcos_simulate(scs_m,4);"
-            "xs2jpg(gcf(),'" + IMAGEDIR + "/img_test.jpg');"
-            "deletefile('" + workspace + "');"
-            "save('" + workspace + "');")
-    elif diagram.workspace_counter == 1 or diagram.workspace_counter == 3:
-        # For 1- TOWS_c or 3 - for both TOWS_c and FROMWSB
-        command = (
-            "importXcosDiagram('" + diagram.xcos_file_name + "');"
-            "xcos_simulate(scs_m,4);"
-            "xs2jpg(gcf(),'" + IMAGEDIR + "/img_test.jpg');"
-            "deletefile('" + workspace + "');"
-            "save('" + workspace + "');")
-    elif diagram.workspace_counter == 4:
+
+    command += "importXcosDiagram('" + diagram.xcos_file_name + "');"
+    command += "xcos_simulate(scs_m,4);"
+
+    if diagram.workspace_counter == 4:
         # For AFFICH-m block
-        command = (
-            "importXcosDiagram('" + diagram.xcos_file_name + "');"
-            "xcos_simulate(scs_m,4);")
-    elif diagram.workspace_counter == 2 and exists(workspace):
-        # For FROMWSB block and also workspace dat file exist
-        command = (
-            "load('" + workspace + "');"
-            "importXcosDiagram('" + diagram.xcos_file_name + "');"
-            "xcos_simulate(scs_m,4);"
-            "xs2jpg(gcf(),'" + IMAGEDIR + "/img_test.jpg');"
-            "deletefile('" + workspace + "');")
+        pass
     elif diagram.workspace_counter == 5:
         # For Sci-Func block (Image are return as output in some cases)
-        command = (
-            "exec('" + scifile.filename + "');"
-            "importXcosDiagram('" + diagram.xcos_file_name + "');"
-            "xcos_simulate(scs_m,4);"
-            "xs2jpg(gcf(),"
-            "'" + IMAGEDIR + "/" + scifile.file_image + "');")
-        t = Timer(15.0, delete_image, [scifile])
-        t.start()
-        t1 = Timer(10.0, delete_scifile, [scifile])
-        t1.start()
+        command += "xs2jpg(gcf(),'%s/%s');" % (IMAGEDIR, scifile.file_image)
     else:
         # For all other block
-        command = (
-            "importXcosDiagram('" + diagram.xcos_file_name + "');"
-            "xcos_simulate(scs_m,4);"
-            "xs2jpg(gcf(),'" + IMAGEDIR + "/img_test.jpg');")
+        command += "xs2jpg(gcf(),'%s/%s');" % (IMAGEDIR, 'img_test.jpg')
+
+    if diagram.workspace_counter in (1, 2, 3) and exists(workspace):
+        command += "deletefile('" + workspace + "');"
+
+    if diagram.workspace_counter in (1, 3):
+        command += "save('" + workspace + "');"
 
     try:
         diagram.scilab_proc, diagram.log_name = run_scilab(command, True)
@@ -781,6 +796,10 @@ def start_scilab():
     # For processes taking more than 10 seconds
     except subprocess.TimeoutExpired:
         pass
+
+    if diagram.workspace_counter == 5:
+        Timer(15.0, delete_image, [scifile]).start()
+        Timer(10.0, delete_scifile, [scifile]).start()
 
     return ""
 
@@ -889,579 +908,582 @@ def upload():
     '''Route that will process the file upload'''
     # Get the file
     file = request.files['file']
+    script_id = request.form.get('script_id', None)
+    # Check if the file is not null
+    if not file:
+        return "error"
     # flags to check if both TOWS_c and FROMWSB are present
     flag1 = 0
     flag2 = 0
     list1 = []
     list2 = []
-    # Check if the file is not null
-    if file:
-        # Make the filename safe, remove unsupported chars
-        (diagram, scripts, scifile, sessiondir) = add_diagram()
-        # Save the file in xml extension and using it for further modification
-        # by using xml parser
-        temp_file_xml_name = diagram.diagram_id + ".xml"
-        file.save(temp_file_xml_name)
-        new_xml = minidom.parse(temp_file_xml_name)
+    # Make the filename safe, remove unsupported chars
+    (diagram, scripts, scifile, sessiondir) = add_diagram()
+    script = get_script(script_id, scripts=scripts)
+    if script is not None:
+        diagram.workspace_filename = script.workspace_filename
+    # Save the file in xml extension and using it for further modification
+    # by using xml parser
+    temp_file_xml_name = diagram.diagram_id + ".xml"
+    file.save(temp_file_xml_name)
+    new_xml = minidom.parse(temp_file_xml_name)
 
-        # to identify if we have to load or save to workspace or neither #0 if
-        # neither TOWS_c or FROWSB found
-        blocks = new_xml.getElementsByTagName("BasicBlock")
-        tk_is_present = False
-        pattern = re.compile(r"<SplitBlock")
-        for i, line in enumerate(open(temp_file_xml_name)):
-            for match in re.finditer(pattern, line):
-                list1.append(i + 1)
-        pattern1 = re.compile(r"<ControlPort")
-        for i, line in enumerate(open(temp_file_xml_name)):
-            for match in re.finditer(pattern1, line):
-                list2.append(i + 1)
-        pattern2 = re.compile(r"<ImplicitInputPort")
-        count1 = 0
+    # to identify if we have to load or save to workspace or neither #0 if
+    # neither TOWS_c or FROWSB found
+    blocks = new_xml.getElementsByTagName("BasicBlock")
+    tk_is_present = False
+    pattern = re.compile(r"<SplitBlock")
+    for i, line in enumerate(open(temp_file_xml_name)):
+        for match in re.finditer(pattern, line):
+            list1.append(i + 1)
+    pattern1 = re.compile(r"<ControlPort")
+    for i, line in enumerate(open(temp_file_xml_name)):
+        for match in re.finditer(pattern1, line):
+            list2.append(i + 1)
+    pattern2 = re.compile(r"<ImplicitInputPort")
+    count1 = 0
 
-        for i, line in enumerate(open(temp_file_xml_name)):
-            for match in re.finditer(pattern2, line):
-                count1 += 1
-        if count1 >= 1:
-            splitline = []
-            count = 0
-            for i in range(len(list1)):
-                for j in range(len(list2)):
-                    if list2[j] == list1[i] + 3:
-                        count += 1
-                        splitline.append(list1[i])
-            blocksplit = new_xml.getElementsByTagName("SplitBlock")
-            block_ids = []  # this stores the id of split blocks
-            for block in blocksplit:
-                if block.getAttribute("style") == "SPLIT_f":
-                    block_ids.append(int(block.getAttribute("id")))
-            compsplit = []
-            for i in range(len(splitline)):
-                for j in range(len(list1)):
-                    if splitline[i] == list1[j]:
-                        compsplit.append(j)
+    for i, line in enumerate(open(temp_file_xml_name)):
+        for match in re.finditer(pattern2, line):
+            count1 += 1
+    if count1 >= 1:
+        splitline = []
+        count = 0
+        for i in range(len(list1)):
+            for j in range(len(list2)):
+                if list2[j] == list1[i] + 3:
+                    count += 1
+                    splitline.append(list1[i])
+        blocksplit = new_xml.getElementsByTagName("SplitBlock")
+        block_ids = []  # this stores the id of split blocks
+        for block in blocksplit:
+            if block.getAttribute("style") == "SPLIT_f":
+                block_ids.append(int(block.getAttribute("id")))
+        compsplit = []
+        for i in range(len(splitline)):
+            for j in range(len(list1)):
+                if splitline[i] == list1[j]:
+                    compsplit.append(j)
 
-            finalsplit = []
-            for i in range(len(compsplit)):
-                finalsplit.append(block_ids[compsplit[i]])
+        finalsplit = []
+        for i in range(len(compsplit)):
+            finalsplit.append(block_ids[compsplit[i]])
 
-            blockcontrol = new_xml.getElementsByTagName("ControlPort")
-            for block in blockcontrol:
-                for i in range(len(finalsplit)):
-                    # match the lines with the parent of our spliblocks which
-                    # we need to change
-                    if block.getAttribute("parent") == str(finalsplit[i]):
-                        block.setAttribute('id', '-1')
-
-            blockcommand = new_xml.getElementsByTagName("CommandPort")
-            for block in blockcommand:
-                for i in range(len(finalsplit)):
-                    if block.getAttribute("parent") == str(finalsplit[i]):
-                        block.setAttribute('id', '-1')
-
-            # here we take the ids of command controllink which we will search
-            # and change
-            finalchangeid = []
+        blockcontrol = new_xml.getElementsByTagName("ControlPort")
+        for block in blockcontrol:
             for i in range(len(finalsplit)):
-                finalchangeid.append(finalsplit[i] + 4)
-                finalchangeid.append(finalsplit[i] + 5)
+                # match the lines with the parent of our spliblocks which
+                # we need to change
+                if block.getAttribute("parent") == str(finalsplit[i]):
+                    block.setAttribute('id', '-1')
 
-            # here we save the contents
-            with open(temp_file_xml_name, 'w') as f:
-                f.write(new_xml.toxml())
-
-            with open(temp_file_xml_name, "r") as f:
-                newline = []
-                i = 0
-                for word in f.readlines():
-
-                    if "<CommandControlLink id=" in word:
-                        temp_word = ""
-                        for i in range(len(finalchangeid)):
-                            fcid = str(finalchangeid[i])
-                            srch = '<CommandControlLink id="' + fcid + '"'
-                            if srch in word:
-                                rplc = '<ImplicitLink id="' + fcid + '"'
-                                temp_word = word.replace(srch, rplc)
-                                i += 1
-                        if temp_word != "":
-                            newline.append(temp_word)
-                        else:
-                            newline.append(word)
-                    else:
-                        newline.append(word)
-            with open(temp_file_xml_name, "w") as f:
-                for line in newline:
-                    f.writelines(line)
-            with open(temp_file_xml_name, "r") as in_file:
-                buf = in_file.readlines()
-            # length=len(finalsplit)
-            # return finalsplit
-            with open(temp_file_xml_name, "w") as out_file:
-                for line in buf:
-                    for i in range(len(finalsplit)):
-                        fs = str(finalsplit[i])
-                        srch = ('<ControlPort connectable="0" '
-                                'dataType="UNKNOW_TYPE" id="-1" ordering="1" '
-                                'parent="' + fs + '"')
-                        if srch in line:
-                            line = (
-                                '\t    <ImplicitInputPort connectable="0" '
-                                'dataType="UNKNOW_TYPE" '
-                                'id="' + str(finalsplit[i] + 1) + '" '
-                                'ordering="1" parent="' + fs + '" '
-                                'style="ImplicitInputPort">\n'
-                                '\t\t<mxGeometry as="geometry" height="10" '
-                                'relative="1" width="10" y="0.5000">\n'
-                                '\t\t</mxGeometry>\n'
-                                '\t    </ImplicitInputPort>\n'
-                                '\t    <ImplicitOutputPort connectable="0" '
-                                'dataType="UNKNOW_TYPE" '
-                                'id="' + str(finalsplit[i] + 2) + '" '
-                                'ordering="1" parent="' + fs + '" '
-                                'style="ImplicitOutputPort">\n'
-                                '\t\t<mxGeometry as="geometry" height="10" '
-                                'relative="1" width="10" y="0.5000">\n'
-                                '\t\t</mxGeometry>\n'
-                                '\t    </ImplicitOutputPort>\n'
-                                '\t    <ImplicitOutputPort connectable="0" '
-                                'dataType="UNKNOW_TYPE" '
-                                'id="' + str(finalsplit[i] + 3) + '" '
-                                'ordering="1" parent="' + fs + '" '
-                                'style="ImplicitOutputPort">\n'
-                                '\t\t<mxGeometry as="geometry" height="10" '
-                                'relative="1" width="10" y="0.5000">\n'
-                                '\t\t</mxGeometry>\n'
-                                '\t    </ImplicitOutputPort>\n' + line)
-
-                    out_file.write(line)
-            list3 = []
-            implitdetect = []
-            # return temp_file_xml_name
+        blockcommand = new_xml.getElementsByTagName("CommandPort")
+        for block in blockcommand:
             for i in range(len(finalsplit)):
-                implitdetect.append(finalsplit[i] + 5)
-                implitdetect.append(finalsplit[i] + 6)
-            for i in range(len(implitdetect)):
-                pattern3 = re.compile(
-                    "<ImplicitLink id=\"" + str(implitdetect[i]) + "\"")
-                for i, line in enumerate(open(temp_file_xml_name)):
-                    for match in re.finditer(pattern3, line):
-                        list3.append(i - 1)
-            with open(temp_file_xml_name, 'r+') as f:
-                data = f.read().splitlines()
-                replace = list3
-                for i in replace:
-                    data[i] = '\t    </ImplicitLink>'
-                f.seek(0)
-                f.write('\n'.join(data))
-                f.truncate()
-            fname = join(sessiondir, UPLOAD_FOLDER,
-                         splitext(temp_file_xml_name)[0] + ".xcos")
-            os.rename(temp_file_xml_name, fname)
-            diagram.xcos_file_name = fname
-            return diagram.diagram_id
+                if block.getAttribute("parent") == str(finalsplit[i]):
+                    block.setAttribute('id', '-1')
 
-        # List to contain all affich blocks
-        blockaffich = new_xml.getElementsByTagName("AfficheBlock")
-        for block in blockaffich:
-            if block.getAttribute("interfaceFunctionName") == "AFFICH_m":
-                diagram.workspace_counter = 4
+        # here we take the ids of command controllink which we will search
+        # and change
+        finalchangeid = []
+        for i in range(len(finalsplit)):
+            finalchangeid.append(finalsplit[i] + 4)
+            finalchangeid.append(finalsplit[i] + 5)
 
-        # List to contain all the block IDs of tkscales so that we can create
-        # read blocks with these IDs
-        block_id = []
-        for block in blocks:
-            if block.getAttribute("interfaceFunctionName") == "TKSCALE":
-                block_id.append(block.getAttribute("id"))
-                block.setAttribute('id', '-1')
-                tk_is_present = True
-                # Changed the ID of tkscales to -1 so that virtually the
-                # tkscale blocks get disconnected from diagram at the backend
-            # Taking workspace_counter 1 for TOWS_c and 2 for FROMWSB
-            if block.getAttribute(
-                    "interfaceFunctionName") == "scifunc_block_m":
-                diagram.workspace_counter = 5
-            if block.getAttribute("interfaceFunctionName") == "TOWS_c":
-                diagram.workspace_counter = 1
-                flag1 = 1
-            if block.getAttribute("interfaceFunctionName") == "FROMWSB":
-                diagram.workspace_counter = 2
-                flag2 = 1
-        if flag1 and flag2:
-            # Both TOWS_c and FROMWSB are present
-            diagram.workspace_counter = 3
-        # Hardcoded the real time scaling to 1.0 (i.e., no scaling of time
-        # occurs) only if tkscale is present
-        if tk_is_present:
-            for dia in new_xml.getElementsByTagName("XcosDiagram"):
-                dia.setAttribute('realTimeScaling', '1.0')
-
-        # Save the changes made by parser
+        # here we save the contents
         with open(temp_file_xml_name, 'w') as f:
             f.write(new_xml.toxml())
 
-        # In front of block tkscale printing the block corresponding to read
-        # function and assigning corresponding values
-        for line in fileinput.input(temp_file_xml_name, inplace=1):
+        with open(temp_file_xml_name, "r") as f:
+            newline = []
+            i = 0
+            for word in f.readlines():
 
-            if 'interfaceFunctionName=\"TKSCALE\"' in line:
-                # change the block ID
-                i = diagram.tk_count
-                print('<BasicBlock blockType="d" id="', block_id[i], '" '
-                      'interfaceFunctionName="RFILE_f" parent="1" '
-                      'simulationFunctionName="readf" '
-                      'simulationFunctionType="DEFAULT" style="RFILE_f">',
-                      sep='')
-                print('<ScilabString as="exprs" height="5" width="1">')
-                print('<data column="0" line="0" value="1"/>')
-                # Value equal to 1 implies take readings from first column in
-                # the file
-                print('<data column="0" line="1" value="2"/>')
-                # Path to the file from which read block obtains the values
-                fname = join(diagram.sessiondir, VALUES_FOLDER,
-                             diagram.diagram_id + "_tk" + str(i + 1) + ".txt")
-                print('<data column="0" line="2" value="', fname, '"/>',
-                      sep='')
-                print('<data column="0" line="3" value="(2(e10.3,1x))"/>')
-                # (2(e10.3,1x)) The format in which numbers are written
-                # Two columns with base 10 and 3 digits after decimal and 1x
-                # represents 1 unit space between two columns.
-                print('<data column="0" line="4" value="2"/>')
-                print('</ScilabString>')
-                print('<ScilabDouble as="realParameters" '
-                      'height="0" width="0"/>')
-                print('<ScilabDouble as="integerParameters" '
-                      'height="105" width="1">')
-                diagram.tk_count += 1
-                # The remaining part of the block is read from the
-                # Read_Content.txt file and written to the xml file
-                with open(READCONTENTFILE, "r") as read_file:
-                    for line_content in read_file:
-                        print(line_content, end='')
-            print(line, end='')
+                if "<CommandControlLink id=" in word:
+                    temp_word = ""
+                    for i in range(len(finalchangeid)):
+                        fcid = str(finalchangeid[i])
+                        srch = '<CommandControlLink id="' + fcid + '"'
+                        if srch in word:
+                            rplc = '<ImplicitLink id="' + fcid + '"'
+                            temp_word = word.replace(srch, rplc)
+                            i += 1
+                    if temp_word != "":
+                        newline.append(temp_word)
+                    else:
+                        newline.append(word)
+                else:
+                    newline.append(word)
+        with open(temp_file_xml_name, "w") as f:
+            for line in newline:
+                f.writelines(line)
+        with open(temp_file_xml_name, "r") as in_file:
+            buf = in_file.readlines()
+        # length=len(finalsplit)
+        # return finalsplit
+        with open(temp_file_xml_name, "w") as out_file:
+            for line in buf:
+                for i in range(len(finalsplit)):
+                    fs = str(finalsplit[i])
+                    srch = ('<ControlPort connectable="0" '
+                            'dataType="UNKNOW_TYPE" id="-1" ordering="1" '
+                            'parent="' + fs + '"')
+                    if srch in line:
+                        line = (
+                            '\t    <ImplicitInputPort connectable="0" '
+                            'dataType="UNKNOW_TYPE" '
+                            'id="' + str(finalsplit[i] + 1) + '" '
+                            'ordering="1" parent="' + fs + '" '
+                            'style="ImplicitInputPort">\n'
+                            '\t\t<mxGeometry as="geometry" height="10" '
+                            'relative="1" width="10" y="0.5000">\n'
+                            '\t\t</mxGeometry>\n'
+                            '\t    </ImplicitInputPort>\n'
+                            '\t    <ImplicitOutputPort connectable="0" '
+                            'dataType="UNKNOW_TYPE" '
+                            'id="' + str(finalsplit[i] + 2) + '" '
+                            'ordering="1" parent="' + fs + '" '
+                            'style="ImplicitOutputPort">\n'
+                            '\t\t<mxGeometry as="geometry" height="10" '
+                            'relative="1" width="10" y="0.5000">\n'
+                            '\t\t</mxGeometry>\n'
+                            '\t    </ImplicitOutputPort>\n'
+                            '\t    <ImplicitOutputPort connectable="0" '
+                            'dataType="UNKNOW_TYPE" '
+                            'id="' + str(finalsplit[i] + 3) + '" '
+                            'ordering="1" parent="' + fs + '" '
+                            'style="ImplicitOutputPort">\n'
+                            '\t\t<mxGeometry as="geometry" height="10" '
+                            'relative="1" width="10" y="0.5000">\n'
+                            '\t\t</mxGeometry>\n'
+                            '\t    </ImplicitOutputPort>\n' + line)
 
-        # To resolve port issue coming in xcos file for following blocks :
-        # INTMUL,MATBKSL,MATDET,MATDIAG,MATDIV and CURV_F
-        # ISSUE is missing of dataColumns and dataLines in port tag
-        block_idint = []
-        block_idmatblsk = []
-        block_det = []
-        block_diag = []
-        block_div = []
-        block_curl = []
-        for block in blocks:
-            # to find INTMUL in blocks and extract its block id and save in
-            # block_idint
-            if block.getAttribute("style") == "INTMUL":
-                block_idint.append(int(block.getAttribute("id")))
-            # to find MATBKSL in blocks and extract its block id and save in
-            # block_idmatblsk
-            if block.getAttribute("style") == "MATBKSL":
-                block_idmatblsk.append(int(block.getAttribute("id")))
-            # to find MATDET in blocks and extract its block id and save in
-            # block_det
-            if block.getAttribute("style") == "MATDET":
-                block_det.append(int(block.getAttribute("id")))
-            # to find MATDIAG in blocks and extract its block id and save in
-            # block_diag
-            if block.getAttribute("style") == "MATDIAG":
-                block_diag.append(int(block.getAttribute("id")))
-            # to find MATDIV in blocks and extract its block id and save in
-            # block_div
-            if block.getAttribute("style") == "MATDIV":
-                block_div.append(int(block.getAttribute("id")))
-            # to find CURV_f in blocks and extract its block id and save in
-            # block_curl
-            if block.getAttribute("style") == "CURV_f":
-                block_curl.append(int(block.getAttribute("id")))
-        if len(block_idint) >= 1:
-            with open(temp_file_xml_name, "r") as f:
-                newline = []
-                i = 0
-                for word in f.readlines():
-                    # check for existance of "ExplicitInputPort" in line
-                    srch = '<ExplicitInputPort dataType="REAL_MATRIX"'
-                    if srch in word:
-                        rplc = ('<ExplicitInputPort dataColumns="-3" '
-                                'dataLines="-2" dataType="REAL_MATRIX"')
-                        temp_word = ""
-                        for i in range(len(block_idint)):
-                            # if ordering= 2 and parent id= INTMUL block id
-                            srch2 = (
-                                'ordering="2" '
-                                'parent="' + str(block_idint[i]) + '"')
-                            if srch2 in word:
-                                # replace word and add datacolumns and
-                                # datalines
-                                temp_word = word.replace(srch, rplc)
-                                i += 1
-                        if temp_word != "":
-                            newline.append(temp_word)
-                        else:
-                            newline.append(word)
-                    else:
-                        newline.append(word)
-            with open(temp_file_xml_name, "w") as f:
-                for line in newline:
-                    f.writelines(line)
-            with open(temp_file_xml_name, "r") as f:
-                newline = []
-                i = 0
-                for word in f.readlines():
-                    # check for existance of "ExplicitOutputPort" in line
-                    srch = '<ExplicitOutputPort dataType="REAL_MATRIX"'
-                    if srch in word:
-                        rplc = ('<ExplicitOutputPort dataColumns="-3" '
-                                'dataType="REAL_MATRIX"')
-                        temp_word = ""
-                        for i in range(len(block_idint)):
-                            # if parent id= INTMUL block id
-                            srch2 = 'parent="' + str(block_idint[i]) + '"'
-                            if srch2 in word:
-                                # replace word and add datacolumns and
-                                # datalines
-                                temp_word = word.replace(srch, rplc)
-                                i += 1
-                        if temp_word != "":
-                            newline.append(temp_word)
-                        else:
-                            newline.append(word)
-                    else:
-                        newline.append(word)
-            with open(temp_file_xml_name, "w") as f:
-                for line in newline:
-                    f.writelines(line)
-        if len(block_idmatblsk) >= 1:
-            with open(temp_file_xml_name, "r") as f:
-                newline = []
-                i = 0
-                for word in f.readlines():
-                    srch = '<ExplicitInputPort dataType="REAL_MATRIX"'
-                    if srch in word:
-                        rplc = ('<ExplicitInputPort dataColumns="-3" '
-                                'dataType="REAL_MATRIX"')
-                        temp_word = ""
-                        for i in range(len(block_idmatblsk)):
-                            srch2 = (
-                                'ordering="2" '
-                                'parent="' + str(block_idmatblsk[i]) + '"')
-                            if srch2 in word:
-                                temp_word = word.replace(srch, rplc)
-                                i += 1
-                        if temp_word != "":
-                            newline.append(temp_word)
-                        else:
-                            newline.append(word)
-                    else:
-                        newline.append(word)
-            with open(temp_file_xml_name, "w") as f:
-                for line in newline:
-                    f.writelines(line)
-            with open(temp_file_xml_name, "r") as f:
-                newline = []
-                i = 0
-                for word in f.readlines():
-                    srch = '<ExplicitOutputPort dataType="REAL_MATRIX"'
-                    if srch in word:
-                        rplc = ('<ExplicitOutputPort dataColumns="-3" '
-                                'dataLines="-2" dataType="REAL_MATRIX"')
-                        temp_word = ""
-                        for i in range(len(block_idmatblsk)):
-                            srch2 = 'parent="' + str(block_idmatblsk[i]) + '"'
-                            if srch2 in word:
-                                temp_word = word.replace(srch, rplc)
-                                i += 1
-                        if temp_word != "":
-                            newline.append(temp_word)
-                        else:
-                            newline.append(word)
-                    else:
-                        newline.append(word)
-            with open(temp_file_xml_name, "w") as f:
-                for line in newline:
-                    f.writelines(line)
-        if len(block_det) >= 1:
-            with open(temp_file_xml_name, "r") as f:
-                newline = []
-                i = 0
-                for word in f.readlines():
-                    srch = '<ExplicitInputPort dataType="REAL_MATRIX"'
-                    if srch in word:
-                        rplc = ('<ExplicitInputPort dataColumns="-1" '
-                                'dataType="REAL_MATRIX"')
-                        temp_word = ""
-                        for i in range(len(block_det)):
-                            srch2 = (
-                                'ordering="2" '
-                                'parent="' + str(block_det[i]) + '"')
-                            if srch2 in word:
-                                temp_word = word.replace(srch, rplc)
-                                i += 1
-                        if temp_word != "":
-                            newline.append(temp_word)
-                        else:
-                            newline.append(word)
-                    else:
-                        newline.append(word)
-            with open(temp_file_xml_name, "w") as f:
-                for line in newline:
-                    f.writelines(line)
-            with open(temp_file_xml_name, "r") as f:
-                newline = []
-                i = 0
-                for word in f.readlines():
-                    srch = '<ExplicitOutputPort dataType="REAL_MATRIX"'
-                    if srch in word:
-                        rplc = ('<ExplicitOutputPort dataColumns="1" '
-                                'dataLines="1" dataType="REAL_MATRIX"')
-                        temp_word = ""
-                        for i in range(len(block_det)):
-                            srch2 = 'parent="' + str(block_det[i]) + '"'
-                            if srch2 in word:
-                                temp_word = word.replace(srch, rplc)
-                                i += 1
-                        if temp_word != "":
-                            newline.append(temp_word)
-                        else:
-                            newline.append(word)
-                    else:
-                        newline.append(word)
-            with open(temp_file_xml_name, "w") as f:
-                for line in newline:
-                    f.writelines(line)
-        if len(block_curl) >= 1:
-            with open(temp_file_xml_name, "r") as f:
-                newline = []
-                i = 0
-                for word in f.readlines():
-                    srch = '<ExplicitOutputPort dataType="REAL_MATRIX"'
-                    if srch in word:
-                        rplc = ('<ExplicitOutputPort dataColumns="1" '
-                                'dataLines="1" dataType="REAL_MATRIX"')
-                        temp_word = ""
-                        for i in range(len(block_curl)):
-                            srch2 = 'parent="' + str(block_curl[i]) + '"'
-                            if srch2 in word:
-                                temp_word = word.replace(srch, rplc)
-                                i += 1
-                        if temp_word != "":
-                            newline.append(temp_word)
-                        else:
-                            newline.append(word)
-                    else:
-                        newline.append(word)
-            with open(temp_file_xml_name, "w") as f:
-                for line in newline:
-                    f.writelines(line)
-        if len(block_diag) >= 1:
-            with open(temp_file_xml_name, "r") as f:
-                newline = []
-                i = 0
-                for word in f.readlines():
-                    srch = '<ExplicitInputPort dataType="REAL_MATRIX"'
-                    if srch in word:
-                        rplc = ('<ExplicitInputPort dataColumns="1" '
-                                'dataType="REAL_MATRIX"')
-                        temp_word = ""
-                        for i in range(len(block_diag)):
-                            srch2 = (
-                                'ordering="2" '
-                                'parent="' + str(block_diag[i]) + '"')
-                            if srch2 in word:
-                                temp_word = word.replace(srch, rplc)
-                                i += 1
-                        if temp_word != "":
-                            newline.append(temp_word)
-                        else:
-                            newline.append(word)
-                    else:
-                        newline.append(word)
-            with open(temp_file_xml_name, "w") as f:
-                for line in newline:
-                    f.writelines(line)
-            with open(temp_file_xml_name, "r") as f:
-                newline = []
-                i = 0
-                for word in f.readlines():
-                    srch = '<ExplicitOutputPort dataType="REAL_MATRIX"'
-                    if srch in word:
-                        rplc = ('<ExplicitOutputPort dataColumns="-1" '
-                                'dataType="REAL_MATRIX"')
-                        temp_word = ""
-                        for i in range(len(block_diag)):
-                            srch2 = 'parent="' + str(block_diag[i]) + '"'
-                            if srch2 in word:
-                                temp_word = word.replace(srch, rplc)
-                                i += 1
-                        if temp_word != "":
-                            newline.append(temp_word)
-                        else:
-                            newline.append(word)
-                    else:
-                        newline.append(word)
-            with open(temp_file_xml_name, "w") as f:
-                for line in newline:
-                    f.writelines(line)
-        if len(block_div) >= 1:
-            with open(temp_file_xml_name, "r") as f:
-                newline = []
-                i = 0
-                for word in f.readlines():
-                    srch = '<ExplicitInputPort dataType="REAL_MATRIX"'
-                    if srch in word:
-                        rplc = ('<ExplicitInputPort dataColumns="-3" '
-                                'dataType="REAL_MATRIX"')
-                        temp_word = ""
-                        for i in range(len(block_div)):
-                            srch2 = (
-                                'ordering="1" '
-                                'parent="' + str(block_div[i]) + '"')
-                            if srch2 in word:
-                                temp_word = word.replace(srch, rplc)
-                                i += 1
-                        if temp_word != "":
-                            newline.append(temp_word)
-                        else:
-                            newline.append(word)
-                    else:
-                        newline.append(word)
-            with open(temp_file_xml_name, "w") as f:
-                for line in newline:
-                    f.writelines(line)
-            with open(temp_file_xml_name, "r") as f:
-                newline = []
-                i = 0
-                for word in f.readlines():
-                    srch = '<ExplicitInputPort dataType="REAL_MATRIX"'
-                    if srch in word:
-                        rplc = ('<ExplicitInputPort dataColumns="-3" '
-                                'dataLines="-2" dataType="REAL_MATRIX"')
-                        temp_word = ""
-                        for i in range(len(block_div)):
-                            srch2 = (
-                                'ordering="2" '
-                                'parent="' + str(block_div[i]) + '"')
-                            if srch2 in word:
-                                temp_word = word.replace(srch, rplc)
-                                i += 1
-                        if temp_word != "":
-                            newline.append(temp_word)
-                        else:
-                            newline.append(word)
-                    else:
-                        newline.append(word)
-            with open(temp_file_xml_name, "w") as f:
-                for line in newline:
-                    f.writelines(line)
-        # Changing the file extension from xml to xcos
+                out_file.write(line)
+        list3 = []
+        implitdetect = []
+        # return temp_file_xml_name
+        for i in range(len(finalsplit)):
+            implitdetect.append(finalsplit[i] + 5)
+            implitdetect.append(finalsplit[i] + 6)
+        for i in range(len(implitdetect)):
+            pattern3 = re.compile(
+                "<ImplicitLink id=\"" + str(implitdetect[i]) + "\"")
+            for i, line in enumerate(open(temp_file_xml_name)):
+                for match in re.finditer(pattern3, line):
+                    list3.append(i - 1)
+        with open(temp_file_xml_name, 'r+') as f:
+            data = f.read().splitlines()
+            replace = list3
+            for i in replace:
+                data[i] = '\t    </ImplicitLink>'
+            f.seek(0)
+            f.write('\n'.join(data))
+            f.truncate()
         fname = join(sessiondir, UPLOAD_FOLDER,
                      splitext(temp_file_xml_name)[0] + ".xcos")
-        # Move the xcos file to uploads directory
         os.rename(temp_file_xml_name, fname)
         diagram.xcos_file_name = fname
         return diagram.diagram_id
-    else:
-        return "error"
+
+    # List to contain all affich blocks
+    blockaffich = new_xml.getElementsByTagName("AfficheBlock")
+    for block in blockaffich:
+        if block.getAttribute("interfaceFunctionName") == "AFFICH_m":
+            diagram.workspace_counter = 4
+
+    # List to contain all the block IDs of tkscales so that we can create
+    # read blocks with these IDs
+    block_id = []
+    for block in blocks:
+        if block.getAttribute("interfaceFunctionName") == "TKSCALE":
+            block_id.append(block.getAttribute("id"))
+            block.setAttribute('id', '-1')
+            tk_is_present = True
+            # Changed the ID of tkscales to -1 so that virtually the
+            # tkscale blocks get disconnected from diagram at the backend
+        # Taking workspace_counter 1 for TOWS_c and 2 for FROMWSB
+        if block.getAttribute(
+                "interfaceFunctionName") == "scifunc_block_m":
+            diagram.workspace_counter = 5
+        if block.getAttribute("interfaceFunctionName") == "TOWS_c":
+            diagram.workspace_counter = 1
+            flag1 = 1
+        if block.getAttribute("interfaceFunctionName") == "FROMWSB":
+            diagram.workspace_counter = 2
+            flag2 = 1
+    if flag1 and flag2:
+        # Both TOWS_c and FROMWSB are present
+        diagram.workspace_counter = 3
+    # Hardcoded the real time scaling to 1.0 (i.e., no scaling of time
+    # occurs) only if tkscale is present
+    if tk_is_present:
+        for dia in new_xml.getElementsByTagName("XcosDiagram"):
+            dia.setAttribute('realTimeScaling', '1.0')
+
+    # Save the changes made by parser
+    with open(temp_file_xml_name, 'w') as f:
+        f.write(new_xml.toxml())
+
+    # In front of block tkscale printing the block corresponding to read
+    # function and assigning corresponding values
+    for line in fileinput.input(temp_file_xml_name, inplace=1):
+
+        if 'interfaceFunctionName=\"TKSCALE\"' in line:
+            # change the block ID
+            i = diagram.tk_count
+            print('<BasicBlock blockType="d" id="', block_id[i], '" '
+                  'interfaceFunctionName="RFILE_f" parent="1" '
+                  'simulationFunctionName="readf" '
+                  'simulationFunctionType="DEFAULT" style="RFILE_f">',
+                  sep='')
+            print('<ScilabString as="exprs" height="5" width="1">')
+            print('<data column="0" line="0" value="1"/>')
+            # Value equal to 1 implies take readings from first column in
+            # the file
+            print('<data column="0" line="1" value="2"/>')
+            # Path to the file from which read block obtains the values
+            fname = join(diagram.sessiondir, VALUES_FOLDER,
+                         diagram.diagram_id + "_tk" + str(i + 1) + ".txt")
+            print('<data column="0" line="2" value="', fname, '"/>',
+                  sep='')
+            print('<data column="0" line="3" value="(2(e10.3,1x))"/>')
+            # (2(e10.3,1x)) The format in which numbers are written
+            # Two columns with base 10 and 3 digits after decimal and 1x
+            # represents 1 unit space between two columns.
+            print('<data column="0" line="4" value="2"/>')
+            print('</ScilabString>')
+            print('<ScilabDouble as="realParameters" '
+                  'height="0" width="0"/>')
+            print('<ScilabDouble as="integerParameters" '
+                  'height="105" width="1">')
+            diagram.tk_count += 1
+            # The remaining part of the block is read from the
+            # Read_Content.txt file and written to the xml file
+            with open(READCONTENTFILE, "r") as read_file:
+                for line_content in read_file:
+                    print(line_content, end='')
+        print(line, end='')
+
+    # To resolve port issue coming in xcos file for following blocks :
+    # INTMUL,MATBKSL,MATDET,MATDIAG,MATDIV and CURV_F
+    # ISSUE is missing of dataColumns and dataLines in port tag
+    block_idint = []
+    block_idmatblsk = []
+    block_det = []
+    block_diag = []
+    block_div = []
+    block_curl = []
+    for block in blocks:
+        # to find INTMUL in blocks and extract its block id and save in
+        # block_idint
+        if block.getAttribute("style") == "INTMUL":
+            block_idint.append(int(block.getAttribute("id")))
+        # to find MATBKSL in blocks and extract its block id and save in
+        # block_idmatblsk
+        if block.getAttribute("style") == "MATBKSL":
+            block_idmatblsk.append(int(block.getAttribute("id")))
+        # to find MATDET in blocks and extract its block id and save in
+        # block_det
+        if block.getAttribute("style") == "MATDET":
+            block_det.append(int(block.getAttribute("id")))
+        # to find MATDIAG in blocks and extract its block id and save in
+        # block_diag
+        if block.getAttribute("style") == "MATDIAG":
+            block_diag.append(int(block.getAttribute("id")))
+        # to find MATDIV in blocks and extract its block id and save in
+        # block_div
+        if block.getAttribute("style") == "MATDIV":
+            block_div.append(int(block.getAttribute("id")))
+        # to find CURV_f in blocks and extract its block id and save in
+        # block_curl
+        if block.getAttribute("style") == "CURV_f":
+            block_curl.append(int(block.getAttribute("id")))
+    if len(block_idint) >= 1:
+        with open(temp_file_xml_name, "r") as f:
+            newline = []
+            i = 0
+            for word in f.readlines():
+                # check for existance of "ExplicitInputPort" in line
+                srch = '<ExplicitInputPort dataType="REAL_MATRIX"'
+                if srch in word:
+                    rplc = ('<ExplicitInputPort dataColumns="-3" '
+                            'dataLines="-2" dataType="REAL_MATRIX"')
+                    temp_word = ""
+                    for i in range(len(block_idint)):
+                        # if ordering= 2 and parent id= INTMUL block id
+                        srch2 = (
+                            'ordering="2" '
+                            'parent="' + str(block_idint[i]) + '"')
+                        if srch2 in word:
+                            # replace word and add datacolumns and
+                            # datalines
+                            temp_word = word.replace(srch, rplc)
+                            i += 1
+                    if temp_word != "":
+                        newline.append(temp_word)
+                    else:
+                        newline.append(word)
+                else:
+                    newline.append(word)
+        with open(temp_file_xml_name, "w") as f:
+            for line in newline:
+                f.writelines(line)
+        with open(temp_file_xml_name, "r") as f:
+            newline = []
+            i = 0
+            for word in f.readlines():
+                # check for existance of "ExplicitOutputPort" in line
+                srch = '<ExplicitOutputPort dataType="REAL_MATRIX"'
+                if srch in word:
+                    rplc = ('<ExplicitOutputPort dataColumns="-3" '
+                            'dataType="REAL_MATRIX"')
+                    temp_word = ""
+                    for i in range(len(block_idint)):
+                        # if parent id= INTMUL block id
+                        srch2 = 'parent="' + str(block_idint[i]) + '"'
+                        if srch2 in word:
+                            # replace word and add datacolumns and
+                            # datalines
+                            temp_word = word.replace(srch, rplc)
+                            i += 1
+                    if temp_word != "":
+                        newline.append(temp_word)
+                    else:
+                        newline.append(word)
+                else:
+                    newline.append(word)
+        with open(temp_file_xml_name, "w") as f:
+            for line in newline:
+                f.writelines(line)
+    if len(block_idmatblsk) >= 1:
+        with open(temp_file_xml_name, "r") as f:
+            newline = []
+            i = 0
+            for word in f.readlines():
+                srch = '<ExplicitInputPort dataType="REAL_MATRIX"'
+                if srch in word:
+                    rplc = ('<ExplicitInputPort dataColumns="-3" '
+                            'dataType="REAL_MATRIX"')
+                    temp_word = ""
+                    for i in range(len(block_idmatblsk)):
+                        srch2 = (
+                            'ordering="2" '
+                            'parent="' + str(block_idmatblsk[i]) + '"')
+                        if srch2 in word:
+                            temp_word = word.replace(srch, rplc)
+                            i += 1
+                    if temp_word != "":
+                        newline.append(temp_word)
+                    else:
+                        newline.append(word)
+                else:
+                    newline.append(word)
+        with open(temp_file_xml_name, "w") as f:
+            for line in newline:
+                f.writelines(line)
+        with open(temp_file_xml_name, "r") as f:
+            newline = []
+            i = 0
+            for word in f.readlines():
+                srch = '<ExplicitOutputPort dataType="REAL_MATRIX"'
+                if srch in word:
+                    rplc = ('<ExplicitOutputPort dataColumns="-3" '
+                            'dataLines="-2" dataType="REAL_MATRIX"')
+                    temp_word = ""
+                    for i in range(len(block_idmatblsk)):
+                        srch2 = 'parent="' + str(block_idmatblsk[i]) + '"'
+                        if srch2 in word:
+                            temp_word = word.replace(srch, rplc)
+                            i += 1
+                    if temp_word != "":
+                        newline.append(temp_word)
+                    else:
+                        newline.append(word)
+                else:
+                    newline.append(word)
+        with open(temp_file_xml_name, "w") as f:
+            for line in newline:
+                f.writelines(line)
+    if len(block_det) >= 1:
+        with open(temp_file_xml_name, "r") as f:
+            newline = []
+            i = 0
+            for word in f.readlines():
+                srch = '<ExplicitInputPort dataType="REAL_MATRIX"'
+                if srch in word:
+                    rplc = ('<ExplicitInputPort dataColumns="-1" '
+                            'dataType="REAL_MATRIX"')
+                    temp_word = ""
+                    for i in range(len(block_det)):
+                        srch2 = (
+                            'ordering="2" '
+                            'parent="' + str(block_det[i]) + '"')
+                        if srch2 in word:
+                            temp_word = word.replace(srch, rplc)
+                            i += 1
+                    if temp_word != "":
+                        newline.append(temp_word)
+                    else:
+                        newline.append(word)
+                else:
+                    newline.append(word)
+        with open(temp_file_xml_name, "w") as f:
+            for line in newline:
+                f.writelines(line)
+        with open(temp_file_xml_name, "r") as f:
+            newline = []
+            i = 0
+            for word in f.readlines():
+                srch = '<ExplicitOutputPort dataType="REAL_MATRIX"'
+                if srch in word:
+                    rplc = ('<ExplicitOutputPort dataColumns="1" '
+                            'dataLines="1" dataType="REAL_MATRIX"')
+                    temp_word = ""
+                    for i in range(len(block_det)):
+                        srch2 = 'parent="' + str(block_det[i]) + '"'
+                        if srch2 in word:
+                            temp_word = word.replace(srch, rplc)
+                            i += 1
+                    if temp_word != "":
+                        newline.append(temp_word)
+                    else:
+                        newline.append(word)
+                else:
+                    newline.append(word)
+        with open(temp_file_xml_name, "w") as f:
+            for line in newline:
+                f.writelines(line)
+    if len(block_curl) >= 1:
+        with open(temp_file_xml_name, "r") as f:
+            newline = []
+            i = 0
+            for word in f.readlines():
+                srch = '<ExplicitOutputPort dataType="REAL_MATRIX"'
+                if srch in word:
+                    rplc = ('<ExplicitOutputPort dataColumns="1" '
+                            'dataLines="1" dataType="REAL_MATRIX"')
+                    temp_word = ""
+                    for i in range(len(block_curl)):
+                        srch2 = 'parent="' + str(block_curl[i]) + '"'
+                        if srch2 in word:
+                            temp_word = word.replace(srch, rplc)
+                            i += 1
+                    if temp_word != "":
+                        newline.append(temp_word)
+                    else:
+                        newline.append(word)
+                else:
+                    newline.append(word)
+        with open(temp_file_xml_name, "w") as f:
+            for line in newline:
+                f.writelines(line)
+    if len(block_diag) >= 1:
+        with open(temp_file_xml_name, "r") as f:
+            newline = []
+            i = 0
+            for word in f.readlines():
+                srch = '<ExplicitInputPort dataType="REAL_MATRIX"'
+                if srch in word:
+                    rplc = ('<ExplicitInputPort dataColumns="1" '
+                            'dataType="REAL_MATRIX"')
+                    temp_word = ""
+                    for i in range(len(block_diag)):
+                        srch2 = (
+                            'ordering="2" '
+                            'parent="' + str(block_diag[i]) + '"')
+                        if srch2 in word:
+                            temp_word = word.replace(srch, rplc)
+                            i += 1
+                    if temp_word != "":
+                        newline.append(temp_word)
+                    else:
+                        newline.append(word)
+                else:
+                    newline.append(word)
+        with open(temp_file_xml_name, "w") as f:
+            for line in newline:
+                f.writelines(line)
+        with open(temp_file_xml_name, "r") as f:
+            newline = []
+            i = 0
+            for word in f.readlines():
+                srch = '<ExplicitOutputPort dataType="REAL_MATRIX"'
+                if srch in word:
+                    rplc = ('<ExplicitOutputPort dataColumns="-1" '
+                            'dataType="REAL_MATRIX"')
+                    temp_word = ""
+                    for i in range(len(block_diag)):
+                        srch2 = 'parent="' + str(block_diag[i]) + '"'
+                        if srch2 in word:
+                            temp_word = word.replace(srch, rplc)
+                            i += 1
+                    if temp_word != "":
+                        newline.append(temp_word)
+                    else:
+                        newline.append(word)
+                else:
+                    newline.append(word)
+        with open(temp_file_xml_name, "w") as f:
+            for line in newline:
+                f.writelines(line)
+    if len(block_div) >= 1:
+        with open(temp_file_xml_name, "r") as f:
+            newline = []
+            i = 0
+            for word in f.readlines():
+                srch = '<ExplicitInputPort dataType="REAL_MATRIX"'
+                if srch in word:
+                    rplc = ('<ExplicitInputPort dataColumns="-3" '
+                            'dataType="REAL_MATRIX"')
+                    temp_word = ""
+                    for i in range(len(block_div)):
+                        srch2 = (
+                            'ordering="1" '
+                            'parent="' + str(block_div[i]) + '"')
+                        if srch2 in word:
+                            temp_word = word.replace(srch, rplc)
+                            i += 1
+                    if temp_word != "":
+                        newline.append(temp_word)
+                    else:
+                        newline.append(word)
+                else:
+                    newline.append(word)
+        with open(temp_file_xml_name, "w") as f:
+            for line in newline:
+                f.writelines(line)
+        with open(temp_file_xml_name, "r") as f:
+            newline = []
+            i = 0
+            for word in f.readlines():
+                srch = '<ExplicitInputPort dataType="REAL_MATRIX"'
+                if srch in word:
+                    rplc = ('<ExplicitInputPort dataColumns="-3" '
+                            'dataLines="-2" dataType="REAL_MATRIX"')
+                    temp_word = ""
+                    for i in range(len(block_div)):
+                        srch2 = (
+                            'ordering="2" '
+                            'parent="' + str(block_div[i]) + '"')
+                        if srch2 in word:
+                            temp_word = word.replace(srch, rplc)
+                            i += 1
+                    if temp_word != "":
+                        newline.append(temp_word)
+                    else:
+                        newline.append(word)
+                else:
+                    newline.append(word)
+        with open(temp_file_xml_name, "w") as f:
+            for line in newline:
+                f.writelines(line)
+    # Changing the file extension from xml to xcos
+    fname = join(sessiondir, UPLOAD_FOLDER,
+                 splitext(temp_file_xml_name)[0] + ".xcos")
+    # Move the xcos file to uploads directory
+    os.rename(temp_file_xml_name, fname)
+    diagram.xcos_file_name = fname
+    return diagram.diagram_id
 
 
 @app.route('/filenames.php', methods=['POST'])
@@ -1716,6 +1738,7 @@ def get_example_file(example_file_id):
             print('Exception:', str(e))
 
     scilab_url = "https://scilab.in/download/file/" + example_file_id
+    print('downloading', scilab_url)
     r = requests.get(scilab_url)
     text = clean_text(r.text)
     return (text, filename, example_id)
@@ -1756,6 +1779,7 @@ def get_prerequisite_file(example_id):
             print('Exception:', str(e))
 
     scilab_url = "https://scilab.in/download/file/" + str(prerequisite_file_id)
+    print('downloading', scilab_url)
     r = requests.get(scilab_url)
     text = clean_text_2(r.text)
     return (text, filename)
