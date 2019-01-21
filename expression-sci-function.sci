@@ -111,7 +111,7 @@ endfunction
 function callFunctionAcctoMethod(filepath,head,exx)
         cal_exp=strcat(["deff(",head,",",exx,")"]);
         ok=execstr(cal_exp,"errcatch")==0
-        if (ok==%t) thenx
+        if (ok==%t) then
             fileid = strcat([filepath, "/", "expr_set_value.txt"]);
             f_temp = mopen(fileid, 'wt');
             mfprintf(f_temp, ' %s :',  "Erroneous expression");

@@ -1718,7 +1718,6 @@ def run_scilab_func_request():
     return list_value
 
 # App route for getting scilab expression output for Expression Block
-
 @app.route('/getExpressionOutput', methods=['POST'])
 def run_scilab_func_expr_request():
     (diagram, __) = get_diagram(get_request_id())
