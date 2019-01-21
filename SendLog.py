@@ -199,10 +199,6 @@ class line_and_state:
     line = None  # initial line to none(Nothing is present)
     state = NOLINE  # initial state to NOLINE ie
 
-    def __init__(self, line, state):
-        self.line = line
-        self.state = state
-
     def set(self, line_state):
         self.line = line_state[0]  # to set line
         self.state = line_state[1]  # to set state
@@ -306,7 +302,7 @@ def add_script():
     return (script, sessiondir)
 
 
-def parse_line(line):
+def parse_line(line, lineno):
     '''
     Function to parse the line
     Returns tuple of figure ID and state
@@ -315,31 +311,35 @@ def parse_line(line):
             DATA otherwise
     '''
     line_words = line.split(' ')  # Each line is split to read condition
-    # The below condition determines the block ID
-    if line_words[2] == "Block":
-        # to get block id (Which is explicitly added by us while writing into
-        # log in scilab source code)
-        block_id = int(line_words[4])
-        return (block_id, BLOCK_IDENTIFICATION)
-    if line_words[2] == "Initialization":
-        # New figure created
-        # Get fig id
-        # to extract figure ids (sometime multiple sinks can be used in one
-        # diagram to differentiate that)
-        figure_id = int(line_words[-1])
-        return (figure_id, INITIALIZATION)
-    elif line_words[2] == "Ending":
-        # Current figure end
-        # Get fig id
-        figure_id = int(line_words[-1])
-        return (figure_id, ENDING)
-    else:
-        # Current figure coordinates
-        figure_id = int(line_words[3])
-        return (figure_id, DATA)
+    try:
+        # The below condition determines the block ID
+        if line_words[2] == "Block":
+            # to get block id (Which is explicitly added by us while writing
+            # into log in scilab source code)
+            block_id = int(line_words[4])
+            return (block_id, BLOCK_IDENTIFICATION)
+        if line_words[2] == "Initialization":
+            # New figure created
+            # Get fig id
+            # to extract figure ids (sometime multiple sinks can be used in one
+            # diagram to differentiate that)
+            figure_id = int(line_words[-1])
+            return (figure_id, INITIALIZATION)
+        elif line_words[2] == "Ending":
+            # Current figure end
+            # Get fig id
+            figure_id = int(line_words[-1])
+            return (figure_id, ENDING)
+        else:
+            # Current figure coordinates
+            figure_id = int(line_words[3])
+            return (figure_id, DATA)
+    except Exception as e:
+        print(str(e), "while parsing", line, "on line", lineno)
+        return (None, NOLINE)
 
 
-def get_line_and_state(file, figure_list):
+def get_line_and_state(file, figure_list, lineno):
     '''
     Function to get a new line from file
     This also parses the line and appends new figures to figure List
@@ -348,7 +348,7 @@ def get_line_and_state(file, figure_list):
     if not line:            # if line is empty then return noline
         return (None, NOLINE)
     # every line is passed to function parse_line for getting values
-    parse_result = parse_line(line)
+    parse_result = parse_line(line, lineno)
     figure_id = parse_result[0]
     state = parse_result[1]
     if state == INITIALIZATION:
@@ -366,6 +366,8 @@ def get_line_and_state(file, figure_list):
         # will be removed
         figure_list.remove(figure_id)
         return (None, ENDING)
+    elif state == NOLINE:
+        return (None, NOLINE)
     return (line, DATA)
 
 
@@ -833,9 +835,13 @@ def event_stream():
 
     with open(diagram.log_name, "r") as log_file:
         # Start sending log
-        line = line_and_state(None, NOLINE)
-        while line.set(get_line_and_state(log_file, diagram.figure_list)) or \
-                len(diagram.figure_list) > 0:
+        lineno = 0
+        line = line_and_state()
+        while True:
+            lineno += 1
+            line.set(get_line_and_state(log_file, diagram.figure_list, lineno))
+            if len(diagram.figure_list) == 0:
+                break
             # Get the line and loop until the state is ENDING and figure_list
             # empty. Determine if we get block id and give it to chart.js
             if line.get_state() == BLOCK_IDENTIFICATION:
@@ -844,8 +850,6 @@ def event_stream():
                 gevent.sleep(LOOK_DELAY)
             else:
                 yield "event: log\ndata: " + line.get_line() + "\n\n"
-            # Reset line, so server won't send same line twice
-            line = line_and_state(None, NOLINE)
 
     # Finished Sending Log
     kill_scilab(diagram)
