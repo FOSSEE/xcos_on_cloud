@@ -1,25 +1,28 @@
 //Function to display content of prerequisite file
 
+var editorCodeMirror = null;
+var resultCodeMirror = null;
+
 function displayPrerequisiteFile(graph) {
     var file_content = prerequisite_content;
     var maindiv = document.createElement('div');
     maindiv.className = "maindiv";
-    maindiv.innerHTML ="<table width = '100%'>"+
-        "<tr><td><div id ='codediv' style='width:800px; height:350px'><label class='insidelabel'>Scilab Code : </label><textarea id ='editorTextArea' placeholder= 'Write a new code...'></textarea></div></td>"+
-        "<td><div id ='resultdiv' style='display:none'><label class='insidelabel'>Result : </label><img src='images/close.gif' style='float:right;' onclick='displayResultforCode(false);' title='Close result window'><textarea id='resultTextArea'></textarea></div></td></tr>"+
-        "<tr><td style ='padding-top:60px'><button id='executePrerequisite' onclick='displayResultforCode(true);' title='Start execution'>Execute</button><button id='executePrerequisite' style='margin-left:60px' onclick='displayResultforCode(false);' title='Stop execution'>Stop</button></td></tr></table>";
+    maindiv.innerHTML = "<table width='100%'>"+
+        "<tr><td><div id='codediv' style='width:800px; height:350px'><label class='insidelabel'>Scilab Code : </label><textarea id='editorTextArea' placeholder='Write a new code...'></textarea></div></td>"+
+        "<td><div id='resultdiv' style='display:none'><label class='insidelabel'>Result : </label><img src='images/close.gif' style='float:right;' onclick='displayResultforCode(false);' title='Close result window'><textarea id='resultTextArea'></textarea></div></td></tr>"+
+        "<tr><td style='padding-top:60px'><button id='executePrerequisite' onclick='saveAndExecutePrerequisiteFile();' title='Start execution'>Execute</button><button id='executePrerequisite' style='margin-left:60px' onclick='stopPrerequisiteFile();' title='Stop execution'>Stop</button></td></tr></table>";
     showModalWindow(graph, 'Prerequisite File', maindiv, 900, 500);
     var editorTextArea = document.getElementById("editorTextArea");
     var resultTextArea = document.getElementById("resultTextArea");
     editorTextArea.value = prerequisite_content;
 
-    CodeMirror.fromTextArea(editorTextArea, {
+    editorCodeMirror = CodeMirror.fromTextArea(editorTextArea, {
         lineNumbers: true,
         lineWrapping : false,
         matchBrackets: true
     });
 
-    CodeMirror.fromTextArea(resultTextArea, {
+    resultCodeMirror = CodeMirror.fromTextArea(resultTextArea, {
         lineNumbers: false,
         lineWrapping : false,
         readOnly: true
@@ -31,6 +34,8 @@ function displayResultforCode(visible_flag) {
 
     var codediv = document.getElementById("codediv");
     var resultdiv = document.getElementById("resultdiv");
+    if (codediv === null || resultdiv === null)
+        return;
     if (visible_flag) {
         codediv.style.width="420px";
         codediv.style.height="350px";
@@ -49,8 +54,9 @@ var old_script_id = null;
 var script_id = null;
 
 function saveAndExecutePrerequisiteFile() {
-    var editorTextArea = document.getElementById("editorTextArea");
-    prerequisite_content = editorTextArea.value;
+    if (editorCodeMirror == null)
+        return;
+    prerequisite_content = editorCodeMirror.getValue();
     executePrerequisiteFile();
 }
 
