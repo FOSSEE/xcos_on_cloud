@@ -820,6 +820,10 @@ def event_stream():
     This function is called in app route 'SendLog' below
     '''
     (diagram, __) = get_diagram(get_request_id())
+    if diagram is None:
+        print('no diagram')
+        yield "event: ERROR\ndata: no diagram\n\n"
+        return
 
     # Open the log file
     if not isfile(diagram.log_name):
