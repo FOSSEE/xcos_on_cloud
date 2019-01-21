@@ -60,6 +60,7 @@ function executePrerequisiteFile() {
 
     executeScriptButton.disabled = true;
     stopScriptButton.disabled = false;
+    clearScriptButton.disabled = true;
 
     var blob = new Blob([prerequisite_content], {
         type: 'application/x-scilab'
@@ -91,6 +92,7 @@ function executePrerequisiteFile() {
             }
             executeScriptButton.disabled = false;
             stopScriptButton.disabled = true;
+            clearScriptButton.disabled = false;
         },
         error: function(xhr, textStatus, errorThrown) {
             var msg = "Error while executing script:\n";
@@ -103,6 +105,7 @@ function executePrerequisiteFile() {
             alert(msg);
             executeScriptButton.disabled = false;
             stopScriptButton.disabled = true;
+            clearScriptButton.disabled = false;
         }
     });
 }
@@ -126,4 +129,12 @@ function stopPrerequisiteFile() {
             script_id = old_script_id;
         }
     });
+}
+
+function clearPrerequisiteFile() {
+    prerequisite_content = "";
+    script_id = null;
+    executeScriptButton.disabled = true;
+    stopScriptButton.disabled = true;
+    clearScriptButton.disabled = true;
 }
