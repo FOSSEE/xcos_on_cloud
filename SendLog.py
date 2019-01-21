@@ -1717,26 +1717,28 @@ def run_scilab_func_request():
 
     return list_value
 
+
 # App route for getting scilab expression output for Expression Block
+
 @app.route('/getExpressionOutput', methods=['POST'])
 def run_scilab_func_expr_request():
     (diagram, __) = get_diagram(get_request_id())
     if diagram is None:
         print('no diagram')
         return
-    runtime = get_runtime(diagram.uid, create=True)
-    pathfortxtfile=session['sessiondir']
+
+    pathfortxtfile=diagram.sessiondir;
     head = request.form['head']
     exx = request.form['exx']
     command = "exec('" + EXP_SCI_FUNC_WRITE + "');callFunctionAcctoMethod('" + pathfortxtfile + \
     "','" + head +"','" + exx + "');"
 
     try:
-        runtime.scilab_proc = run_scilab(command)
+        diagram.scilab_proc = run_scilab(command)
     except FileNotFoundError:
         return "scilab not found. Follow the installation instructions"
 
-    scilab_out, scilab_err = runtime.scilab_proc.communicate()
+    diagram.scilab_proc.communicate()
 
     file_name = pathfortxtfile + "/" + "expr_set_value.txt"
     exprs_value = {}                       # create a dictionary
@@ -1748,6 +1750,7 @@ def run_scilab_func_expr_request():
         exprs_value[var_array[i]] = valuesfromfile[i]
 
     return jsonify(exprs_value)
+
 
 # example page start ###################
 
