@@ -100,7 +100,7 @@ DISPLAY_LIMIT = 10
 SCILAB_START = (
     "errcatch(-1,'stop');lines(0,120);clearfun('messagebox');"
     "function messagebox(msg,msgboxTitle,msgboxIcon,buttons,isModal),"
-    "disp(msg),endfunction;loadXcosLibs();")
+    "disp(msg),endfunction;")
 SCILAB_END = "mode(2);quit();"
 SCILAB_VARS = [
     "%p_r_p",
@@ -108,6 +108,7 @@ SCILAB_VARS = [
     "close",
     "extractDatatip",
     "extractLight",
+    "messagebox",
     "syslin",
     "tf2ss",
 ]
@@ -739,6 +740,7 @@ def start_scilab():
     #    rather than Sinks's log file.
     #    0/No-condition : For all other blocks
 
+    command += "loadXcosLibs();"
     command += "importXcosDiagram('" + diagram.xcos_file_name + "');"
     command += "xcos_simulate(scs_m,4);"
 
