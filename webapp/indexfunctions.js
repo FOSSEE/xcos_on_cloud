@@ -64,6 +64,7 @@ var wnd = null;
 var affichwnd = null;
 var executeScriptButton = null;
 var stopScriptButton = null;
+var clearScriptButton = null;
 var simulateButton = null;
 var stopButton = null;
 
@@ -1850,12 +1851,19 @@ function main(container, outline, toolbar, sidebar, status) {
         stopPrerequisiteFile();
     });
 
+    editor.addAction('clearScript', function(editor, cell) {
+        clearPrerequisiteFile();
+    });
+
     addToolbarButton(editor, toolbar, 'showScript', 'Show Script', 'images/script.png');
     executeScriptButton = addToolbarButton(editor, toolbar, 'executeScript', 'Execute Script', 'images/script.png');
     if (prerequisite_content.length == 0)
         executeScriptButton.disabled = true;
     stopScriptButton = addToolbarButton(editor, toolbar, 'stopScript', 'Stop Script', 'images/script.png');
     stopScriptButton.disabled = true;
+    clearScriptButton = addToolbarButton(editor, toolbar, 'clearScript', 'Clear Script', 'images/script.png');
+    if (prerequisite_content.length == 0)
+        clearScriptButton.disabled = true;
     toolbar.appendChild(spacer.cloneNode(true));
 
     simulateButton = addToolbarButton(editor, toolbar, 'simulate', 'Simulate', 'images/ScilabExecute.png');
@@ -2415,6 +2423,8 @@ function main(container, outline, toolbar, sidebar, status) {
         // Send xcos file to server
         var form = new FormData()
         form.append("file",blob);
+        if (script_id != null)
+            form.append("script_id", script_id);
 
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "/upload", true);
