@@ -1727,12 +1727,12 @@ def run_scilab_func_expr_request():
         print('no diagram')
         return
 
-    pathfortxtfile = diagram.sessiondir;
+    pathfortxtfile = diagram.sessiondir
     head = request.form['head']
     exx = request.form['exx']
     command = "exec('" + EXP_SCI_FUNC_WRITE + \
-    "');callFunctionAcctoMethod('" + pathfortxtfile + \
-    "','" + head +"','" + exx + "');"
+        "');callFunctionAcctoMethod('" + pathfortxtfile + \
+        "','" + head + "','" + exx + "');"
 
     try:
         diagram.scilab_proc = run_scilab(command)
@@ -1745,7 +1745,7 @@ def run_scilab_func_expr_request():
     # create a dictionary
     exprs_value = {}
     # create a array containing value for set parameters
-    var_array = ["ok","ok1","ipar","rpar","nz"]
+    var_array = ["ok", "ok1", "ipar", "rpar", "nz"]
     with open(file_name) as f:
         data = f.read()  # Read the data into a variable
         valuesfromfile = data.splitlines()
