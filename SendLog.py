@@ -1727,7 +1727,7 @@ def run_scilab_func_expr_request():
         print('no diagram')
         return
 
-    pathfortxtfile=diagram.sessiondir;
+    pathfortxtfile = diagram.sessiondir;
     head = request.form['head']
     exx = request.form['exx']
     command = "exec('" + EXP_SCI_FUNC_WRITE + "');callFunctionAcctoMethod('" + pathfortxtfile + \
@@ -1745,7 +1745,7 @@ def run_scilab_func_expr_request():
     var_array = ["ok","ok1","ipar","rpar","nz"] # create a array containing value for set parameters
     with open(file_name) as f:
         data = f.read()  # Read the data into a variable
-        valuesfromfile=data.splitlines()
+        valuesfromfile = data.splitlines()
     for i in range(len(valuesfromfile)):
         exprs_value[var_array[i]] = valuesfromfile[i]
 
