@@ -94,10 +94,10 @@ function executePrerequisiteFile() {
         success: function(rv) {
             var msg = rv.msg;
             if (msg != '') {
-                alert("Error while executing script:\n" + msg);
+                alert("Error while executing script\n\n" + msg);
             }
             var id = rv.script_id;
-            if (id !== null) {
+            if (id != null) {
                 old_script_id = script_id;
                 script_id = id;
 
@@ -110,10 +110,10 @@ function executePrerequisiteFile() {
                     success: function(rv) {
                         var msg = rv.msg;
                         if (msg != '') {
-                            alert("Error while executing script:\n" + msg);
+                            alert("Error while executing script\n\n" + msg);
                         }
                         var output = rv.output;
-                        if (output !== null) {
+                        if (output != null) {
                             /* save the output here */
                             prerequisite_output = output;
                             /* if code window is open, show the output window */
@@ -122,7 +122,7 @@ function executePrerequisiteFile() {
                         setScriptSimulationFlags(false);
                     },
                     error: function(xhr, textStatus, errorThrown) {
-                        var msg = "Error while executing script:\n";
+                        var msg = "Error while executing script\n\n";
                         if (textStatus != null) {
                             msg += textStatus + "\n";
                         }
@@ -133,10 +133,12 @@ function executePrerequisiteFile() {
                         setScriptSimulationFlags(false);
                     }
                 });
+            } else {
+                setScriptSimulationFlags(false);
             }
         },
         error: function(xhr, textStatus, errorThrown) {
-            var msg = "Error while executing script:\n";
+            var msg = "Error while executing script\n\n";
             if (textStatus != null) {
                 msg += textStatus + "\n";
             }
