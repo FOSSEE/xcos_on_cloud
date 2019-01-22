@@ -498,9 +498,8 @@ def getscriptoutput():
         # if error is encountered while execution of script file, then error
         # message is returned to the user
         if '!--error' in output:
-            msg = ("Error in script execution.\n"
-                   "Please edit the script and execute again.\n"
-                   "Check output window for details.")
+            msg = ("Check output window for details.\n"
+                   "Please edit the script and execute again.\n")
             script.status = -3
             rv = {'status': script.status, 'msg': msg, 'output': output}
             return Response(json.dumps(rv), mimetype='application/json')
