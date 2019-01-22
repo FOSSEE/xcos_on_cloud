@@ -7,10 +7,21 @@ function displayPrerequisiteFile(graph) {
     var file_content = prerequisite_content;
     var maindiv = document.createElement('div');
     maindiv.className = "maindiv";
-    maindiv.innerHTML = "<table width='100%'>"+
-        "<tr><td><div id='codediv' style='width:800px; height:350px'><label class='insidelabel'>Scilab Code : </label><textarea id='editorTextArea' placeholder='Write a new code...'></textarea></div></td>"+
-        "<td><div id='resultdiv' style='display:none'><label class='insidelabel'>Result : </label><img src='images/close.gif' style='float:right;' onclick='displayResultforCode(false);' title='Close result window'><textarea id='resultTextArea'></textarea></div></td></tr>"+
-        "<tr><td style='padding-top:60px'><button id='executePrerequisite' onclick='saveAndExecutePrerequisiteFile();' title='Start execution'>Execute</button><button id='executePrerequisite' style='margin-left:60px' onclick='stopPrerequisiteFile();' title='Stop execution'>Stop</button></td></tr></table>";
+    maindiv.innerHTML = "<table width='100%'><tr><td>"
+        +"<div id='codediv' style='width:800px; height:350px'>"
+        +"<label class='insidelabel'>Scilab Code :</label>"
+        +"<textarea id='editorTextArea' placeholder='Write a new code...'></textarea>"
+        +"</div>"
+        +"</td><td>"
+        +"<div id='resultdiv' style='display:none'>"
+        +"<label class='insidelabel'>Result :</label>"
+        +"<img src='images/close.gif' style='float:right;' onclick='displayResultforCode(false);' title='Close result window'>"
+        +"<textarea id='resultTextArea'></textarea>"
+        +"</div>"
+        +"</td></tr><tr><td style='padding-top:60px'>"
+        +"<button id='executePrerequisite' onclick='executePrerequisiteFile();' title='Start execution'>Execute</button>"
+        +"<button id='stopPrerequisite' style='margin-left:60px' onclick='stopPrerequisiteFile();' title='Stop execution'>Stop</button>"
+        +"</td></tr></table>";
     showModalWindow(graph, 'Prerequisite File', maindiv, 900, 500);
     var editorTextArea = document.getElementById("editorTextArea");
     var resultTextArea = document.getElementById("resultTextArea");
@@ -21,12 +32,18 @@ function displayPrerequisiteFile(graph) {
         lineWrapping : false,
         matchBrackets: true
     });
+    editorCodeMirror.on("changes", function(cm) {
+        prerequisite_content = cm.getValue();
+        setScriptSimulationFlags(scriptSimulationStarted);
+    });
 
     resultCodeMirror = CodeMirror.fromTextArea(resultTextArea, {
         lineNumbers: false,
         lineWrapping : false,
         readOnly: true
     });
+
+    setScriptSimulationFlags(scriptSimulationStarted);
 }
 
 //Function to display/hide result window of scilab code
@@ -53,20 +70,11 @@ function displayResultforCode(visible_flag) {
 var old_script_id = null;
 var script_id = null;
 
-function saveAndExecutePrerequisiteFile() {
-    if (editorCodeMirror == null)
-        return;
-    prerequisite_content = editorCodeMirror.getValue();
-    executePrerequisiteFile();
-}
-
 function executePrerequisiteFile() {
     if (prerequisite_content == "")
         return;
 
-    executeScriptButton.disabled = true;
-    stopScriptButton.disabled = false;
-    clearScriptButton.disabled = true;
+    setScriptSimulationFlags(true);
 
     var blob = new Blob([prerequisite_content], {
         type: 'application/x-scilab'
@@ -90,15 +98,39 @@ function executePrerequisiteFile() {
             if (id !== null) {
                 old_script_id = script_id;
                 script_id = id;
+
+                $.ajax({
+                    type: "POST",
+                    url: "/getscriptoutput",
+                    async: true,
+                    data: { script_id: script_id },
+                    dataType: "json",
+                    success: function(rv) {
+                        var msg = rv.msg;
+                        if (msg != '') {
+                            alert("Error while executing script:\n" + msg);
+                        }
+                        var output = rv.output;
+                        if (output !== null) {
+                            /* save the output here */
+                            prerequisite_output = output;
+                            /* TODO: if code window is open, show the output window */
+                        }
+                        setScriptSimulationFlags(false);
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        var msg = "Error while executing script:\n";
+                        if (textStatus != null) {
+                            msg += textStatus + "\n";
+                        }
+                        if (errorThrown != null) {
+                            msg += errorThrown + "\n";
+                        }
+                        alert(msg);
+                        setScriptSimulationFlags(false);
+                    }
+                });
             }
-            var output = rv.output;
-            if (output !== null) {
-                /* TODO: save the output here */
-                /* TODO: if code window is open, show the output window */
-            }
-            executeScriptButton.disabled = false;
-            stopScriptButton.disabled = true;
-            clearScriptButton.disabled = false;
         },
         error: function(xhr, textStatus, errorThrown) {
             var msg = "Error while executing script:\n";
@@ -109,9 +141,7 @@ function executePrerequisiteFile() {
                 msg += errorThrown + "\n";
             }
             alert(msg);
-            executeScriptButton.disabled = false;
-            stopScriptButton.disabled = true;
-            clearScriptButton.disabled = false;
+            setScriptSimulationFlags(false);
         }
     });
 }
@@ -122,17 +152,14 @@ function stopPrerequisiteFile() {
 
     stopScriptButton.disabled = true;
 
-    var formData = new FormData();
-    formData.set('script_id', script_id);
     $.ajax({
         type: "POST",
         url: "/stopscript",
         async: true,
-        processData: false,
-        contentType: false,
-        data: formData,
+        data: { script_id: script_id },
         success: function(rv) {
             script_id = old_script_id;
+            setScriptSimulationFlags(false);
         }
     });
 }
@@ -140,7 +167,5 @@ function stopPrerequisiteFile() {
 function clearPrerequisiteFile() {
     prerequisite_content = "";
     script_id = null;
-    executeScriptButton.disabled = true;
-    stopScriptButton.disabled = true;
-    clearScriptButton.disabled = true;
+    setScriptSimulationFlags(false);
 }
