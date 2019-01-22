@@ -21,19 +21,26 @@ function EXPRESSION () {
 	    this.x = new standard_define(new ScilabDouble([5,2]),model,exprs,gr_i);
 	    return new BasicBlock(this.x)
     }
+    EXPRESSION.prototype.details = function EXPRESSION() {
+        return this.x;
+    }
     EXPRESSION.prototype.set = function EXPRESSION() {
-        this.in = parseFloat((arguments[0]["in"]))
+        this.in = inverse(arguments[0]["in"] || arguments[0]["inp"])
         this.exx = arguments[0]["exx"]
         this.usenz = parseFloat((arguments[0]["usenz"]))
 
         if(this.exx.length == 0){
             this.exx = "0";
         }
-
-        if(this.in == 1){
-            this.nini = 8;
+        if(this.in != 0){
+            if(this.in == 1){
+                this.nini = 8;
+            }else{
+                this.nini = this.in;
+            }
         }else{
-            this.nini = this.in;
+            alert("Variable u1 is not defined.");
+            EXPRESSION.get();
         }
 
         this.head = "%foo(";
@@ -51,14 +58,20 @@ function EXPRESSION () {
         var ok1 = get_values.ok1;
         if(ok == "false"){
             alert("Erroneous expression "+output);
+            EXPRESSION.get();
         }else{
             if(this.in > 1){
-                var io = check_io(this.x.model,this.x.graphics,ones(1,this.in),[1],[],[]);
+                this.inp = []
+                for (var i = 1; i <= this.in; i++ ) {
+                    this.inp.push([-1*i])
+                }
+                var io = check_io(this.x.model,this.x.graphics,this.inp,[1],[],[])
             }else{
-                var io = check_io(this.x.model,this.x.graphics,[-1],[1],[],[]);
+                var io = check_io(this.x.model,this.x.graphics,[-1],[1],[],[])
             }
             if(ok == "false"){
                 alert("Erroneous expression "+output);
+                EXPRESSION.get();
             }else{
                 if(ok1 == "true"){
                     this.x.model.rpar = new ScilabDouble(...this.rpar);
@@ -70,27 +83,24 @@ function EXPRESSION () {
                         this.x.model.nzcross = 0;
                         this.x.model.nmode = 0;
                     }
-                    this.x.model.in = new ScilabDouble(this.in);
-                    this.x.model.out = new ScilabDouble(this.out);
-                    var exprs = new ScilabString([this.in],[this.exx],[this.usenz]);
-	                this.displayParameter = [[this.exx]];
-                    this.x.graphics.exprs = exprs;
-                    return new BasicBlock(this.x)
+                 }else{
+                    alert("Variable u1 is not defined.");
+                    EXPRESSION.get();
                  }
             }
         }
-
+        var exprs = new ScilabString([this.in.toString()],[this.exx],[this.usenz])
+	    this.displayParameter = [[this.exx]]
+        this.x.graphics.exprs = exprs;
+        return new BasicBlock(this.x)
     }
     EXPRESSION.prototype.get = function EXPRESSION() {
          var options={
-            in:["number of inputs",this.in],
+            in:["number of inputs",this.in.toString()],
             exx:["scilab expression",this.exx.toString()],
             usenz:["use zero-crossing (0: no, 1 yes)",this.usenz],
         }
         return options
-    }
-    EXPRESSION.prototype.details = function EXPRESSION() {
-        return this.x;
     }
     EXPRESSION.prototype.get_popup_title = function EXPRESSION() {
         var set_param_popup_title="Give a scalar scilab expression using inputs u1, u2,... <br>If only one input, input is vector [u1,u2,...] (max 8) <br>ex: (dd*u1+sin(u2)>0)*u3 <br> Note that here dd must be defined in context";
