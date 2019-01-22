@@ -102,3 +102,5 @@ SYSTEM_COMMANDS = (
     r'unix\(.*\)|unix_g\(.*\)|unix_w\(.*\)|unix_x\(.*\)|unix_s\(.*\)|host'
     r'|newfun|execstr|ascii|mputl|dir\(\)'
 )
+
+REMOVEFILE = True
