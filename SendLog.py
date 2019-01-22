@@ -425,9 +425,7 @@ def is_unsafe_script(filename):
 
     # Delete saved file if system commands are encountered in that file
     remove(filename)
-    msg = ("System calls are not allowed in script file!\n"
-           "Please upload another script file!!")
-    return msg
+    return True
 
 
 @app.route('/uploadscript', methods=['POST'])
@@ -439,7 +437,7 @@ def uploadscript():
 
     file = request.files['file']
     if not file:
-        msg = "Upload Error"
+        msg = "Upload Error\n"
         rv = {'msg': msg}
         return Response(json.dumps(rv), mimetype='application/json')
 
@@ -450,7 +448,7 @@ def uploadscript():
 
     if is_unsafe_script(fname):
         msg = ("System calls are not allowed in script.\n"
-               "Please edit the script again.")
+               "Please edit the script again.\n")
         script.status = -1
         rv = {'status': script.status, 'msg': msg}
         return Response(json.dumps(rv), mimetype='application/json')
