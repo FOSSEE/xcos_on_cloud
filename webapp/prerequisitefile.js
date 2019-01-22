@@ -4,7 +4,6 @@ var editorCodeMirror = null;
 var resultCodeMirror = null;
 
 function displayPrerequisiteFile(graph) {
-    var file_content = prerequisite_content;
     var maindiv = document.createElement('div');
     maindiv.className = "maindiv";
     maindiv.innerHTML = "<table width='100%'><tr><td>"
@@ -44,6 +43,7 @@ function displayPrerequisiteFile(graph) {
     });
 
     setScriptSimulationFlags(scriptSimulationStarted);
+    displayResultforCode(prerequisite_output != '');
 }
 
 //Function to display/hide result window of scilab code
@@ -59,6 +59,8 @@ function displayResultforCode(visible_flag) {
         resultdiv.style.display = "block";
         resultdiv.style.width="410px";
         resultdiv.style.height="350px";
+        resultCodeMirror.setValue(prerequisite_output);
+        resultCodeMirror.refresh();
     } else {
         codediv.style.width="800px";
         codediv.style.height="350px";
@@ -114,7 +116,8 @@ function executePrerequisiteFile() {
                         if (output !== null) {
                             /* save the output here */
                             prerequisite_output = output;
-                            /* TODO: if code window is open, show the output window */
+                            /* if code window is open, show the output window */
+                            displayResultforCode(output != '');
                         }
                         setScriptSimulationFlags(false);
                     },
@@ -166,6 +169,7 @@ function stopPrerequisiteFile() {
 
 function clearPrerequisiteFile() {
     prerequisite_content = "";
+    prerequisite_output = "";
     script_id = null;
     setScriptSimulationFlags(false);
 }
