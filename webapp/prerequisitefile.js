@@ -20,6 +20,7 @@ function displayPrerequisiteFile(graph) {
         +"</td></tr><tr><td style='padding-top:60px'>"
         +"<button id='executePrerequisite' onclick='executePrerequisiteFile();' title='Start execution'>Execute</button>"
         +"<button id='stopPrerequisite' style='margin-left:60px' onclick='stopPrerequisiteFile();' title='Stop execution'>Stop</button>"
+        +"<button id='showresult' style='margin-left:60px' onclick='displayResultforCode(true);'>Show Result</button>"
         +"</td></tr></table>";
     showModalWindow(graph, 'Prerequisite File', maindiv, 900, 500);
     var editorTextArea = document.getElementById("editorTextArea");
@@ -51,9 +52,11 @@ function displayResultforCode(visible_flag) {
 
     var codediv = document.getElementById("codediv");
     var resultdiv = document.getElementById("resultdiv");
+    var showresult = document.getElementById("showresult");
     if (codediv === null || resultdiv === null)
         return;
     if (visible_flag) {
+        showresult.disabled = true;
         codediv.style.width="420px";
         codediv.style.height="350px";
         resultdiv.style.display = "block";
@@ -62,6 +65,7 @@ function displayResultforCode(visible_flag) {
         resultCodeMirror.setValue(prerequisite_output);
         resultCodeMirror.refresh();
     } else {
+        showresult.disabled = (prerequisite_output.length == 0);
         codediv.style.width="800px";
         codediv.style.height="350px";
         resultdiv.style.display = "none";
