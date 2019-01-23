@@ -425,9 +425,7 @@ def is_unsafe_script(filename):
 
     # Delete saved file if system commands are encountered in that file
     remove(filename)
-    msg = ("System calls are not allowed in script file!\n"
-           "Please upload another script file!!")
-    return msg
+    return True
 
 
 @app.route('/uploadscript', methods=['POST'])
@@ -439,7 +437,7 @@ def uploadscript():
 
     file = request.files['file']
     if not file:
-        msg = "Upload Error"
+        msg = "Upload Error\n"
         rv = {'msg': msg}
         return Response(json.dumps(rv), mimetype='application/json')
 
@@ -450,7 +448,7 @@ def uploadscript():
 
     if is_unsafe_script(fname):
         msg = ("System calls are not allowed in script.\n"
-               "Please edit the script again.")
+               "Please edit the script again.\n")
         script.status = -1
         rv = {'status': script.status, 'msg': msg}
         return Response(json.dumps(rv), mimetype='application/json')
@@ -469,6 +467,28 @@ def uploadscript():
         return Response(json.dumps(rv), mimetype='application/json')
     script.proc = proc
 
+    msg = ''
+    script.status = 1
+    rv = {'script_id': script.script_id, 'status': script.status, 'msg': msg}
+    return Response(json.dumps(rv), mimetype='application/json')
+
+
+@app.route('/getscriptoutput', methods=['POST'])
+def getscriptoutput():
+    '''
+    Below route is called for uploading script file.
+    '''
+    script = get_script(get_script_id())
+    if script is None:
+        # when called with same script_id again or with incorrect script_id
+        print('no script')
+        msg = "no script"
+        rv = {'msg': msg}
+        return Response(json.dumps(rv), mimetype='application/json')
+
+    proc = script.proc
+    wfname = script.workspace_filename
+
     try:
         # output from scilab terminal is saved for checking error msg
         output = proc.communicate(timeout=30)[0]
@@ -476,8 +496,8 @@ def uploadscript():
         # if error is encountered while execution of script file, then error
         # message is returned to the user
         if '!--error' in output:
-            error_index = output.index('!')
-            msg = output[error_index:-9]
+            msg = ("Check output window for details.\n"
+                   "Please edit the script and execute again.\n")
             script.status = -3
             rv = {'status': script.status, 'msg': msg, 'output': output}
             return Response(json.dumps(rv), mimetype='application/json')
@@ -500,11 +520,11 @@ def uploadscript():
 def kill_script(script=None):
     '''Below route is called for stopping a running script file.'''
     if script is None:
-        script = get_script(get_request_id('script_id'), remove=True)
+        script = get_script(get_script_id(), remove=True)
         if script is None:
             # when called with same script_id again or with incorrect script_id
             print('no script')
-            return
+            return "error"
 
     print('kill_script: script=', script.__dict__)
 
@@ -526,6 +546,8 @@ def kill_script(script=None):
     else:
         remove(script.workspace_filename)
         script.workspace_filename = None
+
+    return "ok"
 
 
 @app.route('/uploadsci', methods=['POST'])
@@ -645,6 +667,23 @@ def get_request_id(key='id'):
         value) <= DISPLAY_LIMIT + 3 else value[:DISPLAY_LIMIT] + '...'
     print('Invalid value', displayvalue, 'for', key, 'in request.args')
     return ''
+
+
+def get_script_id(key='script_id', default=''):
+    form = request.form
+    if form is None:
+        print('No form in request')
+        return default
+    if key not in form:
+        print('No', key, 'in request.form')
+        return default
+    value = form[key]
+    if re.fullmatch(r'[0-9]+', value):
+        return value
+    displayvalue = value if len(
+        value) <= DISPLAY_LIMIT + 3 else value[:DISPLAY_LIMIT] + '...'
+    print('Invalid value', displayvalue, 'for', key, 'in request.form')
+    return default
 
 
 def kill_scilab(diagram=None):
@@ -921,7 +960,6 @@ def upload():
     '''Route that will process the file upload'''
     # Get the file
     file = request.files['file']
-    script_id = request.form.get('script_id', None)
     # Check if the file is not null
     if not file:
         return "error"
@@ -932,7 +970,7 @@ def upload():
     list2 = []
     # Make the filename safe, remove unsupported chars
     (diagram, scripts, scifile, sessiondir) = add_diagram()
-    script = get_script(script_id, scripts=scripts)
+    script = get_script(get_script_id(default=None), scripts=scripts)
     if script is not None:
         diagram.workspace_filename = script.workspace_filename
     # Save the file in xml extension and using it for further modification
