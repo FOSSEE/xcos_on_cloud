@@ -59,19 +59,35 @@ function getXsltProcessor() {
     return xsltProcessor;
 }
 
-var simulationStarted = false;
 var wnd = null;
 var affichwnd = null;
+
+var scriptSimulationStarted = false;
 var executeScriptButton = null;
 var stopScriptButton = null;
 var clearScriptButton = null;
+
+var simulationStarted = false;
 var simulateButton = null;
 var stopButton = null;
 
+function setScriptSimulationFlags(flag) {
+    scriptSimulationStarted = flag;
+    executeScriptButton.disabled = flag || prerequisite_content.length == 0;
+    var executePrerequisiteButton = document.getElementById('executePrerequisite');
+    if (executePrerequisiteButton != null)
+        executePrerequisiteButton.disabled = flag || prerequisite_content.length == 0;
+    stopScriptButton.disabled = !flag;
+    var stopPrerequisiteButton = document.getElementById('stopPrerequisite');
+    if (stopPrerequisiteButton != null)
+        stopPrerequisiteButton.disabled = !flag;
+    clearScriptButton.disabled = flag || prerequisite_content.length == 0;
+}
+
 function setSimulationFlags(flag) {
     simulationStarted = flag;
-    stopButton.disabled = !flag;
     simulateButton.disabled = flag;
+    stopButton.disabled = !flag;
 }
 
 // function which deletes the sliders and related files which are created
@@ -1857,18 +1873,14 @@ function main(container, outline, toolbar, sidebar, status) {
 
     addToolbarButton(editor, toolbar, 'showScript', 'Show Script', 'images/script.png');
     executeScriptButton = addToolbarButton(editor, toolbar, 'executeScript', 'Execute Script', 'images/script.png');
-    if (prerequisite_content.length == 0)
-        executeScriptButton.disabled = true;
     stopScriptButton = addToolbarButton(editor, toolbar, 'stopScript', 'Stop Script', 'images/script.png');
-    stopScriptButton.disabled = true;
     clearScriptButton = addToolbarButton(editor, toolbar, 'clearScript', 'Clear Script', 'images/script.png');
-    if (prerequisite_content.length == 0)
-        clearScriptButton.disabled = true;
+    setScriptSimulationFlags(false);
     toolbar.appendChild(spacer.cloneNode(true));
 
     simulateButton = addToolbarButton(editor, toolbar, 'simulate', 'Simulate', 'images/ScilabExecute.png');
     stopButton = addToolbarButton(editor, toolbar, 'processStop', ' Stop', 'images/process-stop.png');
-    stopButton.disabled = true;
+    setSimulationFlags(false);
     toolbar.appendChild(spacer.cloneNode(true));
 
     editor.addAction('simulate', function(editor, cell) {
