@@ -476,7 +476,8 @@ def uploadscript():
 def clean_output(s):
     '''handle whitespace and sequences in output'''
     s = re.sub(r'[\a\b\f\r\v]', r'', s)
-    s = re.sub(r'\033\[[^a-zA-Z]*[a-zA-Z]', r'', s)
+    # https://en.wikipedia.org/wiki/ANSI_escape_code#CSI_sequences
+    s = re.sub(r'\x1b\[[\x30-\x3f]*[\x20-\x2f]*[\x40-\x7e]', r'', s)
     s = re.sub(r'\t', r'    ', s)
     s = re.sub(r' +(\n|$)', r'\n', s)
     s = re.sub(r'\n+', r'\n', s)
@@ -766,7 +767,8 @@ def start_scilab():
             command += "__V4=setdiff(__V1,__V3);"
             command += "__V5=''''+strcat(__V4,''',''')+'''';"
             command += "__V6='load(''%s'','+__V5+');';" % workspace_filename
-            command += "eval(__V6);"
+            command += "execstr(__V6);"
+            command += "clear __V1 __V2 __V3 __V4 __V5 __V6;"
 
         if diagram.workspace_counter in (2, 3) and exists(workspace):
             # 3 - for both TOWS_c and FROMWSB and also workspace dat file exist
