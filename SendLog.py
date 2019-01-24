@@ -473,6 +473,17 @@ def uploadscript():
     return Response(json.dumps(rv), mimetype='application/json')
 
 
+def clean_output(s):
+    '''handle whitespace and sequences in output'''
+    s = re.sub(r'[\a\b\f\r\v]', r'', s)
+    s = re.sub(r'\033\[[^a-zA-Z]*[a-zA-Z]', r'', s)
+    s = re.sub(r'\t', r'    ', s)
+    s = re.sub(r' +(\n|$)', r'\n', s)
+    s = re.sub(r'\n+', r'\n', s)
+    s = re.sub(r'^\n', r'', s)
+    return s
+
+
 @app.route('/getscriptoutput', methods=['POST'])
 def getscriptoutput():
     '''
@@ -492,6 +503,7 @@ def getscriptoutput():
     try:
         # output from scilab terminal is saved for checking error msg
         output = proc.communicate(timeout=30)[0]
+        output = clean_output(output)
 
         # if error is encountered while execution of script file, then error
         # message is returned to the user
