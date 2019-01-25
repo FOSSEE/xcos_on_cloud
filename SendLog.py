@@ -175,6 +175,7 @@ class SciFile:
     filename = ''
     file_image = ''
     flag_sci = False
+    proc = None
 
 
 class UserData:
@@ -459,13 +460,12 @@ def uploadscript():
     command = "exec('" + fname + "');save('" + wfname + "');"
 
     try:
-        proc = run_scilab(command)
+        script.proc = run_scilab(command)
     except FileNotFoundError:
         msg = "scilab not found. Follow the installation instructions"
         script.status = -2
         rv = {'status': script.status, 'msg': msg}
         return Response(json.dumps(rv), mimetype='application/json')
-    script.proc = proc
 
     msg = ''
     script.status = 1
@@ -509,7 +509,7 @@ def getscriptoutput():
         # if error is encountered while execution of script file, then error
         # message is returned to the user
         if '!--error' in output:
-            msg = ("Check output window for details.\n"
+            msg = ("Check result window for details.\n"
                    "Please edit the script and execute again.\n")
             script.status = -3
             rv = {'status': script.status, 'msg': msg, 'output': output}
@@ -598,12 +598,12 @@ def uploadsci():
         command = "exec('" + scifile.filename + "');"
 
         try:
-            output_com = run_scilab(command)
+            scifile.proc = run_scilab(command)
         except FileNotFoundError:
             return "scilab not found. Follow the installation instructions"
 
         # output from scilab terminal is saved for checking error msg
-        out = output_com.communicate()[0]
+        out = scifile.proc.communicate()[0]
 
         # if error is encountered while execution of sci file, then error msg
         # is returned to user. in case no error is encountered, file uploaded
@@ -1681,10 +1681,7 @@ def page():
 
 @app.route('/getOutput', methods=['POST'])
 def run_scilab_func_request():
-    (diagram, __) = get_diagram(get_request_id())
-    if diagram is None:
-        print('no diagram')
-        return
+    (__, __, scifile, __, __) = init_session()
 
     num = request.form['num']
     den = request.form['den']
@@ -1698,11 +1695,11 @@ def run_scilab_func_request():
             "');calculate_cont_frm(" + num + "," + den + ");"
 
     try:
-        diagram.scilab_proc = run_scilab(command)
+        scifile.proc = run_scilab(command)
     except FileNotFoundError:
         return "scilab not found. Follow the installation instructions"
 
-    diagram.scilab_proc.communicate()
+    scifile.proc.communicate()
 
     file_name = "cont_frm_value.txt"
     with open(file_name) as f:

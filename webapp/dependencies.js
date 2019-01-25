@@ -2076,18 +2076,26 @@ function conmat(v, v1) {
 // for calling post method using ajax for calling poly() of scilab
 function cont_frm(num, den) {
     var return_value;
-    var form = new FormData()
-    form.append('num', num);
-    form.append('den', den);
-    var xhr = new XMLHttpRequest();
-    var test;
-    xhr.open("POST", "/getOutput?id=0", false);
-    xhr.onload = function() {
-        if (this.status==200) {
+
+    $.ajax({
+        type: "POST",
+        url: "/getOutput",
+        async: false,
+        data: { num: num, den: den },
+        dataType: "json",
+        success: function(rv) {
+            return_value = rv;
+        },
+        error: function(xhr, textStatus) {
+            var msg = "Error while setting block\n\n";
+            if (textStatus != null) {
+                msg += textStatus + "\n";
+            }
+            alert(msg);
+            throw "error";
         }
-    };
-    xhr.send(form);
-    return_value = JSON.parse(xhr.responseText.trim());
+    });
+
     return return_value;
 }
 
