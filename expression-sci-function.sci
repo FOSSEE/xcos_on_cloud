@@ -5,14 +5,11 @@ function callFunctionAcctoMethod(filename,head,exx)
         cal_exp=strcat(["deff(",head,",",exx,")"]);
         ok=execstr(cal_exp,"errcatch")==0
         if (ok==%t) then
-            mfprintf(f_temp, ' %s :',  "Erroneous expression");
-            mfprintf(f_temp, ' %s',  lasterror());
+            mfprintf(f_temp, 'Incorrect expression : %s',  lasterror());
         else
-            deff(head,exx)
             [ok,%ok1,ipar,rpar,%nz]=compiler_expression(%foo)
             writeValueToFileFromVars(ok,%ok1,ipar,rpar,%nz,f_temp)
         end
-        mfprintf(f_temp, ' %s',  error(test));
         mclose(f_temp)
 endfunction
 
