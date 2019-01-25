@@ -92,7 +92,7 @@ SCIDIR = abspath(config.SCILAB_DIR)
 SCI = join(SCIDIR, "bin", "scilab-adv-cli")
 READCONTENTFILE = abspath("Read_Content.txt")
 CONT_FRM_WRITE = abspath("cont_frm_write.sci")
-COPIED_EXPRESSION_SCI_FROM_SCILAB = abspath("copied_expression_from_scilab.sci")
+COPIED_EXPRESSION_SCI_FRM_SCILAB = abspath("copied_expression_from_scilab.sci")
 EXP_SCI_FUNC_WRITE = abspath("expression-sci-function.sci")
 BASEDIR = abspath('webapp')
 IMAGEDIR = join(BASEDIR, 'res_imgs')
@@ -1736,7 +1736,7 @@ def run_scilab_func_expr_request():
     head: %foo(u1,u2)
     exx: (u1>0)*sin(u2)^2
     '''
-    command = "exec('" +COPIED_EXPRESSION_SCI_FROM_SCILAB + \
+    command = "exec('" + COPIED_EXPRESSION_SCI_FRM_SCILAB + \
         "');exec('" + EXP_SCI_FUNC_WRITE + \
         "');callFunctionAcctoMethod('" + file_name + \
         "','" + head + "','" + exx + "');"
@@ -1751,14 +1751,14 @@ def run_scilab_func_expr_request():
     # create a dictionary
     exprs_value = {}
     '''
-    Array containing value which will be used as key 
+    Array containing value which will be used as key
     for dictionary 'exprs_value'
 
     sample output from scilab:
-    ok: true or scilab error message'
+    ok: true or scilab error message
     ok1: true
-    ipar: [[2], [1], [6], [1], [5], [18], [2], [2], [5], 
-        [101], [6], [2], [5], [15], [5], [3]]
+    ipar: [[2], [1], [6], [1], [5], [18], [2], [2], [5]
+        , [101], [6], [2], [5], [15], [5], [3]]
     rpar: [[0], [2]]
     nz: [[1]]
     '''
