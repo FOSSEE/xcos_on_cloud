@@ -92,6 +92,7 @@ SCIDIR = abspath(config.SCILAB_DIR)
 SCI = join(SCIDIR, "bin", "scilab-adv-cli")
 READCONTENTFILE = abspath("Read_Content.txt")
 CONT_FRM_WRITE = abspath("cont_frm_write.sci")
+COPIED_EXPRESSION_SCI_FROM_SCILAB = abspath("copied_expression_from_scilab.sci")
 EXP_SCI_FUNC_WRITE = abspath("expression-sci-function.sci")
 BASEDIR = abspath('webapp')
 IMAGEDIR = join(BASEDIR, 'res_imgs')
@@ -1727,11 +1728,17 @@ def run_scilab_func_expr_request():
         print('no diagram')
         return
 
-    pathfortxtfile = diagram.sessiondir
+    file_name = join(diagram.sessiondir, "expr_set_value.txt")
     head = request.form['head']
     exx = request.form['exx']
-    command = "exec('" + EXP_SCI_FUNC_WRITE + \
-        "');callFunctionAcctoMethod('" + pathfortxtfile + \
+    '''
+    sample input to scilab:
+    head: %foo(u1,u2)
+    exx: (u1>0)*sin(u2)^2
+    '''
+    command = "exec('" +COPIED_EXPRESSION_SCI_FROM_SCILAB + \
+        "');exec('" + EXP_SCI_FUNC_WRITE + \
+        "');callFunctionAcctoMethod('" + file_name + \
         "','" + head + "','" + exx + "');"
 
     try:
@@ -1741,10 +1748,20 @@ def run_scilab_func_expr_request():
 
     diagram.scilab_proc.communicate()
 
-    file_name = pathfortxtfile + "/" + "expr_set_value.txt"
     # create a dictionary
     exprs_value = {}
-    # create a array containing value for set parameters
+    '''
+    Array containing value which will be used as key 
+    for dictionary 'exprs_value'
+
+    sample output from scilab:
+    ok: true or scilab error message'
+    ok1: true
+    ipar: [[2], [1], [6], [1], [5], [18], [2], [2], [5], 
+        [101], [6], [2], [5], [15], [5], [3]]
+    rpar: [[0], [2]]
+    nz: [[1]]
+    '''
     var_array = ["ok", "ok1", "ipar", "rpar", "nz"]
     with open(file_name) as f:
         data = f.read()  # Read the data into a variable
@@ -1752,6 +1769,10 @@ def run_scilab_func_expr_request():
     for i in range(len(valuesfromfile)):
         exprs_value[var_array[i]] = valuesfromfile[i]
 
+    if not exprs_value:
+        exprs_value["ok"] = "Enter a valid scilab expression : " + \
+            "custom made message"
+    remove(file_name)
     return jsonify(exprs_value)
 
 
