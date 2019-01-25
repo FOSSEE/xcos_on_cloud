@@ -1723,12 +1723,9 @@ def run_scilab_func_request():
 
 @app.route('/getExpressionOutput', methods=['POST'])
 def run_scilab_func_expr_request():
-    (diagram, __) = get_diagram(get_request_id())
-    if diagram is None:
-        print('no diagram')
-        return
+    (__, __, scifile, sessiondir, __) = init_session()
 
-    file_name = join(diagram.sessiondir, "expr_set_value.txt")
+    file_name = join(sessiondir, "expr_set_value.txt")
     head = request.form['head']
     exx = request.form['exx']
     '''
@@ -1742,11 +1739,11 @@ def run_scilab_func_expr_request():
         "','" + head + "','" + exx + "');"
 
     try:
-        diagram.scilab_proc = run_scilab(command)
+        scifile.proc = run_scilab(command)
     except FileNotFoundError:
         return "scilab not found. Follow the installation instructions"
 
-    diagram.scilab_proc.communicate()
+    scifile.proc.communicate()
 
     # create a dictionary
     exprs_value = {}

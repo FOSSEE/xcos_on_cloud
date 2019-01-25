@@ -49,7 +49,7 @@ function EXPRESSION () {
         var get_values = get_expr_output_for_DefineandSet(this.head,this.exx);
         var ok = get_values.ok;
         var ok1 = get_values.ok1;
-        if(ok == "true"){
+        if(ok != "true"){
             alert("Answer given for scilab expression is incorrect : \n\n" + ok.split(":")[0]);
             throw "incorrect value";
         }
