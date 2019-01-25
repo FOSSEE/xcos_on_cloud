@@ -2119,3 +2119,23 @@ function convertInputVectorFormat(inputValue) {
     }
     return replaceWithcomma;
 }
+
+// for calling post method using ajax for calling scilab function for Expression block
+function get_expr_output_for_DefineandSet(head,exx) {
+    var response_map = null;
+    var form = new FormData()
+    form.append('head', head);
+    form.append('exx', exx);
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "/getExpressionOutput?id=0", false);
+    xhr.onload = function() {
+        if (this.status==200) {
+            response_map = JSON.parse(this.responseText);
+        }else{
+            alert("An error occurred!! \nPlease try again");
+            return false;
+        }
+    };
+    xhr.send(form);
+    return response_map;
+}
