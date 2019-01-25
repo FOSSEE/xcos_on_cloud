@@ -32,51 +32,49 @@ function EXPRESSION () {
         if(this.exx.length == 0){
             this.exx = "0";
         }
-        if(this.in != 0){
-            if(this.in == 1){
-                this.nini = 8;
-            }else{
-                this.nini = this.in;
-            }
-            this.head = "%foo(";
-            for(var i = 1; i <= this.nini-1; i++){
-                this.head = this.head + "u" + i.toString() + ",";
-            }
-            this.head = this.head + "u" + this.nini.toString() + ")";
-            var get_values = get_expr_output_for_DefineandSet(this.head,this.exx);
-            var ok = get_values.ok;
-            var ok1 = get_values.ok1;
-            if(ok == "true"){
-                if(this.in > 1){
-                    this.inp = []
-                    for (var i = 1; i <= this.in; i++ ) {
-                        this.inp.push([-1*i])
-                    }
-                    var io = check_io(this.x.model,this.x.graphics,this.inp,[1],[],[])
-                }else{
-                    var io = check_io(this.x.model,this.x.graphics,[-1],[1],[],[])
-                }
-                if(ok1 == "true"){
-                    this.ipar = JSON.parse(get_values.ipar); //getting values for JSON Object for ipar
-                    this.rpar = JSON.parse(get_values.rpar); //getting values for JSON Object for rpar
-                    this.nz = JSON.parse(get_values.nz); //getting values for JSON Object for nz
-                    this.x.model.rpar = new ScilabDouble(...this.rpar);
-                    this.x.model.ipar = new ScilabDouble(...this.ipar);
-                    if(this.usenz != 0){
-                        this.x.model.nzcross = new ScilabDouble([this.nz]);
-                        this.x.model.nmode = new ScilabDouble([this.nz]);
-                    }else{
-                        this.x.model.nzcross = 0;
-                        this.x.model.nmode = 0;
-                    }
-                }
-            }else{
-                alert("Answer given for scilab expression is incorrect : \n\n" + ok.split(":")[0]);
-                throw "incorrect value";
-            }
-        }else{
+        if(this.in == 0){
             alert("Variable u1 is not defined.");
             throw "incorrect value";
+        }
+        if(this.in == 1){
+            this.nini = 8;
+        }else{
+            this.nini = this.in;
+        }
+        this.head = "%foo(";
+        for(var i = 1; i <= this.nini-1; i++){
+            this.head = this.head + "u" + i.toString() + ",";
+        }
+        this.head = this.head + "u" + this.nini.toString() + ")";
+        var get_values = get_expr_output_for_DefineandSet(this.head,this.exx);
+        var ok = get_values.ok;
+        var ok1 = get_values.ok1;
+        if(ok == "true"){
+            alert("Answer given for scilab expression is incorrect : \n\n" + ok.split(":")[0]);
+            throw "incorrect value";
+        }
+        if(this.in > 1){
+            this.inp = []
+            for (var i = 1; i <= this.in; i++ ){
+                this.inp.push([-1*i])
+            }
+            var io = check_io(this.x.model,this.x.graphics,this.inp,[1],[],[])
+        }else{
+            var io = check_io(this.x.model,this.x.graphics,[-1],[1],[],[])
+        }
+        if(ok1 == "true"){
+            this.ipar = JSON.parse(get_values.ipar); //getting values for JSON Object for ipar
+            this.rpar = JSON.parse(get_values.rpar); //getting values for JSON Object for rpar
+            this.nz = JSON.parse(get_values.nz); //getting values for JSON Object for nz
+            this.x.model.rpar = new ScilabDouble(...this.rpar);
+            this.x.model.ipar = new ScilabDouble(...this.ipar);
+            if(this.usenz != 0){
+                this.x.model.nzcross = new ScilabDouble([this.nz]);
+                this.x.model.nmode = new ScilabDouble([this.nz]);
+            }else{
+                this.x.model.nzcross = 0;
+                this.x.model.nmode = 0;
+            }
         }
         var exprs = new ScilabString([this.in.toString()],[this.exx],[this.usenz])
 	    this.displayParameter = [[this.exx]]
