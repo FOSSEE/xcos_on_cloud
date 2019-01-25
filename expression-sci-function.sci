@@ -2,9 +2,9 @@ function callFunctionAcctoMethod(filename,head,exx)
         head = strsubst(head," ","");
         exx = strsubst(exx," ","");
         f_temp = mopen(filename, 'wt');
-        cal_exp=strcat(["deff(",head,",",exx,")"]);
-        ok=execstr(cal_exp,"errcatch")==0
-        if (ok==%t) then
+        cal_exp=strcat(["deff(""",head,""",""",exx,""")"]);
+        ok=execstr(cal_exp,'errcatch')
+        if (ok~=0) then
             mfprintf(f_temp, 'Incorrect expression : %s',  lasterror());
         else
             [ok,%ok1,ipar,rpar,%nz]=compiler_expression(%foo)
