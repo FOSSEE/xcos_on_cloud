@@ -127,11 +127,11 @@ function DLR() {
             alert("Transfer function must be proper");
             DLR.get();
         }
-        this.value=cont_frm(this.num,this.den);
-        var exprs=new ScilabString([this.num.toString()],[this.den.toString()])
-        this.x.graphics.exprs=exprs
-        var ns=size(this.A,1);
-        var ns1=size(this.A,2);
+        this.value = JSON.parse(cont_frm(this.num,this.den));
+        var exprs = new ScilabString([this.num.toString()],[this.den.toString()])
+        this.x.graphics.exprs = exprs
+        var ns = size(this.A,1);
+        var ns1 = size(this.A,2);
 	this.x.model.rpar = new ScilabDouble(...this.value);
         //if ns1<=ns then
             //x0=x0(1:ns1)

@@ -1683,18 +1683,24 @@ def page():
 
 @app.route('/getOutput', methods=['POST'])
 def run_scilab_func_request():
-    (__, __, scifile, __, __) = init_session()
+    (__, __, scifile, sessiondir, __) = init_session()
 
+    file_name = join(sessiondir, "cont_frm_value.txt")
     num = request.form['num']
     den = request.form['den']
+    '''
+    sample input to scilab:
+    num: 1+s
+    den: s^2-5*s+1
+    '''
 
     if 'z' in num or 'z' in den:
-        command = "z=poly(0,'z');exec('" + CONT_FRM_WRITE + \
-            "');calculate_cont_frm(" + num + "," + den + ");"
-
+        p = 'z'
     else:
-        command = "s=poly(0,'s');exec('" + CONT_FRM_WRITE + \
-            "');calculate_cont_frm(" + num + "," + den + ");"
+        p = 's'
+    command = "%s=poly(0, '%s');" % (p, p)
+    command += "exec('%s');" % CONT_FRM_WRITE
+    command += "calculate_cont_frm(%s,%s,'%s');" % (num, den, file_name)
 
     try:
         scifile.proc = run_scilab(command)
@@ -1703,20 +1709,21 @@ def run_scilab_func_request():
 
     scifile.proc.communicate()
 
-    file_name = "cont_frm_value.txt"
-    with open(file_name) as f:
-        data = f.read()  # Read the data into a variable
-        # Split the file rows into seperate elements of a list
-        file_rows = data.strip().split(' ')
-        list_value = "[["
-        for i in range(len(file_rows)):
-            value = file_rows[i]
-            if i == len(file_rows) - 1:
-                list_value = list_value + value + "]]"
-            else:
-                list_value = list_value + value + "],["
+    list_value = ""
+    '''
+    sample output from scilab:
+    [[0], [1], [0], [0]]
+    '''
+    if isfile(file_name):
+        with open(file_name) as f:
+            data = f.read()  # Read the data into a variable
+            list_value = data.replace('][', '],[')
+        remove(file_name)
 
-    return list_value
+    else:
+        list_value = "Error"
+
+    return jsonify(list_value)
 
 
 # App route for getting scilab expression output for Expression Block
