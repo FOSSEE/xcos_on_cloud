@@ -755,9 +755,14 @@ EXPBLK_m.prototype.importset = function EXPBLK_m() {
     var ary = getData(graphics.exprs);
     this.a = ary[0];
 }
-// EXPRESSION.prototype.importset = function EXPRESSION() {
-//    /* TODO */
-// }
+EXPRESSION.prototype.importset = function EXPRESSION() {
+    var graphics = this.x.graphics;
+    var ary = getData(graphics.exprs);
+    this.in = ary[0];
+    this.exx = ary[1];
+    this.usenz = ary[2];
+    this.displayParameter = [this.exx];
+}
 EXTRACTBITS.prototype.importset = function EXTRACTBITS() {
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
@@ -1767,7 +1772,7 @@ EVTDLY_f.prototype.getContainer = function EVTDLY_f() { return new BasicBlock(th
 EVTGEN_f.prototype.getContainer = function EVTGEN_f() { return new BasicBlock(this.x); }
 EVTVARDLY.prototype.getContainer = function EVTVARDLY() { return new BasicBlock(this.x); }
 EXPBLK_m.prototype.getContainer = function EXPBLK_m() { return new BasicBlock(this.x); }
-// EXPRESSION.prototype.getContainer = function EXPRESSION() { return new BasicBlock(this.x); }
+EXPRESSION.prototype.getContainer = function EXPRESSION() { return new BasicBlock(this.x); }
 Extract_Activation.prototype.getContainer = function Extract_Activation() { return new BasicBlock(this.x); }
 EXTRACTBITS.prototype.getContainer = function EXTRACTBITS() { return new BasicBlock(this.x); }
 EXTRACT.prototype.getContainer = function EXTRACT() { return new BasicBlock(this.x); }
