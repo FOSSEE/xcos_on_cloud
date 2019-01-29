@@ -2084,13 +2084,16 @@ function cont_frm(num, den) {
         data: { num: num, den: den },
         dataType: "json",
         success: function(rv) {
-            return_value = rv;
+            if (rv != "Error") {
+                return_value = rv;
+            }else{
+                var msg = "Error while setting block parameters\n\nPlease check entered polynomial";
+                alert(msg);
+                throw "error";
+            }
         },
         error: function(xhr, textStatus) {
-            var msg = "Error while setting block\n\n";
-            if (textStatus != null) {
-                msg += textStatus + "\n";
-            }
+            var msg = "An error occurred!! \n\nPlease try again"
             alert(msg);
             throw "error";
         }
