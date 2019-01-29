@@ -1928,7 +1928,7 @@ function main(container, outline, toolbar, sidebar, status) {
         var affichw = document.body.clientWidth;
         var affichh = (document.body.clientHeight || document.documentElement.clientHeight);
 
-        affichwnd = new mxWindow('Affich_m Values', affichcontent, (affichw-800)/2, (affichh-500)/2, 300, 500, true, true);
+        affichwnd = new mxWindow('Affich_m Values', affichcontent, (affichw-800)/2, (affichh-500)/2, 300, 400, true, true);
         affichwnd.setMaximizable(true);
         affichwnd.setMinimizable(true);
         affichwnd.setScrollable(true);
