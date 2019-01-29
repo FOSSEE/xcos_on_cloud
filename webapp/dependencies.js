@@ -1422,6 +1422,7 @@ function inverse() {
     var str = "[["
     var arg = arguments[0];
     if (arg != "[]") {
+        arg = arg.replace(/[\[\]; ]+/g, " ").trim();
         arg = arg.replace(/ /g, "],[");
         str += arg + "]]";
     } else {
