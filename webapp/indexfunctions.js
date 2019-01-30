@@ -3080,7 +3080,8 @@ function showPropertiesWindow(graph, cell, diagRoot) {
                         var newSourceCell = graph.getModel().getCell(currentNode.getAttribute('source'));
                         var newTargetCell = graph.getModel().getCell(currentNode.getAttribute('target'));
 
-                        if (newSourceCell.getEdgeCount() <=0 && newTargetCell.getEdgeCount()<=0) {
+                        if (newSourceCell != null && newSourceCell.getEdgeCount() <= 0 &&
+                            newTargetCell != null && newTargetCell.getEdgeCount() <= 0) {
                             var childNode = currentNode.firstChild;
                             if (childNode != null) {
                                 if (childNode.nodeName == 'mxGeometry') {
