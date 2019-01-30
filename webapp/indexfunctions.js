@@ -3039,25 +3039,29 @@ function showPropertiesWindow(graph, cell, diagRoot) {
                     return obj.id == missingKeys[i];
                 }).style;
 
-                if (model.cells[newIDs[j]].style.endsWith('Port')) {
-                    if (referenceModelStyle == model.cells[newIDs[j]].style) {
+                var curCell = model.cells[newIDs[j]];
+                var curStyle = curCell != null ? curCell.style : null;
+                if (curStyle != null && curStyle.endsWith('Port')) {
+                    if (referenceModelStyle == curStyle) {
                         model.cells[missingKeys[i]] = model.cells[newIDs[j]];
                         model.cells[missingKeys[i]].id = String(missingKeys[i]);
                         delete model.cells[newIDs[j++]];
                     } else {
                         var tempId = j;
                         while (newIDs[++j] <= lastId) {
-                            if (referenceModelStyle == model.cells[newIDs[j]].style) {
+                            if (referenceModelStyle == curStyle) {
                                 model.cells[missingKeys[i]] = model.cells[newIDs[j]];
                                 model.cells[missingKeys[i]].id = String(missingKeys[i]);
                                 delete model.cells[newIDs[j]];
                                 newIDs.splice(j,1);
                                 j = tempId;
+                                curCell = model.cells[newIDs[j]];
+                                curStyle = curCell != null ? curCell.style : null;
                                 break;
                             }
                         }
                     }
-                } else if (model.cells[newIDs[j]].style) {
+                } else if (curStyle) {
                     model.cells[missingKeys[i]] = model.cells[newIDs[j]];
                     model.cells[missingKeys[i]].id = String(missingKeys[i]);
                     delete model.cells[newIDs[j++]];
@@ -3076,7 +3080,8 @@ function showPropertiesWindow(graph, cell, diagRoot) {
                         var newSourceCell = graph.getModel().getCell(currentNode.getAttribute('source'));
                         var newTargetCell = graph.getModel().getCell(currentNode.getAttribute('target'));
 
-                        if (newSourceCell.getEdgeCount() <=0 && newTargetCell.getEdgeCount()<=0) {
+                        if (newSourceCell != null && newSourceCell.getEdgeCount() <= 0 &&
+                            newTargetCell != null && newTargetCell.getEdgeCount() <= 0) {
                             var childNode = currentNode.firstChild;
                             if (childNode != null) {
                                 if (childNode.nodeName == 'mxGeometry') {
