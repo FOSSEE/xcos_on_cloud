@@ -1298,8 +1298,6 @@ PID.prototype.importset = function PID() {
     for (var [i, o] of objs.entries()) {
         var ary = getData(o.gui);
         if (ary[0] == 'GAINBLK') {
-            var model = o.model;
-            var par = getData(model.rpar);
             par_array[j] = getData(o.graphics.exprs);
             j++;
         }
