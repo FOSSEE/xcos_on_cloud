@@ -1292,7 +1292,21 @@ PerteDP.prototype.importset = function PerteDP() {
     this.p_rho = ary[5];
 }
 PID.prototype.importset = function PID() {
-    /* TODO */
+    var objs = this.x.model.rpar.objs;
+    var par_array = [];
+    var j = 0;
+    for (var [i, o] of objs.entries()) {
+        var ary = getData(o.gui);
+        if (ary[0] == 'GAINBLK') {
+            var model = o.model;
+            var par = getData(model.rpar);
+            par_array[j] = getData(o.graphics.exprs);
+            j++;
+        }
+    }
+    this.prop = par_array[0];
+    this.integ = par_array[1];
+    this.deriv = par_array[2];
 }
 PMOS.prototype.importset = function PMOS() {
     var graphics = this.x.graphics;

@@ -1,10 +1,9 @@
 function PID() {
 
-    PID.prototype.define = function PID() {
-	this.prop=2;
-	this.integ=1;
-	this.deriv=1;
-        var scs_m = scicos_diagram({
+    var scs_m = "";
+
+    function getDefault_SCS_M() {
+        scs_m = scicos_diagram({
             version: new ScilabString(["scicos4.2"]),
             props: scicos_params({
                 wpar: new ScilabDouble([600, 450, 0, 0, 600, 450]),
@@ -124,7 +123,7 @@ function PID() {
                 sz: new ScilabDouble([40, 40]),
                 flip: new ScilabBoolean([true]),
                 theta: new ScilabDouble([0]),
-                exprs: new ScilabString(["1"]),
+                exprs: new ScilabString([this.prop]),
                 pin: new ScilabDouble([17]),
                 pout: new ScilabDouble([10]),
                 pein: new ScilabDouble(),
@@ -152,7 +151,7 @@ function PID() {
                 state: new ScilabDouble(),
                 dstate: new ScilabDouble(),
                 odstate: list(),
-                rpar: new ScilabDouble([1]),
+                rpar: new ScilabDouble([this.prop]),
                 ipar: new ScilabDouble(),
                 opar: list(),
                 blocktype: new ScilabString(["c"]),
@@ -222,7 +221,7 @@ function PID() {
                 sz: new ScilabDouble([40, 40]),
                 flip: new ScilabBoolean([true]),
                 theta: new ScilabDouble([0]),
-                exprs: new ScilabString(["1"]),
+                exprs: new ScilabString([this.integ]),
                 pin: new ScilabDouble([13]),
                 pout: new ScilabDouble([7]),
                 pein: new ScilabDouble(),
@@ -250,7 +249,7 @@ function PID() {
                 state: new ScilabDouble(),
                 dstate: new ScilabDouble(),
                 odstate: list(),
-                rpar: new ScilabDouble([1]),
+                rpar: new ScilabDouble([this.integ]),
                 ipar: new ScilabDouble(),
                 opar: list(),
                 blocktype: new ScilabString(["c"]),
@@ -271,7 +270,7 @@ function PID() {
                 sz: new ScilabDouble([40, 40]),
                 flip: new ScilabBoolean([true]),
                 theta: new ScilabDouble([0]),
-                exprs: new ScilabString(["1"]),
+                exprs: new ScilabString([this.deriv]),
                 pin: new ScilabDouble([14]),
                 pout: new ScilabDouble([8]),
                 pein: new ScilabDouble(),
@@ -299,7 +298,7 @@ function PID() {
                 state: new ScilabDouble(),
                 dstate: new ScilabDouble(),
                 odstate: list(),
-                rpar: new ScilabDouble([1]),
+                rpar: new ScilabDouble([this.deriv]),
                 ipar: new ScilabDouble(),
                 opar: list(),
                 blocktype: new ScilabString(["c"]),
@@ -605,7 +604,14 @@ function PID() {
             from: new ScilabDouble([20, 1, 0]),
             to: new ScilabDouble([15, 1, 1])
         }));
-
+        return scs_m;
+    }
+    PID.prototype.define = function PID() {
+	    this.prop = 1;
+	    this.integ = 1;
+	    this.deriv = 1;
+        scs_m = getDefault_SCS_M();
+        this.prop = 2;
         var model = scicos_model();
         model.sim = new ScilabString(["csuper"]);
         model.in = new ScilabDouble([-1]);
@@ -624,18 +630,19 @@ function PID() {
         return new BasicBlock(this.x);
     }
     PID.prototype.get = function PID() {
-	var options={
-	    prop:["Proportional ",this.prop],
-	    integ:["Integration ",this.integ],
+	    var options={
+	        prop:["Proportional ",this.prop],
+	        integ:["Integration ",this.integ],
             deriv:["Derivation ",this.deriv],
-	}
-	return options
+	    }
+	    return options
     }
     PID.prototype.set = function PID() {
-	this.prop = arguments[0]["prop"]
-	this.integ = arguments[0]["integ"]
-	this.deriv = arguments[0]["deriv"]
-	var model = scicos_model();
+	    this.prop = inverse(arguments[0]["prop"])
+	    this.integ = inverse(arguments[0]["integ"])
+	    this.deriv = inverse(arguments[0]["deriv"])
+	    scs_m = getDefault_SCS_M();
+	    var model = scicos_model();
         model.sim = new ScilabString(["csuper"]);
         model.in = new ScilabDouble([-1]);
         model.in2 = new ScilabDouble([-2]);
