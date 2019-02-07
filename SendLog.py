@@ -508,6 +508,13 @@ def getscriptoutput():
         output = proc.communicate(timeout=30)[0]
         output = clean_output(output)
 
+        if proc.returncode < 0:
+            msg = 'Script stopped'
+            script.status = -5
+            rv = {'status': script.status, 'msg': msg, 'output': output}
+            return Response(json.dumps(rv), mimetype='application/json')
+            return msg
+
         # if error is encountered while execution of script file, then error
         # message is returned to the user
         if '!--error' in output:
@@ -574,38 +581,43 @@ def uploadsci():
     (__, __, scifile, sessiondir, __) = init_session()
 
     file = request.files['file']  # to get uploaded file
-    if file and request.method == 'POST':
-        ts = datetime.now()
-        # file name is created with timestamp
-        fname = join(sessiondir, SCIFUNC_FILES_FOLDER,
-                     str(ts) + secure_filename(file.filename))
-        file.save(fname)  # file is saved in scifunc_files folder
-        scifile.filename = fname
-        scifile.flag_sci = True  # flag for file saved
+    # Check if the file is not null
+    if not file:
+        return "error"
 
-        # Read file and check for system commands and return error if file
-        # contain system commands
-        match = re.findall(SYSTEM_COMMANDS, open(scifile.filename, 'r').read())
-        if match:
-            msg = ("System calls are not allowed in .sci file!\n"
-                   "Please upload another .sci file!!")
-            # Delete saved file if system commands are encountered in that file
-            remove(scifile.filename)
-            # flag for file saved will be set as False
-            scifile.flag_sci = False
-            return msg
+    ts = datetime.now()
+    # file name is created with timestamp
+    fname = join(sessiondir, SCIFUNC_FILES_FOLDER,
+                 str(ts) + secure_filename(file.filename))
+    file.save(fname)  # file is saved in scifunc_files folder
+    scifile.filename = fname
+    scifile.flag_sci = True  # flag for file saved
 
-        # scilab command is created to run that uploaded sci file which will be
-        # used by sci-func block
-        command = "exec('" + scifile.filename + "');"
+    if is_unsafe_script(scifile.filename):
+        msg = ("System calls are not allowed in .sci file!\n"
+               "Please upload another .sci file!!")
+        # flag for file saved will be set as False
+        scifile.flag_sci = False
+        return msg
 
-        try:
-            scifile.proc = run_scilab(command)
-        except FileNotFoundError:
-            return "scilab not found. Follow the installation instructions"
+    # scilab command is created to run that uploaded sci file which will be
+    # used by sci-func block
+    command = "exec('" + scifile.filename + "');"
 
+    try:
+        scifile.proc = run_scilab(command)
+    except FileNotFoundError:
+        return "scilab not found. Follow the installation instructions"
+
+    try:
         # output from scilab terminal is saved for checking error msg
-        out = scifile.proc.communicate()[0]
+        out = scifile.proc.communicate(timeout=30)[0]
+
+        if scifile.proc.returncode < 0:
+            remove(scifile.filename)
+            scifile.flag_sci = False
+            msg = 'Cancelled'
+            return msg
 
         # if error is encountered while execution of sci file, then error msg
         # is returned to user. in case no error is encountered, file uploaded
@@ -619,9 +631,39 @@ def uploadsci():
             # flag for file saved will be set as False
             scifile.flag_sci = False
             return msg
-        else:
-            msg = "File is uploaded successfully!!"
-            return msg
+
+        msg = "File is uploaded successfully!!"
+        return msg
+    except subprocess.TimeoutExpired:
+        kill_scifile(scifile)
+        msg = 'Timeout'
+        return msg
+
+
+@app.route('/stopscifile')
+def kill_scifile(scifile=None):
+    '''Below route is called for stopping a running sci file.'''
+    if scifile is None:
+        (__, __, scifile, __, __) = init_session()
+
+    print('kill_scifile: scifile=', scifile.__dict__)
+
+    if scifile.filename is None:
+        print('empty scifile')
+    else:
+        remove(scifile.filename)
+        scifile.filename = None
+
+    if scifile.proc is None:
+        print('no scilab proc')
+    else:
+        if not kill_scilab_with(scifile.proc, signal.SIGTERM):
+            kill_scilab_with(scifile.proc, signal.SIGKILL)
+        scifile.proc = None
+
+    scifile.flag_sci = False
+
+    return "ok"
 
 
 @app.route('/requestfilename', methods=['POST'])
