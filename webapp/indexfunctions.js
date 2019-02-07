@@ -95,8 +95,12 @@ function setSimulationFlags(flag) {
 function stopSimulation() {
     if (winArr.length > 0) {
         myAjaxreq("Stop", "/UpdateTKfile?id="+clientID);
-        for (var i = 0; i < winArr.length; i++)
-            winArr[i].close();
+        for (var i = 0; i < winArr.length; i++) {
+            if (winArr[i] != null) {
+                winArr[i].close();
+                winArr[i] = null;
+            }
+        }
         winArr = new Array();
     }
 
@@ -147,7 +151,7 @@ function GetcurVal() {
 function main(container, outline, toolbar, sidebar, status) {
     // the following lines makes the GetcurVal() call if <p id is changed (when
     // tk value updates)
-    var target = document.querySelector("p");
+    var target = document.querySelector("p.tkchange");
     var observer = new MutationObserver(function(mutations) {
         mutations.forEach(function(mutation) {
             GetcurVal();
@@ -2060,7 +2064,7 @@ function main(container, outline, toolbar, sidebar, status) {
                 }
                 valArr[row]=new Array();
                 // min value
-                valArr[row][0] = parseInt(Realpart_tag[0].attributes.realPart.value);
+                valArr[row][0] = parseFloat(Realpart_tag[0].attributes.realPart.value);
                 // max value
                 valArr[row][1] = parseFloat(Realpart_tag[1].attributes.realPart.value);
                 // norm value
@@ -2413,18 +2417,20 @@ function main(container, outline, toolbar, sidebar, status) {
 
         /* function which creates a slider for the tkscale data */
         function CreateSlider() {
-            tkchange.innerHTML=0;
-
             for (var i=0;i<row;i++) {
-                min=valArr[i][0];
-                max=valArr[i][1];
-                norm=valArr[i][2];
+                var min = valArr[i][0];
+                var max = valArr[i][1];
+                var norm = valArr[i][2];
                 if (!((min<=norm && norm<=max) || (min>max))) {
                     norm=(min+max)/2;
                 }
-                num=i+1;
-                tag='tk'+(i+1);
-                winArr[i] = window.open('/slider.html?min='+min+"&max="+max+"&num="+num+"&tag="+tag+"&norm="+norm+"&clientID="+clientID,"TK-"+i,'height=350,width=500');
+                var num = i+1;
+                var tag = 'tk'+num;
+                var winid = "TKSCALE-"+clientID+"-"+num;
+                document.getElementById(tag).innerHTML = 0;
+                var params = 'min='+min+'&max='+max+'&num='+num+'&tag='+tag+'&norm='+norm+'&clientID='+clientID;
+                var url = '/slider.html?'+params;
+                winArr[i] = window.open(url,winid,'height=350,width=500');
                 // creating a new window using 'slider.html' and some css
             }
         }
