@@ -151,7 +151,7 @@ function GetcurVal() {
 function main(container, outline, toolbar, sidebar, status) {
     // the following lines makes the GetcurVal() call if <p id is changed (when
     // tk value updates)
-    var target = document.querySelector("p");
+    var target = document.querySelector("p.tkchange");
     var observer = new MutationObserver(function(mutations) {
         mutations.forEach(function(mutation) {
             GetcurVal();
@@ -2417,8 +2417,6 @@ function main(container, outline, toolbar, sidebar, status) {
 
         /* function which creates a slider for the tkscale data */
         function CreateSlider() {
-            tkchange.innerHTML=0;
-
             for (var i=0;i<row;i++) {
                 var min = valArr[i][0];
                 var max = valArr[i][1];
