@@ -32,6 +32,16 @@ function create_scifunc_popups(graph,cell,name,diagRoot) {
     var browser = showModalWindow(graph,"File Browser",upload,350,180);
 
     cancel_btn.onclick = function() {
+        if (ok_btn.disabled) {
+            cancel_btn.disabled = true;
+
+            $.ajax({
+                type: "GET",
+                url: "/stopscifile",
+                async: true
+            });
+        }
+
         browser.destroy();
     }
 
@@ -46,6 +56,8 @@ function create_scifunc_popups(graph,cell,name,diagRoot) {
             alert("Invalid file chosen!! Please choose a .sci file");
             return false;
         }
+
+        ok_btn.disabled = true;
 
         var fileInput = document.getElementById('file');
         var file = fileInput.files[0];
@@ -66,16 +78,19 @@ function create_scifunc_popups(graph,cell,name,diagRoot) {
                     return true;
                 } else {
                     if (msg == "System calls are not allowed in .sci file!\nPlease upload another .sci file!!") {
-                        alert("Execution Error Found:\n" + msg)
+                        alert("Execution Error Found:\n\n" + msg)
+                        ok_btn.disabled = false;
                         return false;
                     } else {
-                        alert("Error encountered while executing file:\n" + msg);
+                        alert("Error encountered while executing file:\n\n" + msg);
+                        ok_btn.disabled = false;
                         return false;
                     }
                 }
             },
             error: function(msg) {
                 alert("An error occurred while uploading file, please try again!");
+                ok_btn.disabled = false;
                 return false;
             }
         });
