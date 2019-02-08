@@ -1,8 +1,11 @@
 function PID() {
 
     var scs_m = "";
-
-    function getDefault_SCS_M() {
+    var blockarray = [];
+    PID.prototype.define = function PID() {
+	this.prop = 2;
+	this.integ = 1;
+	this.deriv = 1;
         scs_m = scicos_diagram({
             version: new ScilabString(["scicos4.2"]),
             props: scicos_params({
@@ -123,7 +126,7 @@ function PID() {
                 sz: new ScilabDouble([40, 40]),
                 flip: new ScilabBoolean([true]),
                 theta: new ScilabDouble([0]),
-                exprs: new ScilabString([this.prop]),
+                exprs: new ScilabString(["1"]),
                 pin: new ScilabDouble([17]),
                 pout: new ScilabDouble([10]),
                 pein: new ScilabDouble(),
@@ -151,7 +154,7 @@ function PID() {
                 state: new ScilabDouble(),
                 dstate: new ScilabDouble(),
                 odstate: list(),
-                rpar: new ScilabDouble([this.prop]),
+                rpar: new ScilabDouble([1]),
                 ipar: new ScilabDouble(),
                 opar: list(),
                 blocktype: new ScilabString(["c"]),
@@ -221,7 +224,7 @@ function PID() {
                 sz: new ScilabDouble([40, 40]),
                 flip: new ScilabBoolean([true]),
                 theta: new ScilabDouble([0]),
-                exprs: new ScilabString([this.integ]),
+                exprs: new ScilabString(["1"]),
                 pin: new ScilabDouble([13]),
                 pout: new ScilabDouble([7]),
                 pein: new ScilabDouble(),
@@ -249,7 +252,7 @@ function PID() {
                 state: new ScilabDouble(),
                 dstate: new ScilabDouble(),
                 odstate: list(),
-                rpar: new ScilabDouble([this.integ]),
+                rpar: new ScilabDouble([1]),
                 ipar: new ScilabDouble(),
                 opar: list(),
                 blocktype: new ScilabString(["c"]),
@@ -270,7 +273,7 @@ function PID() {
                 sz: new ScilabDouble([40, 40]),
                 flip: new ScilabBoolean([true]),
                 theta: new ScilabDouble([0]),
-                exprs: new ScilabString([this.deriv]),
+                exprs: new ScilabString(["1"]),
                 pin: new ScilabDouble([14]),
                 pout: new ScilabDouble([8]),
                 pein: new ScilabDouble(),
@@ -298,7 +301,7 @@ function PID() {
                 state: new ScilabDouble(),
                 dstate: new ScilabDouble(),
                 odstate: list(),
-                rpar: new ScilabDouble([this.deriv]),
+                rpar: new ScilabDouble([1]),
                 ipar: new ScilabDouble(),
                 opar: list(),
                 blocktype: new ScilabString(["c"]),
@@ -604,14 +607,7 @@ function PID() {
             from: new ScilabDouble([20, 1, 0]),
             to: new ScilabDouble([15, 1, 1])
         }));
-        return scs_m;
-    }
-    PID.prototype.define = function PID() {
-	    this.prop = 1;
-	    this.integ = 1;
-	    this.deriv = 1;
-        scs_m = getDefault_SCS_M();
-        this.prop = 2;
+
         var model = scicos_model();
         model.sim = new ScilabString(["csuper"]);
         model.in = new ScilabDouble([-1]);
@@ -630,18 +626,37 @@ function PID() {
         return new BasicBlock(this.x);
     }
     PID.prototype.get = function PID() {
-	    var options={
-	        prop:["Proportional ",this.prop],
-	        integ:["Integration ",this.integ],
+	var options={
+	    prop:["Proportional ",this.prop],
+	    integ:["Integration ",this.integ],
             deriv:["Derivation ",this.deriv],
-	    }
-	    return options
+	}
+	return options
     }
     PID.prototype.set = function PID() {
-	    this.prop = inverse(arguments[0]["prop"])
-	    this.integ = inverse(arguments[0]["integ"])
-	    this.deriv = inverse(arguments[0]["deriv"])
-	    scs_m = getDefault_SCS_M();
+	    var regex = /[a-zA-Z]/g;
+        this.prop = arguments[0]["prop"].replace(/\s/g, "");
+        var charInprop = this.prop.match(regex);
+        if(charInprop!=null){
+            alert("Answer given for Proportional \nis incorrect: Undefined variable :"+arguments[0]["prop"]);
+            throw "incorrect";
+        }
+        this.integ = arguments[0]["integ"].replace(/\s/g, "");
+        var charIninteg = this.integ.match(regex);
+        if(charIninteg!=null){
+            alert("Answer given for Integration \nis incorrect: Undefined variable :"+arguments[0]["integ"]);
+            throw "incorrect";
+        }
+        this.deriv = arguments[0]["deriv"].replace(/\s/g, "");
+        var charInderiv = this.deriv.match(regex);
+        if(charInderiv!=null){
+            alert("Answer given for Derivation \nis incorrect: Undefined variable :"+arguments[0]["deriv"]);
+            throw "incorrect";
+        }
+        this.prop = inverse(this.prop);
+        this.integ = inverse(this.integ);
+        this.deriv = inverse(this.deriv);
+        blockarray = this.arrayobject;
 	    var model = scicos_model();
         model.sim = new ScilabString(["csuper"]);
         model.in = new ScilabDouble([-1]);

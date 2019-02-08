@@ -114,6 +114,43 @@ function getRparObjByGui(obj, gui) {
     }
 }
 
+function getRparObjsByLinkToGui(obj, gui, type1, type2, type3) {
+    var objs = obj.model.rpar.objs;
+    if (objs == null)
+        return null;
+    var rv = Array();
+    for (var [i, o] of objs.entries()) {
+        console.log("GUI::::"+getData(o.gui)[0]+"::::RPAR:::::"+getData(o.model.rpar)+":::::EXPRS:::::"+getData(o.graphics.exprs));
+        if (o.Link == null || o.from == null || o.to == null) {
+            continue;
+        }
+        var fromidx = getData(o.from)[0] - 1;
+        var toidx = getData(o.to)[0] - 1;
+        var from = objs[fromidx];
+        var to = objs[toidx];
+        var aryfrom = getData(from.gui);
+        var aryto = getData(to.gui);
+        if (aryfrom[0] == gui) {
+            if (aryto[0] == type1) {
+                rv[0] = to;
+            } else if (aryto[0] == type2) {
+                rv[1] = to;
+            } else if (aryto[0] == type3) {
+                rv[2] = to;
+            }
+        } else if (aryto[0] == gui) {
+            if (aryfrom[0] == type1) {
+                rv[0] = from;
+            } else if (aryfrom[0] == type2) {
+                rv[1] = from;
+            } else if (aryfrom[0] == type3) {
+                rv[2] = from;
+            }
+        }
+    }
+    return rv;
+}
+
 function getDataPoints(par, withrect=false) {
     var no = Math.trunc(par.length / 2);
     if (withrect)
@@ -1292,16 +1329,23 @@ PerteDP.prototype.importset = function PerteDP() {
     this.p_rho = ary[5];
 }
 PID.prototype.importset = function PID() {
+    var ppath = getRparObjsByLinkToGui(this.x, 'GAINBLK', 'SUMMATION', 'INTEGRAL_m', 'DERIV');
+    
+    //Getting parameter from gainblk
     var objs = this.x.model.rpar.objs;
     var par_array = [];
     var j = 0;
     for (var [i, o] of objs.entries()) {
         var ary = getData(o.gui);
         if (ary[0] == 'GAINBLK') {
-            par_array[j] = getData(o.graphics.exprs);
+            par_array[j] = getData(o.graphics.exprs); //get parameters from gainblk
             j++;
         }
     }
+    for (var [i, o] of objs.entries()) { //returning whole object like tht only for testing purpose
+        arrayofobject[i] = o;
+    }
+    this.arrayobject = arrayofobject;
     this.prop = par_array[0];
     this.integ = par_array[1];
     this.deriv = par_array[2];
