@@ -114,6 +114,42 @@ function getRparObjByGui(obj, gui) {
     }
 }
 
+function getRparObjsByLinkToGui(obj, gui, type1, type2, type3) {
+    var objs = obj.model.rpar.objs;
+    if (objs == null)
+        return null;
+    var rv = Array();
+    for (var [i, o] of objs.entries()) {
+        if (o.Link == null || o.from == null || o.to == null) {
+            continue;
+        }
+        var fromidx = getData(o.from)[0] - 1;
+        var toidx = getData(o.to)[0] - 1;
+        var from = objs[fromidx];
+        var to = objs[toidx];
+        var aryfrom = getData(from.gui);
+        var aryto = getData(to.gui);
+        if (aryfrom[0] == gui) {
+            if (aryto[0] == type1) {
+                rv[0] = from;
+            } else if (aryto[0] == type2) {
+                rv[1] = from;
+            } else if (aryto[0] == type3) {
+                rv[2] = from;
+            }
+        } else if (aryto[0] == gui) {
+            if (aryfrom[0] == type1) {
+                rv[0] = to;
+            } else if (aryfrom[0] == type2) {
+                rv[1] = to;
+            } else if (aryfrom[0] == type3) {
+                rv[2] = to;
+            }
+        }
+    }
+    return rv;
+}
+
 function getDataPoints(par, withrect=false) {
     var no = Math.trunc(par.length / 2);
     if (withrect)
@@ -1292,7 +1328,10 @@ PerteDP.prototype.importset = function PerteDP() {
     this.p_rho = ary[5];
 }
 PID.prototype.importset = function PID() {
-    /* TODO */
+    var ppath = getRparObjsByLinkToGui(this.x, 'GAINBLK', 'SUMMATION', 'INTEGRAL_m', 'DERIV');
+    this.prop = getData(ppath[0].graphics.exprs)[0];
+    this.integ = getData(ppath[1].graphics.exprs)[0];
+    this.deriv = getData(ppath[2].graphics.exprs)[0];
 }
 PMOS.prototype.importset = function PMOS() {
     var graphics = this.x.graphics;

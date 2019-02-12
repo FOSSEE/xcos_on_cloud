@@ -1,9 +1,9 @@
 function PID() {
 
     PID.prototype.define = function PID() {
-	this.prop=2;
-	this.integ=1;
-	this.deriv=1;
+	this.prop = 2;
+	this.integ = 1;
+	this.deriv = 1;
         var scs_m = scicos_diagram({
             version: new ScilabString(["scicos4.2"]),
             props: scicos_params({
@@ -624,39 +624,50 @@ function PID() {
         return new BasicBlock(this.x);
     }
     PID.prototype.get = function PID() {
-	var options={
-	    prop:["Proportional ",this.prop],
-	    integ:["Integration ",this.integ],
+	    var options = {
+	        prop:["Proportional ",this.prop],
+	        integ:["Integration ",this.integ],
             deriv:["Derivation ",this.deriv],
-	}
-	return options
+	    }
+	    return options
     }
     PID.prototype.set = function PID() {
-	this.prop = arguments[0]["prop"]
-	this.integ = arguments[0]["integ"]
-	this.deriv = arguments[0]["deriv"]
-	var model = scicos_model();
-        model.sim = new ScilabString(["csuper"]);
-        model.in = new ScilabDouble([-1]);
-        model.in2 = new ScilabDouble([-2]);
-        model.out = new ScilabDouble([-1]);
-        model.out2 = new ScilabDouble([-2]);
-        model.intyp = new ScilabDouble([1]);
-        model.outtyp = new ScilabDouble([1]);
-        model.blocktype = new ScilabString(["h"]);
-        model.firing = new ScilabBoolean([false]);
-        model.dep_ut = new ScilabBoolean([false, false]);
-        model.rpar = scs_m;
-
-        var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"PID\",sz(1),sz(2));"]);
-        this.x = new standard_define(new ScilabDouble([2, 2]), model, new ScilabDouble(), gr_i);
+	    var regex = /[a-zA-Z]/g;
+        var prop1 = arguments[0]["prop"].replace(/\s/g, "");
+        var charInprop = prop1.match(regex);
+        if(charInprop != null){
+            alert("Answer given for Proportional \nis incorrect: Undefined variable :"+arguments[0]["prop"]);
+            throw "incorrect";
+        }
+        var integ1 = arguments[0]["integ"].replace(/\s/g, "");
+        var charIninteg = integ1.match(regex);
+        if(charIninteg != null){
+            alert("Answer given for Integration \nis incorrect: Undefined variable :"+arguments[0]["integ"]);
+            throw "incorrect";
+        }
+        var deriv1 = arguments[0]["deriv"].replace(/\s/g, "");
+        var charInderiv = deriv1.match(regex);
+        if(charInderiv != null){
+            alert("Answer given for Derivation \nis incorrect: Undefined variable :"+arguments[0]["deriv"]);
+            throw "incorrect";
+        }
+        this.prop = inverse(prop1);
+        this.integ = inverse(integ1);
+        this.deriv = inverse(deriv1);
+        var gainblk_objs = getRparObjsByLinkToGui(this.x, 'GAINBLK', 'SUMMATION', 'INTEGRAL_m', 'DERIV');
+        gainblk_objs[0].model.rpar = new ScilabDouble([this.prop]);
+        gainblk_objs[0].graphics.exprs = new ScilabString([this.prop.toString().replace(/,/g, " ")]);
+        gainblk_objs[1].model.rpar = new ScilabDouble([this.integ]);
+        gainblk_objs[1].graphics.exprs = new ScilabString([this.integ.toString().replace(/,/g, " ")]);
+        gainblk_objs[2].model.rpar = new ScilabDouble([this.deriv]);
+        gainblk_objs[2].graphics.exprs = new ScilabString([this.deriv.toString().replace(/,/g, " ")]);
         return new BasicBlock(this.x);
     }
     PID.prototype.details = function PID() {
         return this.x;
     }
     PID.prototype.get_popup_title = function PID() {
-        var set_param_popup_title="Set PID parameters:";
+        var set_param_popup_title = "Set PID parameters:";
         return set_param_popup_title
     }
     PID.prototype.getDimensionForDisplay = function PID(){
