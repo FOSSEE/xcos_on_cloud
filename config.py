@@ -76,18 +76,24 @@ QUERY_EXAMPLE = (
     "JOIN textbook_companion_example_files tcef ON tce.id = tcef.example_id "
     "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND "
     "pe.approval_status = 1 AND tce.chapter_id = %s "
-    "ORDER BY tce.number")
+    "ORDER BY tce.number ASC")
 
 QUERY_EXAMPLE_FILE = (
-    "SELECT id as example_file_id, filename "
+    "SELECT id as example_file_id, filename, filetype "
     "FROM textbook_companion_example_files "
-    "WHERE filetype = 'X' AND example_id = %s"
-)
+    "WHERE filetype IN ('X', 'S') AND example_id = %s "
+    "ORDER BY filetype DESC")
 
 QUERY_EXAMPLE_FILE_BY_ID = (
     "SELECT filename, filepath, example_id "
     "FROM textbook_companion_example_files "
     "WHERE filetype = 'X' AND id = %s"
+)
+
+QUERY_PREREQUISITE_FILE_BY_ID = (
+    "SELECT filename, filepath "
+    "FROM textbook_companion_example_files "
+    "WHERE filetype = 'S' AND id = %s"
 )
 
 QUERY_PREREQUISITE_FILE_BY_EXAMPLE_ID = (
