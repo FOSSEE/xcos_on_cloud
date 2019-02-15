@@ -165,10 +165,26 @@ $(function() {
                         var $options = [];
                         var i = 1;
                         for (var a = 0, len = example_file.length; a < len; a++) {
+                            var ef = example_file[a];
+                            var filetype = ef[2];
+                            var dispfiletype;
+                            var actions;
+                            switch (filetype) {
+                                case 'X':
+                                    dispfiletype = 'Xcos File';
+                                    actions = "<a href='/example_file?efid=" + ef[0] + "' target='_blank'>Download</a>";
+                                    actions += " | <a href='/open?efid=" + ef[0] + "' target='_blank'>Open on Cloud</a>";
+                                    break;
+                                case 'S':
+                                    dispfiletype = 'Prerequisite';
+                                    actions = "<a href='/prerequisite_file?efid=" + ef[0] + "' target='_blank'>Download</a>";
+                                    break;
+                            }
                             $('#example-file-list > tbody:last-child')
                                 .append("<tr>")
-                                .append("<td>" + example_file[a][1] +"</td>")
-                                .append("<td><a href='/example_file?efid=" + example_file[a][0] + "' target='_blank'>" + "Download" + "</a> / <a href='/open?efid=" + example_file[a][0] + "' target='_blank'>Execute on Cloud</a> </td>")
+                                .append("<td>" + ef[1] + "</td>")
+                                .append("<td>" + dispfiletype + "</td>")
+                                .append("<td>" + actions + "</td>")
                                 .append("</tr>");
                         }
                     },

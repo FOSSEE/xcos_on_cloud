@@ -1911,44 +1911,62 @@ def get_example_file(example_file_id):
     return (text, filename, example_id)
 
 
-def clean_text_2(s):
+def clean_text_2(s, forindex):
     '''handle whitespace'''
     s = re.sub(r'[\a\b\f\r\v]', r'', s)
     s = re.sub(r'\t', r'    ', s)
     s = re.sub(r' +(\n|$)', r'\n', s)
-    s = re.sub(r'\n+$', r'', s)
-    # double each backslash
-    s = re.sub(r'\\', r'\\\\', s)
-    # replace each newline with '\n'
-    s = re.sub(r'\n', r'\\n', s)
+    if forindex:
+        s = re.sub(r'\n+$', r'', s)
+        # double each backslash
+        s = re.sub(r'\\', r'\\\\', s)
+        # replace each newline with '\n'
+        s = re.sub(r'\n', r'\\n', s)
+    else:
+        s = re.sub(r'\n{2,}$', r'\n', s)
     return s
 
 
-def get_prerequisite_file(example_id):
+def get_prerequisite_file(file_id):
     filename = ''
     filepath = ''
-    prerequisite_file_id = None
     cur = connection()
-    cur.execute(config.QUERY_PREREQUISITE_FILE_BY_EXAMPLE_ID, [example_id])
-    for (filename, filepath, prerequisite_file_id) in cur.fetchall():
+    cur.execute(config.QUERY_PREREQUISITE_FILE_BY_ID, [file_id])
+    for (filename, filepath) in cur.fetchall():
         pass
 
-    if prerequisite_file_id is None:
+    return return_prerequisite_file(filename, filepath, file_id, False)
+
+
+def get_prerequisite_file_by_example_id(example_id):
+    filename = ''
+    filepath = ''
+    file_id = None
+    cur = connection()
+    cur.execute(config.QUERY_PREREQUISITE_FILE_BY_EXAMPLE_ID, [example_id])
+    for (filename, filepath, file_id) in cur.fetchall():
+        pass
+
+    return return_prerequisite_file(filename, filepath, file_id, True)
+
+
+def return_prerequisite_file(filename, filepath, file_id, forindex):
+    if file_id is None:
         return ('', filename)
 
     if XCOSSOURCEDIR != '' and filepath != '':
         try:
             print('reading', filename, 'from', filepath)
             with open(join(XCOSSOURCEDIR, filepath), 'r') as f:
-                text = clean_text_2(f.read())
+                text = clean_text_2(f.read(), forindex)
                 return (text, filename)
         except Exception as e:
             print('Exception:', str(e))
 
-    scilab_url = "https://scilab.in/download/file/" + str(prerequisite_file_id)
+    scilab_url = "https://scilab.in/download/file/" + str(file_id)
     print('downloading', scilab_url)
     r = requests.get(scilab_url)
-    text = clean_text_2(r.text)
+    text = clean_text_2(r.text, forindex)
     return (text, filename)
 
 
@@ -1964,13 +1982,25 @@ def download_example_file():
                  'attachment; filename="%s"' % example_filename})
 
 
+@app.route('/prerequisite_file', methods=['GET', 'POST'])
+def download_prerequisite_file():
+    example_file_id = request.args.get('efid')
+    (prerequisite_content, prerequisite_filename) = get_prerequisite_file(
+        example_file_id)
+    return Response(
+        prerequisite_content,
+        mimetype='application/octet-stream',
+        headers={'Content-Disposition':
+                 'attachment; filename="%s"' % prerequisite_filename})
+
+
 @app.route('/open', methods=['GET', 'POST'])
 def open_example_file():
     example_file_id = request.args.get('efid')
     (example_content, example_filename, example_id) = get_example_file(
         example_file_id)
-    (prerequisite_content, prerequisite_filename) = get_prerequisite_file(
-        str(example_id))
+    (prerequisite_content, prerequisite_filename) = \
+        get_prerequisite_file_by_example_id(str(example_id))
     return render_template('index.html',
                            example_content=example_content,
                            example_filename=example_filename,
