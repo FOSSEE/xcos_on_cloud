@@ -5,7 +5,7 @@ function generic_block3() {
         this.function_name = "sinblk";
         this.funtyp = 4;
         this.in = [[1],[1]];
-        this.it = [1]
+        this.it = [1];
         this.out = [[1],[1]];
         this.ot = [1];
         this.ci = [];
@@ -206,13 +206,12 @@ function generic_block3() {
             alert("Answer given for Initial object state is incorrect");
             throw "incorrect";
         }
-        this.oz = oz1;
-
-        oz1 = (oz1.substring(5,oz1.length-1)).replace(/,/g, ' ');
+        var oz_temp = oz1;
+        oz_temp = (oz_temp.substring(5,oz_temp.length-1)).replace(/,/g, ' ');
         var oz2 = [] //for passing to odstate
-        for(var i = 0; i < oz1.length; i++){
-            if (oz1[i].trim().length != 0) {
-                oz2[i] = new ScilabDouble([oz1[i]]);
+        for(var i = 0; i < oz_temp.length; i++){
+            if (oz_temp[i].trim().length != 0) {
+                oz2[i] = new ScilabDouble([oz_temp[i]]);
             }
         }
 
@@ -254,12 +253,12 @@ function generic_block3() {
             alert("Answer given for Object parameters list is incorrect");
             throw "incorrect";
         }
-        this.opar = opar1;
-        opar1 = (opar1.substring(5,opar1.length-1)).replace(/,/g, ' ');
+        var temp_opar = opar1;
+        temp_opar = (temp_opar.substring(5,temp_opar.length-1)).replace(/,/g, ' ');
         var opar2 = [] //for passing to objectparameter
-        for(var i = 0; i < opar1.length; i++){
-            if (opar1[i].trim().length != 0) {
-                opar2[i] = new ScilabDouble([opar1[i]]);
+        for(var i = 0; i < temp_opar.length; i++){
+            if (temp_opar[i].trim().length != 0) {
+                opar2[i] = new ScilabDouble([temp_opar[i]]);
             }
         }
 
@@ -303,6 +302,8 @@ function generic_block3() {
         this.z = z1;
         this.rpar = rpar1;
         this.ipar = ipar1;
+        this.oz = oz1;
+        this.opar = opar1;
         this.nmode = inverse(nmode1);
         this.auto0 = auto01;
         this.depu = depu1;
