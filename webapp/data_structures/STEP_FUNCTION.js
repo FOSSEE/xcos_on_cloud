@@ -1,11 +1,12 @@
 function STEP_FUNCTION() {
 
+    var scs_m_1;
     STEP_FUNCTION.prototype.define = function STEP_FUNCTION() {
-	this.step= 1;
-	this.initial= 0;
-	this.final=1;
+	    this.step= 1;
+	    this.initial= 0;
+	    this.final=1;
 
-	var scs_m_1 = scicos_diagram();
+	    scs_m_1 = scicos_diagram();
         scs_m_1.objs.push(new STEP().internal(this.step,this.initial,this.final));
         scs_m_1.objs.push(new OUT_f().internal());
         scs_m_1.objs.push(scicos_link({}));
@@ -86,28 +87,63 @@ function STEP_FUNCTION() {
     }
     STEP_FUNCTION.prototype.set = function STEP_FUNCTION() {
 
-        var regex_char = /[a-zA-Z]/g; //check character
-        var regex_semicolon_comma = /[\r,;]+/;
-        var step1 = arguments[0]["step"]
-        var initial1 = arguments[0]["initial"]
-        var final1 = arguments[0]["final"]
-        
-        var chararray = step1.trim().match(regex_char);
+        var regex_num = /^\d+$/; //check number only
+        var regex_char = /[a-zA-Z!@#$%^&*]/g; //check character
+        var regex_semicolon_comma = /[,;]+/;
+        var regex_colon = /[;]+/;
+        var regex_roundbracket = /[)(]+/;
+        var regex_parentheses = /[\])}[{(]/g;
+
+        var step1 = arguments[0]["step"];
+        var initial1 = arguments[0]["initial"];
+        var final1 = arguments[0]["final"];
+        step1 = step1.trim().replace(regex_parentheses, '');
+        var chararray = step1.match(regex_char);
         if (chararray != null) {
             alert("Answer given for Step Time \nis incorrect: Undefined variable:"+step1);
             throw "incorrect";
         }
-        if ((regex_semicolon_comma.test(step1.trim())) && (step1.trim().length == 0 || step1.trim() != "")) {
+        if ((regex_semicolon_comma.test(step1)) || step1.length == 0 || step1.split(" ").length>1) {
             alert("Answer given for Step Time\nhas invalid dimension:\nwaiting for dimension 1.");
             throw "incorrect";
         }
 
+        var chararray = initial1.match(regex_char);
+        if (chararray != null) {
+            alert("Answer given for Initial Value \nis incorrect: Undefined variable:"+initial1);
+            throw "incorrect";
+        }
+        if(regex_semicolon_comma.test(initial1) && regex_roundbracket.test(initial1)){
+            if(regex_colon.test(initial1)){
+                alert("Answer given for Initial Value is incorrect: Waiting for right parenthesis.");
+                throw "incorrect";
+            }else{
+                alert("Answer given for Initial Value is incorrect: Incompatible output argument..");
+                throw "incorrect";
+            }
+        }
+        
+        var chararray = final1.match(regex_char);
+        if (chararray != null) {
+            alert("Answer given for Final Value \nis incorrect: Undefined variable:"+final1);
+            throw "incorrect";
+        }
+        if(regex_semicolon_comma.test(final1) && regex_roundbracket.test(final1)){
+            if(regex_colon.test(final1)){
+                alert("Answer given for Final Value is incorrect: Waiting for right parenthesis.");
+                throw "incorrect";
+            }else{
+                alert("Answer given for Final Value is incorrect: Incompatible output argument..");
+                throw "incorrect";
+            }
+        }
+
         this.step = step1;
-        this.initial = MatrixInverse(initial1)
-	    this.final = MatrixInverse(final1)
-	    
-	    this.initial = colon_operator(this.initial)
-	    this.final = colon_operator(this.final)
+        this.initial = MatrixInverse(initial1);
+	    this.final = MatrixInverse(final1);
+
+	    this.initial = colon_operator(this.initial);
+	    this.final = colon_operator(this.final);
 
 	    if (size(this.initial,"*")!=size(this.final,"*")){
 	    	if(size(this.initial,"*")==1) {
@@ -119,25 +155,21 @@ function STEP_FUNCTION() {
 	    		STEP_FUNCTION.get();
 	    	}
 	    }
-
-	    model.out2 = new ScilabDouble([1])
-	    model.outtyp = new ScilabDouble([1])
-	    var io = check_io(this.x.model,this.x.graphics,[],size(this.final,"*"),1,1)
-	    this.x.model.firing = new ScilabDouble([this.step])
+	    this.x.model.out2 = new ScilabDouble([1]);
+	    this.x.model.outtyp = new ScilabDouble([1]);
+	    //var io = check_io(this.x.model,this.x.graphics,[],size(this.final,"*"),1,1);
+	    this.x.model.firing = new ScilabDouble([this.step]);
+	    var rpar = [];
 	    if (this.step == 0){
-		    var rpar = [[this.final],[this.final]]
+		    rpar = [[this.final],[this.final]];
 	    }
 	    else {
-		    var rpar = [[this.initial],[this.final]]
+		    rpar = [[this.initial],[this.final]];
 	    }
 
-	    this.x.model.rpar = rpar
-	    var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"STEP\",sz(1),sz(2));"]);
-	    this.x = new standard_define(new ScilabDouble([2,2]),model,new ScilabDouble(),gr_i);
-	    //var exprs = new ScilabString(["1"],...rpar);
-	    //this.x.graphics.exprs=exprs
-	    return new BasicBlock(this.x)
-	    //set code ends (STEP.SCI)
+	    this.x.model.rpar = rpar;
+
+	    return new BasicBlock(this.x);
     }
 
     STEP_FUNCTION.prototype.details = function STEP_FUNCTION() {
