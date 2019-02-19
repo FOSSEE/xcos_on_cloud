@@ -205,8 +205,15 @@ function generic_block3() {
             alert("Answer given for Initial object state is incorrect");
             throw "incorrect";
         }
-        this.oz = oz1; //[sci2exp(oz1)]
-        oz1 = (oz1.substring(5,oz1.length-1)).split(",");
+        this.oz = oz1;
+
+        oz1 = (oz1.substring(5,oz1.length-1)).replace(/,/g, ' ');
+        var oz2 = [] //for passing to odstate
+        for(var i = 0; i < oz1.length; i++){
+            if (oz1[i].trim().length != 0) {
+                oz2[i] = new ScilabDouble([oz1[i]])
+            }
+        }
 
         var chararray = rpar1.match(regex_char);
         if (chararray != null) {
@@ -218,7 +225,11 @@ function generic_block3() {
             alert("Answer given for Real parameters vector\nis incorrect: Incompatible output argument");
             throw "incorrect";
         }
-        this.rpar = inverse(rpar1)
+        rpar1 = MatrixInverse(rpar1);
+        if (rpar1.length == 0 || rpar1[0].length == 0){
+            rpar1 = [];
+        }
+        this.rpar = rpar1;
 
         var chararray = ipar1.match(regex_char);
         if (chararray != null) {
@@ -230,7 +241,11 @@ function generic_block3() {
             alert("Answer given for Integer parameters vector\nis incorrect: Incompatible output argument");
             throw "incorrect";
         }
-        this.ipar = inverse(ipar1)
+        ipar1 = MatrixInverse(ipar1);
+        if (ipar1.length == 0 || ipar1[0].length == 0){
+            ipar1 = [];
+        }
+        this.ipar = ipar1;
 
         if (regex_colon.test(opar1)){
             alert("Answer given for Object parameters list is incorrect:\n It has to be type of list eg. list()");
@@ -240,7 +255,14 @@ function generic_block3() {
             alert("Answer given for Object parameters list is incorrect");
             throw "incorrect";
         }
-        this.opar = opar1; //[sci2exp(opar1)]
+        this.opar = opar1;
+        opar1 = (opar1.substring(5,opar1.length-1)).replace(/,/g, ' ');
+        var opar2 = [] //for passing to objectparameter
+        for(var i = 0; i < opar1.length; i++){
+            if (opar1[i].trim().length != 0) {
+                opar2[i] = new ScilabDouble([opar1[i]])
+            }
+        }
 
         if (!regex_num.test(nmode1)) {
             var chararray = nmode1.match(regex_char);
@@ -296,10 +318,14 @@ function generic_block3() {
         this.x.model.firing = new ScilabDouble(this.auto0);
         this.x.model.evtin = new ScilabDouble(...this.ci);
         this.x.model.evtout = new ScilabDouble(...this.co);
-        this.x.model.odstate = list(new ScilabDouble(oz1));
+        this.x.model.rpar = new ScilabDouble(this.rpar);
+        this.x.model.ipar = new ScilabDouble(this.ipar);
+        this.x.model.opar = list(...opar2)
+        this.x.model.odstate = list(...oz2);
         this.x.model.nmode = new ScilabDouble(this.nmode);
         this.x.model.nzcr = new ScilabDouble(this.nzcr);
-        var label = new ScilabString([this.function_name], 
+
+        var exprs = new ScilabString([this.function_name],
         [sci2exp(this.funtyp)], 
         [sci2exp([parseFloat(getData(this.x.model.in)[0]), parseFloat(getData(this.x.model.in2)[0])])],
         [sci2exp([parseFloat(getData(this.x.model.intyp)[0])])], 
@@ -310,15 +336,14 @@ function generic_block3() {
         [sci2exp(this.xx)],
         [sci2exp(this.z)],
         [sci2exp(this.oz)],
-        [sci2exp(getData(this.rpar))], 
-        [sci2exp(getData(this.ipar))], 
-        [sci2exp(getData(this.opar))], 
+        [sci2exp(this.rpar)],
+        [sci2exp(this.ipar)],
+        [sci2exp(this.opar)],
         [sci2exp([parseFloat(getData(this.x.model.nmode)[0])])],
         [sci2exp([parseFloat(getData(this.x.model.nzcr)[0])])],
         [sci2exp(getData(this.auto0))], 
         [this.depu], 
         [this.dept]);
-        var exprs = label;
         this.x.graphics.exprs = exprs;
         var io = set_io(this.x.model,this.x.graphics,list(...this.in),list(...this.out),this.ci,this.co);
         this.displayParameter = [this.function_name];
