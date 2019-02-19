@@ -47,57 +47,234 @@ function generic_block3() {
             it:["Input ports type",this.it],
             out:["Output port sizes",this.out.toString().replace(/,/g," ")],
             ot:["Output ports type",this.ot],
-            ci:["Input event ports sizes",this.ci],
-            co:["Output events ports sizes",this.co],
-            xx:["Initial continuous state",this.xx],
-            z:["Initial discrete state",this.z],
-            oz:["Initial object state",this.oz],
-            rpar:["Real parameters vector",this.rpar],
-            ipar:["Integer parameters vector",this.ipar],
-            opar:["Object parameters list",this.opar],
+            ci:["Input event ports sizes",sci2exp(this.ci)],
+            co:["Output events ports sizes",sci2exp(this.co)],
+            xx:["Initial continuous state",sci2exp(this.xx)],
+            z:["Initial discrete state",sci2exp(this.z)],
+            oz:["Initial object state",[sci2exp(this.oz)]],
+            rpar:["Real parameters vector",sci2exp(this.rpar)],
+            ipar:["Integer parameters vector",sci2exp(this.ipar)],
+            opar:["Object parameters list",[sci2exp(this.opar)]],
             nmode:["Number of modes",this.nmode],
             nzcr:["Number of zero crossings",this.nzcr],
-            auto0:["Initial firing vector (<0 for no firing)",this.auto0],
+            auto0:["Initial firing vector (<0 for no firing)",sci2exp(this.auto0)],
             depu:["Direct feedthrough (y or n)",this.depu],
             dept:["Time dependence (y or n)",this.dept]
         }
         return options
     }
     generic_block3.prototype.set = function generic_block3() {
-        this.function_name = (arguments[0]["function_name"])
-        this.funtyp = parseFloat((arguments[0]["funtyp"]))
-        this.in = inverse((arguments[0]["in"]))
-        this.it = inverse((arguments[0]["it"]))
-        this.out = inverse((arguments[0]["out"]))
-        this.ot = inverse((arguments[0]["ot"]))
-        this.ci = inverse((arguments[0]["ci"]))
-        this.co = inverse((arguments[0]["co"]))
-        this.xx = inverse((arguments[0]["xx"]))
-        this.z = inverse((arguments[0]["z"]))
-        this.oz = inverse((arguments[0]["oz"]))
-        this.rpar = inverse((arguments[0]["rpar"]))
-        this.ipar = inverse((arguments[0]["ipar"]))
-        this.opar = inverse((arguments[0]["opar"]))
-        this.nmode = inverse((arguments[0]["nmode"]))
-        this.nzcr = inverse((arguments[0]["nzcr"]))
-        this.auto0 = inverse((arguments[0]["auto0"]))
-        this.depu = arguments[0]["depu"]
-        this.dept = arguments[0]["dept"]
+        var function_name1 = (arguments[0]["function_name"])
+        var funtyp1 = (arguments[0]["funtyp"])
+        var in1 = (arguments[0]["in"])
+        var it1 = (arguments[0]["it"])
+        var out1 = (arguments[0]["out"])
+        var ot1 = (arguments[0]["ot"])
+        var ci1 = (arguments[0]["ci"])
+        var co1 = (arguments[0]["co"])
+        var xx1 = (arguments[0]["xx"])
+        var z1 = (arguments[0]["z"])
+        var oz1 = (arguments[0]["oz"])
+        var rpar1 = (arguments[0]["rpar"])
+        var ipar1 = (arguments[0]["ipar"])
+        var opar1 = (arguments[0]["opar"])
+        var nmode1 = (arguments[0]["nmode"])
+        var nzcr1 = (arguments[0]["nzcr"])
+        var auto01 = (arguments[0]["auto0"])
+        var depu1 = arguments[0]["depu"]
+        var dept1 = arguments[0]["dept"]
 
-        this.function_name = this.function_name.trim();
-        if (this.funtyp < 0) {
+        var regex_num = /^[0-9]*(?:\d{1,2})?$/; //allow only numbers
+        var regex_char = /[a-zA-Z]/g; //check character
+        var regex_semicolon_comma = /[\r,;]+/;
+        var regex_colon = /[\r;]+/;
+        if (!regex_num.test(funtyp1)) {
+            var chararray = funtyp1.match(regex_char);
+            if (chararray != null) {
+                alert("Answer given for Function type (0,1,2,..)\n is incorrect: Undefined variable: "+funtyp1);
+                throw "incorrect";
+            }
+            if (regex_semicolon_comma.test(funtyp1)) {
+                alert("Answer given for Function type (0,1,2,..)\n has invalid dimension:\n waiting for dimension 1");
+                throw "incorrect";
+            }
+        }
+        this.funtyp = parseFloat(funtyp1)
+        if (funtyp < 0) {
             alert("function type cannot be negative");
             throw "incorrect";
         }
-        if (this.ci[0].length != 0 || this.co[0].length != 0) {
-                if (math.max(this.ci.concat(this.co)) > 1) {
-                    alert("vector event links not supported");
-                    throw "incorrect";
-                }
-        }else{
-            this.ci = [];
-            this.co = [];
+        this.function_name = function_name1.trim()
+
+        var chararray = in1.match(regex_char);
+        if (chararray != null) {
+            alert("Answer given for Function type (0,1,2,..)\n is incorrect: Undefined variable: "+in1);
+            throw "incorrect";
         }
+        if (regex_colon.test(in1)){
+            alert("Answer given for Function type (0,1,2,..)\n has invalid dimension:\n waiting for dimension -1 x 2.");
+            throw "incorrect";
+        }
+        if (inverse(in1)[0].length > 2){
+            alert("Answer given for Function type (0,1,2,..)\nhas invalid dimension:\nwaiting for dimension -1 x 2.");
+            throw "incorrect";
+        }
+        this.in = inverse(in1)
+
+        if (regex_semicolon_comma.test(it1)){
+            alert("set_io : input port sizes and input port type must have the same number of rows");
+            throw "incorrect";
+        }
+        var chararray = it1.match(regex_char);
+        if (chararray != null) {
+            alert("Answer given for Function type (0,1,2,..)\n is incorrect: Undefined variable: "+it1);
+            throw "incorrect";
+        }
+        this.it = inverse(it1)
+
+        var chararray = out1.match(regex_char);
+        if (chararray != null) {
+            alert("Answer given for Function type (0,1,2,..)\n is incorrect: Undefined variable: "+out1);
+            throw "incorrect";
+        }
+        if (regex_colon.test(out1)){
+            alert("Answer given for Function type (0,1,2,..)\n has invalid dimension:\n waiting for dimension -1 x 2.");
+            throw "incorrect";
+        }
+        if (inverse(out1)[0].length > 2){
+            alert("Answer given for Function type (0,1,2,..)\nhas invalid dimension:\nwaiting for dimension -1 x 2.");
+            throw "incorrect";
+        }
+        this.out = inverse(out1)
+
+        if (regex_semicolon_comma.test(ot1)){
+            alert("set_io : input port sizes and input port type must have the same number of rows");
+            throw "incorrect";
+        }
+        var chararray = ot1.match(regex_char);
+        if (chararray != null) {
+            alert("Answer given for Function type (0,1,2,..)\n is incorrect: Undefined variable: "+ot1);
+            throw "incorrect";
+        }
+        this.ot = inverse(ot1)
+
+        ci1 = MatrixInverse(ci1)
+        co1 = MatrixInverse(co1)
+        if (ci1.length == 0 || ci1[0].length == 0){
+            ci1 = [];
+        }
+        if (co1.length == 0 || co1[0].length == 0 ){
+            co1 = [];
+        }
+        if (ci1.length != 0 || co1.length != 0) {
+            if (math.max(ci1.concat(co1)) > 1) {
+                alert("vector event links not supported");
+                throw "incorrect";
+            }
+        }
+        this.ci = ci1
+        this.co = co1
+
+        var chararray = xx1.match(regex_char);
+        if (chararray != null) {
+            alert("Answer given for Function type (0,1,2,..)\n is incorrect: Undefined variable: "+xx1);
+            throw "incorrect";
+        }
+        xx1 = MatrixInverse(xx1)
+        if (xx1.length == 0 || xx1[0].length == 0){
+            xx1 = [];
+        }
+        this.xx = xx1
+
+        var chararray = z1.match(regex_char);
+        if (chararray != null) {
+            alert("Answer given for Function type (0,1,2,..)\n is incorrect: Undefined variable: "+z1);
+            throw "incorrect";
+        }
+        z1 = MatrixInverse(z1)
+        if (z1.length == 0 || z1[0].length == 0){
+            z1 = [];
+        }
+        this.z = z1
+
+        if (regex_colon.test(oz1)){
+            alert("Answer given for Initial object state is incorrect:\n It has to be type of list eg. list()");
+            throw "incorrect";
+        }
+        if (oz1.substring(0,5) != "list(" && oz1.charAt(oz1.length-1) != ")"){
+            alert("Answer given for Initial object state is incorrect");
+            throw "incorrect";
+        }
+        this.oz = oz1; //[sci2exp(oz1)]
+        oz1 = (oz1.substring(5,oz1.length-1)).split(",");
+
+        var chararray = rpar1.match(regex_char);
+        if (chararray != null) {
+            alert("Answer given for Real parameters vector\nis incorrect: Undefined variable:"+rpar1);
+            throw "incorrect";
+        }
+        var chararray = rpar1.match(/[\r)(]+/);
+        if (chararray != null) {
+            alert("Answer given for Real parameters vector\nis incorrect: Incompatible output argument");
+            throw "incorrect";
+        }
+        this.rpar = inverse(rpar1)
+
+        var chararray = ipar1.match(regex_char);
+        if (chararray != null) {
+            alert("Answer given for Integer parameters vector\nis incorrect: Undefined variable:"+ipar1);
+            throw "incorrect";
+        }
+        var chararray = ipar1.match(/[\r)(]+/);
+        if (chararray != null) {
+            alert("Answer given for Integer parameters vector\nis incorrect: Incompatible output argument");
+            throw "incorrect";
+        }
+        this.ipar = inverse(ipar1)
+
+        if (regex_colon.test(opar1)){
+            alert("Answer given for Object parameters list is incorrect:\n It has to be type of list eg. list()");
+            throw "incorrect";
+        }
+        if (opar1.substring(0,5) != "list(" && opar1.charAt(opar1.length-1) != ")"){
+            alert("Answer given for Object parameters list is incorrect");
+            throw "incorrect";
+        }
+        this.opar = opar1; //[sci2exp(opar1)]
+
+        if (!regex_num.test(nmode1)) {
+            var chararray = nmode1.match(regex_char);
+            if (chararray != null) {
+                alert("Answer given for Number of modes\n is incorrect: Undefined variable: "+nmode1);
+                throw "incorrect";
+            }
+            if (regex_semicolon_comma.test(nmode1) && (nmode1.length == 0)) {
+                alert("Answer given for Number of modes\n has invalid dimension:\n waiting for dimension 1");
+                throw "incorrect";
+            }
+        }
+        this.nmode = inverse(nmode1)
+
+        if (!regex_num.test(nzcr1)) {
+            var chararray = nzcr1.match(regex_char);
+            if (chararray != null) {
+                alert("Answer given for Number of zero crossings\n is incorrect: Undefined variable: "+nzcr1);
+                throw "incorrect";
+            }
+            if (regex_semicolon_comma.test(nzcr1) && (nzcr1.length == 0)) {
+                alert("Answer given for Number of zero crossings\n has invalid dimension:\n waiting for dimension 1");
+                throw "incorrect";
+            }
+        }
+        this.nzcr = inverse(nzcr1)
+
+        auto01 = MatrixInverse(auto01)
+        if (auto01.length == 0 || auto01[0].length == 0){
+            auto01 = [];
+        }
+        this.auto0 = auto01
+        this.depu = depu1
+        this.dept = dept1
         this.depu = this.depu.trim();
         this.depu_boolean = false;
         if (this.depu == "y") {
@@ -108,19 +285,18 @@ function generic_block3() {
         if (this.dept == "y") {
           this.dept_boolean = true;
         }
-        this.ci = ones(this.ci.length,1);
         this.x.model.in = new ScilabDouble([this.in[0]]);
         this.x.model.in2 = new ScilabDouble([this.in[1]]);
         this.x.model.intyp = new ScilabDouble([this.it]);
         this.x.model.out = new ScilabDouble([this.out[0]]);
-        this.x.model.out2 = new ScilabDouble([this.out[1]]);
+        this.x.model.out2 = new  ScilabDouble([this.out[1]]);
         this.x.model.outtyp = new ScilabDouble([this.ot]);
-        this.x.model.state = new ScilabDouble([this.xx]);
-        this.x.model.dstate = new ScilabDouble([this.z]);
+        this.x.model.state = new ScilabDouble(...this.xx);
+        this.x.model.dstate = new ScilabDouble(...this.z);
         this.x.model.firing = new ScilabDouble(this.auto0);
         this.x.model.evtin = new ScilabDouble(...this.ci);
-        this.x.model.evtout = new ScilabDouble([this.co]);
-        this.x.model.odstate = new ScilabDouble(this.oz);
+        this.x.model.evtout = new ScilabDouble(...this.co);
+        this.x.model.odstate = list(new ScilabDouble(oz1));
         this.x.model.nmode = new ScilabDouble(this.nmode);
         this.x.model.nzcr = new ScilabDouble(this.nzcr);
         var label = new ScilabString([this.function_name], 
@@ -129,11 +305,11 @@ function generic_block3() {
         [sci2exp([parseFloat(getData(this.x.model.intyp)[0])])], 
         [sci2exp([parseFloat(getData(this.x.model.out)[0]), parseFloat(getData(this.x.model.out2)[0])])],
         [sci2exp([parseFloat(getData(this.x.model.outtyp)[0])])], 
-        [sci2exp([parseFloat(getData(this.x.model.evtin))])], 
-        [sci2exp([parseFloat(getData(this.x.model.evtout)[0])])], 
-        [sci2exp([parseFloat(getData(this.x.model.state)[0])])], 
-        [sci2exp([parseFloat(getData(this.x.model.dstate)[0])])], 
-        [sci2exp([parseFloat(getData(this.x.model.odstate)[0])])], 
+        [sci2exp(this.ci)],
+        [sci2exp(this.co)],
+        [sci2exp(this.xx)],
+        [sci2exp(this.z)],
+        [sci2exp(this.oz)],
         [sci2exp(getData(this.rpar))], 
         [sci2exp(getData(this.ipar))], 
         [sci2exp(getData(this.opar))], 
