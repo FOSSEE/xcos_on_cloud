@@ -1,12 +1,11 @@
 function STEP_FUNCTION() {
 
-    var scs_m_1;
     STEP_FUNCTION.prototype.define = function STEP_FUNCTION() {
-	    this.step= 1;
-	    this.initial= 0;
-	    this.final=1;
+	    this.step = 1;
+	    this.initial = 0;
+	    this.final = 1;
 
-	    scs_m_1 = scicos_diagram();
+	    var scs_m_1 = scicos_diagram();
         scs_m_1.objs.push(new STEP().internal(this.step,this.initial,this.final));
         scs_m_1.objs.push(new OUT_f().internal());
         scs_m_1.objs.push(scicos_link({}));
@@ -27,8 +26,8 @@ function STEP_FUNCTION() {
         graphics.out_style = new ScilabString(["ExplicitOutputPort;align=right;verticalAlign=middle;spacing=10.0;rotation=0"]);
         graphics.in_label = new ScilabDouble();
         graphics.out_label = new ScilabString([""]);
-        model.evtin = new ScilabDouble([-1]);
-        model.evtout = new ScilabDouble([-1]);
+        model.evtin = new ScilabDouble([1]);
+        model.evtout = new ScilabDouble([1]);
         model.uid = new ScilabString([count]);
         blk.graphics = graphics;
         blk.model = model;
@@ -78,16 +77,15 @@ function STEP_FUNCTION() {
         return new BasicBlock(this.x);
     }
     STEP_FUNCTION.prototype.get = function STEP_FUNCTION() {
-        var options={
+        var options = {
             step:["Step Time",this.step],
-            initial:["Initial Value",this.initial],
-	        final:["Final Value",this.final],
+            initial:["Initial Value",sci2exp(this.initial)],
+	        final:["Final Value",sci2exp(this.final)],
         }
         return options
     }
     STEP_FUNCTION.prototype.set = function STEP_FUNCTION() {
 
-        var regex_num = /^\d+$/; //check number only
         var regex_char = /[a-zA-Z!@#$%^&*]/g; //check character
         var regex_semicolon_comma = /[,;]+/;
         var regex_colon = /[;]+/;
@@ -122,7 +120,7 @@ function STEP_FUNCTION() {
                 throw "incorrect";
             }
         }
-        
+
         var chararray = final1.match(regex_char);
         if (chararray != null) {
             alert("Answer given for Final Value \nis incorrect: Undefined variable:"+final1);
@@ -138,37 +136,37 @@ function STEP_FUNCTION() {
             }
         }
 
-        this.step = step1;
-        this.initial = MatrixInverse(initial1);
-	    this.final = MatrixInverse(final1);
-
-	    this.initial = colon_operator(this.initial);
-	    this.final = colon_operator(this.final);
-
-	    if (size(this.initial,"*")!=size(this.final,"*")){
-	    	if(size(this.initial,"*")==1) {
-	    		this.initial = this.inital*ones(this.final);
-	    	}else if(size(this.final,"*")==1){
-	    		this.final = this.final*ones(this.initial);
-	    	}else{
+        initial1 = MatrixInverse(initial1);
+	    final1 = MatrixInverse(final1);
+	    this.step = step1;
+        this.initial = initial1;
+        this.final = final1;
+	    var temp_initial = colon_operator(initial1);
+	    var temp_final = colon_operator(final1);
+	    if (size(temp_initial,"*") != size(temp_final,"*")){
+	        if(size(temp_initial,"*") == 1) {
+	            temp_initial = temp_initial*ones(temp_final);
+	        }else if(size(temp_final,"*") == 1){
+	        temp_final = temp_final*ones(temp_initial);
+        }else{
 	    		alert("Initial and Final Value have incompatible sizes");
-	    		STEP_FUNCTION.get();
+        throw "incorrect";
 	    	}
 	    }
-	    this.x.model.out2 = new ScilabDouble([1]);
-	    this.x.model.outtyp = new ScilabDouble([1]);
-	    //var io = check_io(this.x.model,this.x.graphics,[],size(this.final,"*"),1,1);
-	    this.x.model.firing = new ScilabDouble([this.step]);
+	    var scs_m_1 = this.x.model.rpar;
+	    scs_m_1.objs[0].graphics.exprs = new ScilabString([this.step],[sci2exp(initial1)],[sci2exp(final1)]);
+	    scs_m_1.objs[0].model.out2 = new ScilabDouble([1]);
+	    scs_m_1.objs[0].model.outtyp = new ScilabDouble([1]);
+	    scs_m_1.objs[0].model.firing = new ScilabDouble([this.step]);
+	    var io = check_io(scs_m_1.objs[0].model,scs_m_1.objs[0].graphics,[],size(final1,"*"),1,1);
 	    var rpar = [];
 	    if (this.step == 0){
-		    rpar = [[this.final],[this.final]];
+		    rpar = new ScilabDouble(...temp_final,...temp_final);
 	    }
 	    else {
-		    rpar = [[this.initial],[this.final]];
+		    rpar = new ScilabDouble(...temp_initial,...temp_final);
 	    }
-
-	    this.x.model.rpar = rpar;
-
+	    scs_m_1.objs[0].model.rpar = rpar;
 	    return new BasicBlock(this.x);
     }
 
