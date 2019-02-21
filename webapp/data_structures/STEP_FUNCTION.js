@@ -153,37 +153,20 @@ function STEP_FUNCTION() {
         throw "incorrect";
 	    	}
 	    }
-        var scs_m_1 = this.x.model.rpar;
-        scs_m_1.objs[0] = new STEP().internal(this.step,this.initial,this.final);
-        var blk = scs_m_1.objs[0];
-        var graphics = blk.graphics;
-        var model = blk.model;
-        graphics.orig = new ScilabDouble([20, -60]);
-        graphics.sz = new ScilabDouble([40, 40]);
-        graphics.flip = new ScilabBoolean([true]);
-	    graphics.exprs = new ScilabString([this.step],[sci2exp(initial1)],[sci2exp(final1)]);
-        graphics.pein = new ScilabDouble([4]);
-        graphics.peout = new ScilabDouble([4]);
-        graphics.pout = new ScilabDouble([3]);
-        graphics.out_implicit = new ScilabString(["E"]);
-        graphics.in_style = new ScilabDouble();
-        graphics.out_style = new ScilabString(["ExplicitOutputPort;align=right;verticalAlign=middle;spacing=10.0;rotation=0"]);
-        graphics.in_label = new ScilabDouble();
-        graphics.out_label = new ScilabString([""]);
-        model.evtin = new ScilabDouble([1]);
-        model.evtout = new ScilabDouble([1]);
-        model.firing = new ScilabDouble([this.step]);
-        model.uid = new ScilabString([count]);
-        blk.graphics = graphics;
-        blk.model = model;
-        blk.doc = list(new ScilabString([count++]));
-        scs_m_1.objs[0] = blk;
-        this.x.model.sim = new ScilabString(["csuper"]);
-        this.x.model.out = new ScilabDouble([1]);
-        this.x.model.out2 = new ScilabDouble([1]);
-        this.x.model.outtyp = new ScilabDouble([1]);
-        this.x.model.rpar = scs_m_1;
 
+	    var rpar = [];
+	    if (this.step == 0){
+		    rpar = new ScilabDouble(...temp_final,...temp_final);
+	    }
+	    else {
+		    rpar = new ScilabDouble(...temp_initial,...temp_final);
+	    }
+
+	    var block = getRparObjByGui(this.x, 'STEP');
+        block.graphics.exprs = new ScilabString([this.step],[sci2exp(initial1)],[sci2exp(final1)]);
+        block.model.firing = new ScilabDouble([this.step]);
+        block.model.rpar = rpar;
+        this.x.model.rpar.objs[0] = block;
 	    return new BasicBlock(this.x);
     }
 
