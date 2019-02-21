@@ -148,17 +148,16 @@ function STEP_FUNCTION() {
 	            temp_initial = temp_initial*ones(temp_final);
 	        }else if(size(temp_final,"*") == 1){
 	            temp_final = temp_final*ones(temp_initial);
-        }else{
+            }else{
 	    		alert("Initial and Final Value have incompatible sizes");
-        throw "incorrect";
+                throw "incorrect";
 	    	}
 	    }
 
 	    var rpar = [];
 	    if (this.step == 0){
 		    rpar = new ScilabDouble(...temp_final,...temp_final);
-	    }
-	    else {
+	    }else{
 		    rpar = new ScilabDouble(...temp_initial,...temp_final);
 	    }
 
