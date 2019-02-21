@@ -155,6 +155,9 @@ function STEP_FUNCTION() {
 	    }
 	    var scs_m_1 = this.x.model.rpar;
 	    scs_m_1.objs[0].graphics.exprs = new ScilabString([this.step],[sci2exp(initial1)],[sci2exp(final1)]);
+	    scs_m_1.objs[0].model.evtin = new ScilabDouble([1]);
+        scs_m_1.objs[0].model.evtout = new ScilabDouble([1]);
+        scs_m_1.objs[0].model.out = new ScilabDouble([1]);
 	    scs_m_1.objs[0].model.out2 = new ScilabDouble([1]);
 	    scs_m_1.objs[0].model.outtyp = new ScilabDouble([1]);
 	    scs_m_1.objs[0].model.firing = new ScilabDouble([this.step]);
@@ -167,6 +170,9 @@ function STEP_FUNCTION() {
 		    rpar = new ScilabDouble(...temp_initial,...temp_final);
 	    }
 	    scs_m_1.objs[0].model.rpar = rpar;
+	    this.x.model.out = new ScilabDouble([1]);
+        this.x.model.out2 = new ScilabDouble([1]);
+        this.x.model.outtyp = new ScilabDouble([1]);
 	    return new BasicBlock(this.x);
     }
 
