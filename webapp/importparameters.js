@@ -1600,7 +1600,12 @@ STEP_FUNCTION.prototype.importset = function STEP_FUNCTION() {
     var block = getRparObjByGui(this.x, 'STEP');
     if (block == null)
         return;
-    /* TODO */
+    var model = block.model;
+    var ary = getData(model.firing);
+    this.step = ary[0];
+    var par = getData(model.rpar);
+    this.initial = par[0];
+    this.final = par[1];
 }
 SUBMAT.prototype.importset = function SUBMAT() {
     var graphics = this.x.graphics;
