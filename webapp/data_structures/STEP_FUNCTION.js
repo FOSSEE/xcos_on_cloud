@@ -165,7 +165,6 @@ function STEP_FUNCTION() {
         block.graphics.exprs = new ScilabString([this.step],[sci2exp(initial1)],[sci2exp(final1)]);
         block.model.firing = new ScilabDouble([this.step]);
         block.model.rpar = rpar;
-        this.x.model.rpar.objs[0] = block;
 	    return new BasicBlock(this.x);
     }
 
