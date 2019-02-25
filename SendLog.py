@@ -1235,6 +1235,7 @@ def upload():
 
     # In front of block tkscale printing the block corresponding to read
     # function and assigning corresponding values
+    skipblock = False
     for line in fileinput.input(temp_file_xml_name, inplace=1):
 
         if 'interfaceFunctionName=\"TKSCALE\"' in line:
@@ -1271,7 +1272,12 @@ def upload():
             with open(READCONTENTFILE, "r") as read_file:
                 for line_content in read_file:
                     print(line_content, end='')
-        print(line, end='')
+            skipblock = True
+        elif skipblock:
+            if '</BasicBlock>' in line:
+                skipblock = False
+        else:
+            print(line, end='')
 
     # To resolve port issue coming in xcos file for following blocks :
     # INTMUL,MATBKSL,MATDET,MATDIAG,MATDIV and CURV_F
