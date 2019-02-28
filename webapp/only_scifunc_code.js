@@ -1285,7 +1285,7 @@ function create_scifunc_popups(graph,cell,name,diagRoot) {
                     v1.currentAngle = 0;
                     v1.flipX = 1;
                     v1.flipY = 1;
-                    createPorts(graph, v1, inputPorts, controlPorts, outputPorts, commandPorts);
+                    createPorts(graph, v1, inputPorts, controlPorts, outputPorts, commandPorts, null, null, details_instance.x.model);
                     v1.setConnectable(false);
                 } finally {
                     model.endUpdate();

@@ -1588,7 +1588,7 @@ function main(container, outline, toolbar, sidebar, status) {
                         }
 
                         // findAndCreatePorts(graph,v1,doc,curId,codec);
-                        // createPorts(graph, v1, inputPorts, controlPorts, outputPorts, commandPorts);
+                        // createPorts(graph, v1, inputPorts, controlPorts, outputPorts, commandPorts, null, null, details_instance.x.model);
 
                         v1.setConnectable(false);
                     }
@@ -1608,10 +1608,22 @@ function main(container, outline, toolbar, sidebar, status) {
                 } else if (curNodeName.endsWith('Port')) {
                     var oldParentId = currentNode.getAttribute('parent');
                     var ordering = currentNode.getAttribute('ordering');
+                    var dataLines = currentNode.getAttribute('dataLines');
+                    var dataColumns = currentNode.getAttribute('dataColumns');
+                    var dataType = currentNode.getAttribute('dataType');
                     var style = currentNode.getAttribute('style');
                     var newParentObj = nodeDataObject[oldParentId];
 
-                    var curNodeData = { nodename: curNodeName, ordering: ordering, style: style, id: curId, geometryCell: geometryCell }
+                    var curNodeData = {
+                        nodename: curNodeName,
+                        ordering: ordering,
+                        dataLines: dataLines,
+                        dataColumns: dataColumns,
+                        dataType: dataType,
+                        style: style,
+                        id: curId,
+                        geometryCell: geometryCell,
+                    };
                     newParentObj.inputDataArray.push(curNodeData);
                 }
             }
@@ -3001,7 +3013,7 @@ function showPropertiesWindow(graph, cell, diagRoot) {
                 v1.currentAngle = 0;
                 v1.flipX = 1;
                 v1.flipY = 1;
-                createPorts(graph, v1, inputPorts, controlPorts, outputPorts, commandPorts);
+                createPorts(graph, v1, inputPorts, controlPorts, outputPorts, commandPorts, null, null, details_instance.x.model);
                 v1.setConnectable(false);
             } finally {
                 model.endUpdate();
@@ -3915,7 +3927,7 @@ function addSidebarIcon(graph, sidebar, name, image, dimensions) {
             v1.currentAngle = 0;
             v1.flipX = 1;
             v1.flipY = 1;
-            createPorts(graph, v1, inputPorts, controlPorts, outputPorts, commandPorts);
+            createPorts(graph, v1, inputPorts, controlPorts, outputPorts, commandPorts, null, null, details_instance.x.model);
             v1.setConnectable(false);
         } finally {
             model.endUpdate();
@@ -3974,6 +3986,22 @@ function addSidebarIcon(graph, sidebar, name, image, dimensions) {
     ds.setGuidesEnabled(true);
 }
 
+/* from modules/xcos/src/java/org/scilab/modules/xcos/port/BasicPort.java */
+function getPortDataType(typ) {
+    typ = parseInt(typ);
+    switch (typ) {
+        case 1:   return 'REAL_MATRIX';
+        case 2:   return 'COMPLEX_MATRIX';
+        case 3:   return 'INT32_MATRIX';
+        case 4:   return 'INT16_MATRIX';
+        case 5:   return 'INT8_MATRIX';
+        case 6:   return 'UINT32_MATRIX';
+        case 7:   return 'UINT16_MATRIX';
+        case 8:   return 'UINT8_MATRIX';
+        default:  return 'UNKNOW_TYPE';
+    }
+}
+
 // Create ports
 /*
  * Maverick
@@ -3982,9 +4010,9 @@ function addSidebarIcon(graph, sidebar, name, image, dimensions) {
  * is supposed to be added and a dictionary object which contains the mapping
  * between the newly assigned Ids and imported Ids.
  */
-function createPorts(graph, block, left, top, right, bottom, parentObj, nodeDataObject) {
-    createInputPorts(graph, block, left, top, parentObj, nodeDataObject);
-    createOutputPorts(graph, block, right, bottom, parentObj, nodeDataObject);
+function createPorts(graph, block, left, top, right, bottom, parentObj, nodeDataObject, instanceModel) {
+    createInputPorts(graph, block, left, top, parentObj, nodeDataObject, instanceModel);
+    createOutputPorts(graph, block, right, bottom, parentObj, nodeDataObject, instanceModel);
 }
 
 function createPortsWithGeometry(graph, block, dataArray, nodeDataObject) {
@@ -4010,6 +4038,9 @@ function createPortsWithGeometry(graph, block, dataArray, nodeDataObject) {
         }
         var port = graph.insertVertex(block, null, dataPort.nodename, cellx, celly, geometryCell.width, geometryCell.height, dataPort.style, true);
         port.ordering = dataPort.ordering;
+        port.dataLines = dataPort.dataLines;
+        port.dataColumns = dataPort.dataColumns;
+        port.dataType = dataPort.dataType;
 
         if (block.style == 'Split') {
             port.setVisible(false);
@@ -4025,7 +4056,7 @@ function createPortsWithGeometry(graph, block, dataArray, nodeDataObject) {
     }
 }
 
-function createInputPorts(graph, block, leftArray, topArray, parentObj, nodeDataObject) {
+function createInputPorts(graph, block, leftArray, topArray, parentObj, nodeDataObject, instanceModel) {
     var topNumber = topArray.length;
     var leftNumber = leftArray.length;
 
@@ -4035,9 +4066,9 @@ function createInputPorts(graph, block, leftArray, topArray, parentObj, nodeData
             var y = (i / (leftNumber + 1)).toFixed(4);
             var portType = leftArray[i - 1];
             if (parentObj != null) {
-                createInputPort(graph, block, x, y, portType, 'left', i, nodeDataObject, parentObj.inputIds);
+                createInputPort(graph, block, x, y, portType, 'left', i, nodeDataObject, parentObj.inputIds, instanceModel);
             } else {
-                createInputPort(graph, block, x, y, portType, 'left', i);
+                createInputPort(graph, block, x, y, portType, 'left', i, null, null, instanceModel);
             }
         }
     }
@@ -4047,15 +4078,15 @@ function createInputPorts(graph, block, leftArray, topArray, parentObj, nodeData
             var y = 0;
             var portType = topArray[i - 1];
             if (parentObj != null) {
-                createInputPort(graph, block, x, y, portType, 'top', i, nodeDataObject, parentObj.controlIds);
+                createInputPort(graph, block, x, y, portType, 'top', i, nodeDataObject, parentObj.controlIds, instanceModel);
             } else {
-                createInputPort(graph, block, x, y, portType, 'top', i);
+                createInputPort(graph, block, x, y, portType, 'top', i, null, null, instanceModel);
             }
         }
     }
 }
 
-function createOutputPorts(graph, block, rightArray, bottomArray, parentObj, nodeDataObject) {
+function createOutputPorts(graph, block, rightArray, bottomArray, parentObj, nodeDataObject, instanceModel) {
     var bottomNumber = bottomArray.length;
     var rightNumber = rightArray.length;
     if (rightNumber != 0) {
@@ -4064,9 +4095,9 @@ function createOutputPorts(graph, block, rightArray, bottomArray, parentObj, nod
             var y = (i / (rightNumber + 1)).toFixed(4);
             var portType = rightArray[i - 1];
             if (parentObj != null) {
-                createOutputPort(graph, block, x, y, portType, 'right', i, nodeDataObject, parentObj.outputIds);
+                createOutputPort(graph, block, x, y, portType, 'right', i, nodeDataObject, parentObj.outputIds, instanceModel);
             } else {
-                createOutputPort(graph, block, x, y, portType, 'right', i);
+                createOutputPort(graph, block, x, y, portType, 'right', i, null, null, instanceModel);
             }
         }
     }
@@ -4076,15 +4107,15 @@ function createOutputPorts(graph, block, rightArray, bottomArray, parentObj, nod
             var y = 1;
             var portType = bottomArray[i - 1];
             if (parentObj != null) {
-                createOutputPort(graph, block, x, y, portType, 'bottom', i, nodeDataObject, parentObj.commandIds);
+                createOutputPort(graph, block, x, y, portType, 'bottom', i, nodeDataObject, parentObj.commandIds, instanceModel);
             } else {
-                createOutputPort(graph, block, x, y, portType, 'bottom', i);
+                createOutputPort(graph, block, x, y, portType, 'bottom', i, null, null, instanceModel);
             }
         }
     }
 }
 
-function createInputPort(graph, block, x, y, portType, position, ordering, nodeDataObject, idArray) {
+function createInputPort(graph, block, x, y, portType, position, ordering, nodeDataObject, idArray, instanceModel) {
     var port = null;
     if (portType == 'COMMAND') {
         port = graph.insertVertex(block, null, 'CommandPort', x, y, 8, 8, 'CommandPort', true);
@@ -4102,6 +4133,17 @@ function createInputPort(graph, block, x, y, portType, position, ordering, nodeD
             port.geometry.offset = new mxPoint(-8, -6);
         }
         port.ordering = ordering;
+        if (instanceModel != null) {
+            var in1 = getData(instanceModel.in)[ordering - 1];
+            var in2 = getData(instanceModel.in2)[ordering - 1];
+            var intyp = getData(instanceModel.intyp)[ordering - 1];
+            if (in1 != null)
+                port.dataLines = parseInt(in1);
+            if (in2 != null)
+                port.dataColumns = parseInt(in2);
+            if (intyp != null)
+                port.dataType = getPortDataType(intyp);
+        }
 
         if (nodeDataObject != null) {
             var obj = new Object();
@@ -4117,7 +4159,7 @@ function createInputPort(graph, block, x, y, portType, position, ordering, nodeD
     }
 }
 
-function createOutputPort(graph, block, x, y, portType, position, ordering, nodeDataObject, idArray) {
+function createOutputPort(graph, block, x, y, portType, position, ordering, nodeDataObject, idArray, instanceModel) {
     var port = null;
 
     if (portType == 'COMMAND') {
@@ -4137,6 +4179,17 @@ function createOutputPort(graph, block, x, y, portType, position, ordering, node
             port.geometry.offset = new mxPoint(0, -6);
         }
         port.ordering = ordering;
+        if (instanceModel != null) {
+            var out1 = getData(instanceModel.out)[ordering - 1];
+            var out2 = getData(instanceModel.out2)[ordering - 1];
+            var outtyp = getData(instanceModel.outtyp)[ordering - 1];
+            if (out1 != null)
+                port.dataLines = parseInt(out1);
+            if (out2 != null)
+                port.dataColumns = parseInt(out2);
+            if (outtyp != null)
+                port.dataType = getPortDataType(outtyp);
+        }
 
         if (nodeDataObject != null) {
             var obj = new Object();
