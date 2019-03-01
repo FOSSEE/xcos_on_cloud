@@ -39,24 +39,15 @@ function INTMUL() {
 INTMUL.prototype.set = function INTMUL() {
     this.Datatype = parseFloat((arguments[0]["Datatype"]))
     this.np = parseFloat((arguments[0]["np"]))
-    this.it = ones(2,1)
-    for (var i = this.it.length - 1; i >= 0; i--) {
-        this.it[i] = this.Datatype*this.it[i]
+    var it = ones(2,1);
+    for (var i = it.length - 1; i >= 0; i--) {
+        it[i] = this.Datatype*it[i];
     }
-    this.ot = this.Datatype
-    this.x.model.intyp = new ScilabDouble(...this.it)
-    this.x.model.outtyp = new ScilabDouble([this.ot])
-    for (var i = this.it.length - 1; i >= 0; i--){
-        this.it[i] = this.it[i]*this.Datatype
-    }
-    this.ot = this.Datatype
-    //this.x.model.outtyp = new ScilabDouble([this.ot])
-    //this.x.model.intyp = new ScilabDouble(...this.it)
-    this.x.model.intyp = new ScilabDouble([3, 3]);
-    this.x.model.outtyp = new ScilabDouble([3]);
+    var ot = this.Datatype;
+    var model = this.x.model;
     if((this.np!=0)&&(this.np!=1)&&(this.np!=2)){
                 alert("Wrong value for 'Do on Overflow' parameter: "+this.np+"\nMust be in the interval [0, 2]");
-                INTMUL.get();
+                throw "incorrect";
     }
     else if(this.Datatype == 3){
         if(this.np == 0)
@@ -100,7 +91,7 @@ INTMUL.prototype.set = function INTMUL() {
         else if(this.np == 1)
             model.sim = list(new ScilabString(["matmul_ui16s"]), new ScilabDouble([4]))
         else
-            model.sim = list(new ScilabString(["matmul_i32e"]), new ScilabDouble([4]))
+            model.sim = list(new ScilabString(["matmul_ui16e"]), new ScilabDouble([4]))
 
     }
     else if(this.Datatype == 8){
@@ -114,10 +105,12 @@ INTMUL.prototype.set = function INTMUL() {
     }
     else{
         alert("Wrong value for 'Data Type' parameter: "+this.Datatype+"\nMust be in the interval [3, 8]");
-        INTMUL.get();
+        throw "incorrect";
 
     }
-    this.x.model.ipar = new ScilabDouble([this.np]);
+    model.intyp = new ScilabDouble(it);
+    model.outtyp = new ScilabDouble([ot]);
+    model.ipar = new ScilabDouble([this.np]);
     var exprs = new ScilabString([sci2exp(this.Datatype)],[sci2exp(this.np)])
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
