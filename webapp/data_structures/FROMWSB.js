@@ -165,8 +165,8 @@ function FROMWSB() {
     FROMWSB.prototype.details = function FROMWSB() {
         return this.x;
     }
-    FROMWSB.prototype.get=function FROMWSB(){
-        var options={
+    FROMWSB.prototype.get = function FROMWSB(){
+        var options = {
             varnam:["Variable name",this.varnam.toString()],
             Method:["Interpolation Method",this.Method],
             ZC:["Enable zero crossing(0:No, 1:Yes)?",this.ZC],
@@ -174,23 +174,54 @@ function FROMWSB() {
         }
         return options
     }
-    FROMWSB.prototype.set=function FROMWSB(){
-        this.varnam=arguments[0]["varnam"]
-        this.Method=parseFloat(arguments[0]["Method"])
-        this.ZC=parseFloat(arguments[0]["ZC"])
-        this.OutEnd=parseFloat(arguments[0]["OutEnd"])
-        if((this.Method!=0)&&(this.Method!=1)&&(this.Method!=2)&&(this.Method!=3)){
+    FROMWSB.prototype.set = function FROMWSB(){
+        var varnam1 = arguments[0]["varnam"];
+        var Method1 = arguments[0]["Method"];
+        var ZC1 = arguments[0]["ZC"];
+        var OutEnd1 = arguments[0]["OutEnd"];
+
+        var regex_char = /[a-zA-Z]/g; //check character
+        var regex_special_char = /[@%^&*-+]/g; //check character
+        var regex_parentheses = /[\])}[{(]/g;
+        var regex_semicolon_comma = /[,;]+/;
+
+        var chararray = varnam1.match(regex_char);
+        if (chararray != null) {
+            if(regex_special_char.test(varnam1)){
+                alert("Invalid variable name. \nPlease choose another variable name.");
+                throw "incorrect";
+            }
+            if(regex_parentheses.test(varnam1)){
+                alert("Invalid variable name. \nPlease choose another variable name.");
+                throw "incorrect";
+            }
+            if(regex_semicolon_comma.test(varnam1)){
+                alert("Invalid variable name. \nPlease choose another variable name.");
+                throw "incorrect";
+            }
+        }else{
+            alert("Invalid variable name. \nPlease choose another variable name.");
+            throw "incorrect";
+        }
+        Method1 = parseFloat(Method1);
+        if((Method1 != 0) && (Method1 != 1) && (Method1 != 2) && (Method1 != 3)){
             alert("Interpolation method should be chosen in [0,1,2,3]");
-            FROMWSB.get();
+            throw "incorrect";
         }
-        if((this.ZC!=0)&&(this.ZC!=1)){
+        ZC1 = parseFloat(ZC1);
+        if((ZC1 != 0) && (ZC1 != 1)){
             alert("Zero crossing should be either 0 or 1");
-            FROMWSB.get();
+            throw "incorrect";
         }
-        if((this.OutEnd!=0)&&(this.OutEnd!=1)&&(this.OutEnd!=2)){
+        OutEnd1 = parseFloat(OutEnd1);
+        if((OutEnd1 != 0) && (OutEnd1 != 1) && (OutEnd1 != 2)){
             alert("Output at end option should be either 0 or 1 or 2");
-            FROMWSB.get();
+            throw "incorrect";
         }
+        this.varnam = varnam1;
+        this.Method = Method1;
+        this.ZC = ZC1;
+        this.OutEnd = OutEnd1;
         this.x.model.ipar = new ScilabDouble([this.varnam.length],[_str2code(this.varnam)],[this.Method],[this.ZC],[this.OutEnd])
         var io=set_io(this.x.model,this.x.graphics,[],[[-1],[-2]],[],[]);
         var exprs=new ScilabString(this.varnam.toString(),this.Method,this.ZC,this.OutEnd)
