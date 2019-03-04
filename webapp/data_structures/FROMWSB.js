@@ -1,10 +1,10 @@
 function FROMWSB() {
 
     FROMWSB.prototype.define = function FROMWSB() {
-        this.varnam="V";
-        this.Method=1;
-        this.ZC=1;
-        this.OutEnd=0;
+        this.varnam = "V";
+        this.Method = 1;
+        this.ZC = 1;
+        this.OutEnd = 0;
         var scs_m_1 = scicos_diagram({
             version: new ScilabString(["scicos4.2"]),
             props: scicos_params({
@@ -27,7 +27,7 @@ function FROMWSB() {
                 sz: new ScilabDouble([70, 40]),
                 flip: new ScilabBoolean([true]),
                 theta: new ScilabDouble([0]),
-                exprs: new ScilabString(["V"], ["1"], ["1"], ["0"]),
+                exprs: new ScilabString([this.varnam], [this.Method], [this.ZC], [this.OutEnd]),
                 pin: new ScilabDouble(),
                 pout: new ScilabDouble([4]),
                 pein: new ScilabDouble([2]),
