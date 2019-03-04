@@ -865,7 +865,12 @@ FROMWSB.prototype.importset = function FROMWSB() {
     var block = getRparObjByGui(this.x, 'FROMWS_c');
     if (block == null)
         return;
-    /* TODO */
+    var graphics = block.graphics;
+    var ary = getData(graphics.exprs);
+    this.varnam = ary[0];
+    this.Method = ary[1];
+    this.ZC = ary[2];
+    this.OutEnd = ary[3];
 }
 GAINBLK_f.prototype.importset = function GAINBLK_f() {
     var graphics = this.x.graphics;
