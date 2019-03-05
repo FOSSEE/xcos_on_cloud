@@ -94,6 +94,7 @@ SCIDIR = abspath(config.SCILAB_DIR)
 SCI = join(SCIDIR, "bin", "scilab-adv-cli")
 READCONTENTFILE = abspath("Read_Content.txt")
 CONT_FRM_WRITE = abspath("cont_frm_write.sci")
+FROMWSB_STR2CODE_SCI = abspath("get_str2code_FROMWSB.sci")
 COPIED_EXPRESSION_SCI_FRM_SCILAB = abspath("copied_expression_from_scilab.sci")
 EXP_SCI_FUNC_WRITE = abspath("expression-sci-function.sci")
 BASEDIR = abspath('webapp')
@@ -1528,6 +1529,44 @@ def run_scilab_func_expr_request():
             "custom made message"
     remove(file_name)
     return jsonify(exprs_value)
+
+
+# App route for getting scilab str2code output for FROMWSB Block
+
+@app.route('/getstr2codeOutput', methods=['POST'])
+def run_scilab_func_str2code_request():
+    (__, __, scifile, sessiondir, __) = init_session()
+
+    file_name = join(sessiondir, "str2code_value.txt")
+    varnam = request.form['varnam']
+    '''
+    sample input to scilab:
+    varnam: aBc#12V
+    '''
+    command = "exec('" + FROMWSB_STR2CODE_SCI + \
+        "');get_str2code_for_variablename('" + file_name + \
+        "','" + varnam + "');"
+
+    try:
+        scifile.proc = run_scilab(command)
+    except FileNotFoundError:
+        return "scilab not found. Follow the installation instructions"
+
+    scifile.proc.communicate()
+
+    # create a dictionary
+    valuesforstr2code = []
+    '''
+    sample output from scilab:
+
+    10 -11 12 37 1 2 -31
+    '''
+    with open(file_name) as f:
+        data = f.read()  # Read the data into a variable
+        valuesforstr2code = data.split()
+
+    remove(file_name)
+    return jsonify(valuesforstr2code)
 
 
 # example page start ###################
