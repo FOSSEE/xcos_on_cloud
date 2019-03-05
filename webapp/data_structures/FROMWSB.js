@@ -222,10 +222,12 @@ function FROMWSB() {
         this.Method = Method1;
         this.ZC = ZC1;
         this.OutEnd = OutEnd1;
-        this.x.model.ipar = new ScilabDouble([this.varnam.length],[_str2code(this.varnam)],[this.Method],[this.ZC],[this.OutEnd])
-        var io=set_io(this.x.model,this.x.graphics,[],[[-1],[-2]],[],[]);
-        var exprs=new ScilabString(this.varnam.toString(),this.Method,this.ZC,this.OutEnd)
-        this.x.graphics.exprs=exprs
+        var get_str2code = get_str2code_output_for_set(this.varnam);
+
+        var block = getRparObjByGui(this.x, 'FROMWS_c');
+        block.graphics.exprs = new ScilabString([this.varnam], [this.Method], [this.ZC], [this.OutEnd]),
+        block.model.ipar = new ScilabDouble([this.varnam.length],[get_str2code],[this.Method],[this.ZC],[this.OutEnd])
+        var io = set_io(block.model,block.graphics,[],[[-1],[-2]],[],[]);
         return new BasicBlock(this.x);
     }
 
