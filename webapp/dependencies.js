@@ -2145,3 +2145,26 @@ function get_expr_output_for_DefineandSet(head,exx) {
 
     return response_map;
 }
+
+// for calling post method using ajax for calling scilab function str2code for FROMWSB block
+function get_str2code_output_for_set(varnam) {
+    var response = null;
+
+    $.ajax({
+        type: "POST",
+        url: "/getstr2codeOutput",
+        async: false,
+        data: { varnam: varnam },
+        dataType: "json",
+        success: function(rm) {
+            response = rm;
+        },
+        error: function(xhr, textStatus) {
+            var msg = "An error occurred!! \n\nPlease try again"
+            alert(msg);
+            throw "error";
+        }
+    });
+
+    return response;
+}
