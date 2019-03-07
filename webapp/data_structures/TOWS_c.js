@@ -115,7 +115,7 @@ function TOWS_c() {
             alert("Invalid variable name. \nPlease choose another variable name.");
             throw "incorrect";
         }
-        
+
         herit1 = herit1.trim().replace(regex_parentheses, '');
         if (!regex_num.test(herit1)) {
             var chararray = herit1.match(regex_char);
@@ -147,30 +147,23 @@ function TOWS_c() {
                 throw "incorrect";
             }
         }
-        /*var lastchar = herit1.slice(-1);
-        console.log(lastchar);
-        var exist_last_chr = regex_math_char.test(lastchar);
-        console.log(exist_last_chr);
-        if(exist_last_chr=='false'){
-            alert("Answer given for Inherit (no:0, yes:1)\nis incorrect: Invalid factor..");
-            throw "incorrect";
-        }*/
-        var herit2 = getValueOfImaginaryInput(herit1);
-
+        var herit2 = parseFloat(getValueOfImaginaryInput(herit1));
+        if (herit2 != 0){
+            herit2 = 1;
+        }
         nz2 = parseFloat(nz2);
         this.nz = nz1;
-        this.herit = parseFloat(herit2);
         this.varnam = varnam1;
+        this.herit = herit1;
         this.x.model.intyp = new ScilabDouble([-1]);
-        var io = set_io(this.x.model,this.x.graphics,[[-1],[-2]],[],ones(1-this.herit,1),[]);
-        if(this.herit == 1){
+        var io = set_io(this.x.model,this.x.graphics,[[-1],[-2]],[],ones(1-herit2,1),[]);
+        if(herit2 == 1){
             this.x.model.blocktype = new ScilabDouble(["x"]);
-        }
-        else{
+        }else{
             this.x.model.blocktype = new ScilabDouble(["d"]);
         }
-        this.x.model.ipar = new ScilabDouble([nz2],[this.varnam.length],[ascii(this.varnam)]);
-        var exprs = new ScilabString([this.nz],[this.varnam],[herit1]);
+        this.x.model.ipar = new ScilabDouble([nz2],[this.varnam.length],...ascii(this.varnam));
+        var exprs = new ScilabString([this.nz],[this.varnam],[this.herit]);
         this.displayParameter = [[this.varnam],[this.nz]];
         this.x.graphics.exprs = exprs;
         return new BasicBlock(this.x)
