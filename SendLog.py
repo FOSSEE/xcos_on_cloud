@@ -814,7 +814,7 @@ def start_scilab():
     workspace_filename = diagram.workspace_filename
     # name of workspace file
     workspace = join(diagram.sessiondir, WORKSPACE_FILES_FOLDER,
-                  'workspace.dat')
+                     "workspace.dat")
 
     loadfile = workspace_filename is not None or \
         (diagram.workspace_counter in (2, 3) and exists(workspace)) or \
