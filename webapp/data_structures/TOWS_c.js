@@ -158,9 +158,9 @@ function TOWS_c() {
         this.x.model.intyp = new ScilabDouble([-1]);
         var io = set_io(this.x.model,this.x.graphics,[[-1],[-2]],[],ones(1-herit2,1),[]);
         if(herit2 == 1){
-            this.x.model.blocktype = new ScilabDouble(["x"]);
+            this.x.model.blocktype = new ScilabString(["x"]);
         }else{
-            this.x.model.blocktype = new ScilabDouble(["d"]);
+            this.x.model.blocktype = new ScilabString(["d"]);
         }
         this.x.model.ipar = new ScilabDouble([nz2],[this.varnam.length],...ascii(this.varnam));
         var exprs = new ScilabString([this.nz],[this.varnam],[this.herit]);
