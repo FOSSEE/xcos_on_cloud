@@ -777,6 +777,23 @@ def kill_scilab(diagram=None):
     stopDetailsThread(diagram)
 
 
+def load_variables(filename):
+    '''
+    add scilab commands to load only user defined variables
+
+    SCILAB_VARS contains the known list of inbuilt variables
+    '''
+
+    command = "[__V1,__V2]=listvarinfile('%s');" % filename
+    command += "__V3=['%s'];" % ("';'".join(SCILAB_VARS))
+    command += "__V4=setdiff(__V1,__V3);"
+    command += "__V5=''''+strcat(__V4,''',''')+'''';"
+    command += "__V6='load(''%s'','+__V5+');';" % filename
+    command += "execstr(__V6);"
+    command += "clear __V1 __V2 __V3 __V4 __V5 __V6;"
+    return command
+
+
 @app.route('/start_scilab')
 def start_scilab():
     '''
@@ -806,13 +823,7 @@ def start_scilab():
         command += "errcatch(-1,'continue');"
 
         if workspace_filename is not None:
-            command += "[__V1,__V2]=listvarinfile('%s');" % workspace_filename
-            command += "__V3=['%s'];" % ("';'".join(SCILAB_VARS))
-            command += "__V4=setdiff(__V1,__V3);"
-            command += "__V5=''''+strcat(__V4,''',''')+'''';"
-            command += "__V6='load(''%s'','+__V5+');';" % workspace_filename
-            command += "execstr(__V6);"
-            command += "clear __V1 __V2 __V3 __V4 __V5 __V6;"
+            command += load_variables(workspace_filename)
 
         if diagram.workspace_counter in (2, 3) and exists(workspace):
             # 3 - for both TOWS_c and FROMWSB and also workspace dat file exist
