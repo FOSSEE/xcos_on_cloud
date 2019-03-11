@@ -72,6 +72,8 @@ VALUES_FOLDER = 'values'  # to store files related to tkscale block
 SCRIPT_FILES_FOLDER = 'script_files'
 # to store uploaded sci files for sci-func block
 SCIFUNC_FILES_FOLDER = 'scifunc_files'
+# to store workspace files for TOWS_c block
+WORKSPACE_FILES_FOLDER = 'workspace_files'
 
 # Delay time to look for new line (in s)
 LOOK_DELAY = 0.1
@@ -233,6 +235,7 @@ def init_session():
     makedirs(join(sessiondir, VALUES_FOLDER), 'values')
     makedirs(join(sessiondir, SCRIPT_FILES_FOLDER), 'script files')
     makedirs(join(sessiondir, SCIFUNC_FILES_FOLDER), 'scifunc files')
+    makedirs(join(sessiondir, WORKSPACE_FILES_FOLDER), 'workspace files')
 
     return (ud.diagrams, ud.scripts, ud.scifile, sessiondir, ud.diagramlock)
 
@@ -810,7 +813,8 @@ def start_scilab():
     # name of primary workspace file
     workspace_filename = diagram.workspace_filename
     # name of workspace file
-    workspace = "workspace.dat"
+    workspace = join(diagram.sessiondir, WORKSPACE_FILES_FOLDER,
+                     "workspace.dat")
 
     loadfile = workspace_filename is not None or \
         (diagram.workspace_counter in (2, 3) and exists(workspace)) or \
@@ -830,7 +834,7 @@ def start_scilab():
             # In this case workspace is saved in format of dat file (Scilab way
             # of saying workpsace)
             # For FROMWSB block and also workspace dat file exist
-            command += "load('" + workspace + "');"
+            command += load_variables(workspace)
 
         if diagram.workspace_counter == 5:
             command += "exec('" + scifile.filename + "');"
