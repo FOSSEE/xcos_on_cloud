@@ -1506,12 +1506,11 @@ function _check() {
 
 // Converts String to Array of ASCII values
 function ascii() {
+    var str = arguments[0];
     var convertAscii = [];
-
-    for (var i = 0; i < arguments[0].length; i++) {
-        convertAscii.push(arguments[0].charCodeAt(i));
+    for (var i = 0; i < str.length; i++) {
+        convertAscii[i] = [str.charCodeAt(i)];
     }
-
     return convertAscii;
 }
 
