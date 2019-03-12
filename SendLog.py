@@ -911,7 +911,7 @@ def start_scilab():
                     "Follow the installation instructions")
 
         if os.stat(diagram.log_name).st_size == 0 and \
-            diagram.workspace_counter != 1:
+                diagram.workspace_counter != 1:
             return "log file is empty"
 
     # For processes taking more than 10 seconds

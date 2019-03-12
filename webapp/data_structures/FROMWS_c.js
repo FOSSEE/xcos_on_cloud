@@ -1,6 +1,6 @@
 function FROMWS_c () {
 
-    FROMWS_c.prototype.internal = function FROMWS_c() {
+    FROMWS_c.prototype.define = function FROMWS_c() {
         this.varnam = "V";
         this.Method = 1;
         this.ZC = 1;
@@ -18,7 +18,7 @@ function FROMWS_c () {
         model.blocktype = new ScilabString(["d"]);
         model.dep_ut = new ScilabBoolean([false,true]);
         var gr_i = [];
-        var exprs = new ScilabString([this.varnam], [this.Method], [this.ZC], [this.OutEnd]),
+        var exprs = new ScilabString([this.varnam], [this.Method], [this.ZC], [this.OutEnd]);
         var block = new standard_define(new ScilabDouble([3.5,2]),model,exprs,gr_i);
         block.graphics.style = new ScilabString(["FROMWS_c"]);
         block.graphics.in_style = new ScilabString([""]);

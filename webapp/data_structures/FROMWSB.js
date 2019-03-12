@@ -134,30 +134,30 @@ function FROMWSB() {
             to: new ScilabDouble([3, 1, 1])
         }));
 
-        var model = scicos_model({
-            sim: new ScilabString(["csuper"]),
-            in: new ScilabDouble(),
-            in2: new ScilabDouble(),
-            intyp: new ScilabDouble([1]),
-            out: new ScilabDouble([-1]),
-            out2: new ScilabDouble([-2]),
-            outtyp: new ScilabDouble([1]),
-            evtin: new ScilabDouble(),
-            evtout: new ScilabDouble(),
-            state: new ScilabDouble(),
-            dstate: new ScilabDouble(),
-            odstate: list(),
-            rpar: scs_m_1,
-            ipar: new ScilabDouble(),
-            opar: list(),
-            blocktype: new ScilabString(["h"]),
-            firing: new ScilabDouble(),
-            dep_ut: new ScilabBoolean([false, false]),
-            label: new ScilabString([""]),
-            nzcross: new ScilabDouble([0]),
-            nmode: new ScilabDouble([0]),
-            equations: list()
-        });
+        var model = scicos_model();
+        model.sim = new ScilabString(["csuper"]);
+        model.in = new ScilabDouble();
+        model.in2 = new ScilabDouble();
+        model.intyp = new ScilabDouble([1]);
+        model.out = new ScilabDouble([-1]);
+        model.out2 = new ScilabDouble([-2]);
+        model.outtyp = new ScilabDouble([1]);
+        model.evtin = new ScilabDouble();
+        model.evtout = new ScilabDouble();
+        model.state = new ScilabDouble();
+        model.dstate = new ScilabDouble();
+        model.odstate = list();
+        model.rpar = scs_m_1;
+        model.ipar = new ScilabDouble();
+        model.opar = list();
+        model.blocktype = new ScilabString(["h"]);
+        model.firing = new ScilabDouble();
+        model.dep_ut = new ScilabBoolean([false, false]);
+        model.label = new ScilabString([""]);
+        model.nzcross = new ScilabDouble([0]);
+        model.nmode = new ScilabDouble([0]);
+        model.equations = list();
+
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"FROMWSB\",sz(1),sz(2));"]);
         this.x = new standard_define(new ScilabDouble([5, 2]), model, new ScilabDouble(), gr_i);
         return new BasicBlock(this.x);
@@ -225,8 +225,8 @@ function FROMWSB() {
         var get_str2code = get_str2code_output_for_set(this.varnam);
 
         var block = getRparObjByGui(this.x, 'FROMWS_c');
-        block.graphics.exprs = new ScilabString([this.varnam], [this.Method], [this.ZC], [this.OutEnd]),
-        block.model.ipar = new ScilabDouble([this.varnam.length],[get_str2code],[this.Method],[this.ZC],[this.OutEnd])
+        block.graphics.exprs = new ScilabString([this.varnam], [this.Method], [this.ZC], [this.OutEnd]);
+        block.model.ipar = new ScilabDouble([this.varnam.length],[get_str2code],[this.Method],[this.ZC],[this.OutEnd]);
         var io = set_io(block.model,block.graphics,[],[[-1],[-2]],[],[]);
         return new BasicBlock(this.x);
     }
