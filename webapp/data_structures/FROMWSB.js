@@ -8,7 +8,7 @@ function FROMWSB() {
         var scs_m_1 = scicos_diagram({
             version: new ScilabString(["scicos4.2"]),
             props: scicos_params({
-                wpar: new ScilabDouble([600, 450, 0, 0, 450, 600]),
+                wpar: new ScilabDouble([600, 450, 0, 0, 600, 450]),
                 Title: new ScilabString(["FROMWSB"]),
                 tol: new ScilabDouble([0.0001], [0.000001], [Math.pow(10, -10)], [100001], [0], [0], [0]),
                 tf: new ScilabDouble([100000]),
@@ -44,7 +44,7 @@ function FROMWSB() {
                 sim: list(new ScilabString(["fromws_c"]), new ScilabDouble([4])),
                 in: new ScilabDouble(),
                 in2: new ScilabDouble(),
-                intyp: new ScilabDouble(),
+                intyp: new ScilabDouble([1]),
                 out: new ScilabDouble([-1]),
                 out2: new ScilabDouble([-2]),
                 outtyp: new ScilabDouble([-1]),
@@ -95,7 +95,7 @@ function FROMWSB() {
                 intyp: new ScilabDouble([-1]),
                 out: new ScilabDouble(),
                 out2: new ScilabDouble(),
-                outtyp: new ScilabDouble(),
+                outtyp: new ScilabDouble([1]),
                 evtin: new ScilabDouble(),
                 evtout: new ScilabDouble(),
                 state: new ScilabDouble(),
@@ -222,12 +222,11 @@ function FROMWSB() {
         this.Method = Method1;
         this.ZC = ZC1;
         this.OutEnd = OutEnd1;
-        var get_str2code = get_str2code_output_for_set(this.varnam);
-
+        var get_str2code = JSON.parse(get_str2code_output_for_set(this.varnam));
         var block = getRparObjByGui(this.x, 'FROMWS_c');
         block.graphics.exprs = new ScilabString([this.varnam], [this.Method], [this.ZC], [this.OutEnd]);
-        block.model.ipar = new ScilabDouble([this.varnam.length],[get_str2code],[this.Method],[this.ZC],[this.OutEnd]);
-        var io = set_io(block.model,block.graphics,[],[[-1],[-2]],[],[]);
+        block.model.ipar = new ScilabDouble([this.varnam.length],...get_str2code,[this.Method],[this.ZC],[this.OutEnd]);
+        var io = set_io(block.model,block.graphics,list(),list([-1,-2],-1),1,1);
         return new BasicBlock(this.x);
     }
 

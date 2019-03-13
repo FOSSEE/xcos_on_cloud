@@ -1562,19 +1562,16 @@ def run_scilab_func_str2code_request():
 
     scifile.proc.communicate()
 
-    # create a dictionary
-    valuesforstr2code = []
     '''
     sample output from scilab:
 
-    10 -11 12 37 1 2 -31
+    [[10], [-11], [12], [37], [1], [2], [-31]]
     '''
     with open(file_name) as f:
         data = f.read()  # Read the data into a variable
-        valuesforstr2code = data.split()
 
     remove(file_name)
-    return jsonify(valuesforstr2code)
+    return jsonify(data)
 
 
 # example page start ###################
