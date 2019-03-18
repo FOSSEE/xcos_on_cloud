@@ -1,15 +1,16 @@
 function Sigbuilder() {
 
     Sigbuilder.prototype.define = function Sigbuilder() {
-	this.spline=3;
-	this.X=[[0],[1],[2]];
-	this.y=[[10],[20],[-30]];
-	this.periodic="y";
-	this.launch="n";
+	    this.xx = [0,1,2];
+	    this.yy = [10,20,-30];
+	    this.N = 3;
+	    this.Method = 3;
+	    this.PeriodicOption = "y";
+	    this.graf = "n";
         var scs_m_1 = scicos_diagram({
                 version: new ScilabString(["scicos4.2"]),
                 props: scicos_params({
-                wpar: new ScilabDouble([600, 450, 0, 0, 450, 600]),
+                wpar: new ScilabDouble([600, 450, 0, 0, 600, 450]),
                 Title: new ScilabString(["Sigbuilder"]),
                 tol: new ScilabDouble([0.0001], [0.000001], [Math.pow(10, -10)], [100001], [0], [0], [0]),
                 tf: new ScilabDouble([100]),
@@ -28,7 +29,7 @@ function Sigbuilder() {
                 sz: new ScilabDouble([40, 40]),
                 flip: new ScilabBoolean([true]),
                 theta: new ScilabDouble([0]),
-                exprs: new ScilabString(["3"], ["[0,1,2]"], ["[10,20,-30]"], ["y"], ["n"]),
+                exprs: new ScilabString([this.Method], [this.xx], [this.yy], [this.PeriodicOption], [this.graf]),
                 pin: new ScilabDouble(),
                 pout: new ScilabDouble([6]),
                 pein: new ScilabDouble([4]),
@@ -54,8 +55,8 @@ function Sigbuilder() {
                 state: new ScilabDouble(),
                 dstate: new ScilabDouble(),
                 odstate: list(),
-                rpar: new ScilabDouble([0], [1], [2], [10], [20], [-30]),
-                ipar: new ScilabDouble([3], [3], [1]),
+                rpar: new ScilabDouble(this.xx, this.yy),
+                ipar: new ScilabDouble(this.N, this.Method, [1]),
                 opar: list(),
                 blocktype: new ScilabString(["c"]),
                 firing: new ScilabDouble([0]),
@@ -242,54 +243,59 @@ function Sigbuilder() {
             to: new ScilabDouble([7, 1, 1])
         }));
 
-        var model = scicos_model({
-            sim: new ScilabString(["csuper"]),
-            in: new ScilabDouble(),
-            in2: new ScilabDouble(),
-            intyp: new ScilabDouble(),
-            out: new ScilabDouble([-1]),
-            out2: new ScilabDouble([1]),
-            outtyp: new ScilabDouble([1]),
-            evtin: new ScilabDouble(),
-            evtout: new ScilabDouble([1]),
-            state: new ScilabDouble(),
-            dstate: new ScilabDouble(),
-            odstate: list(),
-            rpar: scs_m_1,
-            ipar: new ScilabDouble(),
-            opar: list(),
-            blocktype: new ScilabString(["h"]),
-            firing: new ScilabDouble(),
-            dep_ut: new ScilabBoolean([false, false]),
-            label: new ScilabString([""]),
-            nzcross: new ScilabDouble([0]),
-            nmode: new ScilabDouble([0]),
-            equations: list()
-        });
+        var model = scicos_model();
+        model.sim = new ScilabString(["csuper"]);
+        model.in = new ScilabDouble();
+        model.in2 = new ScilabDouble();
+        model.intyp = new ScilabDouble([1]);
+        model.out = new ScilabDouble([-1]);
+        model.out2 = new ScilabDouble();
+        model.outtyp = new ScilabDouble([1]);
+        model.evtin = new ScilabDouble();
+        model.evtout = new ScilabDouble([1]);
+        model.state = new ScilabDouble();
+        model.dstate = new ScilabDouble();
+        model.odstate = list();
+        model.rpar = scs_m_1;
+        model.ipar = new ScilabDouble();
+        model.opar = list();
+        model.blocktype = new ScilabString(["h"]);
+        model.firing = new ScilabDouble();
+        model.dep_ut = new ScilabBoolean([false, false]);
+        model.label = new ScilabString([""]);
+        model.nzcross = new ScilabDouble([0]);
+        model.nmode = new ScilabDouble([0]);
+        model.equations = list();
 
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"Sigbuilder\",sz(1),sz(2));"]);
         this.x = new standard_define(new ScilabDouble([3, 2]), model, new ScilabDouble(), gr_i);
         return new BasicBlock(this.x);
     }
     Sigbuilder.prototype.get = function Sigbuilder() {
-    var options={
-        spline:["Spline method(0,,7) ",this.spline],
-        X:["X",this.X.toString().replace(/,/g," ")],
-        y:["Y",this.y.toString().replace(/,/g," ")],
-        periodic:["Periodic signal(y/n)?",this.periodic],
-	launch:["Launch graphic window(y/n)?",this.launch],
+        var options = {
+            Method:["Spline Method(0..7)",this.Method],
+            xx:["x",this.xx.toString().replace(/,/g," ")],
+            yy:["y",this.yy.toString().replace(/,/g," ")],
+            PeriodicOption:["Periodic signal(y/n)?",this.PeriodicOption],
+	     graf:["Launch graphic window(y/n)?",this.graf],
          }
-    return options
+        return options
 
 
     }
     Sigbuilder.prototype.set = function Sigbuilder() {
-    this.spline=parseInt(arguments[0]["spline"])
-    this.X = inverse(arguments[0]["X"])
-    this.y = inverse(arguments[0]["y"])
-    this.periodic = arguments[0]["periodic"]
-    this.launch = arguments[0]["launch"]
-    return new BasicBlock(this.x)
+        var Method1 = arguments[0]["Method"];
+        var xx1 = arguments[0]["xx"];
+        var yy1 = arguments[0]["yy"];
+        var PeriodicOption1 = arguments[0]["PeriodicOption"];
+        var graf1 = arguments[0]["graf"];
+        //Have to add validation and understand set function form sci files
+        this.Method = parseInt(Method1);
+        this.xx= inverse(xx1);
+        this.yy = inverse(yy1);
+        this.PeriodicOption = PeriodicOption1;
+        this.graf = graf1;
+        return new BasicBlock(this.x);
     }
 
     Sigbuilder.prototype.details = function Sigbuilder() {
