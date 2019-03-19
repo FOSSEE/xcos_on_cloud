@@ -284,13 +284,71 @@ function Sigbuilder() {
 
     }
     Sigbuilder.prototype.set = function Sigbuilder() {
+        var Ask_again = false;
         var Method1 = arguments[0]["Method"];
         var xx1 = arguments[0]["xx"];
         var yy1 = arguments[0]["yy"];
         var PeriodicOption1 = arguments[0]["PeriodicOption"];
         var graf1 = arguments[0]["graf"];
+
+        var regex_char = /[a-zA-Z]/g; //check character
+        var regex_special_char = /[!@#$%&_=]/g; //check character
+        var regex_math_char = /[^*-+]/g; //check character
+        var regex_semicolon_comma = /[,;]+/; //check semicolon and comma
+        var regex_parentheses = /[\])}[{(]/g; // check for brackets
+        var regex_num = /^\d+$/; //check number only
+        var regex_special_withmath_char = /[@%^&*-+=]/g; //check character
+
+        var semi_comma_array = Method1.match(regex_semicolon_comma);
+        if(semi_comma_array != null){
+            alert("Answer given for Spline Method (0..7)\nhas invalid dimension:\nwaiting for dimension 1.");
+            throw "incorrect";
+        }
+        var lastchar = Method1.slice(-1);
+        var exist_last_char = regex_math_char.test(lastchar);
+        if(!exist_last_char){
+            alert("Answer given for Spline Method (0..7)\nis incorrect: Invalid factor..");
+            throw "incorrect";
+        }
+        var chararray = Method1.match(regex_char);
+        if (chararray != null) {
+            alert("Answer given for Spline Method (0..7)\nis incorrect: Undefined variable:"+Method1);
+            throw "incorrect";
+        }
+        Method1 = Method1.replace(regex_parentheses, '');
+        var mtd = getValueOfImaginaryInput(Method1);
+        if(mtd != null){
+            mtd = Math.floor(parseInt(mtd));
+        }
+        if (mtd < 0){
+            mtd = 0;
+        }
+        if (mtd > 7){
+            mtd = 7;
+        }
+        var METHOD = getmethod(mtd);
+        PeriodicOption1 = PeriodicOption1.trim();
+        var PO = 0;
+        if (PeriodicOption1 == "y" || PeriodicOption1 == "Y"){
+            PO = 1;
+        }else{
+            PeriodicOption1 = "n";
+            PO = 0;
+        }
+        var xx2 = (xx1.replace(regex_parentheses, '')).split(/[\s;,]+/);
+        var yy2 = (yy1.replace(regex_parentheses, '')).split(/[\s;,]+/);
+
+        if(!Ask_again){
+            var x_size = xx2.length;
+            var y_size = yy2.length;
+            if(x_size != y_size){
+                alert("Incompatible size of [x] and [y]");
+                throw "incorrect";
+                Ask_again = true;
+            }
+        }
         //Have to add validation and understand set function form sci files
-        this.Method = parseInt(Method1);
+        this.Method = mtd;
         this.xx= inverse(xx1);
         this.yy = inverse(yy1);
         this.PeriodicOption = PeriodicOption1;
@@ -311,4 +369,35 @@ function Sigbuilder() {
         return dimension
     }
 
+}
+
+function getmethod(mtd){
+    var METHOD = "";
+    switch (mtd){
+        case 0:
+            METHOD = "zero order";
+            break;
+        case 1:
+            METHOD = "linear";
+            break;
+        case 2:
+            METHOD = "order 2";
+            break;
+        case 3:
+            METHOD = "not_a_knot";
+            break;
+        case 4:
+            METHOD = "periodic";
+            break;
+        case 5:
+            METHOD = "monotone";
+            break;
+        case 6:
+            METHOD = "fast";
+            break;
+        case 7:
+            METHOD = "clamped";
+            break;
+    }
+    return METHOD;
 }
