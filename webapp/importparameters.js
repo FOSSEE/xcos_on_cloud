@@ -1563,7 +1563,13 @@ Sigbuilder.prototype.importset = function Sigbuilder() {
     var block = getRparObjByGui(this.x, 'CURVE_c');
     if (block == null)
         return;
-    /* TODO */
+    var graphics = block.graphics;
+    var ary = getData(graphics.exprs);
+    this.Method = ary[0];
+    this.xx = ary[1];
+    this.yy = ary[2];
+    this.PeriodicOption = ary[3];
+    this.graf = ary[4];
 }
 SIGNUM.prototype.importset = function SIGNUM() {
     var graphics = this.x.graphics;
