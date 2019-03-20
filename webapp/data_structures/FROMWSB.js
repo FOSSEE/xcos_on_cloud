@@ -53,8 +53,8 @@ function FROMWSB() {
                 state: new ScilabDouble(),
                 dstate: new ScilabDouble(),
                 odstate: list(),
-                rpar: new ScilabDouble(),
-                ipar: new ScilabDouble([1], [-31], [1], [1], [0]),
+                rpar: new ScilabDouble([]),
+                ipar: new ScilabDouble([this.varnam.length],..._str2code(this.varnam),[this.Method],[this.ZC],[this.OutEnd]),
                 opar: list(),
                 blocktype: new ScilabString(["d"]),
                 firing: new ScilabDouble([0]),
@@ -222,10 +222,10 @@ function FROMWSB() {
         this.Method = Method1;
         this.ZC = ZC1;
         this.OutEnd = OutEnd1;
-        var get_str2code = JSON.parse(get_str2code_output_for_set(this.varnam));
         var block = getRparObjByGui(this.x, 'FROMWS_c');
+        block.model.rpar = new ScilabDouble([]);
         block.graphics.exprs = new ScilabString([this.varnam], [this.Method], [this.ZC], [this.OutEnd]);
-        block.model.ipar = new ScilabDouble([this.varnam.length],...get_str2code,[this.Method],[this.ZC],[this.OutEnd]);
+        block.model.ipar = new ScilabDouble([this.varnam.length],..._str2code(this.varnam),[this.Method],[this.ZC],[this.OutEnd]);
         var io = set_io(block.model,block.graphics,list(),list([-1,-2],-1),1,1);
         return new BasicBlock(this.x);
     }

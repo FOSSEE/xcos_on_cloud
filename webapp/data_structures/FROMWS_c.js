@@ -5,14 +5,14 @@ function FROMWS_c () {
         this.Method = 1;
         this.ZC = 1;
         this.OutEnd = 0;
-        this.str2code = -31; //this is value which we get from _str2code(varnam) function.
 
         var model = scicos_model();
         model.sim = list(new ScilabString(["fromws_c"]), new ScilabDouble([4]));
         model.out = new ScilabDouble([-1]);
         model.out2 = new ScilabDouble([-2]);
         model.outtyp = new ScilabDouble([-1]);
-        model.ipar = new ScilabDouble([this.varnam.length],[this.str2code],[this.Method],[this.ZC],[this.OutEnd])
+        model.rpar = new ScilabDouble([]);
+        model.ipar = new ScilabDouble([this.varnam.length],..._str2code(this.varnam),[this.Method],[this.ZC],[this.OutEnd]);
         model.evtin =  new ScilabDouble([1]);
         model.evtout = new ScilabDouble([1]);
         model.firing = new ScilabDouble([0]);
