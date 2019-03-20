@@ -956,7 +956,7 @@ def event_stream():
     # for Only TOWS_c block
     if os.stat(diagram.log_name).st_size == 0 and \
             diagram.workspace_counter == 1:
-        print("Variables is saved in workspace successfully")
+        print("Variables are saved in workspace successfully")
         yield "event: MESSAGE\ndata: Workspace saved successfully\n\n"
         return
 
@@ -1551,9 +1551,9 @@ def run_scilab_func_str2code_request():
     sample input to scilab:
     varnam: aBc#12V
     '''
-    command = "exec('" + FROMWSB_STR2CODE_SCI + \
-        "');get_str2code_for_variablename('" + file_name + \
-        "','" + varnam + "');"
+    command = "exec('%s');" % FROMWSB_STR2CODE_SCI
+    command += "get_str2code_for_variablename('%s','%s');" % (
+        file_name, varnam)
 
     try:
         scifile.proc = run_scilab(command)
