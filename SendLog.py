@@ -381,9 +381,9 @@ logfilefdrlock = RLock()
 LOGFILEFD = 123
 
 
-def run_scilab(command, createlogfile=False):
-    cmd = SCILAB_START + command + SCILAB_END
-    print('running command', cmd)
+def prestart_scilab():
+    cmd = SCILAB_START
+    print('prestarting')
     cmdarray = [SCI,
                 "-nogui",
                 "-noatomsautoload",
@@ -391,12 +391,6 @@ def run_scilab(command, createlogfile=False):
                 "-nb",
                 "-nw",
                 "-e", cmd]
-    if not createlogfile:
-        return subprocess.Popen(
-            cmdarray,
-            stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE, start_new_session=True,
-            universal_newlines=True)
 
     logfilefd, log_name = mkstemp(prefix=datetime.now().strftime(
         'scilab-log-%Y%m%d-'), suffix='.txt', dir=SESSIONDIR)
@@ -412,6 +406,20 @@ def run_scilab(command, createlogfile=False):
         universal_newlines=True, pass_fds=(LOGFILEFD, ))
     os.close(LOGFILEFD)
     logfilefdrlock.release()
+
+    return (proc, log_name)
+
+
+def run_scilab(command, createlogfile=False):
+    (proc, log_name) = prestart_scilab()
+
+    cmd = command + SCILAB_END
+    print('running command', cmd)
+    proc.stdin.write(cmd)
+
+    if not createlogfile:
+        remove(log_name)
+        return proc
 
     return (proc, log_name)
 
