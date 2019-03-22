@@ -616,6 +616,15 @@ function chart_init(wnd, affichwnd, with_interval, with_interval2) {
             alert("Error occurred! "+event.data);
         isDone = true;
     }, false);
+    // MESSAGE FOR Only TOWS_c block
+    eventSource.addEventListener("MESSAGE", function(event) {
+        setSimulationFlags(false);
+        stopSimulation();
+        stopSimulationWindows();
+        if (event.data!="")
+            alert(event.data);
+        isDone = true;
+    }, false);
     // Stop listening
 
     eventSource.addEventListener("DONE", function(event) {

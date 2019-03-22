@@ -909,7 +909,8 @@ def start_scilab():
             return ("scilab has not been built. "
                     "Follow the installation instructions")
 
-        if os.stat(diagram.log_name).st_size == 0:
+        if os.stat(diagram.log_name).st_size == 0 and \
+                diagram.workspace_counter != 1:
             return "log file is empty"
 
     # For processes taking more than 10 seconds
@@ -946,9 +947,16 @@ def event_stream():
             diagram.scilab_proc.poll() is None:
         gevent.sleep(LOOK_DELAY)
     if os.stat(diagram.log_name).st_size == 0 and \
-            diagram.scilab_proc.poll() is not None:
+            diagram.scilab_proc.poll() is not None and \
+            diagram.workspace_counter != 1:
         print("log file is empty")
         yield "event: ERROR\ndata: log file is empty\n\n"
+        return
+    # for Only TOWS_c block
+    if os.stat(diagram.log_name).st_size == 0 and \
+            diagram.workspace_counter == 1:
+        print("Variables are saved in workspace successfully")
+        yield "event: MESSAGE\ndata: Workspace saved successfully\n\n"
         return
 
     with open(diagram.log_name, "r") as log_file:

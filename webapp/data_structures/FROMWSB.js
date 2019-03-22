@@ -1,14 +1,14 @@
 function FROMWSB() {
 
     FROMWSB.prototype.define = function FROMWSB() {
-        this.varnam="V";
-        this.Method=1;
-        this.ZC=1;
-        this.OutEnd=0;
+        this.varnam = "V";
+        this.Method = 1;
+        this.ZC = 1;
+        this.OutEnd = 0;
         var scs_m_1 = scicos_diagram({
             version: new ScilabString(["scicos4.2"]),
             props: scicos_params({
-                wpar: new ScilabDouble([600, 450, 0, 0, 450, 600]),
+                wpar: new ScilabDouble([600, 450, 0, 0, 600, 450]),
                 Title: new ScilabString(["FROMWSB"]),
                 tol: new ScilabDouble([0.0001], [0.000001], [Math.pow(10, -10)], [100001], [0], [0], [0]),
                 tf: new ScilabDouble([100000]),
@@ -27,7 +27,7 @@ function FROMWSB() {
                 sz: new ScilabDouble([70, 40]),
                 flip: new ScilabBoolean([true]),
                 theta: new ScilabDouble([0]),
-                exprs: new ScilabString(["V"], ["1"], ["1"], ["0"]),
+                exprs: new ScilabString([this.varnam], [this.Method], [this.ZC], [this.OutEnd]),
                 pin: new ScilabDouble(),
                 pout: new ScilabDouble([4]),
                 pein: new ScilabDouble([2]),
@@ -44,7 +44,7 @@ function FROMWSB() {
                 sim: list(new ScilabString(["fromws_c"]), new ScilabDouble([4])),
                 in: new ScilabDouble(),
                 in2: new ScilabDouble(),
-                intyp: new ScilabDouble(),
+                intyp: new ScilabDouble([1]),
                 out: new ScilabDouble([-1]),
                 out2: new ScilabDouble([-2]),
                 outtyp: new ScilabDouble([-1]),
@@ -53,8 +53,8 @@ function FROMWSB() {
                 state: new ScilabDouble(),
                 dstate: new ScilabDouble(),
                 odstate: list(),
-                rpar: new ScilabDouble(),
-                ipar: new ScilabDouble([1], [-31], [1], [1], [0]),
+                rpar: new ScilabDouble([]),
+                ipar: new ScilabDouble([this.varnam.length],..._str2code(this.varnam),[this.Method],[this.ZC],[this.OutEnd]),
                 opar: list(),
                 blocktype: new ScilabString(["d"]),
                 firing: new ScilabDouble([0]),
@@ -95,7 +95,7 @@ function FROMWSB() {
                 intyp: new ScilabDouble([-1]),
                 out: new ScilabDouble(),
                 out2: new ScilabDouble(),
-                outtyp: new ScilabDouble(),
+                outtyp: new ScilabDouble([1]),
                 evtin: new ScilabDouble(),
                 evtout: new ScilabDouble(),
                 state: new ScilabDouble(),
@@ -134,30 +134,30 @@ function FROMWSB() {
             to: new ScilabDouble([3, 1, 1])
         }));
 
-        var model = scicos_model({
-            sim: new ScilabString(["csuper"]),
-            in: new ScilabDouble(),
-            in2: new ScilabDouble(),
-            intyp: new ScilabDouble([1]),
-            out: new ScilabDouble([-1]),
-            out2: new ScilabDouble([-2]),
-            outtyp: new ScilabDouble([1]),
-            evtin: new ScilabDouble(),
-            evtout: new ScilabDouble(),
-            state: new ScilabDouble(),
-            dstate: new ScilabDouble(),
-            odstate: list(),
-            rpar: scs_m_1,
-            ipar: new ScilabDouble(),
-            opar: list(),
-            blocktype: new ScilabString(["h"]),
-            firing: new ScilabDouble(),
-            dep_ut: new ScilabBoolean([false, false]),
-            label: new ScilabString([""]),
-            nzcross: new ScilabDouble([0]),
-            nmode: new ScilabDouble([0]),
-            equations: list()
-        });
+        var model = scicos_model();
+        model.sim = new ScilabString(["csuper"]);
+        model.in = new ScilabDouble();
+        model.in2 = new ScilabDouble();
+        model.intyp = new ScilabDouble([1]);
+        model.out = new ScilabDouble([-1]);
+        model.out2 = new ScilabDouble([-2]);
+        model.outtyp = new ScilabDouble([1]);
+        model.evtin = new ScilabDouble();
+        model.evtout = new ScilabDouble();
+        model.state = new ScilabDouble();
+        model.dstate = new ScilabDouble();
+        model.odstate = list();
+        model.rpar = scs_m_1;
+        model.ipar = new ScilabDouble();
+        model.opar = list();
+        model.blocktype = new ScilabString(["h"]);
+        model.firing = new ScilabDouble();
+        model.dep_ut = new ScilabBoolean([false, false]);
+        model.label = new ScilabString([""]);
+        model.nzcross = new ScilabDouble([0]);
+        model.nmode = new ScilabDouble([0]);
+        model.equations = list();
+
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"FROMWSB\",sz(1),sz(2));"]);
         this.x = new standard_define(new ScilabDouble([5, 2]), model, new ScilabDouble(), gr_i);
         return new BasicBlock(this.x);
@@ -165,8 +165,8 @@ function FROMWSB() {
     FROMWSB.prototype.details = function FROMWSB() {
         return this.x;
     }
-    FROMWSB.prototype.get=function FROMWSB(){
-        var options={
+    FROMWSB.prototype.get = function FROMWSB(){
+        var options = {
             varnam:["Variable name",this.varnam.toString()],
             Method:["Interpolation Method",this.Method],
             ZC:["Enable zero crossing(0:No, 1:Yes)?",this.ZC],
@@ -174,27 +174,59 @@ function FROMWSB() {
         }
         return options
     }
-    FROMWSB.prototype.set=function FROMWSB(){
-        this.varnam=arguments[0]["varnam"]
-        this.Method=parseFloat(arguments[0]["Method"])
-        this.ZC=parseFloat(arguments[0]["ZC"])
-        this.OutEnd=parseFloat(arguments[0]["OutEnd"])
-        if((this.Method!=0)&&(this.Method!=1)&&(this.Method!=2)&&(this.Method!=3)){
+    FROMWSB.prototype.set = function FROMWSB(){
+        var varnam1 = arguments[0]["varnam"];
+        var Method1 = arguments[0]["Method"];
+        var ZC1 = arguments[0]["ZC"];
+        var OutEnd1 = arguments[0]["OutEnd"];
+
+        var regex_char = /[a-zA-Z]/g; //check character
+        var regex_special_char = /[@%^&*-+]/g; //check character
+        var regex_parentheses = /[\])}[{(]/g;
+        var regex_semicolon_comma = /[,;]+/;
+
+        var chararray = varnam1.match(regex_char);
+        if (chararray != null) {
+            if(regex_special_char.test(varnam1)){
+                alert("Invalid variable name. \nPlease choose another variable name.");
+                throw "incorrect";
+            }
+            if(regex_parentheses.test(varnam1)){
+                alert("Invalid variable name. \nPlease choose another variable name.");
+                throw "incorrect";
+            }
+            if(regex_semicolon_comma.test(varnam1)){
+                alert("Invalid variable name. \nPlease choose another variable name.");
+                throw "incorrect";
+            }
+        }else{
+            alert("Invalid variable name. \nPlease choose another variable name.");
+            throw "incorrect";
+        }
+        Method1 = parseFloat(Method1);
+        if((Method1 != 0) && (Method1 != 1) && (Method1 != 2) && (Method1 != 3)){
             alert("Interpolation method should be chosen in [0,1,2,3]");
-            FROMWSB.get();
+            throw "incorrect";
         }
-        if((this.ZC!=0)&&(this.ZC!=1)){
+        ZC1 = parseFloat(ZC1);
+        if((ZC1 != 0) && (ZC1 != 1)){
             alert("Zero crossing should be either 0 or 1");
-            FROMWSB.get();
+            throw "incorrect";
         }
-        if((this.OutEnd!=0)&&(this.OutEnd!=1)&&(this.OutEnd!=2)){
+        OutEnd1 = parseFloat(OutEnd1);
+        if((OutEnd1 != 0) && (OutEnd1 != 1) && (OutEnd1 != 2)){
             alert("Output at end option should be either 0 or 1 or 2");
-            FROMWSB.get();
+            throw "incorrect";
         }
-        this.x.model.ipar = new ScilabDouble([this.varnam.length],[_str2code(this.varnam)],[this.Method],[this.ZC],[this.OutEnd])
-        var io=set_io(this.x.model,this.x.graphics,[],[[-1],[-2]],[],[]);
-        var exprs=new ScilabString(this.varnam.toString(),this.Method,this.ZC,this.OutEnd)
-        this.x.graphics.exprs=exprs
+        this.varnam = varnam1;
+        this.Method = Method1;
+        this.ZC = ZC1;
+        this.OutEnd = OutEnd1;
+        var block = getRparObjByGui(this.x, 'FROMWS_c');
+        block.model.rpar = new ScilabDouble([]);
+        block.graphics.exprs = new ScilabString([this.varnam], [this.Method], [this.ZC], [this.OutEnd]);
+        block.model.ipar = new ScilabDouble([this.varnam.length],..._str2code(this.varnam),[this.Method],[this.ZC],[this.OutEnd]);
+        var io = set_io(block.model,block.graphics,list(),list([-1,-2],-1),1,1);
         return new BasicBlock(this.x);
     }
 
