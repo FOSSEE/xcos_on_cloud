@@ -107,7 +107,6 @@ SCILAB_START = (
     "disp(msg),endfunction;")
 SCILAB_END = "mode(2);quit();"
 SCILAB_VARS = [
-    "%p_r_p",
     "canon",
     "close",
     "extractDatatip",
@@ -790,9 +789,12 @@ def load_variables(filename):
     command = "[__V1,__V2]=listvarinfile('%s');" % filename
     command += "__V3=['%s'];" % ("';'".join(SCILAB_VARS))
     command += "__V4=setdiff(__V1,__V3);"
+    command += "__V4=__V4(grep(__V4, '/^[^%]+$/', 'r'));"
+    command += "if ~isempty(__V4) then;"
     command += "__V5=''''+strcat(__V4,''',''')+'''';"
     command += "__V6='load(''%s'','+__V5+');';" % filename
     command += "execstr(__V6);"
+    command += "end;"
     command += "clear __V1 __V2 __V3 __V4 __V5 __V6;"
     return command
 
@@ -947,16 +949,14 @@ def event_stream():
             diagram.scilab_proc.poll() is None:
         gevent.sleep(LOOK_DELAY)
     if os.stat(diagram.log_name).st_size == 0 and \
-            diagram.scilab_proc.poll() is not None and \
-            diagram.workspace_counter != 1:
-        print("log file is empty")
-        yield "event: ERROR\ndata: log file is empty\n\n"
-        return
-    # for Only TOWS_c block
-    if os.stat(diagram.log_name).st_size == 0 and \
-            diagram.workspace_counter == 1:
-        print("Variables are saved in workspace successfully")
-        yield "event: MESSAGE\ndata: Workspace saved successfully\n\n"
+            diagram.scilab_proc.poll() is not None:
+        if diagram.workspace_counter != 1:
+            print("log file is empty")
+            yield "event: ERROR\ndata: log file is empty\n\n"
+        else:
+            # for Only TOWS_c block
+            print("Variables are saved in workspace successfully")
+            yield "event: MESSAGE\ndata: Workspace saved successfully\n\n"
         return
 
     with open(diagram.log_name, "r") as log_file:

@@ -630,6 +630,7 @@ function chart_init(wnd, affichwnd, with_interval, with_interval2) {
     eventSource.addEventListener("DONE", function(event) {
         setSimulationFlags(false);
         stopSimulation();
+        $('#loader').hide();
         $('#img_loader').html("");
         isDone = true;
     }, false);
