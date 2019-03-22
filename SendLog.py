@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import gevent
+from gevent.event import Event
 from gevent.lock import RLock
 from gevent.monkey import patch_all
 from gevent.pywsgi import WSGIServer
@@ -117,6 +118,88 @@ SCILAB_VARS = [
 ]
 
 USER_DATA = {}
+
+
+class ScilabInstance:
+    proc = None
+    log_name = None
+
+    def __init__(self):
+        (self.proc, self.log_name) = prestart_scilab()
+
+
+INSTANCES_1 = []
+INSTANCES_2 = []
+evt = Event()
+
+
+def too_many_scilab_instances():
+    l1 = len(INSTANCES_1)
+    l2 = len(INSTANCES_2)
+    return l1 >= config.SCILAB_MIN_INSTANCES or \
+        l1 + l2 >= config.SCILAB_MAX_INSTANCES
+
+
+def prestart_scilab_instances():
+    while True:
+        while too_many_scilab_instances():
+            evt.wait()
+
+        INSTANCES_1.append(ScilabInstance())
+        if too_many_scilab_instances():
+            evt.clear()
+
+
+def get_scilab_instance():
+    try:
+        instance = INSTANCES_1.pop()
+        INSTANCES_2.append(instance)
+        if not too_many_scilab_instances():
+            evt.set()
+
+        return instance
+    except IndexError:
+        print('No free instance')
+        return None
+
+
+def remove_scilab_instance(instance):
+    try:
+        INSTANCES_2.remove(instance)
+        if not too_many_scilab_instances():
+            evt.set()
+    except ValueError:
+        print('could not find instance', instance)
+
+
+def stop_scilab_instance(base, createlogfile=False):
+    if base.instance is None:
+        print('no instance')
+        return
+
+    if not kill_scilab_with(base.instance.proc, signal.SIGTERM):
+        kill_scilab_with(base.instance.proc, signal.SIGKILL)
+    remove_scilab_instance(base.instance)
+
+    if base.instance.log_name is None:
+        if createlogfile:
+            print('empty diagram')
+    else:
+        remove(base.instance.log_name)
+
+    base.instance = None
+
+
+def stop_scilab_instances():
+    while len(INSTANCES_1) > 0:
+        instance = INSTANCES_1.pop()
+        if not kill_scilab_with(instance.proc, signal.SIGTERM):
+            kill_scilab_with(instance.proc, signal.SIGKILL)
+
+    while len(INSTANCES_2) > 0:
+        instance = INSTANCES_2.pop()
+        if not kill_scilab_with(instance.proc, signal.SIGTERM):
+            kill_scilab_with(instance.proc, signal.SIGKILL)
 
 
 class Diagram:
