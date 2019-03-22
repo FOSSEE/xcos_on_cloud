@@ -1451,12 +1451,17 @@ function matrix_js_scilab() {
     }
 }
 
-// function updated (8/6/17) to get ascii values for char
+// function to return code for char string
 function _str2code() {
+    var conversion = "0123456789abcdefghijklmnopqrstuvwxyz_#!$ ();:+-*/\\=.,'[]%|&<>~^";
+    var conversion2 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ00?0 00000000$000\"{}000`0@0r";
     var str = arguments[0];
     var code = [];
     for (var i = 0; i < str.length; i++) {
-        code[i] = [str.charCodeAt(i)];
+        code[i] = [conversion.indexOf(str[i])];
+        if (code[i] == -1){
+            code[i] = [conversion2.indexOf(str[i]) * -1];
+        }
     }
     return code;
 }
@@ -2145,3 +2150,4 @@ function get_expr_output_for_DefineandSet(head,exx) {
 
     return response_map;
 }
+
