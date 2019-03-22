@@ -29,7 +29,7 @@ function Sigbuilder() {
                 sz: new ScilabDouble([40, 40]),
                 flip: new ScilabBoolean([true]),
                 theta: new ScilabDouble([0]),
-                exprs: new ScilabString([this.Method], [this.xx], [this.yy], [this.PeriodicOption], [this.graf]),
+                exprs: new ScilabString([this.Method],[sci2exp(this.xx)],[sci2exp(this.yy)], [this.PeriodicOption], [this.graf]),
                 pin: new ScilabDouble(),
                 pout: new ScilabDouble([6]),
                 pein: new ScilabDouble([4]),
@@ -55,8 +55,8 @@ function Sigbuilder() {
                 state: new ScilabDouble(),
                 dstate: new ScilabDouble(),
                 odstate: list(),
-                rpar: new ScilabDouble(this.xx, this.yy),
-                ipar: new ScilabDouble(this.N, this.Method, [1]),
+                rpar: new ScilabDouble([...this.xx,...this.yy]),
+                ipar: new ScilabDouble([this.N,this.Method,1]),
                 opar: list(),
                 blocktype: new ScilabString(["c"]),
                 firing: new ScilabDouble([0]),
@@ -274,8 +274,8 @@ function Sigbuilder() {
     Sigbuilder.prototype.get = function Sigbuilder() {
         var options = {
             Method:["Spline Method(0..7)",this.Method],
-            xx:["x",this.xx.toString().replace(/,/g," ")],
-            yy:["y",this.yy.toString().replace(/,/g," ")],
+            xx:["x",sci2exp(this.xx)],
+            yy:["y",sci2exp(this.yy)],
             PeriodicOption:["Periodic signal(y/n)?",this.PeriodicOption],
 	     graf:["Launch graphic window(y/n)?",this.graf],
          }
@@ -347,6 +347,14 @@ function Sigbuilder() {
                 Ask_again = true;
             }
         }
+        graf1 = graf1.trim();
+        if(!Ask_again){
+            var xy = [...xx2,...yy2];
+            if (graf1 == "y" || graf1 == "Y"){
+            }else{
+                graf1 = "n";
+            }
+        }
         //Have to add validation and understand set function form sci files
         this.Method = mtd;
         this.xx= inverse(xx1);
@@ -400,4 +408,14 @@ function getmethod(mtd){
             break;
     }
     return METHOD;
+}
+
+function cleandata(xye){
+    xe = xye[0];
+    ye = xy[1];
+    [nx,mx] = [size(xe, "r"), size(xe, "c")];
+    [ny,my] = [size(ye, "r"), size(ye, "c")];
+    N = math.min(nx.concat(ny);
+    //TO DO
+
 }
