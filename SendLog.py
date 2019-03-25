@@ -1423,7 +1423,7 @@ def UpdateTKfile():
         # at first the val.txt contains "Start" indicating the starting of the
         # process
         diagram.tkbool = True
-        diagram.tk_starttime = time()
+        diagram.tk_starttime = time() + config.TKSCALE_START_DELAY
         diagram.tk_deltatimes = []
         diagram.tk_values = []
         diagram.tk_times = []
