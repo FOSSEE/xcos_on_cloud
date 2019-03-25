@@ -214,9 +214,8 @@ class Diagram:
     workspace_filename = None
     # tk count
     tk_count = 0
-    scilab_proc = None
     # store log name
-    log_name = None
+    instance = None
     # is thread running?
     tkbool = False
     tk_starttime = None
@@ -234,7 +233,7 @@ class Diagram:
         return (
             "{ 'scilab_pid': %s, "
             "'log_name': %s, 'tkbool': %s, 'figure_list': %s }") % (
-                self.scilab_proc.pid if self.scilab_proc is not None else None,
+                self.instance.proc.pid if self.instance is not None else None,
                 self.log_name, self.tkbool, self.figure_list)
 
 
@@ -243,7 +242,7 @@ class Script:
     sessiondir = None
     filename = None
     status = 0
-    proc = None
+    instance = None
     workspace_filename = None
 
     def __str__(self):
@@ -252,7 +251,7 @@ class Script:
             "script_pid: %s, "
             "workspace_filename: %s }") % (
                 self.script_id, self.filename, self.status,
-                self.proc.pid if self.proc is not None else None,
+                self.instance.proc.pid if self.instance is not None else None,
                 self.workspace_filename)
 
 
@@ -261,7 +260,7 @@ class SciFile:
     filename = ''
     file_image = ''
     flag_sci = False
-    proc = None
+    instance = None
 
 
 class UserData:
@@ -494,17 +493,17 @@ def prestart_scilab():
 
 
 def run_scilab(command, createlogfile=False):
-    (proc, log_name) = prestart_scilab()
+    instance = get_scilab_instance()
 
     cmd = command + SCILAB_END
     print('running command', cmd)
-    proc.stdin.write(cmd)
+    instance.proc.stdin.write(cmd)
 
     if not createlogfile:
-        remove(log_name)
-        return proc
+        remove(instance.log_name)
+        instance.log_name = None
 
-    return (proc, log_name)
+    return instance
 
 
 SYSTEM_COMMANDS = re.compile(config.SYSTEM_COMMANDS)
@@ -555,7 +554,7 @@ def uploadscript():
     command = "exec('" + fname + "');save('" + wfname + "');"
 
     try:
-        script.proc = run_scilab(command)
+        script.instance = run_scilab(command)
     except FileNotFoundError:
         msg = "scilab not found. Follow the installation instructions"
         script.status = -2
@@ -593,13 +592,15 @@ def getscriptoutput():
         rv = {'msg': msg}
         return Response(json.dumps(rv), mimetype='application/json')
 
-    proc = script.proc
+    proc = script.instance.proc
     wfname = script.workspace_filename
 
     try:
         # output from scilab terminal is saved for checking error msg
         output = proc.communicate(timeout=30)[0]
         output = clean_output(output)
+        remove_scilab_instance(script.instance)
+        script.instance = None
 
         if proc.returncode < 0:
             msg = 'Script stopped'
@@ -649,12 +650,7 @@ def kill_script(script=None):
         remove(script.filename)
         script.filename = None
 
-    if script.proc is None:
-        print('no scilab proc')
-    else:
-        if not kill_scilab_with(script.proc, signal.SIGTERM):
-            kill_scilab_with(script.proc, signal.SIGKILL)
-        script.proc = None
+    stop_scilab_instance(script)
 
     if script.workspace_filename is None:
         print('empty workspace')
@@ -698,15 +694,18 @@ def uploadsci():
     command = "exec('" + scifile.filename + "');"
 
     try:
-        scifile.proc = run_scilab(command)
+        scifile.instance = run_scilab(command)
     except FileNotFoundError:
         return "scilab not found. Follow the installation instructions"
 
     try:
         # output from scilab terminal is saved for checking error msg
-        out = scifile.proc.communicate(timeout=30)[0]
+        proc = scifile.instance.proc
+        out = proc.communicate(timeout=30)[0]
+        remove_scilab_instance(scifile.instance)
+        scifile.instance = None
 
-        if scifile.proc.returncode < 0:
+        if proc.returncode < 0:
             remove(scifile.filename)
             scifile.flag_sci = False
             msg = 'Cancelled'
@@ -747,12 +746,7 @@ def kill_scifile(scifile=None):
         remove(scifile.filename)
         scifile.filename = None
 
-    if scifile.proc is None:
-        print('no scilab proc')
-    else:
-        if not kill_scilab_with(scifile.proc, signal.SIGTERM):
-            kill_scilab_with(scifile.proc, signal.SIGKILL)
-        scifile.proc = None
+    stop_scilab_instance(scifile)
 
     scifile.flag_sci = False
 
@@ -853,19 +847,7 @@ def kill_scilab(diagram=None):
         remove(diagram.xcos_file_name)
         diagram.xcos_file_name = None
 
-    if diagram.scilab_proc is None:
-        print('no scilab proc')
-    else:
-        if not kill_scilab_with(diagram.scilab_proc, signal.SIGTERM):
-            kill_scilab_with(diagram.scilab_proc, signal.SIGKILL)
-        diagram.scilab_proc = None
-
-    if diagram.log_name is None:
-        print('empty diagram')
-    else:
-        # Remove log file
-        remove(diagram.log_name)
-        diagram.log_name = None
+    stop_scilab_instance(diagram, True)
 
     stopDetailsThread(diagram)
 
@@ -966,18 +948,21 @@ def start_scilab():
         command += "save('" + workspace + "');"
 
     try:
-        diagram.scilab_proc, diagram.log_name = run_scilab(command, True)
+        diagram.instance = run_scilab(command, True)
     except FileNotFoundError:
         return "scilab not found. Follow the installation instructions"
 
-    print('log_name=', diagram.log_name)
+    instance = diagram.instance
+    print('log_name=', instance.log_name)
 
     # Start sending log to chart function for creating chart
     try:
         # For processes taking less than 10 seconds
-        scilab_out = diagram.scilab_proc.communicate(timeout=4)[0]
+        scilab_out = instance.proc.communicate(timeout=4)[0]
         scilab_out = re.sub(r'^[ !\\-]*\n', r'',
                             scilab_out, flags=re.MULTILINE)
+        remove_scilab_instance(diagram.instance)
+        diagram.instance = None
         print("=== Begin output from scilab console ===")
         print(scilab_out, end='')
         print("===== End output from scilab console ===")
@@ -1002,7 +987,7 @@ def start_scilab():
             return ("scilab has not been built. "
                     "Follow the installation instructions")
 
-        if os.stat(diagram.log_name).st_size == 0 and \
+        if os.stat(instance.log_name).st_size == 0 and \
                 diagram.workspace_counter != 1:
             return "log file is empty"
 
@@ -1032,15 +1017,17 @@ def event_stream():
         return
 
     # Open the log file
-    if not isfile(diagram.log_name):
+    if not isfile(diagram.instance.log_name):
         print("log file does not exist")
         yield "event: ERROR\ndata: no log file found\n\n"
+        remove_scilab_instance(diagram.instance)
+        diagram.instance = None
         return
-    while os.stat(diagram.log_name).st_size == 0 and \
-            diagram.scilab_proc.poll() is None:
+    while os.stat(diagram.instance.log_name).st_size == 0 and \
+            diagram.instance.proc.poll() is None:
         gevent.sleep(LOOK_DELAY)
-    if os.stat(diagram.log_name).st_size == 0 and \
-            diagram.scilab_proc.poll() is not None:
+    if os.stat(diagram.instance.log_name).st_size == 0 and \
+            diagram.instance.proc.poll() is not None:
         if diagram.workspace_counter != 1:
             print("log file is empty")
             yield "event: ERROR\ndata: log file is empty\n\n"
@@ -1048,9 +1035,11 @@ def event_stream():
             # for Only TOWS_c block
             print("Variables are saved in workspace successfully")
             yield "event: MESSAGE\ndata: Workspace saved successfully\n\n"
+        remove_scilab_instance(diagram.instance)
+        diagram.instance = None
         return
 
-    with open(diagram.log_name, "r") as log_file:
+    with open(diagram.instance.log_name, "r") as log_file:
         # Start sending log
         lineno = 0
         line = line_and_state()
@@ -1820,6 +1809,7 @@ def open_example_file():
 if __name__ == '__main__':
     print('starting')
     os.chdir(SESSIONDIR)
+    worker = gevent.spawn(prestart_scilab_instances)
     # Set server address from config
     http_server = WSGIServer(
         (config.HTTP_SERVER_HOST, config.HTTP_SERVER_PORT), app)
@@ -1827,4 +1817,6 @@ if __name__ == '__main__':
     try:
         http_server.serve_forever()
     except KeyboardInterrupt:
+        gevent.kill(worker)
+        stop_scilab_instances()
         print('exiting')
