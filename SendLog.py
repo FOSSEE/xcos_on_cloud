@@ -232,9 +232,11 @@ class Diagram:
     def __str__(self):
         return (
             "{ 'scilab_pid': %s, "
-            "'log_name': %s, 'tkbool': %s, 'figure_list': %s }") % (
+            "'log_name': %s, "
+            "'tkbool': %s, 'figure_list': %s }") % (
                 self.instance.proc.pid if self.instance is not None else None,
-                self.log_name, self.tkbool, self.figure_list)
+                self.instance.log_name if self.instance is not None else None,
+                self.tkbool, self.figure_list)
 
 
 class Script:
@@ -961,34 +963,44 @@ def start_scilab():
         scilab_out = instance.proc.communicate(timeout=4)[0]
         scilab_out = re.sub(r'^[ !\\-]*\n', r'',
                             scilab_out, flags=re.MULTILINE)
-        remove_scilab_instance(diagram.instance)
-        diagram.instance = None
         print("=== Begin output from scilab console ===")
         print(scilab_out, end='')
         print("===== End output from scilab console ===")
         # Check for errors in Scilab
         if "Empty diagram" in scilab_out:
+            remove_scilab_instance(diagram.instance)
+            diagram.instance = None
             return "Empty diagram"
 
         m = re.search(r'Fatal error: exception Failure\("([^"]*)"\)',
                       scilab_out)
         if m:
             msg = 'modelica error: ' + m.group(1)
+            remove_scilab_instance(diagram.instance)
+            diagram.instance = None
             return msg
 
         if ("xcos_simulate: "
                 "Error during block parameters update.") in scilab_out:
+            remove_scilab_instance(diagram.instance)
+            diagram.instance = None
             return "Error in block parameter. Please check block parameters"
 
         if "xcosDiagramToScilab:" in scilab_out:
+            remove_scilab_instance(diagram.instance)
+            diagram.instance = None
             return "Error in xcos diagram. Please check diagram"
 
         if "Cannot find scilab-bin" in scilab_out:
+            remove_scilab_instance(diagram.instance)
+            diagram.instance = None
             return ("scilab has not been built. "
                     "Follow the installation instructions")
 
         if os.stat(instance.log_name).st_size == 0 and \
                 diagram.workspace_counter != 1:
+            remove_scilab_instance(diagram.instance)
+            diagram.instance = None
             return "log file is empty"
 
     # For processes taking more than 10 seconds
