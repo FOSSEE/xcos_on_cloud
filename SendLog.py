@@ -1553,11 +1553,12 @@ def run_scilab_func_request():
     command += "calculate_cont_frm(%s,%s,'%s');" % (num, den, file_name)
 
     try:
-        scifile.proc = run_scilab(command)
+        scifile.instance = run_scilab(command)
     except FileNotFoundError:
         return "scilab not found. Follow the installation instructions"
 
-    scifile.proc.communicate()
+    proc = scifile.instance.proc
+    proc.communicate()
 
     list_value = ""
     '''
@@ -1596,11 +1597,12 @@ def run_scilab_func_expr_request():
         "','" + head + "','" + exx + "');"
 
     try:
-        scifile.proc = run_scilab(command)
+        scifile.instance = run_scilab(command)
     except FileNotFoundError:
         return "scilab not found. Follow the installation instructions"
 
-    scifile.proc.communicate()
+    proc = scifile.instance.proc
+    proc.communicate()
 
     # create a dictionary
     exprs_value = {}
