@@ -48,7 +48,7 @@ function MATDIV() {
         if(this.typ == 1){
             this.function_name = "mat_div"
             this.x.model.outtyp = new ScilabDouble([1])
-            this.x.model.intype = new ScilabDouble([1],[1])
+            this.x.model.intyp = new ScilabDouble([1],[1]);
         }
         else if(this.typ == 2){
             this.function_name = "matz_div"

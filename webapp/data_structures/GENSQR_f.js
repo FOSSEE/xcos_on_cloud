@@ -32,9 +32,7 @@ GENSQR_f.prototype.set = function GENSQR_f() {
 
     this.Amplitude = parseFloat(arguments[0]["Amplitude"]);
     var exprs = new ScilabString([this.Amplitude]);
-    this.x.model.out2=1;
     this.x.model.dstate=new ScilabDouble([this.Amplitude]);
-    this.x.model.outtyp=1;
     this.x.graphics.exprs = exprs;
     return new BasicBlock(this.x);
     }

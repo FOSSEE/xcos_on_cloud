@@ -33,7 +33,7 @@ function BOUNCEXY() {
         model.dstate = new ScilabDouble(...this.z);
         model.rpar = new ScilabDouble([this.xmin], [this.xmax], [this.ymin], [this.ymax]);
         model.ipar = new ScilabDouble([this.win], [this.imode], ...colon_operator(this.clrs));
-        model.blocktype = new ScilabString("d");
+        model.blocktype = new ScilabString(["d"]);
         model.firing = new ScilabDouble();
         model.dep_ut = new ScilabBoolean([false, false]);
 
