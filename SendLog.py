@@ -548,11 +548,6 @@ def uploadscript():
     '''
     (script, sessiondir) = add_script()
 
-    if script.instance is not None:
-        msg = "Cannot execute more than one script at the same time."
-        rv = {'msg': msg}
-        return Response(json.dumps(rv), mimetype='application/json')
-
     file = request.files['file']
     if not file:
         msg = "Upload Error\n"
