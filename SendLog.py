@@ -141,11 +141,24 @@ def too_many_scilab_instances():
 
 
 def prestart_scilab_instances():
+    attempt = 1
+
     while True:
         while too_many_scilab_instances():
             evt.wait()
 
-        INSTANCES_1.append(ScilabInstance())
+        try:
+            INSTANCES_1.append(ScilabInstance())
+            attempt = 1
+        except Exception as e:
+            print('could not start scilab:', str(e))
+            if attempt >= 4:
+                print('could not start scilab after', attempt, 'attempts')
+                gevent.thread.interrupt_main()
+                return
+            gevent.sleep(15 * attempt)
+            attempt += 1
+
         if too_many_scilab_instances():
             evt.clear()
 
@@ -496,6 +509,9 @@ def prestart_scilab():
 
 def run_scilab(command, createlogfile=False):
     instance = get_scilab_instance()
+    if instance is None:
+        print('cannot run command', command)
+        return None
 
     cmd = command + SCILAB_END
     print('running command', cmd)
@@ -532,6 +548,11 @@ def uploadscript():
     '''
     (script, sessiondir) = add_script()
 
+    if script.instance is not None:
+        msg = "Cannot execute more than one script at the same time."
+        rv = {'msg': msg}
+        return Response(json.dumps(rv), mimetype='application/json')
+
     file = request.files['file']
     if not file:
         msg = "Upload Error\n"
@@ -555,10 +576,10 @@ def uploadscript():
     script.workspace_filename = wfname
     command = "exec('" + fname + "');save('" + wfname + "');"
 
-    try:
-        script.instance = run_scilab(command)
-    except FileNotFoundError:
-        msg = "scilab not found. Follow the installation instructions"
+    script.instance = run_scilab(command)
+
+    if script.instance is None:
+        msg = "Resource not available"
         script.status = -2
         rv = {'status': script.status, 'msg': msg}
         return Response(json.dumps(rv), mimetype='application/json')
@@ -671,6 +692,10 @@ def uploadsci():
     '''
     (__, __, scifile, sessiondir, __) = init_session()
 
+    if scifile.instance is not None:
+        msg = 'Cannot execute more than one script at the same time.'
+        return msg
+
     file = request.files['file']  # to get uploaded file
     # Check if the file is not null
     if not file:
@@ -695,10 +720,13 @@ def uploadsci():
     # used by sci-func block
     command = "exec('" + scifile.filename + "');"
 
-    try:
-        scifile.instance = run_scilab(command)
-    except FileNotFoundError:
-        return "scilab not found. Follow the installation instructions"
+    scifile.instance = run_scilab(command)
+
+    if scifile.instance is None:
+        msg = "Resource not available"
+        remove(scifile.filename)
+        scifile.flag_sci = False
+        return msg
 
     try:
         # output from scilab terminal is saved for checking error msg
@@ -708,9 +736,9 @@ def uploadsci():
         scifile.instance = None
 
         if proc.returncode < 0:
+            msg = 'Cancelled'
             remove(scifile.filename)
             scifile.flag_sci = False
-            msg = 'Cancelled'
             return msg
 
         # if error is encountered while execution of sci file, then error msg
@@ -949,10 +977,10 @@ def start_scilab():
     if diagram.workspace_counter in (1, 3):
         command += "save('" + workspace + "');"
 
-    try:
-        diagram.instance = run_scilab(command, True)
-    except FileNotFoundError:
-        return "scilab not found. Follow the installation instructions"
+    diagram.instance = run_scilab(command, True)
+
+    if diagram.instance is None:
+        return "Resource not available"
 
     instance = diagram.instance
     print('log_name=', instance.log_name)
@@ -1535,6 +1563,10 @@ def page():
 def run_scilab_func_request():
     (__, __, scifile, sessiondir, __) = init_session()
 
+    if scifile.instance is not None:
+        msg = 'Cannot execute more than one script at the same time.'
+        return msg
+
     file_name = join(sessiondir, "cont_frm_value.txt")
     num = request.form['num']
     den = request.form['den']
@@ -1552,13 +1584,16 @@ def run_scilab_func_request():
     command += "exec('%s');" % CONT_FRM_WRITE
     command += "calculate_cont_frm(%s,%s,'%s');" % (num, den, file_name)
 
-    try:
-        scifile.instance = run_scilab(command)
-    except FileNotFoundError:
-        return "scilab not found. Follow the installation instructions"
+    scifile.instance = run_scilab(command)
+
+    if scifile.instance is None:
+        msg = "Resource not available"
+        return msg
 
     proc = scifile.instance.proc
     proc.communicate()
+    remove_scilab_instance(scifile.instance)
+    scifile.instance = None
 
     list_value = ""
     '''
@@ -1583,6 +1618,10 @@ def run_scilab_func_request():
 def run_scilab_func_expr_request():
     (__, __, scifile, sessiondir, __) = init_session()
 
+    if scifile.instance is not None:
+        msg = 'Cannot execute more than one script at the same time.'
+        return msg
+
     file_name = join(sessiondir, "expr_set_value.txt")
     head = request.form['head']
     exx = request.form['exx']
@@ -1591,18 +1630,21 @@ def run_scilab_func_expr_request():
     head: %foo(u1,u2)
     exx: (u1>0)*sin(u2)^2
     '''
-    command = "exec('" + COPIED_EXPRESSION_SCI_FRM_SCILAB + \
-        "');exec('" + EXP_SCI_FUNC_WRITE + \
-        "');callFunctionAcctoMethod('" + file_name + \
-        "','" + head + "','" + exx + "');"
+    command = "exec('%s');" % COPIED_EXPRESSION_SCI_FRM_SCILAB
+    command += "exec('%s');" % EXP_SCI_FUNC_WRITE
+    command += "callFunctionAcctoMethod('%s','%s','%s');" % (
+        file_name, head, exx)
 
-    try:
-        scifile.instance = run_scilab(command)
-    except FileNotFoundError:
-        return "scilab not found. Follow the installation instructions"
+    scifile.instance = run_scilab(command)
+
+    if scifile.instance is None:
+        msg = "Resource not available"
+        return msg
 
     proc = scifile.instance.proc
     proc.communicate()
+    remove_scilab_instance(scifile.instance)
+    scifile.instance = None
 
     # create a dictionary
     exprs_value = {}
