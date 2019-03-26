@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import gevent
+from gevent.event import Event
 from gevent.lock import RLock
 from gevent.monkey import patch_all
 from gevent.pywsgi import WSGIServer
@@ -119,6 +120,101 @@ SCILAB_VARS = [
 USER_DATA = {}
 
 
+class ScilabInstance:
+    proc = None
+    log_name = None
+
+    def __init__(self):
+        (self.proc, self.log_name) = prestart_scilab()
+
+
+INSTANCES_1 = []
+INSTANCES_2 = []
+evt = Event()
+
+
+def too_many_scilab_instances():
+    l1 = len(INSTANCES_1)
+    l2 = len(INSTANCES_2)
+    return l1 >= config.SCILAB_MIN_INSTANCES or \
+        l1 + l2 >= config.SCILAB_MAX_INSTANCES
+
+
+def prestart_scilab_instances():
+    attempt = 1
+
+    while True:
+        while too_many_scilab_instances():
+            evt.wait()
+
+        try:
+            INSTANCES_1.append(ScilabInstance())
+            attempt = 1
+        except Exception as e:
+            print('could not start scilab:', str(e))
+            if attempt >= 4:
+                print('could not start scilab after', attempt, 'attempts')
+                gevent.thread.interrupt_main()
+                return
+            gevent.sleep(15 * attempt)
+            attempt += 1
+
+        if too_many_scilab_instances():
+            evt.clear()
+
+
+def get_scilab_instance():
+    try:
+        instance = INSTANCES_1.pop()
+        INSTANCES_2.append(instance)
+        if not too_many_scilab_instances():
+            evt.set()
+
+        return instance
+    except IndexError:
+        print('No free instance')
+        return None
+
+
+def remove_scilab_instance(instance):
+    try:
+        INSTANCES_2.remove(instance)
+        if not too_many_scilab_instances():
+            evt.set()
+    except ValueError:
+        print('could not find instance', instance)
+
+
+def stop_scilab_instance(base, createlogfile=False):
+    if base.instance is None:
+        print('no instance')
+        return
+
+    if not kill_scilab_with(base.instance.proc, signal.SIGTERM):
+        kill_scilab_with(base.instance.proc, signal.SIGKILL)
+    remove_scilab_instance(base.instance)
+
+    if base.instance.log_name is None:
+        if createlogfile:
+            print('empty diagram')
+    else:
+        remove(base.instance.log_name)
+
+    base.instance = None
+
+
+def stop_scilab_instances():
+    while len(INSTANCES_1) > 0:
+        instance = INSTANCES_1.pop()
+        if not kill_scilab_with(instance.proc, signal.SIGTERM):
+            kill_scilab_with(instance.proc, signal.SIGKILL)
+
+    while len(INSTANCES_2) > 0:
+        instance = INSTANCES_2.pop()
+        if not kill_scilab_with(instance.proc, signal.SIGTERM):
+            kill_scilab_with(instance.proc, signal.SIGKILL)
+
+
 class Diagram:
     diagram_id = None
     # session dir
@@ -131,9 +227,8 @@ class Diagram:
     workspace_filename = None
     # tk count
     tk_count = 0
-    scilab_proc = None
     # store log name
-    log_name = None
+    instance = None
     # is thread running?
     tkbool = False
     tk_starttime = None
@@ -150,9 +245,11 @@ class Diagram:
     def __str__(self):
         return (
             "{ 'scilab_pid': %s, "
-            "'log_name': %s, 'tkbool': %s, 'figure_list': %s }") % (
-                self.scilab_proc.pid if self.scilab_proc is not None else None,
-                self.log_name, self.tkbool, self.figure_list)
+            "'log_name': %s, "
+            "'tkbool': %s, 'figure_list': %s }") % (
+                self.instance.proc.pid if self.instance is not None else None,
+                self.instance.log_name if self.instance is not None else None,
+                self.tkbool, self.figure_list)
 
 
 class Script:
@@ -160,7 +257,7 @@ class Script:
     sessiondir = None
     filename = None
     status = 0
-    proc = None
+    instance = None
     workspace_filename = None
 
     def __str__(self):
@@ -169,7 +266,7 @@ class Script:
             "script_pid: %s, "
             "workspace_filename: %s }") % (
                 self.script_id, self.filename, self.status,
-                self.proc.pid if self.proc is not None else None,
+                self.instance.proc.pid if self.instance is not None else None,
                 self.workspace_filename)
 
 
@@ -178,7 +275,7 @@ class SciFile:
     filename = ''
     file_image = ''
     flag_sci = False
-    proc = None
+    instance = None
 
 
 class UserData:
@@ -381,9 +478,9 @@ logfilefdrlock = RLock()
 LOGFILEFD = 123
 
 
-def run_scilab(command, createlogfile=False):
-    cmd = SCILAB_START + command + SCILAB_END
-    print('running command', cmd)
+def prestart_scilab():
+    cmd = SCILAB_START
+    print('prestarting')
     cmdarray = [SCI,
                 "-nogui",
                 "-noatomsautoload",
@@ -391,12 +488,6 @@ def run_scilab(command, createlogfile=False):
                 "-nb",
                 "-nw",
                 "-e", cmd]
-    if not createlogfile:
-        return subprocess.Popen(
-            cmdarray,
-            stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE, start_new_session=True,
-            universal_newlines=True)
 
     logfilefd, log_name = mkstemp(prefix=datetime.now().strftime(
         'scilab-log-%Y%m%d-'), suffix='.txt', dir=SESSIONDIR)
@@ -414,6 +505,23 @@ def run_scilab(command, createlogfile=False):
     logfilefdrlock.release()
 
     return (proc, log_name)
+
+
+def run_scilab(command, createlogfile=False):
+    instance = get_scilab_instance()
+    if instance is None:
+        print('cannot run command', command)
+        return None
+
+    cmd = command + SCILAB_END
+    print('running command', cmd)
+    instance.proc.stdin.write(cmd)
+
+    if not createlogfile:
+        remove(instance.log_name)
+        instance.log_name = None
+
+    return instance
 
 
 SYSTEM_COMMANDS = re.compile(config.SYSTEM_COMMANDS)
@@ -463,10 +571,10 @@ def uploadscript():
     script.workspace_filename = wfname
     command = "exec('" + fname + "');save('" + wfname + "');"
 
-    try:
-        script.proc = run_scilab(command)
-    except FileNotFoundError:
-        msg = "scilab not found. Follow the installation instructions"
+    script.instance = run_scilab(command)
+
+    if script.instance is None:
+        msg = "Resource not available"
         script.status = -2
         rv = {'status': script.status, 'msg': msg}
         return Response(json.dumps(rv), mimetype='application/json')
@@ -502,13 +610,15 @@ def getscriptoutput():
         rv = {'msg': msg}
         return Response(json.dumps(rv), mimetype='application/json')
 
-    proc = script.proc
+    proc = script.instance.proc
     wfname = script.workspace_filename
 
     try:
         # output from scilab terminal is saved for checking error msg
         output = proc.communicate(timeout=30)[0]
         output = clean_output(output)
+        remove_scilab_instance(script.instance)
+        script.instance = None
 
         if proc.returncode < 0:
             msg = 'Script stopped'
@@ -558,12 +668,7 @@ def kill_script(script=None):
         remove(script.filename)
         script.filename = None
 
-    if script.proc is None:
-        print('no scilab proc')
-    else:
-        if not kill_scilab_with(script.proc, signal.SIGTERM):
-            kill_scilab_with(script.proc, signal.SIGKILL)
-        script.proc = None
+    stop_scilab_instance(script)
 
     if script.workspace_filename is None:
         print('empty workspace')
@@ -581,6 +686,10 @@ def uploadsci():
     block (called in Javscript only_scifunc_code.js)
     '''
     (__, __, scifile, sessiondir, __) = init_session()
+
+    if scifile.instance is not None:
+        msg = 'Cannot execute more than one script at the same time.'
+        return msg
 
     file = request.files['file']  # to get uploaded file
     # Check if the file is not null
@@ -606,19 +715,25 @@ def uploadsci():
     # used by sci-func block
     command = "exec('" + scifile.filename + "');"
 
-    try:
-        scifile.proc = run_scilab(command)
-    except FileNotFoundError:
-        return "scilab not found. Follow the installation instructions"
+    scifile.instance = run_scilab(command)
+
+    if scifile.instance is None:
+        msg = "Resource not available"
+        remove(scifile.filename)
+        scifile.flag_sci = False
+        return msg
 
     try:
         # output from scilab terminal is saved for checking error msg
-        out = scifile.proc.communicate(timeout=30)[0]
+        proc = scifile.instance.proc
+        out = proc.communicate(timeout=30)[0]
+        remove_scilab_instance(scifile.instance)
+        scifile.instance = None
 
-        if scifile.proc.returncode < 0:
+        if proc.returncode < 0:
+            msg = 'Cancelled'
             remove(scifile.filename)
             scifile.flag_sci = False
-            msg = 'Cancelled'
             return msg
 
         # if error is encountered while execution of sci file, then error msg
@@ -656,12 +771,7 @@ def kill_scifile(scifile=None):
         remove(scifile.filename)
         scifile.filename = None
 
-    if scifile.proc is None:
-        print('no scilab proc')
-    else:
-        if not kill_scilab_with(scifile.proc, signal.SIGTERM):
-            kill_scilab_with(scifile.proc, signal.SIGKILL)
-        scifile.proc = None
+    stop_scilab_instance(scifile)
 
     scifile.flag_sci = False
 
@@ -762,19 +872,7 @@ def kill_scilab(diagram=None):
         remove(diagram.xcos_file_name)
         diagram.xcos_file_name = None
 
-    if diagram.scilab_proc is None:
-        print('no scilab proc')
-    else:
-        if not kill_scilab_with(diagram.scilab_proc, signal.SIGTERM):
-            kill_scilab_with(diagram.scilab_proc, signal.SIGKILL)
-        diagram.scilab_proc = None
-
-    if diagram.log_name is None:
-        print('empty diagram')
-    else:
-        # Remove log file
-        remove(diagram.log_name)
-        diagram.log_name = None
+    stop_scilab_instance(diagram, True)
 
     stopDetailsThread(diagram)
 
@@ -874,17 +972,18 @@ def start_scilab():
     if diagram.workspace_counter in (1, 3):
         command += "save('" + workspace + "');"
 
-    try:
-        diagram.scilab_proc, diagram.log_name = run_scilab(command, True)
-    except FileNotFoundError:
-        return "scilab not found. Follow the installation instructions"
+    diagram.instance = run_scilab(command, True)
 
-    print('log_name=', diagram.log_name)
+    if diagram.instance is None:
+        return "Resource not available"
+
+    instance = diagram.instance
+    print('log_name=', instance.log_name)
 
     # Start sending log to chart function for creating chart
     try:
         # For processes taking less than 10 seconds
-        scilab_out = diagram.scilab_proc.communicate(timeout=4)[0]
+        scilab_out = instance.proc.communicate(timeout=4)[0]
         scilab_out = re.sub(r'^[ !\\-]*\n', r'',
                             scilab_out, flags=re.MULTILINE)
         print("=== Begin output from scilab console ===")
@@ -892,27 +991,39 @@ def start_scilab():
         print("===== End output from scilab console ===")
         # Check for errors in Scilab
         if "Empty diagram" in scilab_out:
+            remove_scilab_instance(diagram.instance)
+            diagram.instance = None
             return "Empty diagram"
 
         m = re.search(r'Fatal error: exception Failure\("([^"]*)"\)',
                       scilab_out)
         if m:
             msg = 'modelica error: ' + m.group(1)
+            remove_scilab_instance(diagram.instance)
+            diagram.instance = None
             return msg
 
         if ("xcos_simulate: "
                 "Error during block parameters update.") in scilab_out:
+            remove_scilab_instance(diagram.instance)
+            diagram.instance = None
             return "Error in block parameter. Please check block parameters"
 
         if "xcosDiagramToScilab:" in scilab_out:
+            remove_scilab_instance(diagram.instance)
+            diagram.instance = None
             return "Error in xcos diagram. Please check diagram"
 
         if "Cannot find scilab-bin" in scilab_out:
+            remove_scilab_instance(diagram.instance)
+            diagram.instance = None
             return ("scilab has not been built. "
                     "Follow the installation instructions")
 
-        if os.stat(diagram.log_name).st_size == 0 and \
+        if os.stat(instance.log_name).st_size == 0 and \
                 diagram.workspace_counter != 1:
+            remove_scilab_instance(diagram.instance)
+            diagram.instance = None
             return "log file is empty"
 
     # For processes taking more than 10 seconds
@@ -941,15 +1052,17 @@ def event_stream():
         return
 
     # Open the log file
-    if not isfile(diagram.log_name):
+    if not isfile(diagram.instance.log_name):
         print("log file does not exist")
         yield "event: ERROR\ndata: no log file found\n\n"
+        remove_scilab_instance(diagram.instance)
+        diagram.instance = None
         return
-    while os.stat(diagram.log_name).st_size == 0 and \
-            diagram.scilab_proc.poll() is None:
+    while os.stat(diagram.instance.log_name).st_size == 0 and \
+            diagram.instance.proc.poll() is None:
         gevent.sleep(LOOK_DELAY)
-    if os.stat(diagram.log_name).st_size == 0 and \
-            diagram.scilab_proc.poll() is not None:
+    if os.stat(diagram.instance.log_name).st_size == 0 and \
+            diagram.instance.proc.poll() is not None:
         if diagram.workspace_counter != 1:
             print("log file is empty")
             yield "event: ERROR\ndata: log file is empty\n\n"
@@ -957,9 +1070,11 @@ def event_stream():
             # for Only TOWS_c block
             print("Variables are saved in workspace successfully")
             yield "event: MESSAGE\ndata: Workspace saved successfully\n\n"
+        remove_scilab_instance(diagram.instance)
+        diagram.instance = None
         return
 
-    with open(diagram.log_name, "r") as log_file:
+    with open(diagram.instance.log_name, "r") as log_file:
         # Start sending log
         lineno = 0
         line = line_and_state()
@@ -1343,7 +1458,7 @@ def UpdateTKfile():
         # at first the val.txt contains "Start" indicating the starting of the
         # process
         diagram.tkbool = True
-        diagram.tk_starttime = time()
+        diagram.tk_starttime = time() + config.TKSCALE_START_DELAY
         diagram.tk_deltatimes = []
         diagram.tk_values = []
         diagram.tk_times = []
@@ -1443,6 +1558,10 @@ def page():
 def run_scilab_func_request():
     (__, __, scifile, sessiondir, __) = init_session()
 
+    if scifile.instance is not None:
+        msg = 'Cannot execute more than one script at the same time.'
+        return msg
+
     file_name = join(sessiondir, "cont_frm_value.txt")
     num = request.form['num']
     den = request.form['den']
@@ -1460,12 +1579,16 @@ def run_scilab_func_request():
     command += "exec('%s');" % CONT_FRM_WRITE
     command += "calculate_cont_frm(%s,%s,'%s');" % (num, den, file_name)
 
-    try:
-        scifile.proc = run_scilab(command)
-    except FileNotFoundError:
-        return "scilab not found. Follow the installation instructions"
+    scifile.instance = run_scilab(command)
 
-    scifile.proc.communicate()
+    if scifile.instance is None:
+        msg = "Resource not available"
+        return msg
+
+    proc = scifile.instance.proc
+    proc.communicate()
+    remove_scilab_instance(scifile.instance)
+    scifile.instance = None
 
     list_value = ""
     '''
@@ -1490,6 +1613,10 @@ def run_scilab_func_request():
 def run_scilab_func_expr_request():
     (__, __, scifile, sessiondir, __) = init_session()
 
+    if scifile.instance is not None:
+        msg = 'Cannot execute more than one script at the same time.'
+        return msg
+
     file_name = join(sessiondir, "expr_set_value.txt")
     head = request.form['head']
     exx = request.form['exx']
@@ -1498,17 +1625,21 @@ def run_scilab_func_expr_request():
     head: %foo(u1,u2)
     exx: (u1>0)*sin(u2)^2
     '''
-    command = "exec('" + COPIED_EXPRESSION_SCI_FRM_SCILAB + \
-        "');exec('" + EXP_SCI_FUNC_WRITE + \
-        "');callFunctionAcctoMethod('" + file_name + \
-        "','" + head + "','" + exx + "');"
+    command = "exec('%s');" % COPIED_EXPRESSION_SCI_FRM_SCILAB
+    command += "exec('%s');" % EXP_SCI_FUNC_WRITE
+    command += "callFunctionAcctoMethod('%s','%s','%s');" % (
+        file_name, head, exx)
 
-    try:
-        scifile.proc = run_scilab(command)
-    except FileNotFoundError:
-        return "scilab not found. Follow the installation instructions"
+    scifile.instance = run_scilab(command)
 
-    scifile.proc.communicate()
+    if scifile.instance is None:
+        msg = "Resource not available"
+        return msg
+
+    proc = scifile.instance.proc
+    proc.communicate()
+    remove_scilab_instance(scifile.instance)
+    scifile.instance = None
 
     # create a dictionary
     exprs_value = {}
@@ -1729,6 +1860,7 @@ def open_example_file():
 if __name__ == '__main__':
     print('starting')
     os.chdir(SESSIONDIR)
+    worker = gevent.spawn(prestart_scilab_instances)
     # Set server address from config
     http_server = WSGIServer(
         (config.HTTP_SERVER_HOST, config.HTTP_SERVER_PORT), app)
@@ -1736,4 +1868,6 @@ if __name__ == '__main__':
     try:
         http_server.serve_forever()
     except KeyboardInterrupt:
+        gevent.kill(worker)
+        stop_scilab_instances()
         print('exiting')
