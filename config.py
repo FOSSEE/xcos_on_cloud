@@ -24,6 +24,15 @@ DB_PASS = ''
 DB_NAME = 'scilab'
 DB_PORT = 3306
 
+# the instances
+
+SCILAB_MIN_INSTANCES = 2
+SCILAB_MAX_INSTANCES = 8
+
+# the delay
+
+TKSCALE_START_DELAY = 1.5
+
 # the database queries
 
 QUERY_CATEGORY = (
