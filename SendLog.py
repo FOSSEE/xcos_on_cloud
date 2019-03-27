@@ -140,6 +140,17 @@ def too_many_scilab_instances():
         l1 + l2 >= config.SCILAB_MAX_INSTANCES
 
 
+def print_scilab_instances():
+    count_1 = len(INSTANCES_1)
+    count_2 = len(INSTANCES_2)
+    msg = ''
+    if count_1 > 0:
+        msg += ', free=' + str(count_1)
+    if count_2 > 0:
+        msg += ', in use=' + str(count_2)
+    print('instance count:', msg[2:])
+
+
 def prestart_scilab_instances():
     attempt = 1
 
@@ -150,6 +161,7 @@ def prestart_scilab_instances():
         try:
             INSTANCES_1.append(ScilabInstance())
             attempt = 1
+            print_scilab_instances()
         except Exception as e:
             print('could not start scilab:', str(e))
             if attempt >= 4:
@@ -167,6 +179,7 @@ def get_scilab_instance():
     try:
         instance = INSTANCES_1.pop()
         INSTANCES_2.append(instance)
+        print_scilab_instances()
         if not too_many_scilab_instances():
             evt.set()
 
@@ -179,6 +192,7 @@ def get_scilab_instance():
 def remove_scilab_instance(instance):
     try:
         INSTANCES_2.remove(instance)
+        print_scilab_instances()
         if not too_many_scilab_instances():
             evt.set()
     except ValueError:
@@ -480,7 +494,6 @@ LOGFILEFD = 123
 
 def prestart_scilab():
     cmd = SCILAB_START
-    print('prestarting')
     cmdarray = [SCI,
                 "-nogui",
                 "-noatomsautoload",
