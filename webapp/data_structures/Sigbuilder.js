@@ -350,8 +350,13 @@ function Sigbuilder() {
         graf1 = graf1.trim();
         if(!Ask_again){
             var xy = [...xx2,...yy2];
+            cleandata(xy);
             if (graf1 == "y" || graf1 == "Y"){
+
+            //Opening graphics window
+
             }else{
+
                 graf1 = "n";
             }
         }
@@ -410,12 +415,3 @@ function getmethod(mtd){
     return METHOD;
 }
 
-function cleandata(xye){
-    xe = xye[0];
-    ye = xy[1];
-    [nx,mx] = [size(xe, "r"), size(xe, "c")];
-    [ny,my] = [size(ye, "r"), size(ye, "c")];
-    N = math.min(nx.concat(ny);
-    //TO DO
-
-}
