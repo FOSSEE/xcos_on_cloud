@@ -2151,3 +2151,43 @@ function get_expr_output_for_DefineandSet(head,exx) {
     return response_map;
 }
 
+function cleandata(xye) {
+    var response = null;
+
+    $.ajax({
+        type: "POST",
+        url: "/cleandata",
+        async: false,
+        data: { xye: xye },
+        dataType: "json",
+        success: function(rm) {
+            response = rm;
+        },
+        error: function(xhr, textStatus) {
+            var msg = "An error occurred!! \n\nPlease try again"
+            alert(msg);
+            throw "error";
+        }
+    });
+}
+
+
+function Do_Spline(N,order,x,y){
+    var response = null;
+
+    $.ajax({
+        type: "POST",
+        url: "/do_Spline",
+        async: false,
+        data: { N: N, order: order, x: x, y: y },
+        dataType: "json",
+        success: function(rm) {
+            response = rm;
+        },
+        error: function(xhr, textStatus) {
+            var msg = "An error occurred!! \n\nPlease try again"
+            alert(msg);
+            throw "error";
+        }
+    });
+}
