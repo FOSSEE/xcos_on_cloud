@@ -32,6 +32,7 @@ SCILAB_MAX_INSTANCES = 8
 # the delay
 
 TKSCALE_START_DELAY = 1.5
+SCILAB_INSTANCE_TIMEOUT_INTERVAL = 300
 
 # the database queries
 

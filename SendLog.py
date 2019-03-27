@@ -1091,7 +1091,8 @@ def event_stream():
         # Start sending log
         lineno = 0
         line = line_and_state()
-        while True:
+        endtime = time() + config.SCILAB_INSTANCE_TIMEOUT_INTERVAL
+        while time() <= endtime:
             lineno += 1
             line.set(get_line_and_state(log_file, diagram.figure_list, lineno))
             if len(diagram.figure_list) == 0:
