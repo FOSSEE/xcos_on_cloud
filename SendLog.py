@@ -140,6 +140,8 @@ SCI = join(SCIDIR, "bin", "scilab-adv-cli")
 READCONTENTFILE = abspath("Read_Content.txt")
 CONT_FRM_WRITE = abspath("cont_frm_write.sci")
 COPIED_EXPRESSION_SCI_FRM_SCILAB = abspath("copied_expression_from_scilab.sci")
+COPIED_CURVE_c_SCI_FRM_SCILAB = abspath("copied_curve_c_from_scilab.sci")
+CLEANDATA_SCI_FUNC_WRITE = abspath("scifunc-cleandata-do_spline.sci")
 EXP_SCI_FUNC_WRITE = abspath("expression-sci-function.sci")
 BASEDIR = abspath('webapp')
 IMAGEDIR = join(BASEDIR, 'res_imgs')
@@ -1777,6 +1779,104 @@ def run_scilab_func_expr_request():
             "custom made message"
     remove(file_name)
     return jsonify(exprs_value)
+
+
+# App route for getting output for cleandata func for Sigbuilder Block
+
+@app.route('/cleandata', methods=['POST'])
+def run_scilab_func_cleandata_request():
+    (__, __, scifile, sessiondir, __) = init_session()
+
+    if scifile.instance is not None:
+        msg = 'Cannot execute more than one script at the same time.'
+        return msg
+
+    file_name = join(sessiondir, "cleandata.txt")
+    xye = request.form['xye']
+    '''
+    sample input to scilab:
+    xye: 0,1,2,10,20,-30
+    '''
+    command = "clearfun('xinfo');function xinfo(msg),disp(msg),endfunction;"
+    command += "exec('%s');" % COPIED_CURVE_c_SCI_FRM_SCILAB
+    command += "exec('%s');" % CLEANDATA_SCI_FUNC_WRITE
+    command += "callFunctioncleandata('%s','%s');" % (
+        file_name, xye)
+
+    scifile.instance = run_scilab(command)
+
+    if scifile.instance is None:
+        msg = "Resource not available"
+        return msg
+
+    proc = scifile.instance.proc
+    proc.communicate()
+    remove_scilab_instance(scifile.instance)
+    scifile.instance = None
+
+    valuesforcleandata = []
+    '''
+    sample output from scilab:
+    0 1
+    '''
+    with open(file_name) as f:
+        data = f.read()  # Read the data into a variable
+        valuesforcleandata = data.split()
+
+    remove(file_name)
+    return jsonify(valuesforcleandata)
+
+
+# App route for getting output for Do_Spline func for Sigbuilder Block
+
+@app.route('/do_Spline', methods=['POST'])
+def run_scilab_func_do_Spline_request():
+    (__, __, scifile, sessiondir, __) = init_session()
+
+    if scifile.instance is not None:
+        msg = 'Cannot execute more than one script at the same time.'
+        return msg
+
+    file_name = join(sessiondir, "do_spline.txt")
+    N = int(request.form['N'])
+    order = int(request.form['order'])
+    x = int(request.form['x'])
+    y = int(request.form['y'])
+    '''
+    sample input to scilab:
+    N: 1
+    order: 3
+    x: 0
+    y: 1
+    '''
+    command = "clearfun('xinfo');function xinfo(msg),disp(msg),endfunction;"
+    command += "exec('%s');" % COPIED_CURVE_c_SCI_FRM_SCILAB
+    command += "exec('%s');" % CLEANDATA_SCI_FUNC_WRITE
+    command += "callFunction_do_Spline('%s','%d','%d','%d','%d');" % (
+        file_name, N, order, x, y)
+
+    scifile.instance = run_scilab(command)
+
+    if scifile.instance is None:
+        msg = "Resource not available"
+        return msg
+
+    proc = scifile.instance.proc
+    proc.communicate()
+    remove_scilab_instance(scifile.instance)
+    scifile.instance = None
+
+    valuesfordo_spline = []
+    '''
+    sample output from scilab:
+    []
+    '''
+    with open(file_name) as f:
+        data = f.read()  # Read the data into a variable
+        valuesfordo_spline = data
+
+    remove(file_name)
+    return jsonify(valuesfordo_spline)
 
 
 # example page start ###################

@@ -350,7 +350,8 @@ function Sigbuilder() {
         graf1 = graf1.trim();
         if(!Ask_again){
             var xy = [...xx2,...yy2];
-            cleandata(xy);
+            xy = cleandata(xy.toString());
+            var N = size(xy,"r");
             if (graf1 == "y" || graf1 == "Y"){
 
             //Opening graphics window
@@ -358,6 +359,8 @@ function Sigbuilder() {
             }else{
 
                 graf1 = "n";
+                abc = Do_Spline(N,mtd,xy[0],xy[1]); //Need to test it yet
+                console.log(abc);
             }
         }
         //Have to add validation and understand set function form sci files

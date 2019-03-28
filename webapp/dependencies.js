@@ -2151,6 +2151,7 @@ function get_expr_output_for_DefineandSet(head,exx) {
     return response_map;
 }
 
+// calling post method using ajax for calling scilab function for sigbuilder block
 function cleandata(xye) {
     var response = null;
 
@@ -2169,6 +2170,7 @@ function cleandata(xye) {
             throw "error";
         }
     });
+    return response;
 }
 
 
@@ -2190,4 +2192,6 @@ function Do_Spline(N,order,x,y){
             throw "error";
         }
     });
+    return response;
 }
+
