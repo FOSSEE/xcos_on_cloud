@@ -1821,8 +1821,9 @@ def run_scilab_func_cleandata_request():
     '''
     with open(file_name) as f:
         data = f.read()  # Read the data into a variable
-        valuesforcleandata = data.split()
-
+        if "],[" in data:
+            data = "[" + data + "]"
+        valuesforcleandata = data
     remove(file_name)
     return jsonify(valuesforcleandata)
 
@@ -1838,10 +1839,10 @@ def run_scilab_func_do_Spline_request():
         return msg
 
     file_name = join(sessiondir, "do_spline.txt")
-    N = int(request.form['N'])
-    order = int(request.form['order'])
-    x = int(request.form['x'])
-    y = int(request.form['y'])
+    N = request.form['N']
+    order = request.form['order']
+    x = request.form['x']
+    y = request.form['y']
     '''
     sample input to scilab:
     N: 1
@@ -1852,7 +1853,7 @@ def run_scilab_func_do_Spline_request():
     command = "clearfun('xinfo');function xinfo(msg),disp(msg),endfunction;"
     command += "exec('%s');" % COPIED_CURVE_c_SCI_FRM_SCILAB
     command += "exec('%s');" % CLEANDATA_SCI_FUNC_WRITE
-    command += "callFunction_do_Spline('%s','%d','%d','%d','%d');" % (
+    command += "callFunction_do_Spline('%s','%s','%s','%s','%s');" % (
         file_name, N, order, x, y)
 
     scifile.instance = run_scilab(command)
