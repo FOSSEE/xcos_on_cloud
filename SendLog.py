@@ -13,6 +13,7 @@ import fileinput
 import flask
 from flask import request, Response, session, render_template, jsonify
 import flask_session
+from flaskext.versioned import Versioned
 import glob
 import json
 import os
@@ -65,6 +66,7 @@ app.config['SESSION_FILE_DIR'] = FLASKSESSIONDIR
 # These are the extension that we are accepting to be uploaded
 app.config['ALLOWED_EXTENSIONS'] = set(['zcos', 'xcos', 'txt'])
 flask_session.Session(app)
+versioned = Versioned(app)
 
 # This is the path to the upload directory and values directory
 UPLOAD_FOLDER = 'uploads'  # to store xcos file
@@ -1537,6 +1539,11 @@ def sse_request():
 
 @app.route('/<path:path>')
 def static_file(path):
+    return app.send_static_file(path)
+
+
+@app.route('/version-<version>/webapp/<path:path>')
+def versioned_static_file(version, path):
     return app.send_static_file(path)
 
 
