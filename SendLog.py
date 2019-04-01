@@ -120,6 +120,42 @@ SCILAB_VARS = [
 ]
 
 USER_DATA = {}
+VERSIONED_CHECK_TIME = 0
+VERSIONED_LOCK = RLock()
+VERSIONED_FILES_MTIME = {}
+
+
+def version_check():
+    global VERSIONED_CHECK_TIME
+
+    modified = False
+
+    if time() > VERSIONED_CHECK_TIME:
+        with VERSIONED_LOCK:
+            if time() > VERSIONED_CHECK_TIME:
+                modified = is_versioned_file_modified()
+                VERSIONED_CHECK_TIME = time() + config.VERSIONED_CHECK_INTERVAL
+
+    return modified
+
+
+def is_versioned_file_modified():
+    modified = False
+
+    for f in config.VERSIONED_FILES:
+        last_mtime = VERSIONED_FILES_MTIME.get(f, None)
+        mtime = os.stat(join(BASEDIR, f)).st_mtime
+        if last_mtime is None:
+            VERSIONED_FILES_MTIME[f] = mtime
+        elif mtime > last_mtime:
+            VERSIONED_FILES_MTIME[f] = mtime
+            print(f, 'modified')
+            modified = True
+
+    if modified:
+        app.jinja_env.cache.clear()
+
+    return modified
 
 
 class ScilabInstance:
@@ -1565,6 +1601,7 @@ def endBlock(fig_id):
 
 @app.route('/')
 def page():
+    version_check()
     return render_template('index.html',
                            example_content='',
                            example_filename='',
@@ -1861,6 +1898,7 @@ def download_prerequisite_file():
 
 @app.route('/open', methods=['GET', 'POST'])
 def open_example_file():
+    version_check()
     example_file_id = request.args.get('efid')
     (example_content, example_filename, example_id) = get_example_file(
         example_file_id)
@@ -1877,6 +1915,7 @@ def open_example_file():
 
 if __name__ == '__main__':
     print('starting')
+    version_check()
     os.chdir(SESSIONDIR)
     worker = gevent.spawn(prestart_scilab_instances)
     # Set server address from config
