@@ -34,6 +34,23 @@ SCILAB_MAX_INSTANCES = 8
 TKSCALE_START_DELAY = 1.5
 SCILAB_INSTANCE_TIMEOUT_INTERVAL = 300
 
+# the versioned files
+
+VERSIONED_FILES = [
+    "chart.js",
+    "combined.js",
+    "dependencies.js",
+    "details.js",
+    "importparameters.js",
+    "indexfunctions.js",
+    "LOOKUP_CURV.js",
+    "only_scifunc_code.js",
+    "orientation.js",
+    "prerequisitefile.js",
+    "setup.js",
+]
+VERSIONED_CHECK_INTERVAL = 10
+
 # the database queries
 
 QUERY_CATEGORY = (

@@ -120,6 +120,42 @@ SCILAB_VARS = [
 ]
 
 USER_DATA = {}
+VERSIONED_CHECK_TIME = 0
+VERSIONED_LOCK = RLock()
+VERSIONED_FILES_MTIME = {}
+
+
+def version_check():
+    global VERSIONED_CHECK_TIME
+
+    modified = False
+
+    if time() > VERSIONED_CHECK_TIME:
+        with VERSIONED_LOCK:
+            if time() > VERSIONED_CHECK_TIME:
+                modified = is_versioned_file_modified()
+                VERSIONED_CHECK_TIME = time() + config.VERSIONED_CHECK_INTERVAL
+
+    return modified
+
+
+def is_versioned_file_modified():
+    modified = False
+
+    for f in config.VERSIONED_FILES:
+        last_mtime = VERSIONED_FILES_MTIME.get(f, None)
+        mtime = os.stat(join(BASEDIR, f)).st_mtime
+        if last_mtime is None:
+            VERSIONED_FILES_MTIME[f] = mtime
+        elif mtime > last_mtime:
+            VERSIONED_FILES_MTIME[f] = mtime
+            print(f, 'modified')
+            modified = True
+
+    if modified:
+        app.jinja_env.cache.clear()
+
+    return modified
 
 
 class ScilabInstance:
@@ -375,12 +411,11 @@ def get_diagram(xcos_file_id, remove=False):
 def add_diagram():
     (diagrams, scripts, scifile, sessiondir, diagramlock) = init_session()
 
-    diagramlock.acquire()
-    diagram = Diagram()
-    diagram.diagram_id = str(len(diagrams))
-    diagram.sessiondir = sessiondir
-    diagrams.append(diagram)
-    diagramlock.release()
+    with diagramlock:
+        diagram = Diagram()
+        diagram.diagram_id = str(len(diagrams))
+        diagram.sessiondir = sessiondir
+        diagrams.append(diagram)
 
     return (diagram, scripts, scifile, sessiondir)
 
@@ -411,12 +446,11 @@ def get_script(script_id, scripts=None, remove=False):
 def add_script():
     (__, scripts, __, sessiondir, diagramlock) = init_session()
 
-    diagramlock.acquire()
-    script = Script()
-    script.script_id = str(len(scripts))
-    script.sessiondir = sessiondir
-    scripts.append(script)
-    diagramlock.release()
+    with diagramlock:
+        script = Script()
+        script.script_id = str(len(scripts))
+        script.sessiondir = sessiondir
+        scripts.append(script)
 
     return (script, sessiondir)
 
@@ -507,17 +541,16 @@ def prestart_scilab():
     logfilefd, log_name = mkstemp(prefix=datetime.now().strftime(
         'scilab-log-%Y%m%d-'), suffix='.txt', dir=SESSIONDIR)
 
-    logfilefdrlock.acquire()
-    if logfilefd != LOGFILEFD:
-        os.dup2(logfilefd, LOGFILEFD)
-        os.close(logfilefd)
-    proc = subprocess.Popen(
-        cmdarray,
-        stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE, start_new_session=True,
-        universal_newlines=True, pass_fds=(LOGFILEFD, ))
-    os.close(LOGFILEFD)
-    logfilefdrlock.release()
+    with logfilefdrlock:
+        if logfilefd != LOGFILEFD:
+            os.dup2(logfilefd, LOGFILEFD)
+            os.close(logfilefd)
+        proc = subprocess.Popen(
+            cmdarray,
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE, start_new_session=True,
+            universal_newlines=True, pass_fds=(LOGFILEFD, ))
+        os.close(LOGFILEFD)
 
     return (proc, log_name)
 
@@ -1568,6 +1601,7 @@ def endBlock(fig_id):
 
 @app.route('/')
 def page():
+    version_check()
     return render_template('index.html',
                            example_content='',
                            example_filename='',
@@ -1864,6 +1898,7 @@ def download_prerequisite_file():
 
 @app.route('/open', methods=['GET', 'POST'])
 def open_example_file():
+    version_check()
     example_file_id = request.args.get('efid')
     (example_content, example_filename, example_id) = get_example_file(
         example_file_id)
@@ -1880,6 +1915,7 @@ def open_example_file():
 
 if __name__ == '__main__':
     print('starting')
+    version_check()
     os.chdir(SESSIONDIR)
     worker = gevent.spawn(prestart_scilab_instances)
     # Set server address from config
