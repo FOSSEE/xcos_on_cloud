@@ -1867,14 +1867,19 @@ def run_scilab_func_do_Spline_request():
     remove_scilab_instance(scifile.instance)
     scifile.instance = None
 
-    valuesfordo_spline = []
+    valuesfordo_spline = {}
     '''
     sample output from scilab:
     []
+    []
+    []
     '''
+    var_array = ["Xdummy", "Ydummy", "orpar"]
     with open(file_name) as f:
         data = f.read()  # Read the data into a variable
-        valuesfordo_spline = data
+        valuesfromfile = data.splitlines()
+    for i in range(len(valuesfromfile)):
+        valuesfordo_spline[var_array[i]] = valuesfromfile[i]
 
     remove(file_name)
     return jsonify(valuesfordo_spline)

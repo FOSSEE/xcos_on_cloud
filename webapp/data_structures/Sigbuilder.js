@@ -285,6 +285,7 @@ function Sigbuilder() {
     }
     Sigbuilder.prototype.set = function Sigbuilder() {
         var Ask_again = false;
+        var SaveExit = false;
         var Method1 = arguments[0]["Method"];
         var xx1 = arguments[0]["xx"];
         var yy1 = arguments[0]["yy"];
@@ -348,6 +349,10 @@ function Sigbuilder() {
             }
         }
         graf1 = graf1.trim();
+        var Xdummy = [];
+        var Ydummy = [];
+        var orpar = [];
+        var oipar = [];
         if(!Ask_again){
             var xy = [...xx2,...yy2];
             xy = JSON.parse(cleandata(xy.toString()));
@@ -359,8 +364,67 @@ function Sigbuilder() {
             }else{
 
                 graf1 = "n";
-                abc = Do_Spline(N,mtd,xy[0].toString(),xy[1].toString()); //Need to test it yet
+                var do_spline_values = Do_Spline(N,mtd,xy[0].toString(),xy[1].toString());
+                Xdummy = JSON.parse(do_spline_values.Xdummy.replace(" ",","));
+                Ydummy = JSON.parse(do_spline_values.Ydummy.replace(" ",","));
+                orpar = JSON.parse(do_spline_values.orpar.replace(" ",","));
+                if (METHOD == "periodic") {
+                    if (xy[0][1] != undefined){
+                        xy[N][1] = xy[0][1];
+                    }else{
+                        xy[N][1] = xy[1];
+                    }
+                }
+                if (METHOD == "order 2" || METHOD == "not_a_knot" || METHOD == "periodic"
+                || METHOD == "monotone"|| METHOD == "fast" || METHOD == "clamped") {
+                    if (xy[0][1] != undefined){
+                        var a = [];
+                        for(var i = 0;i < xy.length;i++){
+                            a[i] = xy[i][0];
+                        }
+                        var b = [];
+                        for(var i = 0;i < xy.length;i++){
+                            b[i] = xy[i][1];
+                        }
+                        orpar = [a,b,orpar];
+                    }else{
+                        orpar = [xy[0],xy[1],orpar];
+                    }
+                }else{
+                     if (METHOD == "zero order"||METHOD == "linear"){
+                         if (xy[0][1] != undefined){
+                            var a = [];
+                            for(var i = 0;i < xy.length;i++){
+                                a[i] = xy[i][0];
+                            }
+                            var b = [];
+                            for(var i = 0;i < xy.length;i++){
+                                b[i] = xy[i][1];
+                            }
+                            orpar = [a,b];
+                        }else{
+                            orpar = [xy[0],xy[1]];
+                        }
+                     }
+                }
+                oipar = [N,mtd,PO];
+                SaveExit = true;
             }
+        }
+        if(SaveExit){
+            var xp = [];
+            //xp=find(orpar(1:oipar(1))>=0); Need to check in scilab
+            if (xp != []){
+                //model.firing = orpar(xp(1)); //first positive event Need to check in scilab
+            }else{
+                //model.firing = -1; Need to check in scilab
+            }
+            //model.rpar = orpar
+            //model.ipar = oipar
+            //graphics.exprs = exprs;
+            //x.model = model
+            //x.graphics = graphics
+
         }
         //Have to add validation and understand set function form sci files
         this.Method = mtd;
