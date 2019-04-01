@@ -375,12 +375,11 @@ def get_diagram(xcos_file_id, remove=False):
 def add_diagram():
     (diagrams, scripts, scifile, sessiondir, diagramlock) = init_session()
 
-    diagramlock.acquire()
-    diagram = Diagram()
-    diagram.diagram_id = str(len(diagrams))
-    diagram.sessiondir = sessiondir
-    diagrams.append(diagram)
-    diagramlock.release()
+    with diagramlock:
+        diagram = Diagram()
+        diagram.diagram_id = str(len(diagrams))
+        diagram.sessiondir = sessiondir
+        diagrams.append(diagram)
 
     return (diagram, scripts, scifile, sessiondir)
 
@@ -411,12 +410,11 @@ def get_script(script_id, scripts=None, remove=False):
 def add_script():
     (__, scripts, __, sessiondir, diagramlock) = init_session()
 
-    diagramlock.acquire()
-    script = Script()
-    script.script_id = str(len(scripts))
-    script.sessiondir = sessiondir
-    scripts.append(script)
-    diagramlock.release()
+    with diagramlock:
+        script = Script()
+        script.script_id = str(len(scripts))
+        script.sessiondir = sessiondir
+        scripts.append(script)
 
     return (script, sessiondir)
 
@@ -507,17 +505,16 @@ def prestart_scilab():
     logfilefd, log_name = mkstemp(prefix=datetime.now().strftime(
         'scilab-log-%Y%m%d-'), suffix='.txt', dir=SESSIONDIR)
 
-    logfilefdrlock.acquire()
-    if logfilefd != LOGFILEFD:
-        os.dup2(logfilefd, LOGFILEFD)
-        os.close(logfilefd)
-    proc = subprocess.Popen(
-        cmdarray,
-        stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE, start_new_session=True,
-        universal_newlines=True, pass_fds=(LOGFILEFD, ))
-    os.close(LOGFILEFD)
-    logfilefdrlock.release()
+    with logfilefdrlock:
+        if logfilefd != LOGFILEFD:
+            os.dup2(logfilefd, LOGFILEFD)
+            os.close(logfilefd)
+        proc = subprocess.Popen(
+            cmdarray,
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE, start_new_session=True,
+            universal_newlines=True, pass_fds=(LOGFILEFD, ))
+        os.close(LOGFILEFD)
 
     return (proc, log_name)
 
