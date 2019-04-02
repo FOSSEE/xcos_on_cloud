@@ -2151,7 +2151,7 @@ function get_expr_output_for_DefineandSet(head,exx) {
     return response_map;
 }
 
-// calling post method using ajax for calling scilab function for sigbuilder block
+// calling post method using ajax for calling scilab function cleandata for sigbuilder block
 function cleandata(xye) {
     var response = null;
 
@@ -2173,7 +2173,7 @@ function cleandata(xye) {
     return response;
 }
 
-
+// calling post method using ajax for calling scilab function Do_Spline for sigbuilder block
 function Do_Spline(N,order,x,y){
     var response = null;
 
@@ -2193,5 +2193,37 @@ function Do_Spline(N,order,x,y){
         }
     });
     return response;
+}
+
+//For Sigbuilder block
+function getmethod(mtd){
+    var METHOD = "";
+    switch (mtd){
+        case 0:
+            METHOD = "zero order";
+            break;
+        case 1:
+            METHOD = "linear";
+            break;
+        case 2:
+            METHOD = "order 2";
+            break;
+        case 3:
+            METHOD = "not_a_knot";
+            break;
+        case 4:
+            METHOD = "periodic";
+            break;
+        case 5:
+            METHOD = "monotone";
+            break;
+        case 6:
+            METHOD = "fast";
+            break;
+        case 7:
+            METHOD = "clamped";
+            break;
+    }
+    return METHOD;
 }
 
