@@ -413,25 +413,43 @@ function Sigbuilder() {
         }
         if(SaveExit){
             var xp = [];
-            //xp=find(orpar(1:oipar(1))>=0); Need to check in scilab
-            if (xp != []){
-                //model.firing = orpar(xp(1)); //first positive event Need to check in scilab
+            var len = oipar[0];
+            if(orpar[0][1] != undefined){
+                for(var i = 0; i < len; i++){
+                    if (orpar[i][0]>=0){
+                        xp[i] = i;
+                    }
+                }
             }else{
-                //model.firing = -1; Need to check in scilab
+                for(var i = 0; i < len; i++){
+                    if (orpar[i]>=0){
+                        xp[i] = i;
+                    }
+                }
             }
-            //model.rpar = orpar
-            //model.ipar = oipar
-            //graphics.exprs = exprs;
-            //x.model = model
-            //x.graphics = graphics
+            var firing = 0;
+            if (xp != []){
+                if(orpar[0][1] != undefined){
+                    firing = orpar[0][xp[0]];
+                }else{
+                    firing = orpar[xp[0]];
+                }
 
+            }else{
+                firing = -1;
+            }
+            this.Method = mtd;
+            this.xx = xx1;
+            this.yy = yy1;
+            this.PeriodicOption = PeriodicOption1;
+            this.graf = graf1;
+            var block = getRparObjByGui(this.x, 'CURVE_c');
+            block.model.firing = new ScilabDouble([firing]);
+            block.model.rpar = new ScilabDouble(...orpar);
+            block.model.ipar = new ScilabDouble(...oipar);
+            block.graphics.exprs = new ScilabString([this.Method],[sci2exp(this.xx)],[sci2exp(this.yy)], 
+            [this.PeriodicOption],[this.graf]);
         }
-        //Have to add validation and understand set function form sci files
-        this.Method = mtd;
-        this.xx= inverse(xx1);
-        this.yy = inverse(yy1);
-        this.PeriodicOption = PeriodicOption1;
-        this.graf = graf1;
         return new BasicBlock(this.x);
     }
 
@@ -448,36 +466,5 @@ function Sigbuilder() {
         return dimension
     }
 
-}
-
-function getmethod(mtd){
-    var METHOD = "";
-    switch (mtd){
-        case 0:
-            METHOD = "zero order";
-            break;
-        case 1:
-            METHOD = "linear";
-            break;
-        case 2:
-            METHOD = "order 2";
-            break;
-        case 3:
-            METHOD = "not_a_knot";
-            break;
-        case 4:
-            METHOD = "periodic";
-            break;
-        case 5:
-            METHOD = "monotone";
-            break;
-        case 6:
-            METHOD = "fast";
-            break;
-        case 7:
-            METHOD = "clamped";
-            break;
-    }
-    return METHOD;
 }
 
