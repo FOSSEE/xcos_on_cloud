@@ -12,6 +12,7 @@ from datetime import datetime
 import fileinput
 import flask
 from flask import request, Response, session, render_template, jsonify
+from flask_caching import Cache
 import flask_session
 from flaskext.versioned import Versioned
 import glob
@@ -31,7 +32,7 @@ from xml.dom import minidom
 
 from db_connection import connection
 import config
-from config import FLASKSESSIONDIR, SESSIONDIR, XCOSSOURCEDIR, REMOVEFILE
+from config import SESSIONDIR, XCOSSOURCEDIR
 
 
 def makedirs(dirname, dirtype):
@@ -43,7 +44,7 @@ def makedirs(dirname, dirtype):
 def remove(filename):
     if filename is None:
         return False
-    if not REMOVEFILE:
+    if not config.REMOVEFILE:
         print("not removing", filename)
         return True
     try:
@@ -57,14 +58,21 @@ def remove(filename):
 # change directory before using relative paths
 os.chdir(dirname(abspath(__file__)))
 
-makedirs(FLASKSESSIONDIR, 'top flask session')
+makedirs(config.FLASKSESSIONDIR, 'top flask session')
 makedirs(SESSIONDIR, 'top session')
+makedirs(config.FLASKCACHINGDIR, 'top flask caching')
+
+cache = Cache(config={
+    'CACHE_TYPE': 'filesystem',
+    'CACHE_DEFAULT_TIMEOUT': config.FLASKCACHINGDEFAULTTIMEOUT,
+    'CACHE_DIR': config.FLASKCACHINGDIR})
 
 app = flask.Flask(__name__, static_folder='webapp/', template_folder='webapp')
 app.config['SESSION_TYPE'] = 'filesystem'
-app.config['SESSION_FILE_DIR'] = FLASKSESSIONDIR
+app.config['SESSION_FILE_DIR'] = config.FLASKSESSIONDIR
 # These are the extension that we are accepting to be uploaded
 app.config['ALLOWED_EXTENSIONS'] = set(['zcos', 'xcos', 'txt'])
+cache.init_app(app)
 flask_session.Session(app)
 versioned = Versioned(app)
 
@@ -1726,24 +1734,37 @@ def run_scilab_func_expr_request():
 
 # example page start ###################
 
+@cache.memoize()
+def db_query(query, parameters=None):
+    cur = connection()
+    cur.execute(query, parameters)
+    return cur.fetchall()
+
+
 @app.route('/example')
 def example_page():
     try:
-        cur = connection()
-        cur.execute(config.QUERY_CATEGORY)
-        data = cur.fetchall()
+        data = db_query(config.QUERY_CATEGORY)
         return render_template('example.html', data=data)
     except Exception as e:
         return str(e)
+
+
+@app.route('/ea<s>')
+@app.route('/exm<s>')
+@app.route('/exap<s>')
+@app.route('/examl<s>')
+@app.route('/exampe<s>')
+@app.route('/exampl<s>')
+def redirect_to_example_page(s):
+    return flask.redirect(flask.url_for('example_page'))
 
 
 @app.route('/get_book', methods=['GET', 'POST'])
 def ajax_get_book():
     cat_id = request.args.get('catid')
     try:
-        cur = connection()
-        cur.execute(config.QUERY_BOOK, [cat_id])
-        data = cur.fetchall()
+        data = db_query(config.QUERY_BOOK, [cat_id])
         return jsonify(data)
     except Exception as e:
         return str(e)
@@ -1753,9 +1774,7 @@ def ajax_get_book():
 def ajax_get_chapter():
     book_id = request.args.get('bookid')
     try:
-        cur = connection()
-        cur.execute(config.QUERY_CHAPTER, [book_id])
-        chapter = cur.fetchall()
+        chapter = db_query(config.QUERY_CHAPTER, [book_id])
         return jsonify(chapter)
     except Exception as e:
         return str(e)
@@ -1765,9 +1784,7 @@ def ajax_get_chapter():
 def ajax_get_example():
     chapter_id = request.args.get('chapterid')
     try:
-        cur = connection()
-        cur.execute(config.QUERY_EXAMPLE, [chapter_id])
-        example = cur.fetchall()
+        example = db_query(config.QUERY_EXAMPLE, [chapter_id])
         return jsonify(example)
     except Exception as e:
         return str(e)
@@ -1777,9 +1794,7 @@ def ajax_get_example():
 def ajax_get_example_file():
     example_id = request.args.get('exampleid')
     try:
-        cur = connection()
-        cur.execute(config.QUERY_EXAMPLE_FILE, [example_id])
-        example_file = cur.fetchall()
+        example_file = db_query(config.QUERY_EXAMPLE_FILE, [example_id])
         return jsonify(example_file)
     except Exception as e:
         return str(e)
@@ -1792,9 +1807,8 @@ def clean_text(s):
 def get_example_file(example_file_id):
     filename = 'example.xcos'
     filepath = ''
-    cur = connection()
-    cur.execute(config.QUERY_EXAMPLE_FILE_BY_ID, [example_file_id])
-    for (filename, filepath, example_id) in cur.fetchall():
+    data = db_query(config.QUERY_EXAMPLE_FILE_BY_ID, [example_file_id])
+    for (filename, filepath, example_id) in data:
         pass
 
     if XCOSSOURCEDIR != '' and filepath != '':
@@ -1832,9 +1846,8 @@ def clean_text_2(s, forindex):
 def get_prerequisite_file(file_id):
     filename = ''
     filepath = ''
-    cur = connection()
-    cur.execute(config.QUERY_PREREQUISITE_FILE_BY_ID, [file_id])
-    for (filename, filepath) in cur.fetchall():
+    data = db_query(config.QUERY_PREREQUISITE_FILE_BY_ID, [file_id])
+    for (filename, filepath) in data:
         pass
 
     return return_prerequisite_file(filename, filepath, file_id, False)
@@ -1844,9 +1857,8 @@ def get_prerequisite_file_by_example_id(example_id):
     filename = ''
     filepath = ''
     file_id = None
-    cur = connection()
-    cur.execute(config.QUERY_PREREQUISITE_FILE_BY_EXAMPLE_ID, [example_id])
-    for (filename, filepath, file_id) in cur.fetchall():
+    data = db_query(config.QUERY_PREREQUISITE_FILE_BY_EXAMPLE_ID, [example_id])
+    for (filename, filepath, file_id) in data:
         pass
 
     return return_prerequisite_file(filename, filepath, file_id, True)

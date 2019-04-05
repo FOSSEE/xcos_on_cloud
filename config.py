@@ -8,6 +8,10 @@ FLASKSESSIONDIR = '/tmp/flask-sessiondir'
 # The location to keep the session data on server.
 SESSIONDIR = '/tmp/sessiondir'
 
+# The location to keep the flask caching data on server.
+FLASKCACHINGDEFAULTTIMEOUT = 900
+FLASKCACHINGDIR = '/tmp/flask-caching-dir'
+
 # The location of the xcos files on server.
 XCOSSOURCEDIR = ''
 
