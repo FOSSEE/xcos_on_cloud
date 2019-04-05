@@ -1750,6 +1750,16 @@ def example_page():
         return str(e)
 
 
+@app.route('/ea<s>')
+@app.route('/exm<s>')
+@app.route('/exap<s>')
+@app.route('/examl<s>')
+@app.route('/exampe<s>')
+@app.route('/exampl<s>')
+def redirect_to_example_page(s):
+    return flask.redirect(flask.url_for('example_page'))
+
+
 @app.route('/get_book', methods=['GET', 'POST'])
 def ajax_get_book():
     cat_id = request.args.get('catid')
