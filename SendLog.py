@@ -151,7 +151,8 @@ DISPLAY_LIMIT = 10
 SCILAB_START = (
     "errcatch(-1,'stop');lines(0,120);clearfun('messagebox');"
     "function messagebox(msg,msgboxTitle,msgboxIcon,buttons,isModal),"
-    "disp(msg),endfunction;")
+    "disp(msg),endfunction;"
+    "clearfun('xinfo');function xinfo(msg),disp(msg),endfunction;")
 SCILAB_END = "mode(2);quit();"
 SCILAB_VARS = [
     "canon",
@@ -1797,8 +1798,7 @@ def run_scilab_func_cleandata_request():
     sample input to scilab:
     xye: 0,1,2,10,20,-30
     '''
-    command = "clearfun('xinfo');function xinfo(msg),disp(msg),endfunction;"
-    command += "exec('%s');" % COPIED_CURVE_c_SCI_FRM_SCILAB
+    command = "exec('%s');" % COPIED_CURVE_c_SCI_FRM_SCILAB
     command += "exec('%s');" % CLEANDATA_SCI_FUNC_WRITE
     command += "callFunctioncleandata('%s','%s');" % (
         file_name, xye)
@@ -1850,8 +1850,7 @@ def run_scilab_func_do_Spline_request():
     x: 0
     y: 1
     '''
-    command = "clearfun('xinfo');function xinfo(msg),disp(msg),endfunction;"
-    command += "exec('%s');" % COPIED_CURVE_c_SCI_FRM_SCILAB
+    command = "exec('%s');" % COPIED_CURVE_c_SCI_FRM_SCILAB
     command += "exec('%s');" % CLEANDATA_SCI_FUNC_WRITE
     command += "callFunction_do_Spline('%s','%s','%s','%s','%s');" % (
         file_name, N, order, x, y)

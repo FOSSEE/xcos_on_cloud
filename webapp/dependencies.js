@@ -2199,30 +2199,14 @@ function Do_Spline(N,order,x,y){
 function getmethod(mtd){
     var METHOD = "";
     switch (mtd){
-        case 0:
-            METHOD = "zero order";
-            break;
-        case 1:
-            METHOD = "linear";
-            break;
-        case 2:
-            METHOD = "order 2";
-            break;
-        case 3:
-            METHOD = "not_a_knot";
-            break;
-        case 4:
-            METHOD = "periodic";
-            break;
-        case 5:
-            METHOD = "monotone";
-            break;
-        case 6:
-            METHOD = "fast";
-            break;
-        case 7:
-            METHOD = "clamped";
-            break;
+        case 0: METHOD = "zero order"; break;
+        case 1: METHOD = "linear"; break;
+        case 2: METHOD = "order 2"; break;
+        case 3: METHOD = "not_a_knot"; break;
+        case 4: METHOD = "periodic"; break;
+        case 5: METHOD = "monotone"; break;
+        case 6: METHOD = "fast"; break;
+        case 7: METHOD = "clamped"; break;
     }
     return METHOD;
 }

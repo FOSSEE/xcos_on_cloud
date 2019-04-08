@@ -59,19 +59,19 @@ function Do_Spline_write(varargin)
     loop = argn(2);
     f_temp = varargin(loop);
     for k = 1:(loop-1)
-            mfprintf(f_temp, '[');
-            variable = varargin(k) // Storing variable one at a time
-            [m,n] = size(variable) // reading the size of variable
-    for y = 1:n // no. of rows in variables
-        for z = 1:m //no. of columns in variabes
-            if z == m then
-            mfprintf(f_temp, '%d', variable(z,y)) //Print the variable values
-            else
-            mfprintf(f_temp, '%d,', variable(z,y)) //Print the variable values
+        mfprintf(f_temp, '[');
+        variable = varargin(k) // Storing variable one at a time
+        [m,n] = size(variable) // reading the size of variable
+        for y = 1:n // no. of rows in variables
+            for z = 1:m //no. of columns in variabes
+                if z == m then
+                mfprintf(f_temp, '%d', variable(z,y)) //Print the variable values
+                else
+                mfprintf(f_temp, '%d,', variable(z,y)) //Print the variable values
+                end
             end
         end
-    end
-    mfprintf(f_temp, ']\n');
+        mfprintf(f_temp, ']\n');
     end
 endfunction
 
