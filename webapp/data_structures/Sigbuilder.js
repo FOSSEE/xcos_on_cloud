@@ -358,6 +358,8 @@ function Sigbuilder() {
             xy = JSON.parse(cleandata(xy.toString()));
             var N = size(xy,"r");
             if (graf1 == "y" || graf1 == "Y"){
+                var ipar = [N,mtd,PO];
+                var rpar = [];
 
             //Opening graphics window
 
