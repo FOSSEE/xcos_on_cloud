@@ -94,7 +94,7 @@
             <div class="col-sm-2 sidenav">
             </div>
             <div class="col-sm-8 text-left">
-                <h3>Xcos examples</h3><hr>
+                <h3>Xcos examples ({{count}} examples)</h3><hr>
                 <br>
                 <div id="category" class="row">
                     <div class="col-sm-2"><h5><b>Category:</b></h5>
@@ -102,7 +102,7 @@
                     <div class="col-sm-4"><select id="category-list">
                             <option value="0">Select Category</option>
                             {% for item in data %}
-                            <option value="{{item[0]}}">{{item[1]}}</option>
+                            <option value="{{item[0]}}">{{item[1]}} ({{item[2]}} examples)</option>
                             {% endfor %}
                         </select></div>
                 </div>
