@@ -1752,8 +1752,11 @@ def db_query(query, parameters=None):
 @app.route('/example')
 def example_page():
     try:
+        count = db_query(config.QUERY_COUNT)[0][0]
         data = db_query(config.QUERY_CATEGORY)
-        return render_template('example.html', data=data)
+        return render_template('example.html',
+                               count=count,
+                               data=data)
     except Exception as e:
         return str(e)
 
