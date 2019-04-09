@@ -27,20 +27,18 @@ $(function() {
                     success: function(data) {
                         ajax_loader("clear");
                         var $options = [];
-                        var i = 1;
                         $options.push(
                             $('<option />', {
                                 "value": 0,
                                 "text": "Select Book"
                             }));
                         for (var a = 0, len = data.length; a < len; a++) {
+                            var row = data[a];
                             $options.push(
                                 $('<option />', {
-                                    "value": data[a][0],
-                                    "text": i + ") " +
-                                        data[a][1] + "(Author: " + data[a][2] + ") "
+                                    "value": row[0],
+                                    "text": row[1] + " (Author: " + row[2] + ") (" + row[3] + " " + (row[3] != 1 ? "examples" : "example") + ")"
                                 }));
-                            i++;
                         }
                         $("#book-list").empty().append($options);
                     },
@@ -74,7 +72,6 @@ $(function() {
                     success: function(chapter) {
                         ajax_loader("clear");
                         var $options = [];
-                        var i = 1;
                         $options.push(
                             $('<option />', {
                                 "value": 0,
@@ -87,7 +84,6 @@ $(function() {
                                     "text": chapter[a][1] + ") " +
                                         chapter[a][2]
                                 }));
-                            i++;
                         }
                         $("#chapter-list").empty().append($options);
                     },
@@ -119,7 +115,6 @@ $(function() {
                     success: function(example) {
                         ajax_loader("clear");
                         var $options = [];
-                        var i = 1;
                         $options.push(
                             $('<option />', {
                                 "value": 0,
@@ -131,7 +126,6 @@ $(function() {
                                     "value": example[a][0],
                                     "text": example[a][1] + ") " + example[a][2]
                                 }));
-                            i++;
                         }
                         $("#example-list").empty().append($options);
                     },
@@ -163,7 +157,6 @@ $(function() {
                     success: function(example_file) {
                         ajax_loader("clear");
                         var $options = [];
-                        var i = 1;
                         for (var a = 0, len = example_file.length; a < len; a++) {
                             var ef = example_file[a];
                             var filetype = ef[2];
