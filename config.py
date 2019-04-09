@@ -58,8 +58,20 @@ VERSIONED_CHECK_INTERVAL = 10
 
 # the database queries
 
+QUERY_COUNT = (
+    "SELECT COUNT(*) "
+    "FROM textbook_companion_preference pe "
+    "JOIN textbook_companion_proposal po ON pe.proposal_id = po.id "
+    "JOIN list_of_category loc ON pe.category = loc.id "
+    "JOIN textbook_companion_chapter tcc ON pe.id = tcc.preference_id "
+    "JOIN xcos_on_cloud_enable_book xceb ON pe.id = xceb.book_id "
+    "JOIN textbook_companion_example tce ON tcc.id = tce.chapter_id "
+    "JOIN textbook_companion_example_files tcef ON tce.id = tcef.example_id "
+    "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND "
+    "pe.approval_status = 1")
+
 QUERY_CATEGORY = (
-    "SELECT DISTINCT(loc.id), loc.category_name "
+    "SELECT loc.id, loc.category_name, COUNT(*) "
     "FROM textbook_companion_preference pe "
     "JOIN textbook_companion_proposal po ON pe.proposal_id = po.id "
     "JOIN list_of_category loc ON pe.category = loc.id "
@@ -69,10 +81,11 @@ QUERY_CATEGORY = (
     "JOIN textbook_companion_example_files tcef ON tce.id = tcef.example_id "
     "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND "
     "pe.approval_status = 1 "
-    "ORDER BY loc.id ASC")
+    "GROUP BY 1 "
+    "ORDER BY 2 ASC")
 
 QUERY_BOOK = (
-    "SELECT DISTINCT(pe.id), pe.book, pe.author "
+    "SELECT pe.id, pe.book, pe.author, COUNT(*) "
     "FROM textbook_companion_preference pe "
     "JOIN textbook_companion_proposal po ON pe.proposal_id = po.id "
     "JOIN list_of_category loc ON pe.category = loc.id "
@@ -82,7 +95,8 @@ QUERY_BOOK = (
     "JOIN textbook_companion_example_files tcef ON tce.id = tcef.example_id "
     "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND "
     "pe.approval_status = 1 AND pe.category = %s "
-    "ORDER BY pe.book ASC")
+    "GROUP BY 1 "
+    "ORDER BY 2 ASC")
 
 QUERY_CHAPTER = (
     "SELECT DISTINCT(tcc.id), tcc.number, tcc.name "
