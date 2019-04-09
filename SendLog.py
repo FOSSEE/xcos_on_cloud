@@ -186,14 +186,21 @@ def too_many_scilab_instances():
         l1 + l2 >= config.SCILAB_MAX_INSTANCES
 
 
+def too_few_scilab_instances():
+    l1 = len(INSTANCES_1)
+    l2 = len(INSTANCES_2)
+    return l1 < config.SCILAB_START_INSTANCES and \
+        l1 + l2 < config.SCILAB_MAX_INSTANCES
+
+
 def print_scilab_instances():
-    count_1 = len(INSTANCES_1)
-    count_2 = len(INSTANCES_2)
+    l1 = len(INSTANCES_1)
+    l2 = len(INSTANCES_2)
     msg = ''
-    if count_1 > 0:
-        msg += ', free=' + str(count_1)
-    if count_2 > 0:
-        msg += ', in use=' + str(count_2)
+    if l1 > 0:
+        msg += ', free=' + str(l1)
+    if l2 > 0:
+        msg += ', in use=' + str(l2)
     print('instance count:', msg[2:])
 
 
@@ -205,7 +212,8 @@ def prestart_scilab_instances():
             evt.wait()
 
         try:
-            INSTANCES_1.append(ScilabInstance())
+            while too_few_scilab_instances():
+                INSTANCES_1.append(ScilabInstance())
             attempt = 1
             print_scilab_instances()
         except Exception as e:
