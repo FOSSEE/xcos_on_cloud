@@ -44,6 +44,7 @@ SCILAB_INSTANCE_TIMEOUT_INTERVAL = 300
 VERSIONED_FILES = [
     "chart.js",
     "combined.js",
+    "custom.js",
     "dependencies.js",
     "details.js",
     "importparameters.js",
@@ -54,7 +55,7 @@ VERSIONED_FILES = [
     "prerequisitefile.js",
     "setup.js",
 ]
-VERSIONED_CHECK_INTERVAL = 10
+VERSIONED_CHECK_INTERVAL = 15
 
 # the database queries
 
