@@ -336,12 +336,61 @@ function Sigbuilder() {
             PeriodicOption1 = "n";
             PO = 0;
         }
-        var xx2 = (xx1.replace(regex_parentheses, '')).split(/[\s;,]+/);
-        var yy2 = (yy1.replace(regex_parentheses, '')).split(/[\s;,]+/);
+        var xx_arry = [];
+        var yy_arry = [];
+        var xx2 = xx1.replace(regex_parentheses, '');
+        var yy2 = yy1.replace(regex_parentheses, '');
+        xx2 = (xx2.trim().replace(/\s\s+/g," ")).replace(/\s+/g,",");
+        yy2 = (yy2.trim().replace(/\s\s+/g," ")).replace(/\s+/g,",");
+        if(xx2.includes(";") == true){
+            var x = xx2.split(/[;]+/);
+            for(var i = 0;i<x.length;i++){
+                if((x[i].includes(",") == true)){
+                    var x_size = x[i].split(/[,]+/);
+                    var diff_row = [];
+                    for(var j = 0;j<x_size.length;j++){
+                        diff_row[j] = x_size[j];
+                    }
+                    xx_arry[i] = diff_row;
+                }else{
+                    var a = 0 ;
+                    xx_arry[i] = x[i];
+                }
+            }
+        }else{
+            if((xx2.includes(",") == true)){
+                var x_size = xx2.split(/[,]+/);
+                for(var i = 0;i<x_size.length;i++){
+                    xx_arry[i] = x_size[i];
+                }
+            }
+        }
+        if(yy2.includes(";") == true){
+            var y = yy2.split(/[;]+/);
+            for(var i = 0;i<y.length;i++){
+                if((y[i].includes(",") == true)){
+                    var y_size = y[i].split(/[,]+/);
+                    var diff_row = [];
+                    for(var j = 0;j<y_size.length;j++){
+                        diff_row[j] = y_size[j];
+                    }
+                    yy_arry[i] = diff_row;
+                }else{
+                    yy_arry[i] = y[i];
+                }
+            }
+        }else{
+            if((yy2.includes(",") == true)){
+                var y_size = yy2.split(/[,]+/);
+                for(var i = 0;i<y_size.length;i++){
+                    yy_arry[i] = y_size[i];
+                }
+            }
+        }
 
         if(!Ask_again){
-            var x_size = xx2.length;
-            var y_size = yy2.length;
+            var x_size = xx_arry.length;
+            var y_size = yy_arry.length;
             if(x_size != y_size){
                 alert("Incompatible size of [x] and [y]");
                 throw "incorrect";
@@ -354,7 +403,14 @@ function Sigbuilder() {
         var orpar = [];
         var oipar = [];
         if(!Ask_again){
-            var xy = [...xx2,...yy2];
+            var xy = "";
+            for(var i = 0;i<xx_arry.length;i++){
+                if(i != (xx_arry.length-1)){
+                    xy += xx_arry[i]+","+yy_arry[i]+";";
+                }else{
+                    xy += xx_arry[i]+","+yy_arry[i];
+                }
+            }
             xy = JSON.parse(cleandata(xy.toString()));
             var N = size(xy,"r");
             if (graf1 == "y" || graf1 == "Y"){
