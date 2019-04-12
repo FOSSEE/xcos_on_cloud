@@ -416,43 +416,23 @@ function Sigbuilder() {
                 Ydummy = JSON.parse(do_spline_values.Ydummy.replace(" ",","));
                 orpar = JSON.parse(do_spline_values.orpar.replace(" ",","));
                 if (METHOD == "periodic") {
-                    if (xy[0][1] != undefined){
-                        xy[N][1] = xy[0][1];
-                    }else{
-                        xy[N][1] = xy[1];
-                    }
+                    xy[N-1][1] = xy[0][1];
+                }
+                var xy_1_1 = [];
+                for(var i = 0;i < xy.length;i++){
+                    xy_1_1[i] = xy[i][0];
+                }
+                var xy_2_2 = [];
+                for(var i = 0;i < xy.length;i++){
+                    xy_2_2[i] = xy[i][1];
                 }
                 if (METHOD == "order 2" || METHOD == "not_a_knot" || METHOD == "periodic"
                 || METHOD == "monotone"|| METHOD == "fast" || METHOD == "clamped") {
-                    if (xy[0][1] != undefined){
-                        var a = [];
-                        for(var i = 0;i < xy.length;i++){
-                            a[i] = xy[i][0];
-                        }
-                        var b = [];
-                        for(var i = 0;i < xy.length;i++){
-                            b[i] = xy[i][1];
-                        }
-                        orpar = [a,b,orpar];
-                    }else{
-                        orpar = [xy[0],xy[1],orpar];
-                    }
+                    orpar = [xy_1_1,xy_2_2,orpar];
                 }else{
-                     if (METHOD == "zero order"||METHOD == "linear"){
-                         if (xy[0][1] != undefined){
-                            var a = [];
-                            for(var i = 0;i < xy.length;i++){
-                                a[i] = xy[i][0];
-                            }
-                            var b = [];
-                            for(var i = 0;i < xy.length;i++){
-                                b[i] = xy[i][1];
-                            }
-                            orpar = [a,b];
-                        }else{
-                            orpar = [xy[0],xy[1]];
-                        }
-                     }
+                    if (METHOD == "zero order"||METHOD == "linear"){
+                        orpar = [xy_1_1,xy_2_2];
+                    }
                 }
                 oipar = [N,mtd,PO];
                 SaveExit = true;
@@ -460,7 +440,7 @@ function Sigbuilder() {
         }
         if(SaveExit){
             var xp = [];
-            var len = oipar[0];
+            var len = oipar[0]-1;
             if(orpar[0][1] != undefined){
                 for(var i = 0; i < len; i++){
                     if (orpar[i][0]>=0){
