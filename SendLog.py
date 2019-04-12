@@ -1796,7 +1796,7 @@ def run_scilab_func_cleandata_request():
     xye = request.form['xye']
     '''
     sample input to scilab:
-    xye: 0,1,2,10,20,-30
+    xye: '0,10;1,20;2,-30'
     '''
     command = "exec('%s');" % COPIED_CURVE_c_SCI_FRM_SCILAB
     command += "exec('%s');" % CLEANDATA_SCI_FUNC_WRITE
@@ -1817,7 +1817,7 @@ def run_scilab_func_cleandata_request():
     valuesforcleandata = []
     '''
     sample output from scilab:
-    0 1
+    [[0,10],[1,20],[2,-30]]
     '''
     with open(file_name) as f:
         data = f.read()  # Read the data into a variable
@@ -1845,10 +1845,10 @@ def run_scilab_func_do_Spline_request():
     y = request.form['y']
     '''
     sample input to scilab:
-    N: 1
+    N: 3
     order: 3
-    x: 0
-    y: 1
+    x: '0,1,2'
+    y: '10,20,-30'
     '''
     command = "exec('%s');" % COPIED_CURVE_c_SCI_FRM_SCILAB
     command += "exec('%s');" % CLEANDATA_SCI_FUNC_WRITE
@@ -1869,9 +1869,10 @@ def run_scilab_func_do_Spline_request():
     valuesfordo_spline = {}
     '''
     sample output from scilab:
-    []
-    []
-    []
+    orpar: [40,-20,-80]
+    Ydummy: [10,13,16,18,20,21,22,23,23,22,21,20,20,17,15,12,8,4,0,-4,-10,
+    -16,-22,-30]
+    Xdummy: [0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,2]
     '''
     var_array = ["Xdummy", "Ydummy", "orpar"]
     with open(file_name) as f:
