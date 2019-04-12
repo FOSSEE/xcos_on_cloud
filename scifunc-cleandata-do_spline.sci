@@ -1,11 +1,16 @@
 function callFunctioncleandata(filename,xye)
     f_temp = mopen(filename, 'wt'); // Creating a text file
-    xye_split = strsplit(xye,',');  //split string for ','
-    ary_size = size(xye_split);     // get size of array which will be 6 1
+    xye_split = strsplit(xye,';');  //split string for ';'
+    ary_size = size(xye_split);  // get size of array which will be 6 1
     n = ary_size(1);                // retrive only size of element ie. 6
     arry_xye = [];
     for i = 1:n
-        arry_xye(1)(i) = strtod(xye_split(i));  //convert string to double and add to array
+        comma_split = strsplit(xye_split(i),',');//split string for ','
+        comma_ary_size = size(comma_split);  // get size of array which will be 6 1
+        m = comma_ary_size(1);
+        for j = 1:m
+        arry_xye(i)(j) = strtod(comma_split(j));  //convert string to double and add to array
+        end
     end
     [xy] = cleandata([arry_xye]);  //pass new array to cleandata and save return value in xy
     [m,n] = size(xy) // reading the size of variable

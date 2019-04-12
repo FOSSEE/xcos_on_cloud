@@ -345,17 +345,7 @@ function Sigbuilder() {
         if(xx2.includes(";") == true){
             var x = xx2.split(/[;]+/);
             for(var i = 0;i<x.length;i++){
-                if((x[i].includes(",") == true)){
-                    var x_size = x[i].split(/[,]+/);
-                    var diff_row = [];
-                    for(var j = 0;j<x_size.length;j++){
-                        diff_row[j] = x_size[j];
-                    }
-                    xx_arry[i] = diff_row;
-                }else{
-                    var a = 0 ;
-                    xx_arry[i] = x[i];
-                }
+                xx_arry[i] = x[i];
             }
         }else{
             if((xx2.includes(",") == true)){
@@ -368,16 +358,7 @@ function Sigbuilder() {
         if(yy2.includes(";") == true){
             var y = yy2.split(/[;]+/);
             for(var i = 0;i<y.length;i++){
-                if((y[i].includes(",") == true)){
-                    var y_size = y[i].split(/[,]+/);
-                    var diff_row = [];
-                    for(var j = 0;j<y_size.length;j++){
-                        diff_row[j] = y_size[j];
-                    }
-                    yy_arry[i] = diff_row;
-                }else{
-                    yy_arry[i] = y[i];
-                }
+                yy_arry[i] = y[i];
             }
         }else{
             if((yy2.includes(",") == true)){
@@ -412,7 +393,7 @@ function Sigbuilder() {
                 }
             }
             xy = JSON.parse(cleandata(xy.toString()));
-            var N = size(xy,"r");
+            var N = xy.length;
             if (graf1 == "y" || graf1 == "Y"){
                 var ipar = [N,mtd,PO];
                 var rpar = [];
@@ -422,7 +403,15 @@ function Sigbuilder() {
             }else{
 
                 graf1 = "n";
-                var do_spline_values = Do_Spline(N,mtd,xy[0].toString(),xy[1].toString());
+                var xy_1 = [];
+                for(var i = 0;i < xy.length;i++){
+                    xy_1[i] = xy[i][0];
+                }
+                var xy_2 = [];
+                for(var i = 0;i < xy.length;i++){
+                    xy_2[i] = xy[i][1];
+                }
+                var do_spline_values = Do_Spline(N,mtd,xy_1.toString(),xy_2.toString());
                 Xdummy = JSON.parse(do_spline_values.Xdummy.replace(" ",","));
                 Ydummy = JSON.parse(do_spline_values.Ydummy.replace(" ",","));
                 orpar = JSON.parse(do_spline_values.orpar.replace(" ",","));
