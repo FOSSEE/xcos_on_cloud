@@ -246,7 +246,14 @@ function showGraphWindow(graph, cell, diagRoot) {
             var stylesheet = graph.getStylesheet();
             // From the stylesheet, get the style of the particular block
             var style = stylesheet.styles[name];
-
+            // To get dimension(height,width) of a block
+            var dimensionForBlock = cell.blockInstance.instance.getDimensionForDisplay();
+            var height = dimensionForBlock["height"]; // return height of block
+            var width = dimensionForBlock["width"]; // return width of block
+            if (geometry.height != null)
+                height = geometry.height;
+            if (geometry.width != null)
+                width = geometry.width;
             /*
              * When a particular block is loaded for the first time, the image
              * in the style of the block will be a path to the image. Set the
@@ -259,7 +266,7 @@ function showGraphWindow(graph, cell, diagRoot) {
 
             if (style != null && style['image'] != null) {
                 // Make label as a image html element
-                var label = '<img src="' + style['image'] + '" height="80" width="80">';
+                var label = '<img src="' + style['image'] + '" height="' + (height*0.9) + '" width="' + (width*0.9) + '">';
                 // Set label
                 style['label'] = label;
 
@@ -327,8 +334,7 @@ function showGraphWindow(graph, cell, diagRoot) {
                     commandPorts.push("COMMAND");
                 }
             }
-            v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, name);
-
+            v1 = graph.insertVertex(parent, null, node, x, y, width, height, name);
             // @Chhavi: Additional attribute to store the block's instance
             v1.blockInstance = createInstanceTag(details_instance);
             v1.currentAngle = 0;
