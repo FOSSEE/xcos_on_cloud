@@ -12,6 +12,11 @@ SESSIONDIR = '/tmp/sessiondir'
 FLASKCACHINGDEFAULTTIMEOUT = 900
 FLASKCACHINGDIR = '/tmp/flask-caching-dir'
 
+# The location of the logs on server.
+LOGDIR = '/tmp/xcos-on-cloud-logs'
+LOGFILE = 'xcos.log'
+LOGBACKUPCOUNT = 10
+
 # The location of the xcos files on server.
 XCOSSOURCEDIR = ''
 
