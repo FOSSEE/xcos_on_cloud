@@ -442,13 +442,15 @@ function Sigbuilder() {
             var xp = [];
             var len = oipar[0]-1;
             if(orpar[0][1] != undefined){
-                for(var i = 0; i < len; i++){
-                    if (orpar[i][0]>=0){
-                        xp[i] = i;
+                for(var i = 0; i < orpar.length; i++){
+                    for(var j = 0; j <= len; j++){
+                        if (orpar[i][j]>=0){
+                            xp[j] = j;
+                        }
                     }
                 }
             }else{
-                for(var i = 0; i < len; i++){
+                for(var i = 0; i <= len; i++){
                     if (orpar[i]>=0){
                         xp[i] = i;
                     }
