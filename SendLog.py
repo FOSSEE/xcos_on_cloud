@@ -140,6 +140,8 @@ SCI = join(SCIDIR, "bin", "scilab-adv-cli")
 READCONTENTFILE = abspath("Read_Content.txt")
 CONT_FRM_WRITE = abspath("cont_frm_write.sci")
 COPIED_EXPRESSION_SCI_FRM_SCILAB = abspath("copied_expression_from_scilab.sci")
+COPIED_CURVE_c_SCI_FRM_SCILAB = abspath("copied_curve_c_from_scilab.sci")
+CLEANDATA_SCI_FUNC_WRITE = abspath("scifunc-cleandata-do_spline.sci")
 EXP_SCI_FUNC_WRITE = abspath("expression-sci-function.sci")
 BASEDIR = abspath('webapp')
 IMAGEDIR = join(BASEDIR, 'res_imgs')
@@ -149,7 +151,8 @@ DISPLAY_LIMIT = 10
 SCILAB_START = (
     "errcatch(-1,'stop');lines(0,120);clearfun('messagebox');"
     "function messagebox(msg,msgboxTitle,msgboxIcon,buttons,isModal),"
-    "disp(msg),endfunction;")
+    "disp(msg),endfunction;"
+    "clearfun('xinfo');function xinfo(msg),disp(msg),endfunction;")
 SCILAB_END = "mode(2);quit();"
 SCILAB_VARS = [
     "canon",
@@ -1777,6 +1780,109 @@ def run_scilab_func_expr_request():
             "custom made message"
     remove(file_name)
     return jsonify(exprs_value)
+
+
+# App route for getting output for cleandata func for Sigbuilder Block
+
+@app.route('/cleandata', methods=['POST'])
+def run_scilab_func_cleandata_request():
+    (__, __, scifile, sessiondir, __) = init_session()
+
+    if scifile.instance is not None:
+        msg = 'Cannot execute more than one script at the same time.'
+        return msg
+
+    file_name = join(sessiondir, "cleandata.txt")
+    xye = request.form['xye']
+    '''
+    sample input to scilab:
+    xye: '0,10;1,20;2,-30'
+    '''
+    command = "exec('%s');" % COPIED_CURVE_c_SCI_FRM_SCILAB
+    command += "exec('%s');" % CLEANDATA_SCI_FUNC_WRITE
+    command += "callFunctioncleandata('%s','%s');" % (
+        file_name, xye)
+
+    scifile.instance = run_scilab(command)
+
+    if scifile.instance is None:
+        msg = "Resource not available"
+        return msg
+
+    proc = scifile.instance.proc
+    proc.communicate()
+    remove_scilab_instance(scifile.instance)
+    scifile.instance = None
+
+    valuesforcleandata = []
+    '''
+    sample output from scilab:
+    [[0,10],[1,20],[2,-30]]
+    '''
+    with open(file_name) as f:
+        data = f.read()  # Read the data into a variable
+        if "],[" in data:
+            data = "[" + data + "]"
+        valuesforcleandata = data
+    remove(file_name)
+    return jsonify(valuesforcleandata)
+
+
+# App route for getting output for Do_Spline func for Sigbuilder Block
+
+@app.route('/do_Spline', methods=['POST'])
+def run_scilab_func_do_Spline_request():
+    (__, __, scifile, sessiondir, __) = init_session()
+
+    if scifile.instance is not None:
+        msg = 'Cannot execute more than one script at the same time.'
+        return msg
+
+    file_name = join(sessiondir, "do_spline.txt")
+    N = request.form['N']
+    order = request.form['order']
+    x = request.form['x']
+    y = request.form['y']
+    '''
+    sample input to scilab:
+    N: 3
+    order: 3
+    x: '0,1,2'
+    y: '10,20,-30'
+    '''
+    command = "exec('%s');" % COPIED_CURVE_c_SCI_FRM_SCILAB
+    command += "exec('%s');" % CLEANDATA_SCI_FUNC_WRITE
+    command += "callFunction_do_Spline('%s','%s','%s','%s','%s');" % (
+        file_name, N, order, x, y)
+
+    scifile.instance = run_scilab(command)
+
+    if scifile.instance is None:
+        msg = "Resource not available"
+        return msg
+
+    proc = scifile.instance.proc
+    proc.communicate()
+    remove_scilab_instance(scifile.instance)
+    scifile.instance = None
+
+    valuesfordo_spline = {}
+    '''
+    sample output from scilab:
+    orpar: [40,-20,-80]
+    Ydummy: [10,13,16,18,20,21,22,23,23,22,21,20,20,17,15,12,8,4,0,-4,-10,
+    -16,-22,-30]
+    Xdummy: [0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,2]
+    '''
+    var_array = ["Xdummy", "Ydummy", "orpar"]
+    with open(file_name) as f:
+        data = f.read()  # Read the data into a variable
+        valuesfromfile = data.splitlines()
+    for i in range(len(valuesfromfile)):
+        valuesfordo_spline[var_array[i]] = valuesfromfile[i]
+
+    remove(file_name)
+    return jsonify(valuesfordo_spline)
 
 
 # example page start ###################
