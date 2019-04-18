@@ -18,9 +18,9 @@ function callFunctioncleandata(filename,xye)
     for y = 1:m // no. of rows in variables
         for z = 1:n //no. of columns in variabes
             if z == n then
-            mfprintf(f_temp, '%d', xy(y,z)); //Print the variable values
+            mfprintf(f_temp, '%g', xy(y,z)); //Print the variable values
             else
-            mfprintf(f_temp, '%d,', xy(y,z)); //Print the variable values
+            mfprintf(f_temp, '%g,', xy(y,z)); //Print the variable values
             end
         end
         if y ~= m then
@@ -70,9 +70,9 @@ function Do_Spline_write(varargin)
         for y = 1:n // no. of rows in variables
             for z = 1:m //no. of columns in variabes
                 if z == m then
-                mfprintf(f_temp, '%d', variable(z,y)) //Print the variable values
+                mfprintf(f_temp, '%g', variable(z,y)) //Print the variable values
                 else
-                mfprintf(f_temp, '%d,', variable(z,y)) //Print the variable values
+                mfprintf(f_temp, '%g,', variable(z,y)) //Print the variable values
                 end
             end
         end
