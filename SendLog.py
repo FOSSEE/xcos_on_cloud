@@ -149,10 +149,11 @@ IMAGEDIR = join(BASEDIR, 'res_imgs')
 DISPLAY_LIMIT = 10
 # handle scilab startup
 SCILAB_START = (
-    "errcatch(-1,'stop');lines(0,120);clearfun('messagebox');"
-    "function messagebox(msg,msgboxTitle,msgboxIcon,buttons,isModal),"
-    "disp(msg),endfunction;"
-    "clearfun('xinfo');function xinfo(msg),disp(msg),endfunction;")
+    "funcprot(0);errcatch(-1,'stop');lines(0,120);"
+    "clearfun('messagebox');"
+    "function messagebox(msg,title,icon,buttons,modal),disp(msg),endfunction;"
+    "function xinfo(msg),disp(msg),endfunction;"
+    "funcprot(1);")
 SCILAB_END = "mode(2);quit();"
 SCILAB_VARS = [
     "canon",
