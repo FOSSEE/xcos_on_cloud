@@ -4,7 +4,7 @@ import gevent
 from gevent.event import Event
 from gevent.lock import RLock
 from gevent.monkey import patch_all
-from gevent.pywsgi import WSGIServer
+from gevent.pywsgi import WSGIHandler, WSGIServer
 
 patch_all(aggressive=False, subprocess=False)
 
@@ -17,6 +17,8 @@ import flask_session
 from flaskext.versioned import Versioned
 import glob
 import json
+import logging
+from logging.handlers import TimedRotatingFileHandler
 import os
 from os.path import abspath, basename, dirname, exists, isfile, join, splitext
 import re
@@ -24,7 +26,7 @@ import requests
 import signal
 import subprocess
 from tempfile import mkdtemp, mkstemp
-from threading import Timer
+from threading import Timer, current_thread
 from time import time
 import uuid
 from werkzeug import secure_filename
@@ -35,9 +37,27 @@ import config
 from config import SESSIONDIR, XCOSSOURCEDIR
 
 
+class MyWSGIHandler(WSGIHandler):
+    def format_request(self):
+        length = self.response_length or '-'
+        if self.time_finish:
+            delta = '%.6f' % (self.time_finish - self.time_start)
+        else:
+            delta = '-'
+        if isinstance(self.client_address, tuple):
+            client_address = self.client_address[0]
+        else:
+            client_address = self.client_address
+        return '%s "%s" %s %s %s' % (
+            client_address or '-',
+            self.requestline or '',
+            (self._orig_status or self.status or '000').split()[0],
+            length,
+            delta)
+
+
 def makedirs(dirname, dirtype):
     if not exists(dirname):
-        print('making', dirtype, 'dir', dirname)
         os.makedirs(dirname)
 
 
@@ -45,13 +65,13 @@ def remove(filename):
     if filename is None:
         return False
     if not config.REMOVEFILE:
-        print("not removing", filename)
+        logger.debug('not removing %s', filename)
         return True
     try:
         os.remove(filename)
         return True
     except BaseException:
-        print("could not remove", filename)
+        logger.error('could not remove %s', filename)
         return False
 
 
@@ -61,6 +81,7 @@ os.chdir(dirname(abspath(__file__)))
 makedirs(config.FLASKSESSIONDIR, 'top flask session')
 makedirs(SESSIONDIR, 'top session')
 makedirs(config.FLASKCACHINGDIR, 'top flask caching')
+makedirs(config.LOGDIR, 'log')
 
 cache = Cache(config={
     'CACHE_TYPE': 'filesystem',
@@ -75,6 +96,19 @@ app.config['ALLOWED_EXTENSIONS'] = set(['zcos', 'xcos', 'txt'])
 cache.init_app(app)
 flask_session.Session(app)
 versioned = Versioned(app)
+
+logger = logging.getLogger('xcos')
+logger.setLevel(logging.DEBUG)
+logfile = join(config.LOGDIR, config.LOGFILE)
+handler = TimedRotatingFileHandler(logfile,
+                                   when='midnight',
+                                   backupCount=config.LOGBACKUPCOUNT)
+handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter(
+    fmt='%(asctime)s %(threadName)s %(levelname)s %(message)s',
+    datefmt='%H:%M:%S')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 # This is the path to the upload directory and values directory
 UPLOAD_FOLDER = 'uploads'  # to store xcos file
@@ -157,7 +191,7 @@ def is_versioned_file_modified():
             VERSIONED_FILES_MTIME[f] = mtime
         elif mtime > last_mtime:
             VERSIONED_FILES_MTIME[f] = mtime
-            print(f, 'modified')
+            logger.debug('%s modified', f)
             modified = True
 
     if modified:
@@ -186,11 +220,14 @@ def too_many_scilab_instances():
         l1 + l2 >= config.SCILAB_MAX_INSTANCES
 
 
-def too_few_scilab_instances():
+def start_scilab_instances():
     l1 = len(INSTANCES_1)
     l2 = len(INSTANCES_2)
-    return l1 < config.SCILAB_START_INSTANCES and \
-        l1 + l2 < config.SCILAB_MAX_INSTANCES
+    lssi = min(config.SCILAB_START_INSTANCES,
+               config.SCILAB_MAX_INSTANCES - l2) - l1
+    if lssi > 0:
+        logger.info('can start %s instances', lssi)
+    return lssi
 
 
 def print_scilab_instances():
@@ -201,10 +238,12 @@ def print_scilab_instances():
         msg += ', free=' + str(l1)
     if l2 > 0:
         msg += ', in use=' + str(l2)
-    print('instance count:', msg[2:])
+    logger.info('instance count: %s', msg[2:])
 
 
 def prestart_scilab_instances():
+    current_thread().name = 'PreStart'
+
     attempt = 1
 
     while True:
@@ -212,14 +251,15 @@ def prestart_scilab_instances():
             evt.wait()
 
         try:
-            while too_few_scilab_instances():
+            for i in range(start_scilab_instances()):
                 INSTANCES_1.append(ScilabInstance())
             attempt = 1
             print_scilab_instances()
         except Exception as e:
-            print('could not start scilab:', str(e))
+            logger.error('could not start scilab: %s', str(e))
             if attempt >= 4:
-                print('could not start scilab after', attempt, 'attempts')
+                logger.critical('could not start scilab after %s attempts',
+                                attempt)
                 gevent.thread.interrupt_main()
                 return
             gevent.sleep(15 * attempt)
@@ -239,7 +279,7 @@ def get_scilab_instance():
 
         return instance
     except IndexError:
-        print('No free instance')
+        logger.error('No free instance')
         return None
 
 
@@ -250,12 +290,12 @@ def remove_scilab_instance(instance):
         if not too_many_scilab_instances():
             evt.set()
     except ValueError:
-        print('could not find instance', instance)
+        logger.error('could not find instance %s', instance)
 
 
 def stop_scilab_instance(base, createlogfile=False):
     if base.instance is None:
-        print('no instance')
+        logger.warn('no instance')
         return
 
     if not kill_scilab_with(base.instance.proc, signal.SIGTERM):
@@ -264,7 +304,7 @@ def stop_scilab_instance(base, createlogfile=False):
 
     if base.instance.log_name is None:
         if createlogfile:
-            print('empty diagram')
+            logger.warn('empty diagram')
     else:
         remove(base.instance.log_name)
 
@@ -405,15 +445,15 @@ def init_session():
 
 
 def get_diagram(xcos_file_id, remove=False):
-    if len(xcos_file_id) == 0:
-        print("no id")
+    if not xcos_file_id:
+        logger.warn('no id')
         return (None, None)
     xcos_file_id = int(xcos_file_id)
 
     (diagrams, __, scifile, __, __) = init_session()
 
     if xcos_file_id < 0 or xcos_file_id >= len(diagrams):
-        print("id", xcos_file_id, "not in diagrams")
+        logger.warn('id %s not in diagrams', xcos_file_id)
         return (None, None)
 
     diagram = diagrams[xcos_file_id]
@@ -439,8 +479,8 @@ def add_diagram():
 def get_script(script_id, scripts=None, remove=False):
     if script_id is None:
         return None
-    if len(script_id) == 0:
-        print("no id")
+    if not script_id:
+        logger.warn('no id')
         return None
     script_id = int(script_id)
 
@@ -448,7 +488,7 @@ def get_script(script_id, scripts=None, remove=False):
         (__, scripts, __, __, __) = init_session()
 
     if script_id < 0 or script_id >= len(scripts):
-        print("id", script_id, "not in scripts")
+        logger.warn('id %s not in scripts', script_id)
         return None
 
     script = scripts[script_id]
@@ -504,7 +544,7 @@ def parse_line(line, lineno):
             figure_id = int(line_words[3])
             return (figure_id, DATA)
     except Exception as e:
-        print(str(e), "while parsing", line, "on line", lineno)
+        logger.error('%s while parsing %s on line %s', str(e), line, lineno)
         return (None, NOLINE)
 
 
@@ -574,11 +614,11 @@ def prestart_scilab():
 def run_scilab(command, createlogfile=False):
     instance = get_scilab_instance()
     if instance is None:
-        print('cannot run command', command)
+        logger.error('cannot run command %s', command)
         return None
 
     cmd = command + SCILAB_END
-    print('running command', cmd)
+    logger.info('running command %s', cmd)
     instance.proc.stdin.write(cmd)
 
     if not createlogfile:
@@ -669,7 +709,7 @@ def getscriptoutput():
     script = get_script(get_script_id())
     if script is None:
         # when called with same script_id again or with incorrect script_id
-        print('no script')
+        logger.warn('no script')
         msg = "no script"
         rv = {'msg': msg}
         return Response(json.dumps(rv), mimetype='application/json')
@@ -700,7 +740,7 @@ def getscriptoutput():
             rv = {'status': script.status, 'msg': msg, 'output': output}
             return Response(json.dumps(rv), mimetype='application/json')
 
-        print('workspace for', script.script_id, 'saved in', wfname)
+        logger.info('workspace for %s saved in %s', script.script_id, wfname)
         msg = ''
         script.status = 0
         rv = {'script_id': script.script_id, 'status': script.status,
@@ -721,13 +761,13 @@ def kill_script(script=None):
         script = get_script(get_script_id(), remove=True)
         if script is None:
             # when called with same script_id again or with incorrect script_id
-            print('no script')
+            logger.warn('no script')
             return "error"
 
-    print('kill_script: script=', script.__dict__)
+    logger.info('kill_script: script=%s', script.__dict__)
 
     if script.filename is None:
-        print('empty script')
+        logger.warn('empty script')
     else:
         remove(script.filename)
         script.filename = None
@@ -735,7 +775,7 @@ def kill_script(script=None):
     stop_scilab_instance(script)
 
     if script.workspace_filename is None:
-        print('empty workspace')
+        logger.warn('empty workspace')
     else:
         remove(script.workspace_filename)
         script.workspace_filename = None
@@ -827,10 +867,10 @@ def kill_scifile(scifile=None):
     if scifile is None:
         (__, __, scifile, __, __) = init_session()
 
-    print('kill_scifile: scifile=', scifile.__dict__)
+    logger.info('kill_scifile: scifile=%s', scifile.__dict__)
 
     if scifile.filename is None:
-        print('empty scifile')
+        logger.warn('empty scifile')
     else:
         remove(scifile.filename)
         scifile.filename = None
@@ -872,10 +912,10 @@ def kill_scilab_with(proc, sgnl):
     try:
         os.killpg(proc.pid, sgnl)
     except OSError:
-        print('could not kill', proc.pid, 'with signal', sgnl)
+        logger.warn('could not kill %s with signal %s', proc.pid, sgnl)
         return False
     except TypeError:
-        print('could not kill invalid process with signal', sgnl)
+        logger.warn('could not kill invalid process with signal %s', sgnl)
         return True
 
     for i in range(0, 20):
@@ -888,34 +928,34 @@ def kill_scilab_with(proc, sgnl):
 def get_request_id(key='id'):
     args = request.args
     if args is None:
-        print('No args in request')
+        logger.warn('No args in request')
         return ''
     if key not in args:
-        print('No', key, 'in request.args')
+        logger.warn('No %s in request.args', key)
         return ''
     value = args[key]
     if re.fullmatch(r'[0-9]+', value):
         return value
     displayvalue = value if len(
         value) <= DISPLAY_LIMIT + 3 else value[:DISPLAY_LIMIT] + '...'
-    print('Invalid value', displayvalue, 'for', key, 'in request.args')
+    logger.warn('Invalid value %s for %s in request.args', displayvalue, key)
     return ''
 
 
 def get_script_id(key='script_id', default=''):
     form = request.form
     if form is None:
-        print('No form in request')
+        logger.warn('No form in request')
         return default
     if key not in form:
-        print('No', key, 'in request.form')
+        logger.warn('No %s in request.form', key)
         return default
     value = form[key]
     if re.fullmatch(r'[0-9]+', value):
         return value
     displayvalue = value if len(
         value) <= DISPLAY_LIMIT + 3 else value[:DISPLAY_LIMIT] + '...'
-    print('Invalid value', displayvalue, 'for', key, 'in request.form')
+    logger.warn('Invalid value %s for %s in request.form', displayvalue, key)
     return default
 
 
@@ -925,12 +965,12 @@ def kill_scilab(diagram=None):
         (diagram, __) = get_diagram(get_request_id(), True)
 
     if diagram is None:
-        print('no diagram')
+        logger.warn('no diagram')
         return
-    print('kill_scilab: diagram=', diagram.__dict__)
+    logger.info('kill_scilab: diagram=%s', diagram.__dict__)
 
     if diagram.xcos_file_name is None:
-        print('empty diagram')
+        logger.warn('empty diagram')
     else:
         # Remove xcos file
         remove(diagram.xcos_file_name)
@@ -971,7 +1011,7 @@ def start_scilab():
     '''
     (diagram, scifile) = get_diagram(get_request_id())
     if diagram is None:
-        print('no diagram')
+        logger.warn('no diagram')
         return "error"
 
     # name of primary workspace file
@@ -1042,7 +1082,7 @@ def start_scilab():
         return "Resource not available"
 
     instance = diagram.instance
-    print('log_name=', instance.log_name)
+    logger.info('log_name=%s', instance.log_name)
 
     # Start sending log to chart function for creating chart
     try:
@@ -1050,9 +1090,8 @@ def start_scilab():
         scilab_out = instance.proc.communicate(timeout=4)[0]
         scilab_out = re.sub(r'^[ !\\-]*\n', r'',
                             scilab_out, flags=re.MULTILINE)
-        print("=== Begin output from scilab console ===")
-        print(scilab_out, end='')
-        print("===== End output from scilab console ===")
+        if scilab_out:
+            logger.info('=== Output from scilab console ===\n%s', scilab_out)
         # Check for errors in Scilab
         if "Empty diagram" in scilab_out:
             remove_scilab_instance(diagram.instance)
@@ -1111,13 +1150,13 @@ def event_stream():
     '''
     (diagram, __) = get_diagram(get_request_id())
     if diagram is None:
-        print('no diagram')
+        logger.warn('no diagram')
         yield "event: ERROR\ndata: no diagram\n\n"
         return
 
     # Open the log file
     if not isfile(diagram.instance.log_name):
-        print("log file does not exist")
+        logger.warn('log file does not exist')
         yield "event: ERROR\ndata: no log file found\n\n"
         remove_scilab_instance(diagram.instance)
         diagram.instance = None
@@ -1128,11 +1167,11 @@ def event_stream():
     if os.stat(diagram.instance.log_name).st_size == 0 and \
             diagram.instance.proc.poll() is not None:
         if diagram.workspace_counter != 1:
-            print("log file is empty")
+            logger.warn('log file is empty')
             yield "event: ERROR\ndata: log file is empty\n\n"
         else:
             # for Only TOWS_c block
-            print("Variables are saved in workspace successfully")
+            logger.info('variables are saved in workspace')
             yield "event: MESSAGE\ndata: Workspace saved successfully\n\n"
         remove_scilab_instance(diagram.instance)
         diagram.instance = None
@@ -1146,7 +1185,7 @@ def event_stream():
         while time() <= endtime:
             lineno += 1
             line.set(get_line_and_state(log_file, diagram.figure_list, lineno))
-            if len(diagram.figure_list) == 0:
+            if not diagram.figure_list:
                 break
             # Get the line and loop until the state is ENDING and figure_list
             # empty. Determine if we get block id and give it to chart.js
@@ -1504,7 +1543,7 @@ def filenames():
 def UpdateTKfile():
     (diagram, __) = get_diagram(get_request_id())
     if diagram is None:
-        print('no diagram')
+        logger.warn('no diagram')
         return "error"
 
     # function which makes the initialazation and updation of the files with
@@ -1558,7 +1597,7 @@ def DownloadFile():
     '''route for download of binary and audio'''
     fn = request.form['path']
     if fn == '' or fn[0] == '.' or '/' in fn:
-        print('downloadfile=', fn)
+        logger.warn('downloadfile=%s', fn)
         return "error"
     # check if audio file or binary file
     if "audio" in fn:
@@ -1574,7 +1613,7 @@ def DeleteFile():
     '''route for deletion of binary and audio file'''
     fn = request.form['path']
     if fn == '' or fn[0] == '.' or '/' in fn:
-        print('deletefile=', fn)
+        logger.warn('deletefile=%s', fn)
         return "error"
     remove(fn)  # deleting the file
     return "0"
@@ -1608,7 +1647,7 @@ def endBlock(fig_id):
     '''route to end blocks with no Ending parameter'''
     (diagram, __) = get_diagram(get_request_id())
     if diagram is None:
-        print('no diagram')
+        logger.warn('no diagram')
         return
 
     diagram.figure_list.remove(fig_id)
@@ -1824,15 +1863,15 @@ def get_example_file(example_file_id):
 
     if XCOSSOURCEDIR != '' and filepath != '':
         try:
-            print('reading', filename, 'from', filepath)
+            logger.info('reading %s from %s', filename, filepath)
             with open(join(XCOSSOURCEDIR, filepath), 'r') as f:
                 text = clean_text(f.read())
                 return (text, filename, example_id)
         except Exception as e:
-            print('Exception:', str(e))
+            logger.warn('Exception: %s', str(e))
 
     scilab_url = "https://scilab.in/download/file/" + example_file_id
-    print('downloading', scilab_url)
+    logger.info('downloading %s', scilab_url)
     r = requests.get(scilab_url)
     text = clean_text(r.text)
     return (text, filename, example_id)
@@ -1881,15 +1920,15 @@ def return_prerequisite_file(filename, filepath, file_id, forindex):
 
     if XCOSSOURCEDIR != '' and filepath != '':
         try:
-            print('reading', filename, 'from', filepath)
+            logger.info('reading %s from %s', filename, filepath)
             with open(join(XCOSSOURCEDIR, filepath), 'r') as f:
                 text = clean_text_2(f.read(), forindex)
                 return (text, filename)
         except Exception as e:
-            print('Exception:', str(e))
+            logger.warn('Exception: %s', str(e))
 
     scilab_url = "https://scilab.in/download/file/" + str(file_id)
-    print('downloading', scilab_url)
+    logger.info('downloading %s', scilab_url)
     r = requests.get(scilab_url)
     text = clean_text_2(r.text, forindex)
     return (text, filename)
@@ -1937,17 +1976,21 @@ def open_example_file():
 
 
 if __name__ == '__main__':
-    print('starting')
+    logger.info('starting')
     version_check()
     os.chdir(SESSIONDIR)
     worker = gevent.spawn(prestart_scilab_instances)
+    worker.name = 'PreStart'
     # Set server address from config
     http_server = WSGIServer(
-        (config.HTTP_SERVER_HOST, config.HTTP_SERVER_PORT), app)
-    print('listening:', http_server)
+        (config.HTTP_SERVER_HOST, config.HTTP_SERVER_PORT), app,
+        log=logger,
+        error_log=logger,
+        handler_class=MyWSGIHandler)
+    logger.info('listening: %s', http_server)
     try:
         http_server.serve_forever()
     except KeyboardInterrupt:
         gevent.kill(worker)
         stop_scilab_instances()
-        print('exiting')
+        logger.info('exiting')
