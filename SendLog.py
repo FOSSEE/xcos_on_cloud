@@ -437,12 +437,19 @@ class line_and_state:
         return self.state
 
 
-def init_session():
+def set_session():
     if 'uid' not in session:
         session['uid'] = str(uuid.uuid1())
 
     uid = session['uid']
-    current_thread().name = 'S-' + uid[:6]
+    if not hasattr(current_thread(), 's_name'):
+        current_thread().s_name = current_thread().name
+    current_thread().name = 'S-%s-%s' % (current_thread().s_name[12:], uid[:6])
+    return uid
+
+
+def init_session():
+    uid = set_session()
 
     if uid not in USER_DATA:
         USER_DATA[uid] = UserData()
@@ -1546,6 +1553,7 @@ def upload():
 
 @app.route('/filenames.php', methods=['POST'])
 def filenames():
+    set_session()
     url = request.form['url']
     if url == '' or '.' in url or url[0] != '/' or url[-1] != '/':
         return "error"
@@ -1641,11 +1649,13 @@ def sse_request():
 
 @app.route('/<path:path>')
 def static_file(path):
+    set_session()
     return app.send_static_file(path)
 
 
 @app.route('/version-<version>/webapp/<path:path>')
 def versioned_static_file(version, path):
+    set_session()
     return app.send_static_file(path)
 
 
@@ -1670,6 +1680,7 @@ def endBlock(fig_id):
 
 @app.route('/')
 def page():
+    set_session()
     version_check()
     return render_template('index.html',
                            example_content='',
@@ -1907,6 +1918,7 @@ def db_query(query, parameters=None):
 
 @app.route('/example')
 def example_page():
+    set_session()
     try:
         count = db_query(config.QUERY_COUNT)[0][0]
         data = db_query(config.QUERY_CATEGORY)
@@ -1924,11 +1936,13 @@ def example_page():
 @app.route('/exampe<s>')
 @app.route('/exampl<s>')
 def redirect_to_example_page(s):
+    set_session()
     return flask.redirect(flask.url_for('example_page'))
 
 
 @app.route('/get_book', methods=['GET', 'POST'])
 def ajax_get_book():
+    set_session()
     cat_id = request.args.get('catid')
     try:
         data = db_query(config.QUERY_BOOK, [cat_id])
@@ -1939,6 +1953,7 @@ def ajax_get_book():
 
 @app.route('/get_chapter', methods=['GET', 'POST'])
 def ajax_get_chapter():
+    set_session()
     book_id = request.args.get('bookid')
     try:
         chapter = db_query(config.QUERY_CHAPTER, [book_id])
@@ -1949,6 +1964,7 @@ def ajax_get_chapter():
 
 @app.route('/get_example', methods=['GET', 'POST'])
 def ajax_get_example():
+    set_session()
     chapter_id = request.args.get('chapterid')
     try:
         example = db_query(config.QUERY_EXAMPLE, [chapter_id])
@@ -1959,6 +1975,7 @@ def ajax_get_example():
 
 @app.route('/get_example_file', methods=['GET', 'POST'])
 def ajax_get_example_file():
+    set_session()
     example_id = request.args.get('exampleid')
     try:
         example_file = db_query(config.QUERY_EXAMPLE_FILE, [example_id])
@@ -2053,6 +2070,7 @@ def return_prerequisite_file(filename, filepath, file_id, forindex):
 
 @app.route('/example_file', methods=['GET', 'POST'])
 def download_example_file():
+    set_session()
     example_file_id = request.args.get('efid')
     (example_content, example_filename, example_id) = get_example_file(
         example_file_id)
@@ -2065,6 +2083,7 @@ def download_example_file():
 
 @app.route('/prerequisite_file', methods=['GET', 'POST'])
 def download_prerequisite_file():
+    set_session()
     example_file_id = request.args.get('efid')
     (prerequisite_content, prerequisite_filename) = get_prerequisite_file(
         example_file_id)
@@ -2077,6 +2096,7 @@ def download_prerequisite_file():
 
 @app.route('/open', methods=['GET', 'POST'])
 def open_example_file():
+    set_session()
     version_check()
     example_file_id = request.args.get('efid')
     (example_content, example_filename, example_id) = get_example_file(
