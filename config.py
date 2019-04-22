@@ -56,6 +56,7 @@ VERSIONED_FILES = [
     "importparameters.js",
     "indexfunctions.js",
     "LOOKUP_CURV.js",
+    "Sigbuilder-graph.js",
     "only_scifunc_code.js",
     "orientation.js",
     "prerequisitefile.js",
