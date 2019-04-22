@@ -311,6 +311,11 @@ def stop_scilab_instance(base, createlogfile=False):
 
     if not kill_scilab_with(base.instance.proc, signal.SIGTERM):
         kill_scilab_with(base.instance.proc, signal.SIGKILL)
+
+    if base.instance is None:
+        logger.warn('no instance 2')
+        return
+
     remove_scilab_instance(base.instance)
 
     if base.instance.log_name is None:
@@ -437,6 +442,7 @@ def init_session():
         session['uid'] = str(uuid.uuid1())
 
     uid = session['uid']
+    current_thread().name = 'S-' + uid[:6]
 
     if uid not in USER_DATA:
         USER_DATA[uid] = UserData()
