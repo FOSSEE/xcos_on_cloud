@@ -34,7 +34,6 @@ from xml.dom import minidom
 
 from db_connection import connection
 import config
-from config import SESSIONDIR, XCOSSOURCEDIR
 
 
 class MyWSGIHandler(WSGIHandler):
@@ -78,19 +77,39 @@ def remove(filename):
 # change directory before using relative paths
 os.chdir(dirname(abspath(__file__)))
 
-makedirs(config.FLASKSESSIONDIR, 'top flask session')
+# Scilab dir
+SCIDIR = abspath(config.SCILAB_DIR)
+SCI = join(SCIDIR, "bin", "scilab-adv-cli")
+READCONTENTFILE = abspath("Read_Content.txt")
+CONT_FRM_WRITE = abspath("cont_frm_write.sci")
+COPIED_EXPRESSION_SCI_FRM_SCILAB = abspath("copied_expression_from_scilab.sci")
+COPIED_CURVE_c_SCI_FRM_SCILAB = abspath("copied_curve_c_from_scilab.sci")
+CLEANDATA_SCI_FUNC_WRITE = abspath("scifunc-cleandata-do_spline.sci")
+EXP_SCI_FUNC_WRITE = abspath("expression-sci-function.sci")
+BASEDIR = abspath('webapp')
+IMAGEDIR = join(BASEDIR, 'res_imgs')
+XCOSSOURCEDIR = abspath(config.XCOSSOURCEDIR)
+SESSIONDIR = abspath(config.SESSIONDIR)
+FLASKSESSIONDIR = abspath(config.FLASKSESSIONDIR)
+FLASKCACHINGDIR = abspath(config.FLASKCACHINGDIR)
+LOGDIR = abspath(config.LOGDIR)
+LOGFILE = join(LOGDIR, config.LOGFILE)
+SYSTEM_COMMANDS = re.compile(config.SYSTEM_COMMANDS)
+
+
+makedirs(FLASKSESSIONDIR, 'top flask session')
 makedirs(SESSIONDIR, 'top session')
-makedirs(config.FLASKCACHINGDIR, 'top flask caching')
-makedirs(config.LOGDIR, 'log')
+makedirs(FLASKCACHINGDIR, 'top flask caching')
+makedirs(LOGDIR, 'log')
 
 cache = Cache(config={
     'CACHE_TYPE': 'filesystem',
     'CACHE_DEFAULT_TIMEOUT': config.FLASKCACHINGDEFAULTTIMEOUT,
-    'CACHE_DIR': config.FLASKCACHINGDIR})
+    'CACHE_DIR': FLASKCACHINGDIR})
 
 app = flask.Flask(__name__, static_folder='webapp/', template_folder='webapp')
 app.config['SESSION_TYPE'] = 'filesystem'
-app.config['SESSION_FILE_DIR'] = config.FLASKSESSIONDIR
+app.config['SESSION_FILE_DIR'] = FLASKSESSIONDIR
 # These are the extension that we are accepting to be uploaded
 app.config['ALLOWED_EXTENSIONS'] = set(['zcos', 'xcos', 'txt'])
 cache.init_app(app)
@@ -99,8 +118,7 @@ versioned = Versioned(app)
 
 logger = logging.getLogger('xcos')
 logger.setLevel(logging.DEBUG)
-logfile = join(config.LOGDIR, config.LOGFILE)
-handler = TimedRotatingFileHandler(logfile,
+handler = TimedRotatingFileHandler(LOGFILE,
                                    when='midnight',
                                    backupCount=config.LOGBACKUPCOUNT)
 handler.setLevel(logging.DEBUG)
@@ -134,17 +152,6 @@ NOLINE = -1
 # to indicate block id is present
 BLOCK_IDENTIFICATION = -2
 
-# Scilab dir
-SCIDIR = abspath(config.SCILAB_DIR)
-SCI = join(SCIDIR, "bin", "scilab-adv-cli")
-READCONTENTFILE = abspath("Read_Content.txt")
-CONT_FRM_WRITE = abspath("cont_frm_write.sci")
-COPIED_EXPRESSION_SCI_FRM_SCILAB = abspath("copied_expression_from_scilab.sci")
-COPIED_CURVE_c_SCI_FRM_SCILAB = abspath("copied_curve_c_from_scilab.sci")
-CLEANDATA_SCI_FUNC_WRITE = abspath("scifunc-cleandata-do_spline.sci")
-EXP_SCI_FUNC_WRITE = abspath("expression-sci-function.sci")
-BASEDIR = abspath('webapp')
-IMAGEDIR = join(BASEDIR, 'res_imgs')
 # display limit for long strings
 DISPLAY_LIMIT = 10
 # handle scilab startup
@@ -630,9 +637,6 @@ def run_scilab(command, createlogfile=False):
         instance.log_name = None
 
     return instance
-
-
-SYSTEM_COMMANDS = re.compile(config.SYSTEM_COMMANDS)
 
 
 def is_unsafe_script(filename):
