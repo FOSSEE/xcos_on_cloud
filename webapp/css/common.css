@@ -242,7 +242,7 @@ td.mxPopupMenuIcon {
 
 .menuDropdown {
 	background-color: #808080;
-	width:60px;
+	width:auto;
 	position: absolute;
 	z-index: 1;
 }

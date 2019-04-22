@@ -2903,6 +2903,12 @@ function showPropertiesWindow(graph, cell, diagRoot) {
                         propertiesObject[key] = document.getElementById(key.toString()).value;
                     }
                 }
+                if(name == 'Sigbuilder'){
+                    var key = "graf";
+                    if(propertiesObject[key] == "y"){
+                        showGraphWindowSigBlk(graph,cell,diagRoot);
+                    }
+                }
                 var geometry = cell.getGeometry();
                 var x=geometry.x;
                 var y=geometry.y;
