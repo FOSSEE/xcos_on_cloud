@@ -345,26 +345,26 @@ function Sigbuilder() {
         if(xx2.includes(";") == true){
             var x = xx2.split(/[;]+/);
             for(var i = 0;i<x.length;i++){
-                xx_arry[i] = x[i];
+                xx_arry[i] = parseFloat(x[i]);
             }
         }else{
             if((xx2.includes(",") == true)){
                 var x_size = xx2.split(/[,]+/);
                 for(var i = 0;i<x_size.length;i++){
-                    xx_arry[i] = x_size[i];
+                    xx_arry[i] = parseFloat(x_size[i]);
                 }
             }
         }
         if(yy2.includes(";") == true){
             var y = yy2.split(/[;]+/);
             for(var i = 0;i<y.length;i++){
-                yy_arry[i] = y[i];
+                yy_arry[i] = parseFloat(y[i]);
             }
         }else{
             if((yy2.includes(",") == true)){
                 var y_size = yy2.split(/[,]+/);
                 for(var i = 0;i<y_size.length;i++){
-                    yy_arry[i] = y_size[i];
+                    yy_arry[i] = parseFloat(y_size[i]);
                 }
             }
         }
@@ -397,9 +397,30 @@ function Sigbuilder() {
             if (graf1 == "y" || graf1 == "Y"){
                 var ipar = [N,mtd,PO];
                 var rpar = [];
-
+                var graphPoints = [];
+                for(var i = 0;i<xx_arry.length;i++){
+                    var arry = [];
+                    arry[0] = xx_arry[i];
+                    arry[1] = yy_arry[i];
+                    graphPoints[i] = arry;
+                }
+                var xmin = parseFloat(Math.min(...xx_arry));
+                var xmax = parseFloat(Math.max(...xx_arry));
+                var ymin = parseFloat(Math.min(...yy_arry));
+                var ymax = parseFloat(Math.max(...yy_arry));
+                var subTitle = "<b>"+xx_arry.length+" points, Method: "+METHOD+", periodic, T = "+xmax+"</b>";
+                var graphParameters = {
+                    graphPoints: graphPoints,
+                    xmin: xmin,
+                    xmax: xmax + 1,
+                    ymin: ymin,
+                    ymax: ymax + 1,
+                    chartType: "spline",
+                    subTitle: subTitle
+                };
+                showGraphWindowSigBlk(graph_sigbuilder,graphParameters);
+                throw "incorrect";
             //Opening graphics window
-
             }else{
 
                 graf1 = "n";

@@ -1,13 +1,4 @@
-function showGraphWindowSigBlk(graph, cell, diagRoot) {
-    var name = cell.getAttribute('blockElementName');
-    var myGraph;
-    var graphParameters = cell.blockInstance.instance.get();
-    // for replotting the grph
-    graphParameters.graphPoints = [[0,10],[1,20],[2,-30]];
-    graphParameters.xmin = 0;
-    graphParameters.xmax = 3;
-    graphParameters.ymin = -40;
-    graphParameters.ymax = 30;
+function showGraphWindowSigBlk(graph,graphParameters) {
     var defaultPoints = graphParameters.graphPoints.slice();
     // to store all the states of graph points for undo function
     var pointsHistory = [];
@@ -165,8 +156,8 @@ function showGraphWindowSigBlk(graph, cell, diagRoot) {
     fileSelector.setAttribute("id","inputFile");
     chart.appendChild(fileSelector);
     content.appendChild(chart);
-    var wind = showModalWindow(graph, 'Properties', content, 450, 450);
-    var drag_chart = create_draggable_points_chart(graphParameters.graphPoints, pointsHistory, graphParameters.xmin, graphParameters.xmax, graphParameters.ymin, graphParameters.ymax);
+    var wind = showModalWindow(graph, 'Properties', content, 550, 450);
+    var drag_chart = create_draggable_points_chart_sigbuilder(graphParameters.graphPoints, pointsHistory, graphParameters.xmin, graphParameters.xmax, graphParameters.ymin, graphParameters.ymax, graphParameters.chartType, graphParameters.subTitle);
 
     //For displaying and hiding of submenus
     content.onclick = function() {

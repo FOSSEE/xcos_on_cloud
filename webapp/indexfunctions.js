@@ -1,3 +1,5 @@
+var graph_sigbuilder = ""; //For storing graph for sigbuilder block
+var cell_sigbuilder = ""; //For storing graph for sigbuilder block
 // function which makes the Ajax 'post' request with data sent in arguments
 function myAjaxreq(k,functionName) {
     var mbl = new Blob([k], { type: 'text/plain' });  // store the data in blob
@@ -2906,7 +2908,8 @@ function showPropertiesWindow(graph, cell, diagRoot) {
                 if(name == 'Sigbuilder'){
                     var key = "graf";
                     if(propertiesObject[key] == "y"){
-                        showGraphWindowSigBlk(graph,cell,diagRoot);
+                        graph_sigbuilder = graph;
+                        cell_sigbuilder = cell;
                     }
                 }
                 var geometry = cell.getGeometry();
