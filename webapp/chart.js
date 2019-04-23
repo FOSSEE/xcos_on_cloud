@@ -398,6 +398,99 @@ var create_draggable_points_chart = function(graphPoints, pointsHistory, xmin, x
     });
 };
 
+// Function to create a chart with responsive points for Sigbuilder
+var create_draggable_points_chart_sigbuilder = function(graphPoints, pointsHistory, xmin, xmax, ymin, ymax, chart_type, subtitle) {
+
+    pointsHistory.push(graphPoints.slice());
+
+    myGraph = Highcharts.chart('drag_chart', {
+        chart: {
+            type: chart_type,
+            animation: false,
+            events: {
+                click: function (e) {
+                    this.series[0].addPoint([e.xAxis[0].value, e.yAxis[0].value]);
+                    pointsHistory.push(graphPoints.slice());
+                }
+            }
+        },
+        title: {
+            text: ""
+        },
+        subtitle: {
+            text: subtitle
+        },
+
+        yAxis: {
+            title: {
+                text: 'Output'
+            },
+            min: ymin,
+            max: ymax,
+            gridLineWidth: 1,
+            gridLineDashStyle: 'dash'
+        },
+
+        xAxis: {
+            title: {
+                text: 'time'
+            },
+            min: xmin,
+            max: xmax,
+            gridLineWidth: 1,
+            gridLineDashStyle: 'dash'
+        },
+
+        plotOptions: {
+            series: {
+                point: {
+                    events: {
+                        drag: function (e) {
+                            if (e.y >= ymax) {
+                                this.y = ymax;
+                                return false;
+                            }
+                            if (e.y <= ymin) {
+                                this.y = ymin;
+                                return false;
+                            }
+                            if (e.x >= xmax) {
+                                this.x = xmax;
+                                return false;
+                            }
+                            if (e.x <= xmin) {
+                                this.x = xmin;
+                                return false;
+                            }
+                        },
+                        drop: function (e) {
+                            pointsHistory.push(graphPoints.slice());
+                        }
+                    },
+                    stickyTracking: false
+                },
+                column: {
+                    stacking: 'normal'
+                }
+            }
+        },
+
+        tooltip: {
+            enabled: true
+        },
+
+        series: [{
+            showInLegend: false,
+            pointStart: -2.5,
+            pointInterval: 0.5,
+            data: graphPoints,
+            draggableX: true,
+            draggableY: true
+        }]
+    });
+};
+
+
 function chart_init(wnd, affichwnd, with_interval, with_interval2) {
     var block;
     // define buffer for CANIMXY3D
