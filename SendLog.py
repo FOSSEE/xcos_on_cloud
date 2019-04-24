@@ -165,6 +165,7 @@ SCILAB_END = "mode(2);quit();"
 SCILAB_VARS = [
     "canon",
     "close",
+    "cont_frm",
     "extractDatatip",
     "extractLight",
     "messagebox",
