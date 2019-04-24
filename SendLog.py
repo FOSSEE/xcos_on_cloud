@@ -214,6 +214,9 @@ def is_versioned_file_modified():
 class ScilabInstance:
     proc = None
     log_name = None
+    base = None
+    starttime = None
+    endtime = None
 
     def __init__(self):
         (self.proc, self.log_name) = prestart_scilab()
@@ -305,26 +308,28 @@ def remove_scilab_instance(instance):
 
 
 def stop_scilab_instance(base, createlogfile=False):
-    if base.instance is None:
+    stop_instance(base.instance, createlogfile)
+
+    base.instance = None
+
+
+def stop_instance(instance, createlogfile=False):
+    if instance is None:
         logger.warn('no instance')
         return
 
-    if not kill_scilab_with(base.instance.proc, signal.SIGTERM):
-        kill_scilab_with(base.instance.proc, signal.SIGKILL)
+    if not kill_scilab_with(instance.proc, signal.SIGTERM):
+        kill_scilab_with(instance.proc, signal.SIGKILL)
 
-    if base.instance is None:
-        logger.warn('no instance 2')
-        return
+    remove_scilab_instance(instance)
 
-    remove_scilab_instance(base.instance)
-
-    if base.instance.log_name is None:
+    if instance.log_name is None:
         if createlogfile:
             logger.warn('empty diagram')
     else:
-        remove(base.instance.log_name)
+        remove(instance.log_name)
 
-    base.instance = None
+    instance.base = None
 
 
 def stop_scilab_instances():
@@ -337,6 +342,38 @@ def stop_scilab_instances():
         instance = INSTANCES_2.pop()
         if not kill_scilab_with(instance.proc, signal.SIGTERM):
             kill_scilab_with(instance.proc, signal.SIGKILL)
+
+
+def reap_scilab_instances():
+    current_thread().name = 'Reaper'
+    while True:
+        gevent.sleep(100)
+
+        remove_instances = []
+
+        for instance in INSTANCES_2:
+            if instance.endtime < time():
+                remove_instances.append(instance)
+
+        count = len(remove_instances)
+        if count == 0:
+            continue
+
+        logger.info('removing %s stale instances', count)
+        for instance in remove_instances:
+            base = instance.base
+            if base is None:
+                logger.warn('cannot stop instance %s', instance)
+                stop_instance(instance)
+            elif isinstance(base, Diagram):
+                kill_scilab(base)
+            elif isinstance(base, Script):
+                kill_script(base)
+            elif isinstance(base, SciFile):
+                kill_scifile(base)
+            else:
+                logger.warn('cannot stop instance %s', instance)
+                stop_instance(instance)
 
 
 class Diagram:
@@ -406,6 +443,7 @@ class UserData:
     sessiondir = None
     diagrams = None
     scripts = None
+    scriptcount = None
     scifile = None
     diagramlock = None
 
@@ -413,9 +451,17 @@ class UserData:
         self.sessiondir = mkdtemp(
             prefix=datetime.now().strftime('%Y%m%d.'), dir=SESSIONDIR)
         self.diagrams = []
-        self.scripts = []
+        self.scripts = {}
+        self.scriptcount = 0
         self.scifile = SciFile()
         self.diagramlock = RLock()
+
+    def getscriptcount(self):
+        with self.diagramlock:
+            rv = str(self.scriptcount)
+            self.scriptcount += 1
+
+        return rv
 
 
 class line_and_state:
@@ -465,7 +511,8 @@ def init_session():
     makedirs(join(sessiondir, SCIFUNC_FILES_FOLDER), 'scifunc files')
     makedirs(join(sessiondir, WORKSPACE_FILES_FOLDER), 'workspace files')
 
-    return (ud.diagrams, ud.scripts, ud.scifile, sessiondir, ud.diagramlock)
+    return (ud.diagrams, ud.scripts, ud.getscriptcount, ud.scifile, sessiondir,
+            ud.diagramlock)
 
 
 def get_diagram(xcos_file_id, remove=False):
@@ -474,7 +521,7 @@ def get_diagram(xcos_file_id, remove=False):
         return (None, None)
     xcos_file_id = int(xcos_file_id)
 
-    (diagrams, __, scifile, __, __) = init_session()
+    (diagrams, __, __, scifile, __, __) = init_session()
 
     if xcos_file_id < 0 or xcos_file_id >= len(diagrams):
         logger.warn('id %s not in diagrams', xcos_file_id)
@@ -489,7 +536,8 @@ def get_diagram(xcos_file_id, remove=False):
 
 
 def add_diagram():
-    (diagrams, scripts, scifile, sessiondir, diagramlock) = init_session()
+    (diagrams, scripts, getscriptcount, scifile, sessiondir,
+     diagramlock) = init_session()
 
     with diagramlock:
         diagram = Diagram()
@@ -497,7 +545,7 @@ def add_diagram():
         diagram.sessiondir = sessiondir
         diagrams.append(diagram)
 
-    return (diagram, scripts, scifile, sessiondir)
+    return (diagram, scripts, getscriptcount, scifile, sessiondir)
 
 
 def get_script(script_id, scripts=None, remove=False):
@@ -506,31 +554,31 @@ def get_script(script_id, scripts=None, remove=False):
     if not script_id:
         logger.warn('no id')
         return None
-    script_id = int(script_id)
 
     if scripts is None:
-        (__, scripts, __, __, __) = init_session()
+        (__, scripts, __, __, __, __) = init_session()
 
-    if script_id < 0 or script_id >= len(scripts):
+    if script_id not in scripts:
         logger.warn('id %s not in scripts', script_id)
         return None
 
     script = scripts[script_id]
 
     if remove:
-        scripts[script_id] = None
+        del scripts[script_id]
 
     return script
 
 
 def add_script():
-    (__, scripts, __, sessiondir, diagramlock) = init_session()
+    (__, scripts, getscriptcount, __, sessiondir, diagramlock) = init_session()
 
-    with diagramlock:
-        script = Script()
-        script.script_id = str(len(scripts))
-        script.sessiondir = sessiondir
-        scripts.append(script)
+    script_id = getscriptcount()
+
+    script = Script()
+    script.script_id = script_id
+    script.sessiondir = sessiondir
+    scripts[script_id] = script
 
     return (script, sessiondir)
 
@@ -635,7 +683,7 @@ def prestart_scilab():
     return (proc, log_name)
 
 
-def run_scilab(command, createlogfile=False):
+def run_scilab(command, base, createlogfile=False, timeout=70):
     instance = get_scilab_instance()
     if instance is None:
         logger.error('cannot run command %s', command)
@@ -649,6 +697,9 @@ def run_scilab(command, createlogfile=False):
         remove(instance.log_name)
         instance.log_name = None
 
+    instance.base = base
+    instance.starttime = time()
+    instance.endtime = time() + timeout
     return instance
 
 
@@ -696,7 +747,7 @@ def uploadscript():
     script.workspace_filename = wfname
     command = "exec('" + fname + "');save('" + wfname + "');"
 
-    script.instance = run_scilab(command)
+    script.instance = run_scilab(command, script)
 
     if script.instance is None:
         msg = "Resource not available"
@@ -810,7 +861,7 @@ def uploadsci():
     Below route is called for uploading sci file which is required in sci-func
     block (called in Javscript only_scifunc_code.js)
     '''
-    (__, __, scifile, sessiondir, __) = init_session()
+    (__, __, __, scifile, sessiondir, __) = init_session()
 
     if scifile.instance is not None:
         msg = 'Cannot execute more than one script at the same time.'
@@ -840,7 +891,7 @@ def uploadsci():
     # used by sci-func block
     command = "exec('" + scifile.filename + "');"
 
-    scifile.instance = run_scilab(command)
+    scifile.instance = run_scilab(command, scifile)
 
     if scifile.instance is None:
         msg = "Resource not available"
@@ -886,7 +937,7 @@ def uploadsci():
 def kill_scifile(scifile=None):
     '''Below route is called for stopping a running sci file.'''
     if scifile is None:
-        (__, __, scifile, __, __) = init_session()
+        (__, __, __, scifile, __, __) = init_session()
 
     logger.info('kill_scifile: scifile=%s', scifile.__dict__)
 
@@ -910,7 +961,7 @@ def sendfile():
     if sci file is uploaded for sci-func block diagram imported directly using
     import (will confirm again)
     '''
-    (__, __, scifile, __, __) = init_session()
+    (__, __, __, scifile, __, __) = init_session()
 
     if scifile.flag_sci:
         scifile.file_image = ('img_test%s.jpg' %
@@ -1097,7 +1148,8 @@ def start_scilab():
     if diagram.workspace_counter in (1, 3):
         command += "save('" + workspace + "');"
 
-    diagram.instance = run_scilab(command, True)
+    diagram.instance = run_scilab(command, diagram, True,
+                                  config.SCILAB_INSTANCE_TIMEOUT_INTERVAL + 60)
 
     if diagram.instance is None:
         return "Resource not available"
@@ -1290,7 +1342,7 @@ def upload():
     list1 = []
     list2 = []
     # Make the filename safe, remove unsupported chars
-    (diagram, scripts, scifile, sessiondir) = add_diagram()
+    (diagram, scripts, __, scifile, sessiondir) = add_diagram()
     script = get_script(get_script_id(default=None), scripts=scripts)
     if script is not None:
         diagram.workspace_filename = script.workspace_filename
@@ -1691,7 +1743,7 @@ def page():
 
 @app.route('/getOutput', methods=['POST'])
 def run_scilab_func_request():
-    (__, __, scifile, sessiondir, __) = init_session()
+    (__, __, __, scifile, sessiondir, __) = init_session()
 
     if scifile.instance is not None:
         msg = 'Cannot execute more than one script at the same time.'
@@ -1714,7 +1766,7 @@ def run_scilab_func_request():
     command += "exec('%s');" % CONT_FRM_WRITE
     command += "calculate_cont_frm(%s,%s,'%s');" % (num, den, file_name)
 
-    scifile.instance = run_scilab(command)
+    scifile.instance = run_scilab(command, scifile)
 
     if scifile.instance is None:
         msg = "Resource not available"
@@ -1746,7 +1798,7 @@ def run_scilab_func_request():
 
 @app.route('/getExpressionOutput', methods=['POST'])
 def run_scilab_func_expr_request():
-    (__, __, scifile, sessiondir, __) = init_session()
+    (__, __, __, scifile, sessiondir, __) = init_session()
 
     if scifile.instance is not None:
         msg = 'Cannot execute more than one script at the same time.'
@@ -1765,7 +1817,7 @@ def run_scilab_func_expr_request():
     command += "callFunctionAcctoMethod('%s','%s','%s');" % (
         file_name, head, exx)
 
-    scifile.instance = run_scilab(command)
+    scifile.instance = run_scilab(command, scifile)
 
     if scifile.instance is None:
         msg = "Resource not available"
@@ -1808,7 +1860,7 @@ def run_scilab_func_expr_request():
 
 @app.route('/cleandata', methods=['POST'])
 def run_scilab_func_cleandata_request():
-    (__, __, scifile, sessiondir, __) = init_session()
+    (__, __, __, scifile, sessiondir, __) = init_session()
 
     if scifile.instance is not None:
         msg = 'Cannot execute more than one script at the same time.'
@@ -1825,7 +1877,7 @@ def run_scilab_func_cleandata_request():
     command += "callFunctioncleandata('%s','%s');" % (
         file_name, xye)
 
-    scifile.instance = run_scilab(command)
+    scifile.instance = run_scilab(command, scifile)
 
     if scifile.instance is None:
         msg = "Resource not available"
@@ -1854,7 +1906,7 @@ def run_scilab_func_cleandata_request():
 
 @app.route('/do_Spline', methods=['POST'])
 def run_scilab_func_do_Spline_request():
-    (__, __, scifile, sessiondir, __) = init_session()
+    (__, __, __, scifile, sessiondir, __) = init_session()
 
     if scifile.instance is not None:
         msg = 'Cannot execute more than one script at the same time.'
@@ -1877,7 +1929,7 @@ def run_scilab_func_do_Spline_request():
     command += "callFunction_do_Spline('%s','%s','%s','%s','%s');" % (
         file_name, N, order, x, y)
 
-    scifile.instance = run_scilab(command)
+    scifile.instance = run_scilab(command, scifile)
 
     if scifile.instance is None:
         msg = "Resource not available"
@@ -2118,6 +2170,8 @@ if __name__ == '__main__':
     os.chdir(SESSIONDIR)
     worker = gevent.spawn(prestart_scilab_instances)
     worker.name = 'PreStart'
+    reaper = gevent.spawn(reap_scilab_instances)
+    reaper.name = 'Reaper'
     # Set server address from config
     http_server = WSGIServer(
         (config.HTTP_SERVER_HOST, config.HTTP_SERVER_PORT), app,
@@ -2129,5 +2183,6 @@ if __name__ == '__main__':
         http_server.serve_forever()
     except KeyboardInterrupt:
         gevent.kill(worker)
+        gevent.kill(reaper)
         stop_scilab_instances()
         logger.info('exiting')
