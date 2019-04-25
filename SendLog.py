@@ -60,6 +60,14 @@ def makedirs(dirname, dirtype):
         os.makedirs(dirname)
 
 
+def rmdir(dirname, dirtype):
+    try:
+        if exists(dirname):
+            os.rmdir(dirname)
+    except Exception as e:
+        logger.warn('could not remove %s: %s', dirname, str(e))
+
+
 def remove(filename):
     if filename is None:
         return False
@@ -415,6 +423,18 @@ class Diagram:
         return "{'instance': %s, 'tkbool': %s, 'figure_list': %s}" % (
             self.instance, self.tkbool, self.figure_list)
 
+    def clean(self):
+        logger.info('cleaning diagram %s', self.diagram_id)
+        if self.instance is not None:
+            kill_scilab(self)
+            self.instance = None
+        if self.xcos_file_name is not None:
+            remove(self.xcos_file_name)
+            self.xcos_file_name = None
+        if self.workspace_filename is not None:
+            remove(self.workspace_filename)
+            self.workspace_filename = None
+
 
 class Script:
     script_id = None
@@ -431,6 +451,18 @@ class Script:
                 self.script_id, self.filename, self.status, self.instance,
                 self.workspace_filename)
 
+    def clean(self):
+        logger.info('cleaning script %s', self.script_id)
+        if self.instance is not None:
+            kill_script(self)
+            self.instance = None
+        if self.filename is not None:
+            remove(self.filename)
+            self.filename = None
+        if self.workspace_filename is not None:
+            remove(self.workspace_filename)
+            self.workspace_filename = None
+
 
 class SciFile:
     '''Variables used in sci-func block'''
@@ -438,6 +470,18 @@ class SciFile:
     file_image = ''
     flag_sci = False
     instance = None
+
+    def clean(self):
+        logger.info('cleaning scifile')
+        if self.instance is not None:
+            kill_scifile(self)
+            self.instance = None
+        if self.filename is not None:
+            remove(self.filename)
+            self.filename = None
+        if self.file_image != '':
+            remove(join(IMAGEDIR, self.file_image))
+            self.file_image = ''
 
 
 class UserData:
@@ -465,6 +509,26 @@ class UserData:
             self.scriptcount += 1
 
         return str(rv)
+
+    def clean(self):
+        for diagram in self.diagrams:
+            diagram.clean()
+        self.diagrams = None
+        for script in self.scripts:
+            self.scripts[script].clean()
+        self.scripts = None
+        self.scifile.clean()
+        self.scifile = None
+        self.diagramlock = None
+
+        sessiondir = self.sessiondir
+
+        rmdir(join(sessiondir, WORKSPACE_FILES_FOLDER), 'workspace files')
+        rmdir(join(sessiondir, SCIFUNC_FILES_FOLDER), 'scifunc files')
+        rmdir(join(sessiondir, SCRIPT_FILES_FOLDER), 'script files')
+        rmdir(join(sessiondir, VALUES_FOLDER), 'values')
+        rmdir(join(sessiondir, UPLOAD_FOLDER), 'upload')
+        rmdir(sessiondir, 'session')
 
 
 class line_and_state:
@@ -517,6 +581,26 @@ def init_session():
 
     return (ud.diagrams, ud.scripts, ud.getscriptcount, ud.scifile, sessiondir,
             ud.diagramlock)
+
+
+def clean_sessions(final=False):
+    current_thread().name = 'Clean'
+    totalcount = 0
+    cleanuids = []
+    for uid, ud in USER_DATA.items():
+        totalcount += 1
+        if final or time() - ud.timestamp > config.SESSIONTIMEOUT:
+            cleanuids.append(uid)
+
+    logger.info('cleaning %s/%s sessions', len(cleanuids), totalcount)
+    for uid in cleanuids:
+        current_thread().name = 'Clean-%s' % uid[:6]
+        try:
+            logger.info('cleaning')
+            ud = USER_DATA.pop(uid)
+            ud.clean()
+        except Exception as e:
+            logger.warn('could not clean: %s', str(e))
 
 
 def get_diagram(xcos_file_id, remove=False):
@@ -841,13 +925,13 @@ def kill_script(script=None):
 
     logger.info('kill_script: script=%s', script)
 
+    stop_scilab_instance(script)
+
     if script.filename is None:
         logger.warn('empty script')
     else:
         remove(script.filename)
         script.filename = None
-
-    stop_scilab_instance(script)
 
     if script.workspace_filename is None:
         logger.warn('empty workspace')
@@ -1052,14 +1136,14 @@ def kill_scilab(diagram=None):
         return
     logger.info('kill_scilab: diagram=%s', diagram)
 
+    stop_scilab_instance(diagram, True)
+
     if diagram.xcos_file_name is None:
         logger.warn('empty diagram')
     else:
         # Remove xcos file
         remove(diagram.xcos_file_name)
         diagram.xcos_file_name = None
-
-    stop_scilab_instance(diagram, True)
 
     stopDetailsThread(diagram)
 
@@ -2190,5 +2274,6 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         gevent.kill(worker)
         gevent.kill(reaper)
+        clean_sessions(True)
         stop_scilab_instances()
         logger.info('exiting')
