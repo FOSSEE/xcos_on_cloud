@@ -222,6 +222,9 @@ class ScilabInstance:
     def __init__(self):
         (self.proc, self.log_name) = prestart_scilab()
 
+    def __str__(self):
+        return "{'pid': %s, 'log_name': %s}" % (self.proc.pid, self.log_name)
+
 
 INSTANCES_1 = []
 INSTANCES_2 = []
@@ -314,7 +317,7 @@ def stop_scilab_instance(base, createlogfile=False):
     base.instance = None
 
 
-def stop_instance(instance, createlogfile=False):
+def stop_instance(instance, createlogfile=False, removeinstance=True):
     if instance is None:
         logger.warn('no instance')
         return
@@ -322,27 +325,31 @@ def stop_instance(instance, createlogfile=False):
     if not kill_scilab_with(instance.proc, signal.SIGTERM):
         kill_scilab_with(instance.proc, signal.SIGKILL)
 
-    remove_scilab_instance(instance)
+    if removeinstance:
+        remove_scilab_instance(instance)
 
     if instance.log_name is None:
         if createlogfile:
             logger.warn('empty diagram')
     else:
         remove(instance.log_name)
+        instance.log_name = None
 
     instance.base = None
 
 
 def stop_scilab_instances():
-    while len(INSTANCES_1) > 0:
-        instance = INSTANCES_1.pop()
-        if not kill_scilab_with(instance.proc, signal.SIGTERM):
-            kill_scilab_with(instance.proc, signal.SIGKILL)
+    if len(INSTANCES_1) > 0:
+        logger.info('stopping %s idle instances', len(INSTANCES_1))
+        while len(INSTANCES_1) > 0:
+            instance = INSTANCES_1.pop()
+            stop_instance(instance, removeinstance=False)
 
-    while len(INSTANCES_2) > 0:
-        instance = INSTANCES_2.pop()
-        if not kill_scilab_with(instance.proc, signal.SIGTERM):
-            kill_scilab_with(instance.proc, signal.SIGKILL)
+    if len(INSTANCES_2) > 0:
+        logger.info('stopping %s busy instances', len(INSTANCES_2))
+        while len(INSTANCES_2) > 0:
+            instance = INSTANCES_2.pop()
+            stop_instance(instance, removeinstance=False)
 
 
 def reap_scilab_instances():
@@ -405,13 +412,8 @@ class Diagram:
         self.figure_list = []
 
     def __str__(self):
-        return (
-            "{ 'scilab_pid': %s, "
-            "'log_name': %s, "
-            "'tkbool': %s, 'figure_list': %s }") % (
-                self.instance.proc.pid if self.instance is not None else None,
-                self.instance.log_name if self.instance is not None else None,
-                self.tkbool, self.figure_list)
+        return "{'instance': %s, 'tkbool': %s, 'figure_list': %s}" % (
+            self.instance, self.tkbool, self.figure_list)
 
 
 class Script:
@@ -424,17 +426,15 @@ class Script:
 
     def __str__(self):
         return (
-            "{ script_id: %s, filename: %s, status: %d, "
-            "script_pid: %s, "
-            "workspace_filename: %s }") % (
-                self.script_id, self.filename, self.status,
-                self.instance.proc.pid if self.instance is not None else None,
+            "{script_id: %s, filename: %s, status: %d, instance: %s, "
+            "workspace_filename: %s}") % (
+                self.script_id, self.filename, self.status, self.instance,
                 self.workspace_filename)
 
 
 class SciFile:
     '''Variables used in sci-func block'''
-    filename = ''
+    filename = None
     file_image = ''
     flag_sci = False
     instance = None
@@ -459,10 +459,10 @@ class UserData:
 
     def getscriptcount(self):
         with self.diagramlock:
-            rv = str(self.scriptcount)
+            rv = self.scriptcount
             self.scriptcount += 1
 
-        return rv
+        return str(rv)
 
 
 class line_and_state:
@@ -802,7 +802,6 @@ def getscriptoutput():
             script.status = -5
             rv = {'status': script.status, 'msg': msg, 'output': output}
             return Response(json.dumps(rv), mimetype='application/json')
-            return msg
 
         # if error is encountered while execution of script file, then error
         # message is returned to the user
@@ -837,7 +836,7 @@ def kill_script(script=None):
             logger.warn('no script')
             return "error"
 
-    logger.info('kill_script: script=%s', script.__dict__)
+    logger.info('kill_script: script=%s', script)
 
     if script.filename is None:
         logger.warn('empty script')
@@ -884,6 +883,7 @@ def uploadsci():
     if is_unsafe_script(scifile.filename):
         msg = ("System calls are not allowed in .sci file!\n"
                "Please upload another .sci file!!")
+        scifile.filename = None
         # flag for file saved will be set as False
         scifile.flag_sci = False
         return msg
@@ -897,6 +897,7 @@ def uploadsci():
     if scifile.instance is None:
         msg = "Resource not available"
         remove(scifile.filename)
+        scifile.filename = None
         scifile.flag_sci = False
         return msg
 
@@ -910,6 +911,7 @@ def uploadsci():
         if proc.returncode < 0:
             msg = 'Cancelled'
             remove(scifile.filename)
+            scifile.filename = None
             scifile.flag_sci = False
             return msg
 
@@ -922,6 +924,7 @@ def uploadsci():
             # Delete saved file if error is encountered while executing sci
             # function in that file
             remove(scifile.filename)
+            scifile.filename = None
             # flag for file saved will be set as False
             scifile.flag_sci = False
             return msg
@@ -940,7 +943,9 @@ def kill_scifile(scifile=None):
     if scifile is None:
         (__, __, __, scifile, __, __) = init_session()
 
-    logger.info('kill_scifile: scifile=%s', scifile.__dict__)
+    logger.info('kill_scifile: scifile=%s', scifile)
+
+    stop_scilab_instance(scifile)
 
     if scifile.filename is None:
         logger.warn('empty scifile')
@@ -948,7 +953,9 @@ def kill_scifile(scifile=None):
         remove(scifile.filename)
         scifile.filename = None
 
-    stop_scilab_instance(scifile)
+    if scifile.file_image != '':
+        remove(scifile.file_image)
+        scifile.file_image = ''
 
     scifile.flag_sci = False
 
@@ -1040,7 +1047,7 @@ def kill_scilab(diagram=None):
     if diagram is None:
         logger.warn('no diagram')
         return
-    logger.info('kill_scilab: diagram=%s', diagram.__dict__)
+    logger.info('kill_scilab: diagram=%s', diagram)
 
     if diagram.xcos_file_name is None:
         logger.warn('empty diagram')
@@ -1278,20 +1285,15 @@ def event_stream():
 
 
 def delete_image(scifile):
-    if scifile.file_image == '':
-        return
-
-    image_path = IMAGEDIR + '/' + scifile.file_image
-    remove(image_path)
-    scifile.file_image = ''
+    if scifile.file_image != '':
+        remove(join(IMAGEDIR, scifile.file_image))
+        scifile.file_image = ''
 
 
 def delete_scifile(scifile):
-    if scifile.filename == '':
-        return
-
-    remove(scifile.filename)
-    scifile.filename = ''
+    if scifile.filename is not None:
+        remove(scifile.filename)
+        scifile.filename = None
 
 
 def AppendtoTKfile(diagram):
