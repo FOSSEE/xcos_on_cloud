@@ -447,6 +447,7 @@ class UserData:
     scriptcount = None
     scifile = None
     diagramlock = None
+    timestamp = None
 
     def __init__(self):
         self.sessiondir = mkdtemp(
@@ -456,6 +457,7 @@ class UserData:
         self.scriptcount = 0
         self.scifile = SciFile()
         self.diagramlock = RLock()
+        self.timestamp = time()
 
     def getscriptcount(self):
         with self.diagramlock:
@@ -502,6 +504,7 @@ def init_session():
         USER_DATA[uid] = UserData()
 
     ud = USER_DATA[uid]
+    ud.timestamp = time()
 
     sessiondir = ud.sessiondir
 
