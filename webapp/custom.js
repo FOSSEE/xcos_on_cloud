@@ -212,9 +212,9 @@ $(function() {
                 console.log(data);
                 for (var a = 0, len = data.length; a < len; a++) {
                 var cdata= data[a];
-                    $('#full_name').html(cdata[7]);
-                    $('#branch').html(cdata[11]);
-                    $('#university').html(cdata[12]);
+                    $('#full_name').html(cdata[5]);
+                    $('#branch').html(cdata[6]);
+                    $('#university').html(cdata[7]);
                     $('#book-data').html(cdata[1] + ' (Author: '+ cdata[2] + ', ISBN: ' + cdata[3] + ', Publication: ' + cdata[4]+ ')' );
                 }
                 $("#contributor_wrapper").modal('show');
