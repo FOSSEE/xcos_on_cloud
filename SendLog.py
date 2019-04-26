@@ -1967,6 +1967,16 @@ def ajax_get_example_file():
         return str(e)
 
 
+@app.route('/get_contributor_details', methods=['GET', 'POST'])
+def ajax_get_contributor_details():
+    book_id = request.args.get('book_id')
+    try:
+        details = db_query(config.QUERY_CONTRIBUTOR_DETAILS, [book_id])
+        return jsonify(details)
+    except Exception as e:
+        return str(e)
+
+
 def clean_text(s):
     return re.sub(r'[ \t]*[\r\n]+[ \t]*', r'', s)
 
