@@ -408,7 +408,7 @@ function Sigbuilder() {
                 var xmax = parseFloat(Math.max(...xx_arry));
                 var ymin = parseFloat(Math.min(...yy_arry));
                 var ymax = parseFloat(Math.max(...yy_arry));
-                var subTitle = "<b>"+xx_arry.length+" points, Method: "+METHOD+", periodic, T = "+xmax+"</b>";
+                var points = xx_arry.length;
                 var graphParameters = {
                     graphPoints: graphPoints,
                     xmin: xmin,
@@ -416,9 +416,16 @@ function Sigbuilder() {
                     ymin: ymin,
                     ymax: ymax + 1,
                     chartType: "spline",
-                    subTitle: subTitle
+                    points: points,
+                    mtd: mtd,
+                    PeriodicOption: PeriodicOption1,
+                    graf: graf1,
+                    xmax: xmax
                 };
-                showGraphWindowSigBlk(graph_sigbuilder,graphParameters);
+                var parameters = {};
+                parameters = showGraphWindowSigBlk(graph_sigbuilder,graphParameters);
+                console.log(parameters);
+                graf1 = "n";
                 throw "incorrect";
             //Opening graphics window
             }else{

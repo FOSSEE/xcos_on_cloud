@@ -1,4 +1,11 @@
 function showGraphWindowSigBlk(graph,graphParameters) {
+    var parameters = {
+        xx: "",
+        yy: "",
+        mtd: "",
+        PeriodicOption: "",
+        graf: ""
+    };
     var defaultPoints = graphParameters.graphPoints.slice();
     // to store all the states of graph points for undo function
     var pointsHistory = [];
@@ -150,14 +157,14 @@ function showGraphWindowSigBlk(graph,graphParameters) {
     exit.appendChild(exitSubMenu);
 
     var chart = document.createElement('div');
-    chart.setAttribute('id','drag_chart');
+    chart.setAttribute('id','drag_sig_chart');
     var fileSelector = document.createElement("input");
     fileSelector.setAttribute("type","file");
     fileSelector.setAttribute("id","inputFile");
     chart.appendChild(fileSelector);
     content.appendChild(chart);
-    var wind = showModalWindow(graph, 'Properties', content, 550, 450);
-    var drag_chart = create_draggable_points_chart_sigbuilder(graphParameters.graphPoints, pointsHistory, graphParameters.xmin, graphParameters.xmax, graphParameters.ymin, graphParameters.ymax, graphParameters.chartType, graphParameters.subTitle);
+    var wind = showModalWindow(graph, 'Graphic Window', content, 550, 450);
+    var drag_sig_chart = create_draggable_points_chart_sigbuilder(graphParameters.graphPoints, pointsHistory, graphParameters.xmin, graphParameters.xmax, graphParameters.ymin, graphParameters.ymax, graphParameters.chartType, graphParameters.points, graphParameters.mtd, graphParameters.xmax);
 
     //For displaying and hiding of submenus
     content.onclick = function() {
@@ -255,6 +262,40 @@ function showGraphWindowSigBlk(graph,graphParameters) {
             exitSubMenu.style.display = 'none';
         }
     };
-
-
+    //Functionalities of different menus
+    exitMenuOptions[2].onclick = function() {
+        var x_arr = "[";
+        var y_arr = "[";
+        graphParameters.graphPoints = objToArrayList(graphParameters.graphPoints);
+        for (var i = 0; i < graphParameters.graphPoints.length; i++){
+            var x = graphParameters.graphPoints[i][0];
+            var y = graphParameters.graphPoints[i][1];
+            if((x.toString()).includes(".") == true){
+                var x_check = (x.toString()).split(".");
+                if(x_check[1].length > 7){
+                    x = x.toFixed(7);
+                }
+            }
+            if((y.toString()).includes(".") == true){
+                var y_check = (y.toString()).split(".");
+                if(y_check[1].length > 7){
+                    y = y.toFixed(7);
+                }
+            }
+            if(i == (graphParameters.graphPoints.length-1)){
+                x_arr += x + "]";
+                y_arr += y + "]";
+            }else{
+                x_arr += x + ";";
+                y_arr += y + ";";
+            }
+        }
+        parameters.xx = x_arr;
+        parameters.yy = y_arr;
+        parameters.mtd = (graphParameters.mtd).toString();
+        parameters.PeriodicOption = (graphParameters.PeriodicOption).toString();
+        parameters.graf = (graphParameters.graf).toString();
+        wind.destroy();
+    };
+    return parameters;
 }
