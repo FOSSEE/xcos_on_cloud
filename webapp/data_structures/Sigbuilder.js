@@ -425,6 +425,9 @@ function Sigbuilder() {
                 var parameters = {};
                 parameters = showGraphWindowSigBlk(graph_sigbuilder,graphParameters);
                 console.log(parameters);
+                for (let value of Object.values(parameters)) {
+                    alert(value);
+                }
                 graf1 = "n";
                 throw "incorrect";
             //Opening graphics window
