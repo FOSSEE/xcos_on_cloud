@@ -209,7 +209,6 @@ $(function() {
                 book_id: $("#book-list").val()
             },
             success: function(data) {
-                console.log(data);
                 for (var a = 0, len = data.length; a < len; a++) {
                 var cdata= data[a];
                     $('#full_name').html(cdata[5]);
