@@ -603,6 +603,16 @@ def clean_sessions(final=False):
             logger.warn('could not clean: %s', str(e))
 
 
+def clean_sessions_thread():
+    current_thread().name = 'Clean'
+    while True:
+        gevent.sleep(config.SESSIONTIMEOUT / 2)
+        try:
+            clean_sessions()
+        except Exception as e:
+            logger.warn('Exception in clean_sessions: %s', str(e))
+
+
 def get_diagram(xcos_file_id, remove=False):
     if not xcos_file_id:
         logger.warn('no id')
@@ -2262,6 +2272,8 @@ if __name__ == '__main__':
     worker.name = 'PreStart'
     reaper = gevent.spawn(reap_scilab_instances)
     reaper.name = 'Reaper'
+    cleaner = gevent.spawn(clean_sessions_thread)
+    cleaner.name = 'Clean'
     # Set server address from config
     http_server = WSGIServer(
         (config.HTTP_SERVER_HOST, config.HTTP_SERVER_PORT), app,
@@ -2274,6 +2286,7 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         gevent.kill(worker)
         gevent.kill(reaper)
+        gevent.kill(cleaner)
         clean_sessions(True)
         stop_scilab_instances()
         logger.info('exiting')
