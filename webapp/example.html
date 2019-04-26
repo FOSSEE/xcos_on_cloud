@@ -141,6 +141,7 @@
                         <select id="book-list">
                             <option value="0">Select Book</option>
                         </select>
+                        <a href="#" class="extra-link col-sm-2" id="contributor">+Contributor</a>
                     </div>
                 </div>
                 <div id="chapter" class="row">
@@ -234,6 +235,54 @@
         </div>
     </div>
     <!-- contact us modal end -->
+    <!-- contributor -->
+    <div class="modal" id="contributor_wrapper">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h6 class="modal-title text-primary"><u>Contributor details</u></h6>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <table class="table table-striped">
+                        <tbody>
+                            <tr>
+                                <td>Contributor name</td>
+                                <td><span id="full_name"></span></td>
+                            </tr>
+                            <tr>
+                                <td>Branch</td>
+                                <td><span id="branch"></span></td>
+                            </tr>
+                            <tr>
+                                <td>College</td>
+                                <td><span id="university"></span></td>
+                            </tr>
+                            <tr>
+                                <td>Book</td>
+                                <td><span id="book-data"></span></td>
+                            </tr>
+                            <tr>
+                                <td>License</td>
+                                <td><span id="license">This work is licensed under the Creative Commons Attribution 4.0 Unported License. To view a copy of this license, visit <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank">http://creativecommons.org/licenses/by/4.0/.</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- --------------------contributor modal ends------------------ -->
 </body>
 
 </html>
