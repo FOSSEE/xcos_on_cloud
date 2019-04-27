@@ -2138,6 +2138,7 @@ def ajax_get_example_file():
 
 @app.route('/get_contributor_details', methods=['GET', 'POST'])
 def ajax_get_contributor_details():
+    set_session()
     book_id = request.args.get('book_id')
     try:
         details = db_query(config.QUERY_CONTRIBUTOR_DETAILS, [book_id])

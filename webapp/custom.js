@@ -44,7 +44,9 @@ $(function() {
                         }
                         $("#book-list").empty().append($options);
                     },
-                    error: function(error) {
+                    error: function(xhr, error) {
+                        ajax_loader("clear");
+                        $('#book').hide();
                         alert(error);
                     }
                 });
@@ -91,7 +93,10 @@ $(function() {
                         }
                         $("#chapter-list").empty().append($options);
                     },
-                    error: function(error) {
+                    error: function(xhr, error) {
+                        ajax_loader("clear");
+                        $("#contributor").hide();
+                        $('#chapter').hide();
                         alert(error);
                     }
                 });
@@ -134,7 +139,9 @@ $(function() {
                         }
                         $("#example-list").empty().append($options);
                     },
-                    error: function(error) {
+                    error: function(xhr, error) {
+                        ajax_loader("clear");
+                        $('#example').hide();
                         alert(error);
                     }
                 });
@@ -186,7 +193,9 @@ $(function() {
                                 .append("</tr>");
                         }
                     },
-                    error: function(error) {
+                    error: function(xhr, error) {
+                        ajax_loader("clear");
+                        $('#example-file').hide();
                         alert(error);
                     }
                 });
@@ -217,6 +226,9 @@ $(function() {
                     $('#book-data').html(cdata[1] + ' (Author: '+ cdata[2] + ', ISBN: ' + cdata[3] + ', Publication: ' + cdata[4]+ ')' );
                 }
                 $("#contributor_wrapper").modal('show');
+            },
+            error: function(xhr, error) {
+                alert(error);
             }
         });
         e.preventDefault();
