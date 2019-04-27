@@ -155,6 +155,15 @@ QUERY_PREREQUISITE_FILE_BY_EXAMPLE_ID = (
     "WHERE filetype = 'S' AND example_id = %s"
 )
 
+QUERY_CONTRIBUTOR_DETAILS = (
+    "SELECT pe.id, pe.book as preference_book, pe.author as preference_author, "
+    "pe.isbn as preference_isbn, pe.publisher as preference_publisher, "
+    "po.full_name as proposal_full_name, po.branch as proposal_branch, "
+    "po.university as proposal_university "
+    "FROM textbook_companion_proposal po "
+    "LEFT JOIN textbook_companion_preference pe ON po.id = pe.proposal_id "
+    "WHERE pe.id=%s")
+
 # Following are system command which are not permitted in sci files
 # (Reference scilab-on-cloud project)
 SYSTEM_COMMANDS = (
