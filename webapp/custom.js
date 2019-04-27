@@ -7,6 +7,7 @@ $(function() {
             $('#chapter').hide();
             $('#example').hide();
             $('#example-file').hide();
+            $("#contributor").hide();
         }
         // books fetch
         $('#category-list').on('change', function() {
@@ -14,6 +15,7 @@ $(function() {
             var catid = $('#category-list').val();
             if (catid != 0) {
                 $('#book').show();
+                $("#contributor").hide();
                 $('#chapter').hide();
                 $('#example').hide();
                 $('#example-file').hide();
@@ -49,6 +51,7 @@ $(function() {
             } else {
                 ajax_loader("clear");
                 $('#book').hide();
+                $("#contributor").hide();
                 $('#chapter').hide();
                 $('#example').hide();
                 $('#example-file').hide();
@@ -59,6 +62,7 @@ $(function() {
             ajax_loader(this);
             var bookid = $('#book-list').val();
             if (bookid != 0) {
+                $("#contributor").show();
                 $('#chapter').show();
                 $('#example').hide();
                 $('#example-file').hide();
@@ -93,6 +97,7 @@ $(function() {
                 });
             } else {
                 ajax_loader("clear");
+                $("#contributor").hide();
                 $('#chapter').hide();
                 $('#example').hide();
                 $('#example-file').hide();
@@ -190,6 +195,33 @@ $(function() {
                 $('#example-file').hide();
             }
         });
+
+
+    /********************************************/
+    /****** Get contributor *********************/
+    /********************************************/
+    $(document).on("click", "#contributor", function(e) {
+        $.ajax({
+            url: '/get_contributor_details',
+            dataType: 'JSON',
+            type: 'GET',
+            data: {
+                book_id: $("#book-list").val()
+            },
+            success: function(data) {
+                for (var a = 0, len = data.length; a < len; a++) {
+                var cdata= data[a];
+                    $('#full_name').html(cdata[5]);
+                    $('#branch').html(cdata[6]);
+                    $('#university').html(cdata[7]);
+                    $('#book-data').html(cdata[1] + ' (Author: '+ cdata[2] + ', ISBN: ' + cdata[3] + ', Publication: ' + cdata[4]+ ')' );
+                }
+                $("#contributor_wrapper").modal('show');
+            }
+        });
+        e.preventDefault();
+    });
+    /********************************************/
 
 
     }); //document.ready
