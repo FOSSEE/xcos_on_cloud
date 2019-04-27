@@ -424,7 +424,6 @@ class Diagram:
             self.instance, self.tkbool, self.figure_list)
 
     def clean(self):
-        logger.info('cleaning diagram %s', self.diagram_id)
         if self.instance is not None:
             kill_scilab(self)
             self.instance = None
@@ -452,7 +451,6 @@ class Script:
                 self.workspace_filename)
 
     def clean(self):
-        logger.info('cleaning script %s', self.script_id)
         if self.instance is not None:
             kill_script(self)
             self.instance = None
@@ -472,7 +470,6 @@ class SciFile:
     instance = None
 
     def clean(self):
-        logger.info('cleaning scifile')
         if self.instance is not None:
             kill_scifile(self)
             self.instance = None
@@ -884,8 +881,14 @@ def getscriptoutput():
         rv = {'msg': msg}
         return Response(json.dumps(rv), mimetype='application/json')
 
-    proc = script.instance.proc
-    wfname = script.workspace_filename
+    instance = script.instance
+    if instance is None:
+        logger.warn('no instance')
+        msg = "no instance"
+        rv = {'msg': msg}
+        return Response(json.dumps(rv), mimetype='application/json')
+
+    proc = instance.proc
 
     try:
         # output from scilab terminal is saved for checking error msg
@@ -909,7 +912,8 @@ def getscriptoutput():
             rv = {'status': script.status, 'msg': msg, 'output': output}
             return Response(json.dumps(rv), mimetype='application/json')
 
-        logger.info('workspace for %s saved in %s', script.script_id, wfname)
+        logger.info('workspace for %s saved in %s',
+                    script.script_id, script.workspace_filename)
         msg = ''
         script.status = 0
         rv = {'script_id': script.script_id, 'status': script.status,
@@ -2138,6 +2142,7 @@ def ajax_get_example_file():
 
 @app.route('/get_contributor_details', methods=['GET', 'POST'])
 def ajax_get_contributor_details():
+    set_session()
     book_id = request.args.get('book_id')
     try:
         details = db_query(config.QUERY_CONTRIBUTOR_DETAILS, [book_id])
