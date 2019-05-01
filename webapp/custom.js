@@ -14,7 +14,7 @@ $(function() {
             ajax_loader(this);
             var catid = $('#category-list').val();
             if (catid != 0) {
-                $('#book').show();
+                $('#book').hide();
                 $("#contributor").hide();
                 $('#chapter').hide();
                 $('#example').hide();
@@ -42,6 +42,7 @@ $(function() {
                                     "text": row[1] + " (Author: " + row[2] + ") (" + row[3] + " " + (row[3] != 1 ? "examples" : "example") + ")"
                                 }));
                         }
+                        $('#book').show();
                         $("#book-list").empty().append($options);
                     },
                     error: function(xhr, error) {
@@ -65,7 +66,7 @@ $(function() {
             var bookid = $('#book-list').val();
             if (bookid != 0) {
                 $("#contributor").show();
-                $('#chapter').show();
+                $('#chapter').hide();
                 $('#example').hide();
                 $('#example-file').hide();
                 $.ajax({
@@ -91,6 +92,7 @@ $(function() {
                                         chapter[a][2]
                                 }));
                         }
+                        $('#chapter').show();
                         $("#chapter-list").empty().append($options);
                     },
                     error: function(xhr, error) {
@@ -113,7 +115,7 @@ $(function() {
             ajax_loader(this);
             var chapterid = $('#chapter-list').val();
             if (chapterid != 0) {
-                $('#example').show();
+                $('#example').hide();
                 $('#example-file').hide();
                 $.ajax({
                     url: '/get_example',
@@ -137,6 +139,7 @@ $(function() {
                                     "text": example[a][1] + ") " + example[a][2]
                                 }));
                         }
+                        $('#example').show();
                         $("#example-list").empty().append($options);
                     },
                     error: function(xhr, error) {
