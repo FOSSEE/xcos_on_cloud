@@ -2075,6 +2075,7 @@ def db_query(query, parameters=None):
 @app.route('/example')
 def example_page():
     set_session()
+    version_check()
     try:
         count = db_query(config.QUERY_COUNT)[0][0]
         data = db_query(config.QUERY_CATEGORY)
