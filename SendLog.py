@@ -231,7 +231,7 @@ class ScilabInstance:
         (self.proc, self.log_name) = prestart_scilab()
 
     def __str__(self):
-        return "{'pid': %s, 'log_name': %s}" % (self.proc.pid, self.log_name)
+        return "{pid: %s, log_name: %s}" % (self.proc.pid, self.log_name)
 
 
 INSTANCES_1 = []
@@ -420,7 +420,7 @@ class Diagram:
         self.figure_list = []
 
     def __str__(self):
-        return "{'instance': %s, 'tkbool': %s, 'figure_list': %s}" % (
+        return "{instance: %s, tkbool: %s, figure_list: %s}" % (
             self.instance, self.tkbool, self.figure_list)
 
     def clean(self):
