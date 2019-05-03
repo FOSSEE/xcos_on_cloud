@@ -404,9 +404,9 @@ var create_draggable_points_chart_sigbuilder = function(graphPoints, pointsHisto
     var subtitle = updateSubtitleForSigbuilderGraph(points, method, xmax);
     pointsHistory.push(graphPoints.slice());
 
-    myGraph = Highcharts.chart('drag_sig_chart', {
+    sigbuilder_Graph = Highcharts.chart('drag_sig_chart', {
         chart: {
-            type: chart_type,
+            //type: chart_type,
             animation: false,
             events: {
                 click: function (e) {
@@ -487,10 +487,13 @@ var create_draggable_points_chart_sigbuilder = function(graphPoints, pointsHisto
             pointStart: -2.5,
             pointInterval: 0.5,
             data: graphPoints,
+            //step: 'left',
+            //name: 'Left',
             draggableX: true,
             draggableY: true
         }]
     });
+    return sigbuilder_Graph;
 };
 
 function updateSubtitleForSigbuilderGraph(points, method, xmax){

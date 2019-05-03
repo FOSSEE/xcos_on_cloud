@@ -422,13 +422,22 @@ function Sigbuilder() {
                     graf: graf1,
                     xmax: xmax
                 };
-                var parameters = {};
-                parameters = showGraphWindowSigBlk(graph_sigbuilder,graphParameters);
-                console.log(parameters);
-                for (let value of Object.values(parameters)) {
-                    alert(value);
+                if(check_call != 2){
+                showGraphWindowSigBlk(graph_sigbuilder,graphParameters,cell_sigbuilder);
+                }else{
+                    check_call = 1 ;
                 }
                 graf1 = "n";
+                document.getElementById("Method").value = Method1;
+                document.getElementById("xx").value = xx1;
+                document.getElementById("yy").value = yy1;
+                document.getElementById("PeriodicOption").value = PeriodicOption1;
+                document.getElementById("graf").value = graf1;
+                this.Method = mtd;
+                this.xx = xx1;
+                this.yy = yy1;
+                this.PeriodicOption = PeriodicOption1;
+                this.graf = graf1;
                 throw "incorrect";
             //Opening graphics window
             }else{

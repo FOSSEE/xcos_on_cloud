@@ -1,4 +1,6 @@
-function showGraphWindowSigBlk(graph,graphParameters) {
+var check_call = 0;
+function showGraphWindowSigBlk(graph,graphParameters,cell) {
+    var drag_sig_chart = "";
     var parameters = {
         xx: "",
         yy: "",
@@ -164,8 +166,7 @@ function showGraphWindowSigBlk(graph,graphParameters) {
     chart.appendChild(fileSelector);
     content.appendChild(chart);
     var wind = showModalWindow(graph, 'Graphic Window', content, 550, 450);
-    var drag_sig_chart = create_draggable_points_chart_sigbuilder(graphParameters.graphPoints, pointsHistory, graphParameters.xmin, graphParameters.xmax, graphParameters.ymin, graphParameters.ymax, graphParameters.chartType, graphParameters.points, graphParameters.mtd, graphParameters.xmax);
-
+    drag_sig_chart = create_draggable_points_chart_sigbuilder(graphParameters.graphPoints, pointsHistory, graphParameters.xmin, graphParameters.xmax, graphParameters.ymin, graphParameters.ymax, graphParameters.chartType, graphParameters.points, graphParameters.mtd, graphParameters.xmax);
     //For displaying and hiding of submenus
     content.onclick = function() {
         fileSubMenu.style.display = 'none';
@@ -263,7 +264,69 @@ function showGraphWindowSigBlk(graph,graphParameters) {
         }
     };
     //Functionalities of different menus
+
+    // menu Spline -> submenus 'zero order','linear','order 2','not_a_knot','periodic','monotone','fast','clamped'
+    splineMenuOptions[0].onclick = function() {
+        // zero order
+        graphParameters.mtd = 0;
+        drag_sig_chart.setTitle(null, {
+            text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmax)
+            });
+    };
+    splineMenuOptions[1].onclick = function() {
+        // linear
+        graphParameters.mtd = 1;
+        drag_sig_chart.setTitle(null, {
+            text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmax)
+            });
+    };
+    splineMenuOptions[2].onclick = function() {
+        // order 2
+        graphParameters.mtd = 2;
+        drag_sig_chart.setTitle(null, {
+            text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmax)
+            });
+    };
+    splineMenuOptions[3].onclick = function() {
+        // not_a_knot
+        graphParameters.mtd = 3;
+        drag_sig_chart.setTitle(null, {
+            text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmax)
+            });
+    };
+    splineMenuOptions[4].onclick = function() {
+        // periodic
+        graphParameters.mtd = 4;
+        drag_sig_chart.setTitle(null, {
+            text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmax)
+            });
+    };
+    splineMenuOptions[5].onclick = function() {
+        // monotone
+        graphParameters.mtd = 5;
+        drag_sig_chart.setTitle(null, {
+            text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmax)
+            });
+    };
+    splineMenuOptions[6].onclick = function() {
+        // fast
+        graphParameters.mtd = 6;
+        drag_sig_chart.setTitle(null, {
+            text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmax)
+            });
+    };
+    splineMenuOptions[7].onclick = function() {
+        //clamped
+        graphParameters.mtd = 7;
+        drag_sig_chart.setTitle(null, {
+            text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmax)
+            });
+    };
+    // menu Exit -> submenu Save/Exit
     exitMenuOptions[2].onclick = function() {
+        var propertiesObject = {
+                    id: cell.id
+                };
         var x_arr = "[";
         var y_arr = "[";
         graphParameters.graphPoints = objToArrayList(graphParameters.graphPoints);
@@ -290,12 +353,17 @@ function showGraphWindowSigBlk(graph,graphParameters) {
                 y_arr += y + ";";
             }
         }
-        parameters.xx = x_arr;
-        parameters.yy = y_arr;
-        parameters.mtd = (graphParameters.mtd).toString();
-        parameters.PeriodicOption = (graphParameters.PeriodicOption).toString();
-        parameters.graf = (graphParameters.graf).toString();
+        var propertiesObject = {
+            id: cell.id
+                };
+        propertiesObject["xx"] = x_arr;
+        propertiesObject["yy"] = y_arr;
+        propertiesObject["Method"] = (graphParameters.mtd).toString();
+        propertiesObject["PeriodicOption"] = (graphParameters.PeriodicOption).toString();
+        propertiesObject["graf"] = "y";
         wind.destroy();
+        check_call = 2;
+        cell.blockInstance.instance.set(propertiesObject);
     };
-    return parameters;
+    check_call = 1;
 }
