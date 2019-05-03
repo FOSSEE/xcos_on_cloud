@@ -1,7 +1,3 @@
-function checkOnBeforeUnload(e) {
-    return "Please click 'Stay on this Page' if you did this unintentionally";
-}
-
 // function which makes the Ajax 'post' request with data sent in arguments
 function myAjaxreq(k,functionName) {
     var mbl = new Blob([k], { type: 'text/plain' });  // store the data in blob
@@ -217,6 +213,12 @@ function main(container, outline, toolbar, sidebar, status) {
     editor = new mxEditor();
     var graph = editor.graph;
     var model = graph.getModel();
+
+    window.onbeforeunload = function() {
+        if (graph.getChildVertices(graph.getDefaultParent()).length == 0)
+            return null;
+        return "Please click 'Stay on this Page' if you did this unintentionally";
+    }
 
     /*
      * Maverick
