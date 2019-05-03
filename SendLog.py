@@ -278,14 +278,25 @@ def prestart_scilab_instances():
 
         try:
             for i in range(start_scilab_instances()):
-                INSTANCES_1.append(ScilabInstance())
+                instance = ScilabInstance()
+                proc = instance.proc
+                if proc.poll() is not None:
+                    logger.error('could not start scilab: return code is %s',
+                                 proc.returncode)
+                    if attempt >= 4:
+                        logger.critical('aborting after %s attempts', attempt)
+                        gevent.thread.interrupt_main()
+                        return
+                    gevent.sleep(15 * attempt)
+                    attempt += 1
+                    continue
+                INSTANCES_1.append(instance)
             attempt = 1
             print_scilab_instances()
         except Exception as e:
             logger.error('could not start scilab: %s', str(e))
             if attempt >= 4:
-                logger.critical('could not start scilab after %s attempts',
-                                attempt)
+                logger.critical('aborting after %s attempts', attempt)
                 gevent.thread.interrupt_main()
                 return
             gevent.sleep(15 * attempt)
