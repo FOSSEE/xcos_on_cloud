@@ -308,13 +308,22 @@ def prestart_scilab_instances():
 
 def get_scilab_instance():
     try:
-        instance = INSTANCES_1.pop()
-        INSTANCES_2.append(instance)
-        print_scilab_instances()
-        if not too_many_scilab_instances():
-            evt.set()
+        while True:
+            instance = INSTANCES_1.pop(0)
+            proc = instance.proc
+            if proc.poll() is not None:
+                logger.warn('could not get scilab instance: return code is %s',
+                            proc.returncode)
+                if not too_many_scilab_instances():
+                    evt.set()
+                    gevent.sleep(1)
+                continue
+            INSTANCES_2.append(instance)
+            print_scilab_instances()
+            if not too_many_scilab_instances():
+                evt.set()
 
-        return instance
+            return instance
     except IndexError:
         logger.error('No free instance')
         return None
