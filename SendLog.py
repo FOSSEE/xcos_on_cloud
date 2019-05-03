@@ -897,11 +897,17 @@ def getscriptoutput():
         remove_scilab_instance(script.instance)
         script.instance = None
 
-        if proc.returncode < 0:
+        returncode = proc.returncode
+        if returncode < 0:
+            logger.warn('return code is %s', returncode)
             msg = 'Script stopped'
             script.status = -5
             rv = {'status': script.status, 'msg': msg, 'output': output}
             return Response(json.dumps(rv), mimetype='application/json')
+        if returncode > 0:
+            logger.info('return code is %s', returncode)
+            if output:
+                logger.info('=== Output from scilab console ===\n%s', output)
 
         # if error is encountered while execution of script file, then error
         # message is returned to the user
@@ -917,7 +923,7 @@ def getscriptoutput():
         msg = ''
         script.status = 0
         rv = {'script_id': script.script_id, 'status': script.status,
-              'msg': msg, 'output': output, 'returncode': proc.returncode}
+              'msg': msg, 'output': output, 'returncode': returncode}
         return Response(json.dumps(rv), mimetype='application/json')
     except subprocess.TimeoutExpired:
         kill_script(script)
