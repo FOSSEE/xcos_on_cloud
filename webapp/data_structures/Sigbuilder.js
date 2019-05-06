@@ -408,19 +408,35 @@ function Sigbuilder() {
                 var xmax = parseFloat(Math.max(...xx_arry));
                 var ymin = parseFloat(Math.min(...yy_arry));
                 var ymax = parseFloat(Math.max(...yy_arry));
+                var diffxx = Math.abs(xx_arry[0] - xx_arry[1]);
+                var diffyy = Math.abs(yy_arry[0] - yy_arry[1]);
+                var charttype = getcharttype(mtd);
+                var pointinterval = 0.5;
+                if(diffxx < 2){
+                    pointinterval = 0.2;
+                }
+                var step = "";
+                var stepname = "";
+                if(mtd == 0){
+                    step = "left";
+                    stepname = "Left"
+                }
                 var points = xx_arry.length;
                 var graphParameters = {
                     graphPoints: graphPoints,
                     xmin: xmin,
-                    xmax: xmax + 1,
+                    xmax: xmax + diffxx,
                     ymin: ymin,
-                    ymax: ymax + 1,
-                    chartType: "spline",
+                    ymax: ymax + diffyy,
+                    chartType: charttype,
                     points: points,
                     mtd: mtd,
                     PeriodicOption: PeriodicOption1,
                     graf: graf1,
-                    xmax: xmax
+                    xmax: xmax,
+                    pointInterval: pointinterval,
+                    step: step,
+                    name: stepname
                 };
                 if(check_call != 2){
                 showGraphWindowSigBlk(graph_sigbuilder,graphParameters,cell_sigbuilder);
