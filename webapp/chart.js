@@ -399,14 +399,14 @@ var create_draggable_points_chart = function(graphPoints, pointsHistory, xmin, x
 };
 
 // Function to create a chart with responsive points for Sigbuilder
-var create_draggable_points_chart_sigbuilder = function(graphPoints, pointsHistory, xmin, xmax, ymin, ymax, chart_type, points, method, xmax) {
+var create_draggable_points_chart_sigbuilder = function(graphPoints, pointsHistory, xmin, xmax, ymin, ymax, chart_type, points, method, xmax,pointinterval,step,stepname) {
 
     var subtitle = updateSubtitleForSigbuilderGraph(points, method, xmax);
     pointsHistory.push(graphPoints.slice());
 
     sigbuilder_Graph = Highcharts.chart('drag_sig_chart', {
         chart: {
-            //type: chart_type,
+            type: chart_type,
             animation: false,
             events: {
                 click: function (e) {
@@ -431,6 +431,7 @@ var create_draggable_points_chart_sigbuilder = function(graphPoints, pointsHisto
             min: ymin,
             max: ymax,
             gridLineWidth: 1,
+            tickInterval: pointinterval,
             gridLineDashStyle: 'dash'
         },
 
@@ -484,11 +485,10 @@ var create_draggable_points_chart_sigbuilder = function(graphPoints, pointsHisto
 
         series: [{
             showInLegend: false,
-            pointStart: -2.5,
-            pointInterval: 0.5,
+            pointInterval: pointinterval,
             data: graphPoints,
-            //step: 'left',
-            //name: 'Left',
+            step: step,
+            name: stepname,
             draggableX: true,
             draggableY: true
         }]
