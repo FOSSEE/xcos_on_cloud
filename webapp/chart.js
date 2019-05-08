@@ -399,9 +399,9 @@ var create_draggable_points_chart = function(graphPoints, pointsHistory, xmin, x
 };
 
 // Function to create a chart with responsive points for Sigbuilder
-var create_draggable_points_chart_sigbuilder = function(graphPoints, pointsHistory, xmin, xmax, ymin, ymax, chart_type, points, method, xmax,pointinterval,step,stepname) {
+var create_draggable_points_chart_sigbuilder = function(graphPoints, pointsHistory, xmin, xmax, ymin, ymax, chart_type, points, method, xmaxtitle,xpointinterval,step,stepname) {
 
-    var subtitle = updateSubtitleForSigbuilderGraph(points, method, xmax);
+    var subtitle = updateSubtitleForSigbuilderGraph(points, method, xmaxtitle);
     pointsHistory.push(graphPoints.slice());
 
     sigbuilder_Graph = Highcharts.chart('drag_sig_chart', {
@@ -413,9 +413,13 @@ var create_draggable_points_chart_sigbuilder = function(graphPoints, pointsHisto
                     this.series[0].addPoint([e.xAxis[0].value, e.yAxis[0].value]);
                     pointsHistory.push(graphPoints.slice());
                     var pointscount = (pointsHistory[pointsHistory.length-1].length);
-                    this.setTitle(null, { text: updateSubtitleForSigbuilderGraph(pointscount, method, xmax)});
+                    xmaxtitle = (sigbuilder_Graph.xAxis[0].getExtremes().dataMax).toFixed(6);
+                    this.setTitle(null, { text: updateSubtitleForSigbuilderGraph(pointscount, method, xmaxtitle)});
                 }
             }
+        },
+        tooltip: {
+            enabled: false
         },
         title: {
             text: ""
@@ -428,10 +432,9 @@ var create_draggable_points_chart_sigbuilder = function(graphPoints, pointsHisto
             title: {
                 text: 'Output'
             },
-            min: ymin,
-            max: ymax,
+            min: parseFloat(ymin),
+            max: parseFloat(ymax),
             gridLineWidth: 1,
-            tickInterval: pointinterval,
             gridLineDashStyle: 'dash'
         },
 
@@ -439,8 +442,9 @@ var create_draggable_points_chart_sigbuilder = function(graphPoints, pointsHisto
             title: {
                 text: 'time'
             },
-            min: xmin,
-            max: xmax,
+            min: parseFloat(xmin),
+            max: parseFloat(xmax),
+            tickInterval: xpointinterval,
             gridLineWidth: 1,
             gridLineDashStyle: 'dash'
         },
@@ -475,29 +479,27 @@ var create_draggable_points_chart_sigbuilder = function(graphPoints, pointsHisto
                 },
                 column: {
                     stacking: 'normal'
+                },
+                marker: {
+                    enabled: true,
+                    symbol: 'url(../images/plus-icon.png)'
                 }
             }
         },
-
-        tooltip: {
-            enabled: true
-        },
-
         series: [{
+            draggableX: true,
+            draggableY: true,
             showInLegend: false,
-            pointInterval: pointinterval,
             data: graphPoints,
             step: step,
-            name: stepname,
-            draggableX: true,
-            draggableY: true
+            name: stepname
         }]
     });
     return sigbuilder_Graph;
 };
 
-function updateSubtitleForSigbuilderGraph(points, method, xmax){
-    var subTitle = "<b>"+points+" points, Method: "+getmethod(method)+", periodic, T = "+xmax+"</b>";
+function updateSubtitleForSigbuilderGraph(points, method, xmaxtitle){
+    var subTitle = "<b>"+points+" points, Method: "+getmethod(method)+", periodic, T = "+xmaxtitle+"</b>";
     return subTitle;
 }
 
