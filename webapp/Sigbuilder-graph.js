@@ -1,4 +1,4 @@
-var check_call = 0;
+var check_call = 1;
 function showGraphWindowSigBlk(graph,graphParameters,cell) {
     var drag_sig_chart = "";
     var parameters = {
@@ -166,7 +166,8 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     chart.appendChild(fileSelector);
     content.appendChild(chart);
     var wind = showModalWindow(graph, 'Graphic Window', content, 550, 450);
-    drag_sig_chart = create_draggable_points_chart_sigbuilder(graphParameters.graphPoints, pointsHistory, graphParameters.xmin, graphParameters.xmax, graphParameters.ymin, graphParameters.ymax, graphParameters.chartType, graphParameters.points, graphParameters.mtd, graphParameters.xmax,graphParameters.pointinterval,graphParameters.step,graphParameters.stepname);
+    drag_sig_chart = create_draggable_points_chart_sigbuilder(graphParameters.graphPoints, pointsHistory, graphParameters.xmin, graphParameters.xmax, graphParameters.ymin, graphParameters.ymax, graphParameters.chartType, graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle,graphParameters.xpointInterval,graphParameters.step,graphParameters.stepname,graphParameters.diffxx,
+graphParameters.diffyy);
     //For displaying and hiding of submenus
     content.onclick = function() {
         fileSubMenu.style.display = 'none';
@@ -265,12 +266,54 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     };
     //Functionalities of different menus
 
+    //menu Autoscale
+    autoscale_menu.onclick = function() {
+        var max_x_value_new = (drag_sig_chart.xAxis[0].getExtremes().dataMax).toFixed(1);
+        var max_y_value_new = (drag_sig_chart.yAxis[0].getExtremes().dataMax).toFixed(1);
+        var max_x = drag_sig_chart.xAxis[0].getExtremes().max;
+        var max_y = drag_sig_chart.yAxis[0].getExtremes().max;
+        if(Math.abs(max_x - max_x_value_new) < parseFloat(graphParameters.diffxx/2) ){
+            max_x = parseFloat(parseFloat(max_x) + parseFloat(graphParameters.diffxx)).toFixed(1);
+            drag_sig_chart.xAxis[0].update({
+                max: parseFloat(max_x)
+            });
+        }
+        if(Math.abs(max_y - max_y_value_new) < parseFloat(graphParameters.diffyy/2) ){
+            max_y = parseFloat(parseFloat(max_y) + parseFloat(graphParameters.diffyy)).toFixed(1);
+            drag_sig_chart.yAxis[0].update({
+                max: parseFloat(max_y)
+            });
+        }
+        /* Still need to add more code for minimum value drag functionality
+        console.log(drag_sig_chart.xAxis[0].getExtremes());
+        console.log(drag_sig_chart.yAxis[0].getExtremes());
+        var min_x_value_new = (drag_sig_chart.xAxis[0].getExtremes().dataMin).toFixed(1);
+        var min_y_value_new = (drag_sig_chart.yAxis[0].getExtremes().dataMin).toFixed(1);
+        var min_x = drag_sig_chart.xAxis[0].getExtremes().min;
+        var min_y = drag_sig_chart.yAxis[0].getExtremes().min;
+        if(Math.abs(min_x - min_x_value_new) < parseFloat(graphParameters.diffxx/2) ){
+            console.log("min_x_value_new::"+min_x_value_new);
+            console.log("min_x::::"+min_x);
+            drag_sig_chart.xAxis[0].update({
+                min: parseFloat(-50)
+            });
+        }
+        if(Math.abs(min_y - min_y_value_new) < parseFloat(graphParameters.diffyy/2) ){
+            console.log("min_y_value_new:::"+min_y_value_new);
+            console.log("min_y::::"+min_y);
+            drag_sig_chart.yAxis[0].update({
+                min: parseFloat(-50)
+            });
+        }*/
+    };
     // menu Spline -> submenus 'zero order','linear','order 2','not_a_knot','periodic','monotone','fast','clamped'
     splineMenuOptions[0].onclick = function() {
         // zero order
         graphParameters.mtd = 0;
+        graphParameters.points = (drag_sig_chart.series[0].points).length;
+        graphParameters.xmaxTitle = (drag_sig_chart.xAxis[0].getExtremes().dataMax).toFixed(6)
         drag_sig_chart.setTitle(null, {
-            text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmax)
+            text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle)
             });
         drag_sig_chart.series[0].update({
                 type: "line",
@@ -281,8 +324,10 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     splineMenuOptions[1].onclick = function() {
         // linear
         graphParameters.mtd = 1;
+        graphParameters.points =(drag_sig_chart.series[0].points).length;
+        graphParameters.xmaxTitle = (drag_sig_chart.xAxis[0].getExtremes().dataMax).toFixed(6)
         drag_sig_chart.setTitle(null, {
-            text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmax)
+            text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle)
             });
         drag_sig_chart.series[0].update({
                 type: "line",
@@ -293,8 +338,10 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     splineMenuOptions[2].onclick = function() {
         // order 2
         graphParameters.mtd = 2;
+        graphParameters.points = (drag_sig_chart.series[0].points).length;
+        graphParameters.xmaxTitle = (drag_sig_chart.xAxis[0].getExtremes().dataMax).toFixed(6)
         drag_sig_chart.setTitle(null, {
-            text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmax)
+            text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle)
         });
         drag_sig_chart.series[0].update({
             type: "spline"
@@ -303,8 +350,10 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     splineMenuOptions[3].onclick = function() {
         // not_a_knot
         graphParameters.mtd = 3;
+        graphParameters.points = (drag_sig_chart.series[0].points).length;
+        graphParameters.xmaxTitle = (drag_sig_chart.xAxis[0].getExtremes().dataMax).toFixed(6)
         drag_sig_chart.setTitle(null, {
-            text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmax)
+            text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle)
             });
         drag_sig_chart.series[0].update({
                 type: "spline"
@@ -313,8 +362,10 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     splineMenuOptions[4].onclick = function() {
         // periodic
         graphParameters.mtd = 4;
+        graphParameters.points = (drag_sig_chart.series[0].points).length;
+        graphParameters.xmaxTitle = (drag_sig_chart.xAxis[0].getExtremes().dataMax).toFixed(6)
         drag_sig_chart.setTitle(null, {
-            text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmax)
+            text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle)
             });
         drag_sig_chart.series[0].update({
                 type: "spline"
@@ -323,8 +374,10 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     splineMenuOptions[5].onclick = function() {
         // monotone
         graphParameters.mtd = 5;
+        graphParameters.points = (drag_sig_chart.series[0].points).length;
+        graphParameters.xmaxTitle = (drag_sig_chart.xAxis[0].getExtremes().dataMax).toFixed(6)
         drag_sig_chart.setTitle(null, {
-            text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmax)
+            text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle)
             });
         drag_sig_chart.series[0].update({
                 type: "spline"
@@ -333,8 +386,10 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     splineMenuOptions[6].onclick = function() {
         // fast
         graphParameters.mtd = 6;
+        graphParameters.points = (drag_sig_chart.series[0].points).length;
+        graphParameters.xmaxTitle = (drag_sig_chart.xAxis[0].getExtremes().dataMax).toFixed(6)
         drag_sig_chart.setTitle(null, {
-            text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmax)
+            text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle)
             });
         drag_sig_chart.series[0].update({
                 type: "spline"
@@ -343,12 +398,18 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     splineMenuOptions[7].onclick = function() {
         //clamped
         graphParameters.mtd = 7;
+        graphParameters.points = (drag_sig_chart.series[0].points).length;
+        graphParameters.xmaxTitle = (drag_sig_chart.xAxis[0].getExtremes().dataMax).toFixed(6)
         drag_sig_chart.setTitle(null, {
-            text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmax)
+            text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle)
             });
         drag_sig_chart.series[0].update({
                 type: "spline"
         });
+    };
+    // menu Exit -> submenu Exit without save
+    exitMenuOptions[1].onclick = function() {
+        wind.destroy();
     };
     // menu Exit -> submenu Save/Exit
     exitMenuOptions[2].onclick = function() {

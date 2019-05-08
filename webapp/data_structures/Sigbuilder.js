@@ -408,12 +408,17 @@ function Sigbuilder() {
                 var xmax = parseFloat(Math.max(...xx_arry));
                 var ymin = parseFloat(Math.min(...yy_arry));
                 var ymax = parseFloat(Math.max(...yy_arry));
-                var diffxx = Math.abs(xx_arry[0] - xx_arry[1]);
-                var diffyy = Math.abs(yy_arry[0] - yy_arry[1]);
+                var diffxx = parseFloat((Math.abs(xx_arry[0] - xx_arry[1])).toFixed(1));
+                var diffyy = parseFloat((Math.abs(yy_arry[0] - yy_arry[1])).toFixed(1));
                 var charttype = getcharttype(mtd);
-                var pointinterval = 0.5;
+                var xpointinterval = parseFloat(0.5);
+                var xmaxTitle = xmax;
                 if(diffxx < 2){
-                    pointinterval = 0.2;
+                    xpointinterval = parseFloat(0.2);
+                    diffxx = xpointinterval;
+                    xmax = parseFloat(xmax + xpointinterval);
+                }else{
+                    xmax = parseFloat(xmax + diffxx);
                 }
                 var step = "";
                 var stepname = "";
@@ -421,22 +426,26 @@ function Sigbuilder() {
                     step = "left";
                     stepname = "Left"
                 }
+                ymax = parseFloat(ymax + diffyy);
+                ymin = parseFloat(ymin - diffyy);
                 var points = xx_arry.length;
                 var graphParameters = {
                     graphPoints: graphPoints,
                     xmin: xmin,
-                    xmax: xmax + diffxx,
+                    xmax: xmax,
                     ymin: ymin,
-                    ymax: ymax + diffyy,
+                    ymax: ymax,
                     chartType: charttype,
                     points: points,
                     mtd: mtd,
                     PeriodicOption: PeriodicOption1,
                     graf: graf1,
-                    xmax: xmax,
-                    pointInterval: pointinterval,
+                    xmaxTitle: xmaxTitle,
+                    xpointInterval: xpointinterval,
                     step: step,
-                    name: stepname
+                    name: stepname,
+                    diffxx : diffxx,
+                    diffyy : diffyy
                 };
                 if(check_call != 2){
                 showGraphWindowSigBlk(graph_sigbuilder,graphParameters,cell_sigbuilder);
