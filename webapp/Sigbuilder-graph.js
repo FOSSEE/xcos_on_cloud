@@ -268,6 +268,7 @@ graphParameters.diffyy);
 
     //menu Autoscale
     autoscale_menu.onclick = function() {
+        //Added for postive/maximum value autoscale functionality
         var max_x_value_new = (drag_sig_chart.xAxis[0].getExtremes().dataMax).toFixed(1);
         var max_y_value_new = (drag_sig_chart.yAxis[0].getExtremes().dataMax).toFixed(1);
         var max_x = drag_sig_chart.xAxis[0].getExtremes().max;
@@ -284,27 +285,23 @@ graphParameters.diffyy);
                 max: parseFloat(max_y)
             });
         }
-        /* Still need to add more code for minimum value drag functionality
-        console.log(drag_sig_chart.xAxis[0].getExtremes());
-        console.log(drag_sig_chart.yAxis[0].getExtremes());
+        //Added for negative/minimum value autoscale functionality for both axis
         var min_x_value_new = (drag_sig_chart.xAxis[0].getExtremes().dataMin).toFixed(1);
         var min_y_value_new = (drag_sig_chart.yAxis[0].getExtremes().dataMin).toFixed(1);
         var min_x = drag_sig_chart.xAxis[0].getExtremes().min;
         var min_y = drag_sig_chart.yAxis[0].getExtremes().min;
         if(Math.abs(min_x - min_x_value_new) < parseFloat(graphParameters.diffxx/2) ){
-            console.log("min_x_value_new::"+min_x_value_new);
-            console.log("min_x::::"+min_x);
+            min_x = parseFloat(parseFloat(min_x) - parseFloat(graphParameters.diffxx));
             drag_sig_chart.xAxis[0].update({
-                min: parseFloat(-50)
+                min: min_x
             });
         }
         if(Math.abs(min_y - min_y_value_new) < parseFloat(graphParameters.diffyy/2) ){
-            console.log("min_y_value_new:::"+min_y_value_new);
-            console.log("min_y::::"+min_y);
+            min_y = parseFloat(parseFloat(min_y) - parseFloat(graphParameters.diffyy));
             drag_sig_chart.yAxis[0].update({
-                min: parseFloat(-50)
+                min: min_y
             });
-        }*/
+        }
     };
     // menu Spline -> submenus 'zero order','linear','order 2','not_a_knot','periodic','monotone','fast','clamped'
     splineMenuOptions[0].onclick = function() {
