@@ -473,6 +473,19 @@ var create_draggable_points_chart_sigbuilder = function(graphPoints, pointsHisto
                         },
                         drop: function (e) {
                             pointsHistory.push(graphPoints.slice());
+                        },
+                        dblclick: function (e) {
+                            //Have to work on double click functionality
+                            console.log(e.point.x);
+                            console.log(e.point.y);
+                        },
+                        contextmenu: function (e) {
+                            var counter = e.point.index;
+                            if (counter > -1) {
+                                graphPoints.splice(counter, 1);
+                            }
+                            sigbuilder_Graph.series[0].data[counter].remove();
+                            pointsHistory.push(graphPoints.slice());
                         }
                     },
                     stickyTracking: false
