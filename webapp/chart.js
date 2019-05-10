@@ -412,7 +412,7 @@ var create_draggable_points_chart_sigbuilder = function(graphPoints, pointsHisto
                 click: function (e) {
                     this.series[0].addPoint([e.xAxis[0].value, e.yAxis[0].value]);
                     pointsHistory.push(graphPoints.slice());
-                    var pointscount = (pointsHistory[pointsHistory.length-1].length);
+                    var pointscount = sigbuilder_Graph.series[0].data.length;
                     xmaxtitle = (sigbuilder_Graph.xAxis[0].getExtremes().dataMax).toFixed(6);
                     this.setTitle(null, { text: updateSubtitleForSigbuilderGraph(pointscount, method, xmaxtitle)});
                 }
@@ -486,6 +486,9 @@ var create_draggable_points_chart_sigbuilder = function(graphPoints, pointsHisto
                             }
                             sigbuilder_Graph.series[0].data[counter].remove();
                             pointsHistory.push(graphPoints.slice());
+                            var pointscount = sigbuilder_Graph.series[0].data.length;
+                            xmaxtitle = (sigbuilder_Graph.xAxis[0].getExtremes().dataMax).toFixed(6);
+                            sigbuilder_Graph.setTitle(null, { text: updateSubtitleForSigbuilderGraph(pointscount, method, xmaxtitle)});
                         }
                     },
                     stickyTracking: false
