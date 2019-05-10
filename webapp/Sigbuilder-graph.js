@@ -268,32 +268,8 @@ graphParameters.diffyy);
 
     //menu Autoscale
     autoscale_menu.onclick = function() {
-        //Added for postive/maximum value autoscale functionality
-        var max_x_value_new = (drag_sig_chart.xAxis[0].getExtremes().dataMax).toFixed(1);
-        var max_y_value_new = (drag_sig_chart.yAxis[0].getExtremes().dataMax).toFixed(1);
-        var max_x = drag_sig_chart.xAxis[0].getExtremes().max;
-        var max_y = drag_sig_chart.yAxis[0].getExtremes().max;
-        if(Math.abs(max_x - max_x_value_new) < parseFloat(graphParameters.diffxx/2) ){
-            max_x = parseFloat(parseFloat(max_x) + parseFloat(graphParameters.diffxx)).toFixed(1);
-            drag_sig_chart.xAxis[0].update({
-                max: parseFloat(max_x)
-            });
-        }
-        if(Math.abs(max_y - max_y_value_new) < parseFloat(graphParameters.diffyy/2) ){
-            max_y = parseFloat(parseFloat(max_y) + parseFloat(graphParameters.diffyy)).toFixed(1);
-            drag_sig_chart.yAxis[0].update({
-                max: parseFloat(max_y)
-            });
-        }
-        //Added for negative/minimum value autoscale functionality for y axis
-        var min_y_value_new = (drag_sig_chart.yAxis[0].getExtremes().dataMin).toFixed(1);
-        var min_y = drag_sig_chart.yAxis[0].getExtremes().min;
-        if(Math.abs(min_y - min_y_value_new) < parseFloat(graphParameters.diffyy/2) ){
-            min_y = parseFloat(parseFloat(min_y) - parseFloat(graphParameters.diffyy));
-            drag_sig_chart.yAxis[0].update({
-                min: min_y
-            });
-        }
+        //Called function for autoscaling axis
+        autoscaleFunctionalityForGraph(drag_sig_chart,graphParameters);
     };
     // menu Spline -> submenus 'zero order','linear','order 2','not_a_knot','periodic','monotone','fast','clamped'
     splineMenuOptions[0].onclick = function() {
@@ -411,32 +387,9 @@ graphParameters.diffyy);
     // menu Exit -> submenu Save/Exit
     exitMenuOptions[2].onclick = function() {
 
-        //Updating maximum and minimum values fo both axis as after removing points , scale need to be updated
-        var max_x_value_new = (drag_sig_chart.xAxis[0].getExtremes().dataMax).toFixed(1);
-        var max_y_value_new = (drag_sig_chart.yAxis[0].getExtremes().dataMax).toFixed(1);
-        var max_x = drag_sig_chart.xAxis[0].getExtremes().max;
-        var max_y = drag_sig_chart.yAxis[0].getExtremes().max;
-        if(Math.abs(max_x - max_x_value_new) < parseFloat(graphParameters.diffxx/2) ){
-            max_x = parseFloat(parseFloat(max_x) + parseFloat(graphParameters.diffxx)).toFixed(1);
-            drag_sig_chart.xAxis[0].update({
-                max: parseFloat(max_x)
-            });
-        }
-        if(Math.abs(max_y - max_y_value_new) < parseFloat(graphParameters.diffyy/2) ){
-            max_y = parseFloat(parseFloat(max_y) + parseFloat(graphParameters.diffyy)).toFixed(1);
-            drag_sig_chart.yAxis[0].update({
-                max: parseFloat(max_y)
-            });
-        }
-        //Added for negative/minimum value autoscale functionality for y axis
-        var min_y_value_new = (drag_sig_chart.yAxis[0].getExtremes().dataMin).toFixed(1);
-        var min_y = drag_sig_chart.yAxis[0].getExtremes().min;
-        if(Math.abs(min_y - min_y_value_new) < parseFloat(graphParameters.diffyy/2) ){
-            min_y = parseFloat(parseFloat(min_y) - parseFloat(graphParameters.diffyy));
-            drag_sig_chart.yAxis[0].update({
-                min: min_y
-            });
-        }
+        //Called function for autoscaling axis according to new points
+        autoscaleFunctionalityForGraph(drag_sig_chart,graphParameters);
+
         //Saving points and sending it to set method of JS
         var propertiesObject = {
                     id: cell.id
@@ -480,4 +433,33 @@ graphParameters.diffyy);
         cell.blockInstance.instance.set(propertiesObject);
     };
     check_call = 1;
+}
+
+function autoscaleFunctionalityForGraph(drag_sig_chart,graphParameters){
+    //Added for postive/maximum value autoscale functionality
+        var max_x_value_new = (drag_sig_chart.xAxis[0].getExtremes().dataMax).toFixed(1);
+        var max_y_value_new = (drag_sig_chart.yAxis[0].getExtremes().dataMax).toFixed(1);
+        var max_x = drag_sig_chart.xAxis[0].getExtremes().max;
+        var max_y = drag_sig_chart.yAxis[0].getExtremes().max;
+        if(Math.abs(max_x - max_x_value_new) < parseFloat(graphParameters.diffxx/2) ){
+            max_x = parseFloat(parseFloat(max_x) + parseFloat(graphParameters.diffxx)).toFixed(1);
+            drag_sig_chart.xAxis[0].update({
+                max: parseFloat(max_x)
+            });
+        }
+        if(Math.abs(max_y - max_y_value_new) < parseFloat(graphParameters.diffyy/2) ){
+            max_y = parseFloat(parseFloat(max_y) + parseFloat(graphParameters.diffyy)).toFixed(1);
+            drag_sig_chart.yAxis[0].update({
+                max: parseFloat(max_y)
+            });
+        }
+        //Added for negative/minimum value autoscale functionality for y axis
+        var min_y_value_new = (drag_sig_chart.yAxis[0].getExtremes().dataMin).toFixed(1);
+        var min_y = drag_sig_chart.yAxis[0].getExtremes().min;
+        if(Math.abs(min_y - min_y_value_new) < parseFloat(graphParameters.diffyy/2) ){
+            min_y = parseFloat(parseFloat(min_y) - parseFloat(graphParameters.diffyy));
+            drag_sig_chart.yAxis[0].update({
+                min: min_y
+            });
+        }
 }
