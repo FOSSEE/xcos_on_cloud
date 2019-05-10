@@ -410,11 +410,9 @@ var create_draggable_points_chart_sigbuilder = function(graphPoints, pointsHisto
             animation: false,
             events: {
                 click: function (e) {
-                    this.series[0].addPoint([e.xAxis[0].value, e.yAxis[0].value]);
-                    pointsHistory.push(graphPoints.slice());
-                    var pointscount = sigbuilder_Graph.series[0].data.length;
-                    xmaxtitle = (sigbuilder_Graph.xAxis[0].getExtremes().dataMax).toFixed(6);
-                    this.setTitle(null, { text: updateSubtitleForSigbuilderGraph(pointscount, method, xmaxtitle)});
+                    var x_value = e.xAxis[0].value;
+                    var y_value = e.yAxis[0].value;
+                    addPointsOnChart(sigbuilder_Graph, graphPoints, pointsHistory, x_value, y_value, method);
                 }
             }
         },
@@ -475,20 +473,12 @@ var create_draggable_points_chart_sigbuilder = function(graphPoints, pointsHisto
                             pointsHistory.push(graphPoints.slice());
                         },
                         dblclick: function (e) {
-                            //Have to work on double click functionality
-                            console.log(e.point.x);
-                            console.log(e.point.y);
+                            var graphObject = e;
+                            editPointsValue(graphObject, graph_sigbuilder, sigbuilder_Graph, graphPoints, pointsHistory, method);
                         },
                         contextmenu: function (e) {
-                            var counter = e.point.index;
-                            if (counter > -1) {
-                                graphPoints.splice(counter, 1);
-                            }
-                            sigbuilder_Graph.series[0].data[counter].remove();
-                            pointsHistory.push(graphPoints.slice());
-                            var pointscount = sigbuilder_Graph.series[0].data.length;
-                            xmaxtitle = (sigbuilder_Graph.xAxis[0].getExtremes().dataMax).toFixed(6);
-                            sigbuilder_Graph.setTitle(null, { text: updateSubtitleForSigbuilderGraph(pointscount, method, xmaxtitle)});
+                            var graphObject = e;
+                            removePointsFromChart(graphObject, sigbuilder_Graph, graphPoints, pointsHistory, method);
                         }
                     },
                     stickyTracking: false
