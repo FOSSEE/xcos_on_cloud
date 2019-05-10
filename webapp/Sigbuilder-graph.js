@@ -463,3 +463,116 @@ function autoscaleFunctionalityForGraph(drag_sig_chart,graphParameters){
             });
         }
 }
+
+function editPointsValue(graphObject,graph,sigbuilder_Graph,graphPoints, pointsHistory, method){
+
+    // Create basic structure for the form
+    var content = document.createElement('div');
+    content.setAttribute("id", "editCoordinates");
+
+    // Add Form
+    var myform = document.createElement("form");
+    myform.method = "post";
+    myform.id = "formEditCoordinate";
+    myform.style.padding = "10px";
+
+    var titlelabel = document.createElement('span');
+    titlelabel.innerHTML = "Enter new x and y";
+    myform.appendChild(titlelabel);
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    var keys = Object.keys(graphObject.point.options);
+    var len = keys.length;
+    for(var i = 0; i < len; i++){
+        // Input Title
+        var namelabel = document.createElement('label');
+        namelabel.innerHTML = keys[i].toString();
+        namelabel.style.marginLeft = "30px";
+        myform.appendChild(namelabel);
+
+        var value = 0;
+        if(((graphObject.point.options[keys[i]]).toString()).includes(".")){
+            value = (graphObject.point.options[keys[i]]).toFixed(6);
+        }else{
+            value = (graphObject.point.options[keys[i]]);
+        }
+        // Input
+        var input = document.createElement("input");
+        input.name = "edit_"+keys[i].toString();
+        input.value = value;
+        input.setAttribute("id", "edit_"+keys[i].toString());
+        input.setAttribute("class", "fieldInput");
+        myform.appendChild(input);
+
+        // Line break
+        var linebreak = document.createElement('br');
+        myform.appendChild(linebreak);
+
+        // Line break
+        var linebreak = document.createElement('br');
+        myform.appendChild(linebreak);
+
+    }
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    // Button - Cancel
+    var cancel_btn = document.createElement("button");
+    cancel_btn.style.cssFloat = "right";
+    cancel_btn.innerHTML = 'Cancel';
+    cancel_btn.type = "button";
+    cancel_btn.name = "Cancel";
+    myform.appendChild(cancel_btn);
+
+    // Button - OK
+    var ok_btn = document.createElement("button");
+    ok_btn.style.cssFloat = "right";
+    ok_btn.style.marginRight = "20px";
+    ok_btn.innerHTML = 'OK';
+    ok_btn.type = "button";
+    ok_btn.name = "OK";
+
+    myform.appendChild(ok_btn);
+    content.appendChild(myform);
+    var height = 150;
+    var wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 200, height);
+
+    // Executes when button 'cancel_btn' is clicked
+    cancel_btn.onclick = function() {
+        wind.destroy();
+    };
+    // Executes when button 'ok_btn' is clicked
+    ok_btn.onclick = function() {
+        var x_value = parseFloat(document.getElementById("edit_x").value);
+        var y_value = parseFloat(document.getElementById("edit_y").value);
+        removePointsFromChart(graphObject,sigbuilder_Graph,graphPoints, pointsHistory,method);
+        addPointsOnChart(sigbuilder_Graph,graphPoints, pointsHistory,x_value,y_value,method);
+        wind.destroy();
+    };
+}
+
+function removePointsFromChart(graphObject, sigbuilder_Graph, graphPoints, pointsHistory, method){
+    var counter = graphObject.point.index;
+    if (counter > -1) {
+        graphPoints.splice(counter, 1);
+    }
+    sigbuilder_Graph.series[0].data[counter].remove();
+    pointsHistory.push(graphPoints.slice());
+    var pointscount = sigbuilder_Graph.series[0].data.length;
+    xmaxtitle = (sigbuilder_Graph.xAxis[0].getExtremes().dataMax).toFixed(6);
+    sigbuilder_Graph.setTitle(null, { text: updateSubtitleForSigbuilderGraph(pointscount, method, xmaxtitle)});
+}
+
+function addPointsOnChart(sigbuilder_Graph, graphPoints, pointsHistory, x_value, y_value, method){
+    sigbuilder_Graph.series[0].addPoint([x_value, y_value]);
+    pointsHistory.push(graphPoints.slice());
+    var pointscount = sigbuilder_Graph.series[0].data.length;
+    xmaxtitle = (sigbuilder_Graph.xAxis[0].getExtremes().dataMax).toFixed(6);
+    sigbuilder_Graph.setTitle(null, { text: updateSubtitleForSigbuilderGraph(pointscount, method, xmaxtitle)});
+}
