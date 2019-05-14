@@ -165,9 +165,12 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     fileSelector.setAttribute("id","inputFile");
     chart.appendChild(fileSelector);
     content.appendChild(chart);
-    var wind = showModalWindow(graph, 'Graphic Window', content, 550, 450);
-    drag_sig_chart = create_draggable_points_chart_sigbuilder(graphParameters.graphPoints, pointsHistory, graphParameters.xmin, graphParameters.xmax, graphParameters.ymin, graphParameters.ymax, graphParameters.chartType, graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle,graphParameters.xpointInterval,graphParameters.step,graphParameters.stepname,graphParameters.diffxx,
-graphParameters.diffyy);
+    var messageLabel = document.createElement('span');
+    messageLabel.innerHTML = "";
+    messageLabel.setAttribute('id','messageLabel');
+    content.appendChild(messageLabel);
+    var wind = showModalWindow(graph, 'Graphic Window', content, 550, 480);
+    drag_sig_chart = create_draggable_points_chart_sigbuilder(graphParameters, pointsHistory, graphParameters.xmin, graphParameters.xmax, graphParameters.ymin, graphParameters.ymax, graphParameters.chartType, graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle,graphParameters.xpointInterval,graphParameters.step,graphParameters.stepname);
     //For displaying and hiding of submenus
     content.onclick = function() {
         fileSubMenu.style.display = 'none';
@@ -372,6 +375,10 @@ graphParameters.diffyy);
                 type: "spline"
         });
     };
+    //menu Data - > Data Bounds
+    dataMenuOptions[1].onclick = function() {
+        editandUpdateDataBoundsValue(graph_sigbuilder,drag_sig_chart);
+    };
     // menu Exit -> Help
     exitMenuOptions[0].onclick = function() {
        alert("Mouse-left click: adding a new point\n"+
@@ -441,14 +448,14 @@ function autoscaleFunctionalityForGraph(drag_sig_chart,graphParameters){
         var max_y_value_new = (drag_sig_chart.yAxis[0].getExtremes().dataMax).toFixed(1);
         var max_x = drag_sig_chart.xAxis[0].getExtremes().max;
         var max_y = drag_sig_chart.yAxis[0].getExtremes().max;
-        if(Math.abs(max_x - max_x_value_new) < parseFloat(graphParameters.diffxx/2) ){
-            max_x = parseFloat(parseFloat(max_x) + parseFloat(graphParameters.diffxx)).toFixed(1);
+        if(Math.abs(max_x - max_x_value_new) < parseFloat(graphParameters.xpointinterval) ){
+            max_x = parseFloat(parseFloat(max_x) + parseFloat(graphParameters.xpointinterval)).toFixed(1);
             drag_sig_chart.xAxis[0].update({
                 max: parseFloat(max_x)
             });
         }
-        if(Math.abs(max_y - max_y_value_new) < parseFloat(graphParameters.diffyy/2) ){
-            max_y = parseFloat(parseFloat(max_y) + parseFloat(graphParameters.diffyy)).toFixed(1);
+        if(Math.abs(max_y - max_y_value_new) < parseFloat(10/2) ){
+            max_y = parseFloat(parseFloat(max_y) + parseFloat(5)).toFixed(1);
             drag_sig_chart.yAxis[0].update({
                 max: parseFloat(max_y)
             });
@@ -456,15 +463,125 @@ function autoscaleFunctionalityForGraph(drag_sig_chart,graphParameters){
         //Added for negative/minimum value autoscale functionality for y axis
         var min_y_value_new = (drag_sig_chart.yAxis[0].getExtremes().dataMin).toFixed(1);
         var min_y = drag_sig_chart.yAxis[0].getExtremes().min;
-        if(Math.abs(min_y - min_y_value_new) < parseFloat(graphParameters.diffyy/2) ){
-            min_y = parseFloat(parseFloat(min_y) - parseFloat(graphParameters.diffyy));
+        if(Math.abs(min_y - min_y_value_new) < parseFloat(10/2) ){
+            min_y = parseFloat(parseFloat(min_y) - parseFloat(5)).toFixed(1);
             drag_sig_chart.yAxis[0].update({
                 min: min_y
             });
         }
 }
 
-function editPointsValue(graphObject,graph,sigbuilder_Graph,graphPoints, pointsHistory, method){
+function editandUpdateDataBoundsValue(graph,sigbuilder_Graph){
+    // Create basic structure for the form
+    var content = document.createElement('div');
+    content.setAttribute("id", "editDataBounds");
+
+    // Add Form
+    var myform = document.createElement("form");
+    myform.method = "post";
+    myform.id = "formEditDataBounds";
+    myform.style.padding = "10px";
+
+    var titlelabel = document.createElement('span');
+    titlelabel.innerHTML = "Enter new bounds";
+    myform.appendChild(titlelabel);
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+    var min_x = sigbuilder_Graph.xAxis[0].getExtremes().min;
+    var max_x = sigbuilder_Graph.xAxis[0].getExtremes().max;
+    var min_y = sigbuilder_Graph.yAxis[0].getExtremes().min;
+    var max_y = sigbuilder_Graph.yAxis[0].getExtremes().max;
+    var labelArray = ['xmin','xmax','ymin','ymax'];
+    var textValueArray = [min_x,max_x,min_y,max_y];
+    for(var i = 0; i < labelArray.length; i++){
+        // Input Title
+        var namelabel = document.createElement('label');
+        namelabel.innerHTML = labelArray[i];
+        namelabel.style.marginLeft = "30px";
+        myform.appendChild(namelabel);
+
+        var value = 0;
+        if(((textValueArray[i]).toString()).includes(".")){
+            value = (textValueArray[i]).toFixed(6);
+        }else{
+            value = (textValueArray[i]);
+        }
+        // Input
+        var input = document.createElement("input");
+        input.name = "edit_"+labelArray[i].toString();
+        input.value = value;
+        input.setAttribute("id", "edit_"+labelArray[i].toString());
+        input.setAttribute("class", "fieldInput");
+        myform.appendChild(input);
+
+        // Line break
+        var linebreak = document.createElement('br');
+        myform.appendChild(linebreak);
+
+        // Line break
+        var linebreak = document.createElement('br');
+        myform.appendChild(linebreak);
+
+    }
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    // Button - Cancel
+    var cancel_btn = document.createElement("button");
+    cancel_btn.style.cssFloat = "right";
+    cancel_btn.innerHTML = 'Cancel';
+    cancel_btn.type = "button";
+    cancel_btn.name = "Cancel";
+    myform.appendChild(cancel_btn);
+
+    // Button - OK
+    var ok_btn = document.createElement("button");
+    ok_btn.style.cssFloat = "right";
+    ok_btn.style.marginRight = "20px";
+    ok_btn.innerHTML = 'OK';
+    ok_btn.type = "button";
+    ok_btn.name = "OK";
+
+    myform.appendChild(ok_btn);
+    content.appendChild(myform);
+    var height = 200;
+    var wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 300, height);
+
+    // Executes when button 'cancel_btn' is clicked
+    cancel_btn.onclick = function() {
+        document.getElementById("messageLabel").innerHTML = "";
+        wind.destroy();
+    };
+    // Executes when button 'ok_btn' is clicked
+    ok_btn.onclick = function() {
+        var x_min = parseFloat(document.getElementById("edit_xmin").value);
+        var x_max = parseFloat(document.getElementById("edit_xmax").value);
+        var y_min = parseFloat(document.getElementById("edit_ymin").value);
+        var y_max = parseFloat(document.getElementById("edit_ymax").value);
+        if(x_min < 0){
+            document.getElementById("messageLabel").innerHTML = "X should be positive";
+        }else{
+            document.getElementById("messageLabel").innerHTML = "";
+        }
+        sigbuilder_Graph.xAxis[0].update({
+                max: parseFloat(x_max)
+            });
+        sigbuilder_Graph.yAxis[0].update({
+                max: parseFloat(y_max)
+            });
+        sigbuilder_Graph.yAxis[0].update({
+                min: parseFloat(y_min)
+            });
+        wind.destroy();
+    };
+}
+
+function editPointsValue(graphObject,graph,sigbuilder_Graph,graphParameters, pointsHistory, method){
 
     // Create basic structure for the form
     var content = document.createElement('div');
@@ -551,27 +668,24 @@ function editPointsValue(graphObject,graph,sigbuilder_Graph,graphPoints, pointsH
     ok_btn.onclick = function() {
         var x_value = parseFloat(document.getElementById("edit_x").value);
         var y_value = parseFloat(document.getElementById("edit_y").value);
-        removePointsFromChart(graphObject,sigbuilder_Graph,graphPoints, pointsHistory,method);
-        addPointsOnChart(sigbuilder_Graph,graphPoints, pointsHistory,x_value,y_value,method);
+        removePointsFromChart(graphObject,sigbuilder_Graph,graphParameters, pointsHistory,method);
+        addPointsOnChart(sigbuilder_Graph,graphParameters, pointsHistory,x_value,y_value,method);
         wind.destroy();
     };
 }
 
-function removePointsFromChart(graphObject, sigbuilder_Graph, graphPoints, pointsHistory, method){
+function removePointsFromChart(graphObject, sigbuilder_Graph, graphParameters, pointsHistory, method){
     var counter = graphObject.point.index;
-    if (counter > -1) {
-        graphPoints.splice(counter, 1);
-    }
     sigbuilder_Graph.series[0].data[counter].remove();
-    pointsHistory.push(graphPoints.slice());
+    pointsHistory.push(graphParameters.graphPoints.slice());
     var pointscount = sigbuilder_Graph.series[0].data.length;
     xmaxtitle = (sigbuilder_Graph.xAxis[0].getExtremes().dataMax).toFixed(6);
     sigbuilder_Graph.setTitle(null, { text: updateSubtitleForSigbuilderGraph(pointscount, method, xmaxtitle)});
 }
 
-function addPointsOnChart(sigbuilder_Graph, graphPoints, pointsHistory, x_value, y_value, method){
+function addPointsOnChart(sigbuilder_Graph, graphParameters, pointsHistory, x_value, y_value, method){
     sigbuilder_Graph.series[0].addPoint([x_value, y_value]);
-    pointsHistory.push(graphPoints.slice());
+    pointsHistory.push(graphParameters.graphPoints.slice());
     var pointscount = sigbuilder_Graph.series[0].data.length;
     xmaxtitle = (sigbuilder_Graph.xAxis[0].getExtremes().dataMax).toFixed(6);
     sigbuilder_Graph.setTitle(null, { text: updateSubtitleForSigbuilderGraph(pointscount, method, xmaxtitle)});

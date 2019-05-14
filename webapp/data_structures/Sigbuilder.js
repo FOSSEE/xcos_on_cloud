@@ -405,20 +405,20 @@ function Sigbuilder() {
                     graphPoints[i] = arry;
                 }
                 var xmin = parseFloat(Math.min(...xx_arry));
+                if(xmin < 0){
+                    xmin = 0;
+                }
                 var xmax = parseFloat(Math.max(...xx_arry));
                 var ymin = parseFloat(Math.min(...yy_arry));
                 var ymax = parseFloat(Math.max(...yy_arry));
-                var diffxx = parseFloat((Math.abs(xx_arry[0] - xx_arry[1])).toFixed(1));
-                var diffyy = parseFloat((Math.abs(yy_arry[0] - yy_arry[1])).toFixed(1));
                 var charttype = getcharttype(mtd);
                 var xpointinterval = parseFloat(0.5);
                 var xmaxTitle = xmax;
-                if(diffxx < 2){
+                if(xmax <= 2){
                     xpointinterval = parseFloat(0.2);
-                    diffxx = xpointinterval;
                     xmax = parseFloat(xmax + xpointinterval);
                 }else{
-                    xmax = parseFloat(xmax + diffxx);
+                    xmax = parseFloat(xmax + 1);
                 }
                 var step = "";
                 var stepname = "";
@@ -426,8 +426,8 @@ function Sigbuilder() {
                     step = "left";
                     stepname = "Left"
                 }
-                ymax = parseFloat(ymax + diffyy);
-                ymin = parseFloat(ymin - diffyy);
+                ymax = parseFloat(ymax + 1);
+                ymin = parseFloat(ymin - 1);
                 var points = xx_arry.length;
                 var graphParameters = {
                     graphPoints: graphPoints,
@@ -443,9 +443,7 @@ function Sigbuilder() {
                     xmaxTitle: xmaxTitle,
                     xpointInterval: xpointinterval,
                     step: step,
-                    name: stepname,
-                    diffxx : diffxx,
-                    diffyy : diffyy
+                    name: stepname
                 };
                 if(check_call != 2){
                 showGraphWindowSigBlk(graph_sigbuilder,graphParameters,cell_sigbuilder);

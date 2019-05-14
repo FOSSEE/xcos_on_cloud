@@ -399,10 +399,10 @@ var create_draggable_points_chart = function(graphPoints, pointsHistory, xmin, x
 };
 
 // Function to create a chart with responsive points for Sigbuilder
-var create_draggable_points_chart_sigbuilder = function(graphPoints, pointsHistory, xmin, xmax, ymin, ymax, chart_type, points, method, xmaxtitle,xpointinterval,step,stepname) {
+var create_draggable_points_chart_sigbuilder = function(graphParameters, pointsHistory, xmin, xmax, ymin, ymax, chart_type, points, method, xmaxtitle,xpointinterval,step,stepname) {
 
     var subtitle = updateSubtitleForSigbuilderGraph(points, method, xmaxtitle);
-    pointsHistory.push(graphPoints.slice());
+    pointsHistory.push(graphParameters.graphPoints.slice());
 
     sigbuilder_Graph = Highcharts.chart('drag_sig_chart', {
         chart: {
@@ -412,7 +412,7 @@ var create_draggable_points_chart_sigbuilder = function(graphPoints, pointsHisto
                 click: function (e) {
                     var x_value = e.xAxis[0].value;
                     var y_value = e.yAxis[0].value;
-                    addPointsOnChart(sigbuilder_Graph, graphPoints, pointsHistory, x_value, y_value, method);
+                    addPointsOnChart(sigbuilder_Graph, graphParameters, pointsHistory, x_value, y_value, method);
                 }
             }
         },
@@ -470,15 +470,15 @@ var create_draggable_points_chart_sigbuilder = function(graphPoints, pointsHisto
                             }
                         },
                         drop: function (e) {
-                            pointsHistory.push(graphPoints.slice());
+                            pointsHistory.push(graphParameters.graphPoints.slice());
                         },
                         dblclick: function (e) {
                             var graphObject = e;
-                            editPointsValue(graphObject, graph_sigbuilder, sigbuilder_Graph, graphPoints, pointsHistory, method);
+                            editPointsValue(graphObject, graph_sigbuilder, sigbuilder_Graph, graphParameters, pointsHistory, method);
                         },
                         contextmenu: function (e) {
                             var graphObject = e;
-                            removePointsFromChart(graphObject, sigbuilder_Graph, graphPoints, pointsHistory, method);
+                            removePointsFromChart(graphObject, sigbuilder_Graph, graphParameters, pointsHistory, method);
                         }
                     },
                     stickyTracking: false
@@ -496,7 +496,7 @@ var create_draggable_points_chart_sigbuilder = function(graphPoints, pointsHisto
             draggableX: true,
             draggableY: true,
             showInLegend: false,
-            data: graphPoints,
+            data: graphParameters.graphPoints,
             step: step,
             name: stepname
         }]
