@@ -375,9 +375,25 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
                 type: "spline"
         });
     };
+    //menu Data - > Clear
+    dataMenuOptions[0].onclick = function() {
+        clearPoints(drag_sig_chart, graphParameters, pointsHistory);
+    };
     //menu Data - > Data Bounds
     dataMenuOptions[1].onclick = function() {
         editandUpdateDataBoundsValue(graph_sigbuilder,drag_sig_chart);
+    };
+    //menu Data - > Load from text file
+    dataMenuOptions[2].onclick = function() {
+        loadPointsFromDatFile(graph_sigbuilder,drag_sig_chart,fileSelector);
+    };
+    //menu Data - > Save to text file
+    dataMenuOptions[3].onclick = function() {
+        saveToTextFile(graph_sigbuilder,drag_sig_chart,fileSelector);
+    };
+    //menu Data - > Load from Excel
+    dataMenuOptions[4].onclick = function() {
+        loadFromExcel(graph_sigbuilder,drag_sig_chart,fileSelector);
     };
     // menu Exit -> Help
     exitMenuOptions[0].onclick = function() {
@@ -394,15 +410,15 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     // menu Exit -> submenu Save/Exit
     exitMenuOptions[2].onclick = function() {
 
+        var x_arr = "";
+        var y_arr = "";
+        if(graphParameters.graphPoints!=[] && graphParameters.graphPoints.length!=0){
         //Called function for autoscaling axis according to new points
         autoscaleFunctionalityForGraph(drag_sig_chart,graphParameters);
 
         //Saving points and sending it to set method of JS
-        var propertiesObject = {
-                    id: cell.id
-                };
-        var x_arr = "[";
-        var y_arr = "[";
+        x_arr = "[";
+        y_arr = "[";
         graphParameters.graphPoints = objToArrayList(graphParameters.graphPoints);
         for (var i = 0; i < graphParameters.graphPoints.length; i++){
             var x = graphParameters.graphPoints[i][0];
@@ -426,6 +442,10 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
                 x_arr += x + ";";
                 y_arr += y + ";";
             }
+        }
+        }else{
+            x_arr = "[0]";
+            y_arr = "[0]";
         }
         var propertiesObject = {
             id: cell.id
@@ -469,6 +489,12 @@ function autoscaleFunctionalityForGraph(drag_sig_chart,graphParameters){
                 min: min_y
             });
         }
+}
+
+function clearPoints(sigbuilder_Graph, graphParameters, pointsHistory){
+    sigbuilder_Graph.series[0].setData([]);
+    graphParameters.graphPoints = [];
+    pointsHistory = [];
 }
 
 function editandUpdateDataBoundsValue(graph,sigbuilder_Graph){
@@ -580,6 +606,282 @@ function editandUpdateDataBoundsValue(graph,sigbuilder_Graph){
         wind.destroy();
     };
 }
+
+function loadPointsFromDatFile(graph,sigbuilder_Graph,fileSelector){
+
+    // Create basic structure for the form
+    var content = document.createElement('div');
+    content.setAttribute("id", "loadFromDatFile");
+
+    // Add Form
+    var myform = document.createElement("form");
+    myform.method = "post";
+    myform.id = "formLoadFromDatFile";
+    myform.style.padding = "10px";
+
+    var titlelabel = document.createElement('span');
+    titlelabel.innerHTML = "Text data file";
+    myform.appendChild(titlelabel);
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    var labelArray = ['Filename','Reading [C] format','Abscissa column','Output column'];
+    var textValueArray = ["mydatafile.dat","%g %g","1","2"];
+    for(var i = 0; i < labelArray.length; i++){
+        // Input Title
+        var namelabel = document.createElement('label');
+        namelabel.innerHTML = labelArray[i];
+        namelabel.style.marginLeft = "30px";
+        myform.appendChild(namelabel);
+
+        // Input
+        var input = document.createElement("input");
+        input.name = "edit_"+labelArray[i].toString();
+        input.placeholder = textValueArray[i];
+        input.setAttribute("id", "fileupload_"+i.toString());
+        input.setAttribute("class", "fieldInput");
+        myform.appendChild(input);
+
+        // Line break
+        var linebreak = document.createElement('br');
+        myform.appendChild(linebreak);
+
+        // Line break
+        var linebreak = document.createElement('br');
+        myform.appendChild(linebreak);
+
+    }
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    // Button - Cancel
+    var cancel_btn = document.createElement("button");
+    cancel_btn.style.cssFloat = "right";
+    cancel_btn.innerHTML = 'Cancel';
+    cancel_btn.type = "button";
+    cancel_btn.name = "Cancel";
+    myform.appendChild(cancel_btn);
+
+    // Button - OK
+    var ok_btn = document.createElement("button");
+    ok_btn.style.cssFloat = "right";
+    ok_btn.style.marginRight = "20px";
+    ok_btn.innerHTML = 'OK';
+    ok_btn.type = "button";
+    ok_btn.name = "OK";
+
+    myform.appendChild(ok_btn);
+    content.appendChild(myform);
+    var height = 220;
+    var wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 300, height);
+
+    var filename_input = document.getElementById("fileupload_0");
+    filename_input.readOnly = true;
+    filename_input.onfocus = function(){
+        if ("FileReader" in window) {
+            fileSelector.click();
+        } else {
+            alert("Your browser does not support the HTML5 FileReader.");
+        }
+    }
+    // Executes when button 'cancel_btn' is clicked
+    cancel_btn.onclick = function() {
+        wind.destroy();
+    };
+    // Executes when button 'ok_btn' is clicked
+    ok_btn.onclick = function() {
+        wind.destroy();
+    };
+
+}
+
+function saveToTextFile(graph,sigbuilder_Graph,fileSelector){
+
+    // Create basic structure for the form
+    var content = document.createElement('div');
+    content.setAttribute("id", "saveToDatFile");
+
+    // Add Form
+    var myform = document.createElement("form");
+    myform.method = "post";
+    myform.id = "formSaveToDatFile";
+    myform.style.padding = "10px";
+
+    var titlelabel = document.createElement('span');
+    titlelabel.innerHTML = "Text data file";
+    myform.appendChild(titlelabel);
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    var labelArray = ['Filename','Writing [C] format'];
+    var textValueArray = ["mydatafile.dat","%g %g"];
+    for(var i = 0; i < labelArray.length; i++){
+        // Input Title
+        var namelabel = document.createElement('label');
+        namelabel.innerHTML = labelArray[i];
+        namelabel.style.marginLeft = "30px";
+        myform.appendChild(namelabel);
+
+        // Input
+        var input = document.createElement("input");
+        input.name = "edit_"+labelArray[i].toString();
+        input.value = textValueArray[i];
+        input.setAttribute("id", "filesave_"+i.toString());
+        input.setAttribute("class", "fieldInput");
+        myform.appendChild(input);
+
+        // Line break
+        var linebreak = document.createElement('br');
+        myform.appendChild(linebreak);
+
+        // Line break
+        var linebreak = document.createElement('br');
+        myform.appendChild(linebreak);
+
+    }
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    // Button - Cancel
+    var cancel_btn = document.createElement("button");
+    cancel_btn.style.cssFloat = "right";
+    cancel_btn.innerHTML = 'Cancel';
+    cancel_btn.type = "button";
+    cancel_btn.name = "Cancel";
+    myform.appendChild(cancel_btn);
+
+    // Button - OK
+    var ok_btn = document.createElement("button");
+    ok_btn.style.cssFloat = "right";
+    ok_btn.style.marginRight = "20px";
+    ok_btn.innerHTML = 'OK';
+    ok_btn.type = "button";
+    ok_btn.name = "OK";
+
+    myform.appendChild(ok_btn);
+    content.appendChild(myform);
+    var height = 180;
+    var wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 300, height);
+
+    // Executes when button 'cancel_btn' is clicked
+    cancel_btn.onclick = function() {
+        wind.destroy();
+    };
+    // Executes when button 'ok_btn' is clicked
+    ok_btn.onclick = function() {
+        wind.destroy();
+    };
+
+
+}
+
+function loadFromExcel(graph,sigbuilder_Graph,fileSelector){
+
+    // Create basic structure for the form
+    var content = document.createElement('div');
+    content.setAttribute("id", "loadFromExcel");
+
+    // Add Form
+    var myform = document.createElement("form");
+    myform.method = "post";
+    myform.id = "formloadFromExcel";
+    myform.style.padding = "10px";
+
+    var titlelabel = document.createElement('span');
+    titlelabel.innerHTML = "Excel data file";
+    myform.appendChild(titlelabel);
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    var labelArray = ['Filename','Sheet #','X[start:stop]','Y[start:stop]'];
+    var textValueArray = ["Classeur1.xls","1","C5:C25","D5:D25"];
+    for(var i = 0; i < labelArray.length; i++){
+        // Input Title
+        var namelabel = document.createElement('label');
+        namelabel.innerHTML = labelArray[i];
+        namelabel.style.marginLeft = "30px";
+        myform.appendChild(namelabel);
+
+        // Input
+        var input = document.createElement("input");
+        input.name = "edit_"+labelArray[i].toString();
+        input.placeholder = textValueArray[i];
+        input.setAttribute("id", "filesave_"+i.toString());
+        input.setAttribute("class", "fieldInput");
+        myform.appendChild(input);
+
+        // Line break
+        var linebreak = document.createElement('br');
+        myform.appendChild(linebreak);
+
+        // Line break
+        var linebreak = document.createElement('br');
+        myform.appendChild(linebreak);
+
+    }
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    // Button - Cancel
+    var cancel_btn = document.createElement("button");
+    cancel_btn.style.cssFloat = "right";
+    cancel_btn.innerHTML = 'Cancel';
+    cancel_btn.type = "button";
+    cancel_btn.name = "Cancel";
+    myform.appendChild(cancel_btn);
+
+    // Button - OK
+    var ok_btn = document.createElement("button");
+    ok_btn.style.cssFloat = "right";
+    ok_btn.style.marginRight = "20px";
+    ok_btn.innerHTML = 'OK';
+    ok_btn.type = "button";
+    ok_btn.name = "OK";
+
+    myform.appendChild(ok_btn);
+    content.appendChild(myform);
+    var height = 220;
+    var wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 300, height);
+
+    // Executes when button 'cancel_btn' is clicked
+    cancel_btn.onclick = function() {
+        wind.destroy();
+    };
+    // Executes when button 'ok_btn' is clicked
+    ok_btn.onclick = function() {
+        wind.destroy();
+    };
+
+
+}
+
 
 function editPointsValue(graphObject,graph,sigbuilder_Graph,graphParameters, pointsHistory, method){
 
