@@ -353,6 +353,8 @@ function Sigbuilder() {
                 for(var i = 0;i<x_size.length;i++){
                     xx_arry[i] = parseFloat(x_size[i]);
                 }
+            }else{
+                xx_arry[0] = parseFloat(0);
             }
         }
         if(yy2.includes(";") == true){
@@ -366,6 +368,8 @@ function Sigbuilder() {
                 for(var i = 0;i<y_size.length;i++){
                     yy_arry[i] = parseFloat(y_size[i]);
                 }
+            }else{
+                yy_arry[0] = parseFloat(0);
             }
         }
 
