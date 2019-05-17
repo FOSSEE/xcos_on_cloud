@@ -2025,9 +2025,7 @@ def run_scilab_func_cleandata_request():
     '''
     with open(file_name) as f:
         data = f.read()  # Read the data into a variable
-        if "],[" in data:
-            data = "[" + data + "]"
-        valuesforcleandata = data
+        valuesforcleandata = "[" + data + "]"
     remove(file_name)
     return jsonify(valuesforcleandata)
 

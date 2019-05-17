@@ -389,7 +389,7 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     };
     //menu Data - > Save to text file
     dataMenuOptions[3].onclick = function() {
-        saveToTextFile(graph_sigbuilder,drag_sig_chart,fileSelector);
+        saveToTextFile(graph_sigbuilder,drag_sig_chart,fileSelector,graphParameters);
     };
     //menu Data - > Load from Excel
     dataMenuOptions[4].onclick = function() {
@@ -468,8 +468,8 @@ function autoscaleFunctionalityForGraph(drag_sig_chart,graphParameters){
         var max_y_value_new = (drag_sig_chart.yAxis[0].getExtremes().dataMax).toFixed(1);
         var max_x = drag_sig_chart.xAxis[0].getExtremes().max;
         var max_y = drag_sig_chart.yAxis[0].getExtremes().max;
-        if(Math.abs(max_x - max_x_value_new) < parseFloat(graphParameters.xpointinterval) ){
-            max_x = parseFloat(parseFloat(max_x) + parseFloat(graphParameters.xpointinterval)).toFixed(1);
+        if(Math.abs(max_x - max_x_value_new) < parseFloat(graphParameters.xpointInterval) ){
+            max_x = parseFloat(parseFloat(max_x) + parseFloat(graphParameters.xpointInterval)).toFixed(1);
             drag_sig_chart.xAxis[0].update({
                 max: parseFloat(max_x)
             });
@@ -493,8 +493,13 @@ function autoscaleFunctionalityForGraph(drag_sig_chart,graphParameters){
 
 function clearPoints(sigbuilder_Graph, graphParameters, pointsHistory){
     sigbuilder_Graph.series[0].setData([]);
+    sigbuilder_Graph.series[0].addPoint([0, 0]);
     graphParameters.graphPoints = [];
+    graphParameters.mtd = 0;
     pointsHistory = [];
+    var pointscount = sigbuilder_Graph.series[0].data.length;
+    xmaxtitle = (sigbuilder_Graph.xAxis[0].getExtremes().dataMax).toFixed(6);
+    sigbuilder_Graph.setTitle(null, { text: updateSubtitleForSigbuilderGraph(pointscount, graphParameters.mtd, xmaxtitle)});
 }
 
 function editandUpdateDataBoundsValue(graph,sigbuilder_Graph){
@@ -704,7 +709,7 @@ function loadPointsFromDatFile(graph,sigbuilder_Graph,fileSelector){
 
 }
 
-function saveToTextFile(graph,sigbuilder_Graph,fileSelector){
+function saveToTextFile(graph,sigbuilder_Graph,fileSelector,graphParameters){
 
     // Create basic structure for the form
     var content = document.createElement('div');
@@ -783,14 +788,65 @@ function saveToTextFile(graph,sigbuilder_Graph,fileSelector){
 
     // Executes when button 'cancel_btn' is clicked
     cancel_btn.onclick = function() {
+        document.getElementById("messageLabel").innerHTML = "";
         wind.destroy();
     };
     // Executes when button 'ok_btn' is clicked
     ok_btn.onclick = function() {
+
+        graphParameters.graphPoints= objToArrayList(graphParameters.graphPoints);
+        var format = (document.getElementById("filesave_1").value).trim();
+        var format_array = (format.replace(/\s\s+/g," ")).split(" ");
+        var length_format = ((format.replace(/\s\s+/g," ")).split(" ")).length;
+        if((length_format == 2)&&(["%g","%f"].includes(format_array[0]))&&(["%g","%f"].includes(format_array[1]))){
+            if ("Blob" in window) {
+                var fileName = document.getElementById("filesave_0").value;
+                var textToWrite = "";
+                var x = 0;
+                var y = 0;
+                for (var i=0;i<graphParameters.graphPoints.length;i++) {
+                    x = parseFloat(graphParameters.graphPoints[i][0]);
+                    y = parseFloat(graphParameters.graphPoints[i][1]);
+                   /* if(format_array[0] == "%g"){
+                        x = parseFloat(graphParameters.graphPoints[i][0]);
+                    }else if(format_array[0] == "%f"){
+                        x = parseFloat(graphParameters.graphPoints[i][0]).toFixed(6);;
+                    }else if(format_array[1] == "%g"){
+                        y = parseFloat(graphParameters.graphPoints[i][1]);
+                    }else if(format_array[1] == "%f"){
+                        y = parseFloat(graphParameters.graphPoints[i][1]).toFixed(6);;
+                    }*/
+                    textToWrite = textToWrite + x + " " + y + "\r\n";
+                }
+                var textFileAsBlob = new Blob([textToWrite], { type: "text/plain" });
+                if ("msSaveOrOpenBlob" in navigator) {
+                    navigator.msSaveOrOpenBlob(textFileAsBlob, fileName);
+                }else{
+                    var downloadLink = document.createElement("a");
+                    downloadLink.download = fileName;
+                    downloadLink.innerHTML = "Download File";
+                    if ("webkitURL" in window) {
+                        downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+                    }else{
+                        downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+                        downloadLink.style.display = "none";
+                        document.body.appendChild(downloadLink);
+                    }
+                    downloadLink.click();
+                }
+                document.getElementById("messageLabel").innerHTML = "";
+            }else{
+                alert("Your browser does not support the HTML5 Blob.");
+            }
+        }else{
+            document.getElementById("messageLabel").innerHTML = "Bad format in writing data file";
+        }
         wind.destroy();
     };
 
-
+    function destroyClickedElement(event) {
+        document.body.removeChild(event.target);
+    }
 }
 
 function loadFromExcel(graph,sigbuilder_Graph,fileSelector){
