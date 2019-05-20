@@ -401,7 +401,7 @@ var create_draggable_points_chart = function(graphPoints, pointsHistory, xmin, x
 // Function to create a chart with responsive points for Sigbuilder
 var create_draggable_points_chart_sigbuilder = function(graphParameters, pointsHistory, xmin, xmax, ymin, ymax, chart_type, points, method, xmaxtitle,xpointinterval,step,stepname) {
 
-    var subtitle = updateSubtitleForSigbuilderGraph(points, method, xmaxtitle);
+    var subtitle = updateSubtitleForSigbuilderGraph(points, method, xmaxtitle,graphParameters.PeriodicOption);
     pointsHistory.push(graphParameters.graphPoints.slice());
 
     sigbuilder_Graph = Highcharts.chart('drag_sig_chart', {
@@ -504,8 +504,14 @@ var create_draggable_points_chart_sigbuilder = function(graphParameters, pointsH
     return sigbuilder_Graph;
 };
 
-function updateSubtitleForSigbuilderGraph(points, method, xmaxtitle){
-    var subTitle = "<b>"+points+" points, Method: "+getmethod(method)+", periodic, T = "+xmaxtitle+"</b>";
+function updateSubtitleForSigbuilderGraph(points, method, xmaxtitle, periodicFlag){
+
+    var subTitle = "";
+    if(periodicFlag == "y"){
+        subTitle = "<b>"+points+" points, Method: "+getmethod(method)+", periodic, T = "+xmaxtitle+"</b>";
+    }else{
+        subTitle = "<b>"+points+" points, Method: "+getmethod(method)+", aperiodic</b>";
+    }
     return subTitle;
 }
 
