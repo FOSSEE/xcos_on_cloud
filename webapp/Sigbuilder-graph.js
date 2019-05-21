@@ -399,6 +399,30 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     dataMenuOptions[5].onclick = function() {
         openPeriodicSignal(graph_sigbuilder, graphParameters, drag_sig_chart);
     };
+    //menu Standards - > sine
+    standardsMenuOptions[0].onclick = function() {
+        open_sine_wind(graph_sigbuilder);
+    };
+    //menu Standards - > sawtooth1
+    standardsMenuOptions[1].onclick = function() {
+        open_sawtooth1_wind(graph_sigbuilder);
+    };
+    //menu Standards - > sawtooth2
+    standardsMenuOptions[2].onclick = function() {
+        open_sawtooth2_wind(graph_sigbuilder);
+    };
+    //menu Standards - > pulse
+    standardsMenuOptions[3].onclick = function() {
+        open_pulse_wind(graph_sigbuilder);
+    };
+    //menu Standards - > random normal
+    standardsMenuOptions[4].onclick = function() {
+        open_random_normal_wind(graph_sigbuilder);
+    };
+    //menu Standards - > random uniform
+    standardsMenuOptions[5].onclick = function() {
+        open_random_uniform_wind(graph_sigbuilder);
+    };
     // menu Exit -> Help
     exitMenuOptions[0].onclick = function() {
        alert("Mouse-left click: adding a new point\n"+
@@ -1037,6 +1061,511 @@ function openPeriodicSignal(graph, graphParameters, drag_sig_chart){
     };
 
 }
+
+function open_sine_wind(graph){
+    // Create basic structure for the form
+    var content = document.createElement('div');
+    content.setAttribute("id", "openSineWnd");
+
+    // Add Form
+    var myform = document.createElement("form");
+    myform.method = "post";
+    myform.id = "formOpenSineWnd";
+    myform.style.padding = "10px";
+
+    var titlelabel = document.createElement('span');
+    titlelabel.innerHTML = "Sine parameters";
+    myform.appendChild(titlelabel);
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    var labelArray = ['Amplitude','Frequency(rad/sec)','Phase(rad)','Bias','number of points'];
+    for(var i = 0; i < labelArray.length; i++){
+        // Input Title
+        var namelabel = document.createElement('label');
+        namelabel.innerHTML = labelArray[i];
+        namelabel.style.marginLeft = "20px";
+        myform.appendChild(namelabel);
+
+        // Input
+        var input = document.createElement("input");
+        input.name = "edit_"+labelArray[i].toString();
+        input.setAttribute("id", "edit_sine_"+i.toString());
+        input.setAttribute("class", "fieldInput");
+        myform.appendChild(input);
+
+        // Line break
+        var linebreak = document.createElement('br');
+        myform.appendChild(linebreak);
+
+        // Line break
+        var linebreak = document.createElement('br');
+        myform.appendChild(linebreak);
+
+    }
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    // Button - Cancel
+    var cancel_btn = document.createElement("button");
+    cancel_btn.style.cssFloat = "right";
+    cancel_btn.innerHTML = 'Cancel';
+    cancel_btn.type = "button";
+    cancel_btn.name = "Cancel";
+    myform.appendChild(cancel_btn);
+
+    // Button - OK
+    var ok_btn = document.createElement("button");
+    ok_btn.style.cssFloat = "right";
+    ok_btn.style.marginRight = "20px";
+    ok_btn.innerHTML = 'OK';
+    ok_btn.type = "button";
+    ok_btn.name = "OK";
+
+    myform.appendChild(ok_btn);
+    content.appendChild(myform);
+    var height = 240;
+    var wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 320, height);
+    // Executes when button 'cancel_btn' is clicked
+    cancel_btn.onclick = function() {
+        wind.destroy();
+    };
+    // Executes when button 'ok_btn' is clicked
+    ok_btn.onclick = function() {
+        wind.destroy();
+    };
+
+}
+
+function open_sawtooth1_wind(graph){
+
+    // Create basic structure for the form
+    var content = document.createElement('div');
+    content.setAttribute("id", "openSawtooth1Wnd");
+
+    // Add Form
+    var myform = document.createElement("form");
+    myform.method = "post";
+    myform.id = "formOpenSawtooth1Wnd";
+    myform.style.padding = "10px";
+
+    var titlelabel = document.createElement('span');
+    titlelabel.innerHTML = "Sawtooth signal parameters";
+    myform.appendChild(titlelabel);
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    var labelArray = ['Amplitude','Period','Delay'];
+    for(var i = 0; i < labelArray.length; i++){
+        // Input Title
+        var namelabel = document.createElement('label');
+        namelabel.innerHTML = labelArray[i];
+        namelabel.style.marginLeft = "20px";
+        myform.appendChild(namelabel);
+
+        // Input
+        var input = document.createElement("input");
+        input.setAttribute("id", "edit_sawtooth1_"+i.toString());
+        input.setAttribute("class", "fieldInput");
+        myform.appendChild(input);
+
+        // Line break
+        var linebreak = document.createElement('br');
+        myform.appendChild(linebreak);
+
+        // Line break
+        var linebreak = document.createElement('br');
+        myform.appendChild(linebreak);
+
+    }
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    // Button - Cancel
+    var cancel_btn = document.createElement("button");
+    cancel_btn.style.cssFloat = "right";
+    cancel_btn.innerHTML = 'Cancel';
+    cancel_btn.type = "button";
+    cancel_btn.name = "Cancel";
+    myform.appendChild(cancel_btn);
+
+    // Button - OK
+    var ok_btn = document.createElement("button");
+    ok_btn.style.cssFloat = "right";
+    ok_btn.style.marginRight = "20px";
+    ok_btn.innerHTML = 'OK';
+    ok_btn.type = "button";
+    ok_btn.name = "OK";
+
+    myform.appendChild(ok_btn);
+    content.appendChild(myform);
+    var height = 200;
+    var wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 250, height);
+    // Executes when button 'cancel_btn' is clicked
+    cancel_btn.onclick = function() {
+        wind.destroy();
+    };
+    // Executes when button 'ok_btn' is clicked
+    ok_btn.onclick = function() {
+        wind.destroy();
+    };
+
+}
+
+function open_sawtooth2_wind(graph){
+
+    // Create basic structure for the form
+    var content = document.createElement('div');
+    content.setAttribute("id", "openSawtooth2Wnd");
+
+    // Add Form
+    var myform = document.createElement("form");
+    myform.method = "post";
+    myform.id = "formOpenSawtooth2Wnd";
+    myform.style.padding = "10px";
+
+    var titlelabel = document.createElement('span');
+    titlelabel.innerHTML = "Sawtooth signal parameters";
+    myform.appendChild(titlelabel);
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    var labelArray = ['Amplitude','Period'];
+    for(var i = 0; i < labelArray.length; i++){
+        // Input Title
+        var namelabel = document.createElement('label');
+        namelabel.innerHTML = labelArray[i];
+        namelabel.style.marginLeft = "20px";
+        myform.appendChild(namelabel);
+
+        // Input
+        var input = document.createElement("input");
+        input.setAttribute("id", "edit_sawtooth2_"+i.toString());
+        input.setAttribute("class", "fieldInput");
+        myform.appendChild(input);
+
+        // Line break
+        var linebreak = document.createElement('br');
+        myform.appendChild(linebreak);
+
+        // Line break
+        var linebreak = document.createElement('br');
+        myform.appendChild(linebreak);
+
+    }
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    // Button - Cancel
+    var cancel_btn = document.createElement("button");
+    cancel_btn.style.cssFloat = "right";
+    cancel_btn.innerHTML = 'Cancel';
+    cancel_btn.type = "button";
+    cancel_btn.name = "Cancel";
+    myform.appendChild(cancel_btn);
+
+    // Button - OK
+    var ok_btn = document.createElement("button");
+    ok_btn.style.cssFloat = "right";
+    ok_btn.style.marginRight = "20px";
+    ok_btn.innerHTML = 'OK';
+    ok_btn.type = "button";
+    ok_btn.name = "OK";
+
+    myform.appendChild(ok_btn);
+    content.appendChild(myform);
+    var height = 180;
+    var wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 250, height);
+    // Executes when button 'cancel_btn' is clicked
+    cancel_btn.onclick = function() {
+        wind.destroy();
+    };
+    // Executes when button 'ok_btn' is clicked
+    ok_btn.onclick = function() {
+        wind.destroy();
+    };
+
+}
+
+function open_pulse_wind(graph){
+
+    // Create basic structure for the form
+    var content = document.createElement('div');
+    content.setAttribute("id", "openPulseWnd");
+
+    // Add Form
+    var myform = document.createElement("form");
+    myform.method = "post";
+    myform.id = "formOpenPulseWnd";
+    myform.style.padding = "10px";
+
+    var titlelabel = document.createElement('span');
+    titlelabel.innerHTML = "Square wave pulse signal";
+    myform.appendChild(titlelabel);
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    var labelArray = ['Amplitude','Period (sec)','Pulse width(% of period)','Phase delay(sec)','Bias'];
+    for(var i = 0; i < labelArray.length; i++){
+        // Input Title
+        var namelabel = document.createElement('label');
+        namelabel.innerHTML = labelArray[i];
+        namelabel.style.marginLeft = "20px";
+        myform.appendChild(namelabel);
+
+        // Input
+        var input = document.createElement("input");
+        input.setAttribute("id", "edit_pulse_"+i.toString());
+        input.setAttribute("class", "fieldInput");
+        myform.appendChild(input);
+
+        // Line break
+        var linebreak = document.createElement('br');
+        myform.appendChild(linebreak);
+
+        // Line break
+        var linebreak = document.createElement('br');
+        myform.appendChild(linebreak);
+
+    }
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    // Button - Cancel
+    var cancel_btn = document.createElement("button");
+    cancel_btn.style.cssFloat = "right";
+    cancel_btn.innerHTML = 'Cancel';
+    cancel_btn.type = "button";
+    cancel_btn.name = "Cancel";
+    myform.appendChild(cancel_btn);
+
+    // Button - OK
+    var ok_btn = document.createElement("button");
+    ok_btn.style.cssFloat = "right";
+    ok_btn.style.marginRight = "20px";
+    ok_btn.innerHTML = 'OK';
+    ok_btn.type = "button";
+    ok_btn.name = "OK";
+
+    myform.appendChild(ok_btn);
+    content.appendChild(myform);
+    var height = 240;
+    var wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 300, height);
+    // Executes when button 'cancel_btn' is clicked
+    cancel_btn.onclick = function() {
+        wind.destroy();
+    };
+    // Executes when button 'ok_btn' is clicked
+    ok_btn.onclick = function() {
+        wind.destroy();
+    };
+
+}
+
+function open_random_normal_wind(graph){
+
+    // Create basic structure for the form
+    var content = document.createElement('div');
+    content.setAttribute("id", "openRandomNormalWnd");
+
+    // Add Form
+    var myform = document.createElement("form");
+    myform.method = "post";
+    myform.id = "formRandomNormalWnd";
+    myform.style.padding = "10px";
+
+    var titlelabel = document.createElement('span');
+    titlelabel.innerHTML = "Normal(Gaussian) random signal";
+    myform.appendChild(titlelabel);
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    var labelArray = ['Mean','Variance','Initial seed','Sample time','Number of points'];
+    for(var i = 0; i < labelArray.length; i++){
+        // Input Title
+        var namelabel = document.createElement('label');
+        namelabel.innerHTML = labelArray[i];
+        namelabel.style.marginLeft = "20px";
+        myform.appendChild(namelabel);
+
+        // Input
+        var input = document.createElement("input");
+        input.setAttribute("id", "edit_Random_Normal_"+i.toString());
+        input.setAttribute("class", "fieldInput");
+        myform.appendChild(input);
+
+        // Line break
+        var linebreak = document.createElement('br');
+        myform.appendChild(linebreak);
+
+        // Line break
+        var linebreak = document.createElement('br');
+        myform.appendChild(linebreak);
+
+    }
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    // Button - Cancel
+    var cancel_btn = document.createElement("button");
+    cancel_btn.style.cssFloat = "right";
+    cancel_btn.innerHTML = 'Cancel';
+    cancel_btn.type = "button";
+    cancel_btn.name = "Cancel";
+    myform.appendChild(cancel_btn);
+
+    // Button - OK
+    var ok_btn = document.createElement("button");
+    ok_btn.style.cssFloat = "right";
+    ok_btn.style.marginRight = "20px";
+    ok_btn.innerHTML = 'OK';
+    ok_btn.type = "button";
+    ok_btn.name = "OK";
+
+    myform.appendChild(ok_btn);
+    content.appendChild(myform);
+    var height = 240;
+    var wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 300, height);
+    // Executes when button 'cancel_btn' is clicked
+    cancel_btn.onclick = function() {
+        wind.destroy();
+    };
+    // Executes when button 'ok_btn' is clicked
+    ok_btn.onclick = function() {
+        wind.destroy();
+    };
+
+}
+
+function open_random_uniform_wind(graph){
+
+    // Create basic structure for the form
+    var content = document.createElement('div');
+    content.setAttribute("id", "openRandomUniformWnd");
+
+    // Add Form
+    var myform = document.createElement("form");
+    myform.method = "post";
+    myform.id = "formRandomUniformWnd";
+    myform.style.padding = "10px";
+
+    var titlelabel = document.createElement('span');
+    titlelabel.innerHTML = "Uniform random signal";
+    myform.appendChild(titlelabel);
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    var labelArray = ['Minimum','Maximum','Initial seed','Sample time','Number of points'];
+    for(var i = 0; i < labelArray.length; i++){
+        // Input Title
+        var namelabel = document.createElement('label');
+        namelabel.innerHTML = labelArray[i];
+        namelabel.style.marginLeft = "30px";
+        myform.appendChild(namelabel);
+
+        // Input
+        var input = document.createElement("input");
+        input.setAttribute("id", "edit_Random_Uniform_"+i.toString());
+        input.setAttribute("class", "fieldInput");
+        myform.appendChild(input);
+
+        // Line break
+        var linebreak = document.createElement('br');
+        myform.appendChild(linebreak);
+
+        // Line break
+        var linebreak = document.createElement('br');
+        myform.appendChild(linebreak);
+
+    }
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    // Button - Cancel
+    var cancel_btn = document.createElement("button");
+    cancel_btn.style.cssFloat = "right";
+    cancel_btn.innerHTML = 'Cancel';
+    cancel_btn.type = "button";
+    cancel_btn.name = "Cancel";
+    myform.appendChild(cancel_btn);
+
+    // Button - OK
+    var ok_btn = document.createElement("button");
+    ok_btn.style.cssFloat = "right";
+    ok_btn.style.marginRight = "20px";
+    ok_btn.innerHTML = 'OK';
+    ok_btn.type = "button";
+    ok_btn.name = "OK";
+
+    myform.appendChild(ok_btn);
+    content.appendChild(myform);
+    var height = 240;
+    var wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 300, height);
+    // Executes when button 'cancel_btn' is clicked
+    cancel_btn.onclick = function() {
+        wind.destroy();
+    };
+    // Executes when button 'ok_btn' is clicked
+    ok_btn.onclick = function() {
+        wind.destroy();
+    };
+
+}
+
 
 function editPointsValue(graphObject,graph,sigbuilder_Graph,graphParameters, pointsHistory, method){
 
