@@ -160,10 +160,6 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
 
     var chart = document.createElement('div');
     chart.setAttribute('id','drag_sig_chart');
-    var fileSelector = document.createElement("input");
-    fileSelector.setAttribute("type","file");
-    fileSelector.setAttribute("id","inputFile");
-    chart.appendChild(fileSelector);
     content.appendChild(chart);
     var messageLabel = document.createElement('span');
     messageLabel.innerHTML = "";
@@ -385,15 +381,15 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     };
     //menu Data - > Load from text file
     dataMenuOptions[2].onclick = function() {
-        loadPointsFromDatFile(graph_sigbuilder,drag_sig_chart,fileSelector);
+        loadPointsFromDatFile(graph_sigbuilder,drag_sig_chart);
     };
     //menu Data - > Save to text file
     dataMenuOptions[3].onclick = function() {
-        saveToTextFile(graph_sigbuilder,drag_sig_chart,fileSelector,graphParameters);
+        saveToTextFile(graph_sigbuilder,drag_sig_chart,graphParameters);
     };
     //menu Data - > Load from Excel
     dataMenuOptions[4].onclick = function() {
-        loadFromExcel(graph_sigbuilder,drag_sig_chart,fileSelector);
+        loadFromExcel(graph_sigbuilder,drag_sig_chart);
     };
     //menu Data - > Periodic signal
     dataMenuOptions[5].onclick = function() {
@@ -640,7 +636,7 @@ function editandUpdateDataBoundsValue(graph,sigbuilder_Graph){
     };
 }
 
-function loadPointsFromDatFile(graph,sigbuilder_Graph,fileSelector){
+function loadPointsFromDatFile(graph,sigbuilder_Graph){
 
     // Create basic structure for the form
     var content = document.createElement('div');
@@ -665,6 +661,12 @@ function loadPointsFromDatFile(graph,sigbuilder_Graph,fileSelector){
     // Line break
     var linebreak = document.createElement('br');
     myform.appendChild(linebreak);
+
+    var fileSelector = document.createElement("input");
+    fileSelector.setAttribute("type","file");
+    fileSelector.style.display = 'none';
+    fileSelector.setAttribute("id","inputDatFile");
+    myform.appendChild(fileSelector);
 
     var labelArray = ['Filename','Reading [C] format','Abscissa column','Output column'];
     var textValueArray = ["mydatafile.dat","%g %g","1","2"];
@@ -719,13 +721,25 @@ function loadPointsFromDatFile(graph,sigbuilder_Graph,fileSelector){
 
     var filename_input = document.getElementById("fileupload_0");
     filename_input.readOnly = true;
-    filename_input.onfocus = function(){
-        if ("FileReader" in window) {
-            fileSelector.click();
-        } else {
-            alert("Your browser does not support the HTML5 FileReader.");
+    filename_input.onclick = function(){
+        fileSelector.click();
+    };
+    fileSelector.onchange = function(){
+    var x = document.getElementById("inputDatFile");
+    var txt = "";
+    if ('files' in x) {
+        var file = x.files[0];
+        if ('name' in file){
+            txt = file.name;
         }
     }
+    var fileExtension = txt.substr((txt.lastIndexOf('.') + 1));
+    if(fileExtension == "dat"){
+        document.getElementById("fileupload_0").value = txt;
+    }else{
+        alert("Only file with extension .dat is allowed");
+    }
+    };
     // Executes when button 'cancel_btn' is clicked
     cancel_btn.onclick = function() {
         wind.destroy();
@@ -737,7 +751,7 @@ function loadPointsFromDatFile(graph,sigbuilder_Graph,fileSelector){
 
 }
 
-function saveToTextFile(graph,sigbuilder_Graph,fileSelector,graphParameters){
+function saveToTextFile(graph,sigbuilder_Graph){
 
     // Create basic structure for the form
     var content = document.createElement('div');
@@ -821,8 +835,7 @@ function saveToTextFile(graph,sigbuilder_Graph,fileSelector,graphParameters){
     };
     // Executes when button 'ok_btn' is clicked
     ok_btn.onclick = function() {
-
-        graphParameters.graphPoints= objToArrayList(graphParameters.graphPoints);
+        var pointlength = sigbuilder_Graph.series[0].data.length;
         var format = (document.getElementById("filesave_1").value).trim();
         var count = (format.match(/%/g) || []).length;
         if(count == 2){
@@ -835,19 +848,28 @@ function saveToTextFile(graph,sigbuilder_Graph,fileSelector,graphParameters){
                 var textToWrite = "";
                 var x = 0;
                 var y = 0;
-                for (var i=0;i<graphParameters.graphPoints.length;i++) {
-                    x = parseFloat(graphParameters.graphPoints[i][0]);
-                    y = parseFloat(graphParameters.graphPoints[i][1]);
-                   /* if(format_array[0] == "%g"){
-                        x = parseFloat(graphParameters.graphPoints[i][0]);
-                    }else if(format_array[0] == "%f"){
-                        x = parseFloat(graphParameters.graphPoints[i][0]).toFixed(6);;
-                    }else if(format_array[1] == "%g"){
-                        y = parseFloat(graphParameters.graphPoints[i][1]);
-                    }else if(format_array[1] == "%f"){
-                        y = parseFloat(graphParameters.graphPoints[i][1]).toFixed(6);;
-                    }*/
-                    textToWrite = textToWrite + x + " " + y + "\r\n";
+                for (var i=0;i<pointlength;i++) {
+                    if(ary[0] == "%g"){
+                        if((sigbuilder_Graph.series[0].data[i].x).toString().includes(".")){
+                            x = parseFloat(sigbuilder_Graph.series[0].data[i].x).toFixed(6);
+                        }else{
+                            x = parseFloat(sigbuilder_Graph.series[0].data[i].x);
+                        }
+                    }else{
+                        x = parseFloat(sigbuilder_Graph.series[0].data[i].x).toFixed(6);
+                    }
+                    if(ary[1] == "%g"){
+                        if((sigbuilder_Graph.series[0].data[i].y).toString().includes(".")){
+                            y = parseFloat(sigbuilder_Graph.series[0].data[i].y).toFixed(6);
+                        }else{
+                            y = parseFloat(sigbuilder_Graph.series[0].data[i].y);
+                        }
+                    }else{
+                        y = parseFloat(sigbuilder_Graph.series[0].data[i].y).toFixed(6);
+                    }
+                    var replace_1 = format.replace(ary[0],x);
+                    var replace_2 = replace_1.replace(ary[1],y);
+                    textToWrite = textToWrite +replace_2+"\r\n";
                 }
                 var textFileAsBlob = new Blob([textToWrite], { type: "text/plain" });
                 if ("msSaveOrOpenBlob" in navigator) {
@@ -883,7 +905,7 @@ function saveToTextFile(graph,sigbuilder_Graph,fileSelector,graphParameters){
     }
 }
 
-function loadFromExcel(graph,sigbuilder_Graph,fileSelector){
+function loadFromExcel(graph,sigbuilder_Graph){
 
     // Create basic structure for the form
     var content = document.createElement('div');
@@ -909,6 +931,12 @@ function loadFromExcel(graph,sigbuilder_Graph,fileSelector){
     var linebreak = document.createElement('br');
     myform.appendChild(linebreak);
 
+    var fileSelector = document.createElement("input");
+    fileSelector.setAttribute("type","file");
+    fileSelector.style.display = 'none';
+    fileSelector.setAttribute("id","inputExcelFile");
+    myform.appendChild(fileSelector);
+
     var labelArray = ['Filename','Sheet #','X[start:stop]','Y[start:stop]'];
     var textValueArray = ["Classeur1.xls","1","C5:C25","D5:D25"];
     for(var i = 0; i < labelArray.length; i++){
@@ -922,7 +950,7 @@ function loadFromExcel(graph,sigbuilder_Graph,fileSelector){
         var input = document.createElement("input");
         input.name = "edit_"+labelArray[i].toString();
         input.placeholder = textValueArray[i];
-        input.setAttribute("id", "filesave_"+i.toString());
+        input.setAttribute("id", "loadfromExcel_"+i.toString());
         input.setAttribute("class", "fieldInput");
         myform.appendChild(input);
 
@@ -960,6 +988,27 @@ function loadFromExcel(graph,sigbuilder_Graph,fileSelector){
     var height = 220;
     var wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 300, height);
 
+    var filename_input = document.getElementById("loadfromExcel_0");
+    filename_input.readOnly = true;
+    filename_input.onclick = function(){
+        fileSelector.click();
+    };
+    fileSelector.onchange = function(){
+    var x = document.getElementById("inputExcelFile");
+    var txt = "";
+    if ('files' in x) {
+        var file = x.files[0];
+        if ('name' in file){
+            txt = file.name;
+        }
+    }
+    var fileExtension = txt.substr((txt.lastIndexOf('.') + 1));
+    if(fileExtension == "xls"){
+        document.getElementById("loadfromExcel_0").value = txt;
+    }else{
+        alert("Only file with extension .xls is allowed");
+    }
+    };
     // Executes when button 'cancel_btn' is clicked
     cancel_btn.onclick = function() {
         wind.destroy();
