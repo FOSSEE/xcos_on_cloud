@@ -167,6 +167,10 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     content.appendChild(messageLabel);
     var wind = showModalWindow(graph, 'Graphic Window', content, 550, 480);
     drag_sig_chart = create_draggable_points_chart_sigbuilder(graphParameters, pointsHistory, graphParameters.xmin, graphParameters.xmax, graphParameters.ymin, graphParameters.ymax, graphParameters.chartType, graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle,graphParameters.xpointInterval,graphParameters.step,graphParameters.stepname);
+    get_parameters_wind_sigbuilder.hide();
+    wind.addListener(mxEvent.DESTROY, function(evt) {
+        get_parameters_wind_sigbuilder.show();
+    });
     //For displaying and hiding of submenus
     content.onclick = function() {
         fileSubMenu.style.display = 'none';
@@ -430,6 +434,7 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     // menu Exit -> submenu Exit without save
     exitMenuOptions[1].onclick = function() {
         wind.destroy();
+        get_parameters_wind_sigbuilder.show();
     };
     // menu Exit -> submenu Save/Exit
     exitMenuOptions[2].onclick = function() {
@@ -480,6 +485,7 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
         propertiesObject["PeriodicOption"] = (graphParameters.PeriodicOption).toString();
         propertiesObject["graf"] = "y";
         wind.destroy();
+        get_parameters_wind_sigbuilder.show();
         check_call = 2;
         cell.blockInstance.instance.set(propertiesObject);
     };
@@ -489,28 +495,31 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
 function autoscaleFunctionalityForGraph(drag_sig_chart,graphParameters){
     //Added for postive/maximum value autoscale functionality
         var max_x_value_new = (drag_sig_chart.xAxis[0].getExtremes().dataMax).toFixed(1);
+        var min_x_value_new = (drag_sig_chart.xAxis[0].getExtremes().dataMin).toFixed(1);
         var max_y_value_new = (drag_sig_chart.yAxis[0].getExtremes().dataMax).toFixed(1);
+        var min_y_value_new = (drag_sig_chart.yAxis[0].getExtremes().dataMin).toFixed(1);
         var max_x = drag_sig_chart.xAxis[0].getExtremes().max;
         var max_y = drag_sig_chart.yAxis[0].getExtremes().max;
-        if(Math.abs(max_x - max_x_value_new) < parseFloat(graphParameters.xpointInterval) ){
-            max_x = parseFloat(parseFloat(max_x) + parseFloat(graphParameters.xpointInterval)).toFixed(1);
+        var min_y = drag_sig_chart.yAxis[0].getExtremes().min;
+        var diff_x = (((Math.abs(max_x_value_new - min_x_value_new))/100)*10).toFixed(2);
+        var diff_y = (((Math.abs(max_y_value_new - min_y_value_new))/100)*10).toFixed(2);
+        if(Math.abs(max_x - max_x_value_new) < parseFloat(diff_x)){
+            max_x = parseFloat(parseFloat(max_x) + parseFloat(diff_x)).toFixed(1);
             drag_sig_chart.xAxis[0].update({
                 max: parseFloat(max_x)
             });
         }
-        if(Math.abs(max_y - max_y_value_new) < parseFloat(10/2) ){
-            max_y = parseFloat(parseFloat(max_y) + parseFloat(5)).toFixed(1);
+        if(Math.abs(max_y - max_y_value_new) < parseFloat(diff_y)){
+            max_y = parseFloat(parseFloat(max_y) + parseFloat(diff_y)).toFixed(1);
             drag_sig_chart.yAxis[0].update({
                 max: parseFloat(max_y)
             });
         }
         //Added for negative/minimum value autoscale functionality for y axis
-        var min_y_value_new = (drag_sig_chart.yAxis[0].getExtremes().dataMin).toFixed(1);
-        var min_y = drag_sig_chart.yAxis[0].getExtremes().min;
-        if(Math.abs(min_y - min_y_value_new) < parseFloat(10/2) ){
-            min_y = parseFloat(parseFloat(min_y) - parseFloat(5)).toFixed(1);
+        if(Math.abs(min_y - min_y_value_new) < parseFloat(diff_y)){
+            min_y = parseFloat(parseFloat(min_y) - parseFloat(diff_y)).toFixed(1);
             drag_sig_chart.yAxis[0].update({
-                min: min_y
+                min: parseFloat(min_y)
             });
         }
 }
@@ -734,11 +743,25 @@ function loadPointsFromDatFile(graph,sigbuilder_Graph){
         }
     }
     var fileExtension = txt.substr((txt.lastIndexOf('.') + 1));
-    if(fileExtension == "dat"){
+    if(fileExtension == "dat"||fileExtension == "txt"){
         document.getElementById("fileupload_0").value = txt;
     }else{
-        alert("Only file with extension .dat is allowed");
+        alert("Only file with extension .dat and .txt is allowed");
     }
+        var file = x.files[0];
+        var reader = new FileReader();
+        reader.onload = function(progressEvent){
+        // By lines
+        var lines = this.result.split('\n');
+        for(var i = 0; i < lines.length; i++){
+            var line = lines[i];
+            if(line.length!=0){
+                console.log("lines::::"+i+"::::value:::"+line);
+            }
+        }
+
+        };
+        reader.readAsText(file);
     };
     // Executes when button 'cancel_btn' is clicked
     cancel_btn.onclick = function() {
@@ -1003,10 +1026,10 @@ function loadFromExcel(graph,sigbuilder_Graph){
         }
     }
     var fileExtension = txt.substr((txt.lastIndexOf('.') + 1));
-    if(fileExtension == "xls"){
+    if(fileExtension == "xls"||fileExtension == "xlsx"){
         document.getElementById("loadfromExcel_0").value = txt;
     }else{
-        alert("Only file with extension .xls is allowed");
+        alert("Only file with extension .xls and .xlsx is allowed");
     }
     };
     // Executes when button 'cancel_btn' is clicked
