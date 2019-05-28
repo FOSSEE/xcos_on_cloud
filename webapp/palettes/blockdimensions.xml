@@ -32,6 +32,7 @@
   <block name='CLKOUTV_f' width='20' height='20' />
   <block name='CLKSOMV_f' width='40' height='40' />
   <block name='CLOCK_c' width='40' height='40' />
+  <block name='CLOCK_f' width='40' height='40' />
   <block name='CLR' width='60' height='40' />
   <block name='CLSS' width='80' height='40' />
   <block name='CMAT3D' width='40' height='40' />

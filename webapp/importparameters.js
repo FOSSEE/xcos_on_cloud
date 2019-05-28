@@ -468,6 +468,15 @@ CLOCK_c.prototype.importset = function CLOCK_c() {
     this.dt = ary[0];
     this.t0 = ary[1];
 }
+CLOCK_f.prototype.importset = function CLOCK_f() {
+    var block = getRparObjByGui(this.x, 'EVTDLY_f');
+    if (block == null)
+        return;
+    var graphics = block.graphics;
+    var ary = getData(graphics.exprs);
+    this.dt = ary[0];
+    this.t0 = ary[1];
+}
 CLR.prototype.importset = function CLR() {
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
@@ -1778,6 +1787,7 @@ CLKOUTV_f.prototype.getContainer = function CLKOUTV_f() { return new EventOutBlo
 CLKSOM_f.prototype.getContainer = function CLKSOM_f() { return new BasicBlock(this.x); }
 CLKSOMV_f.prototype.getContainer = function CLKSOMV_f() { return new RoundBlock(this.x); }
 CLOCK_c.prototype.getContainer = function CLOCK_c() { return new BasicBlock(this.x); }
+CLOCK_f.prototype.getContainer = function CLOCK_f() { return new BasicBlock(this.x); }
 CLR.prototype.getContainer = function CLR() { return new BasicBlock(this.x); }
 CLSS.prototype.getContainer = function CLSS() { return new BasicBlock(this.x); }
 CMAT3D.prototype.getContainer = function CMAT3D() { return new BasicBlock(this.x); }
