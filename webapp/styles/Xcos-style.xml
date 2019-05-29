@@ -180,6 +180,9 @@
     <add as="CLOCK_c" extend="Icon">
       <add as="image" value="blocks/CLOCK_c.svg"/>
     </add>
+    <add as="CLOCK_f" extend="Icon">
+      <add as="image" value="blocks/CLOCK_f.svg"/>
+    </add>
     <add as="GENSIN_f" extend="Icon">
         <add as="image" value="blocks/SINUS_f.svg"/>
     </add>
@@ -964,9 +967,6 @@
     </add>
     <add as="Counter" extend="blockWithLabel">
         <add as="displayedLabel" value="Counter&lt;BR&gt;%s &amp;#8594; %s"/>
-    </add>
-    <add as="CLOCK_f" extend="Icon">
-      <add as="image" value="blocks/CLOCK_c.svg"/>
     </add>
     <add as="VirtualCLK0" extend="CLOCK_f"/>
     <add as="CLKSPLIT_f" extend="Split"/>
