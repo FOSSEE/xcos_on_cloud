@@ -385,7 +385,7 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     };
     //menu Data - > Load from text file
     dataMenuOptions[2].onclick = function() {
-        loadPointsFromDatFile(graph_sigbuilder,drag_sig_chart);
+        loadPointsFromDatFile(graph_sigbuilder,drag_sig_chart, graphParameters, pointsHistory);
     };
     //menu Data - > Save to text file
     dataMenuOptions[3].onclick = function() {
@@ -645,7 +645,7 @@ function editandUpdateDataBoundsValue(graph,sigbuilder_Graph){
     };
 }
 
-function loadPointsFromDatFile(graph,sigbuilder_Graph){
+function loadPointsFromDatFile(graph,sigbuilder_Graph, graphParameters, pointsHistory){
 
     // Create basic structure for the form
     var content = document.createElement('div');
@@ -689,7 +689,7 @@ function loadPointsFromDatFile(graph,sigbuilder_Graph){
         // Input
         var input = document.createElement("input");
         input.name = "edit_"+labelArray[i].toString();
-        input.placeholder = textValueArray[i];
+        input.value = textValueArray[i];
         input.setAttribute("id", "fileupload_"+i.toString());
         input.setAttribute("class", "fieldInput");
         myform.appendChild(input);
@@ -748,20 +748,6 @@ function loadPointsFromDatFile(graph,sigbuilder_Graph){
     }else{
         alert("Only file with extension .dat and .txt is allowed");
     }
-        var file = x.files[0];
-        var reader = new FileReader();
-        reader.onload = function(progressEvent){
-        // By lines
-        var lines = this.result.split('\n');
-        for(var i = 0; i < lines.length; i++){
-            var line = lines[i];
-            if(line.length!=0){
-                console.log("lines::::"+i+"::::value:::"+line);
-            }
-        }
-
-        };
-        reader.readAsText(file);
     };
     // Executes when button 'cancel_btn' is clicked
     cancel_btn.onclick = function() {
@@ -769,6 +755,37 @@ function loadPointsFromDatFile(graph,sigbuilder_Graph){
     };
     // Executes when button 'ok_btn' is clicked
     ok_btn.onclick = function() {
+        sigbuilder_Graph.series[0].setData([]);
+        var points_ary = [];
+        var format = (document.getElementById("fileupload_1").value).trim();
+        var count = (format.match(/%/g) || []).length;
+        if(count == 2){
+            var x = document.getElementById("inputDatFile");
+            var file = x.files[0];
+            var reader = new FileReader();
+            reader.onload = function(progressEvent){
+            // By lines
+                var lines = this.result.split('\n');
+                for(var i = 0; i < lines.length; i++){
+                    var line = lines[i];
+                    if(line.length != 0){
+                            points_ary[i] = scan(line.trim(),format);
+                        if((points_ary[i][0]!=""||points_ary[i][0]!="undefined")&&(points_ary[i][1]!=""||points_ary[i][1]!="undefined")){
+                            sigbuilder_Graph.series[0].addPoint([points_ary[i][0],points_ary[i][1]]);
+                        }
+                    }
+                }
+                graphParameters.graphPoints = points_ary.slice();
+                pointsHistory.push(graphParameters.graphPoints.slice());
+                var pointscount = sigbuilder_Graph.series[0].data.length;
+                var xmaxtitle = (sigbuilder_Graph.xAxis[0].getExtremes().dataMax).toFixed(6);
+                sigbuilder_Graph.setTitle(null, { text: updateSubtitleForSigbuilderGraph(pointscount, graphParameters.mtd, xmaxtitle, graphParameters.PeriodicOption)});
+                autoscaleFunctionalityForGraph(sigbuilder_Graph,graphParameters);
+            };
+            reader.readAsText(file);
+        }else{
+            document.getElementById("messageLabel").innerHTML ="Bad Format";
+        }
         wind.destroy();
     };
 

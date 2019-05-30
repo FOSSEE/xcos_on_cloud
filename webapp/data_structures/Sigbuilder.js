@@ -422,7 +422,9 @@ function Sigbuilder() {
                     xpointinterval = parseFloat(0.2);
                     xmax = parseFloat(xmax + xpointinterval);
                 }else{
-                    xmax = parseFloat(xmax + 1);
+                    var diff_x = parseFloat((((Math.abs(xmax - xmin))/100)*10).toFixed(1));
+                    xmax = parseFloat(xmax + diff_x).toFixed(1);
+                    xpointinterval = diff_x;
                 }
                 var step = "";
                 var stepname = "";
