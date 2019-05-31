@@ -1979,7 +1979,7 @@ function main(container, outline, toolbar, sidebar, status) {
         // array which stores the main id of each tkblock
         var tkid  = new Array();
         var affichmid  = new Array();
-        var clkid = new Array();    // array which stores every CLOCK_c ids
+        var clkid = new Array();    // array which stores every CLOCK_c/CLOCK_f ids
         // array which stores the parameters of clock ('Period',
         // 'initialisation time')
         var clkdetails = new Array();
@@ -2089,10 +2089,10 @@ function main(container, outline, toolbar, sidebar, status) {
             if (Bblock_tag[i].attributes.blockElementName.value == "CSCOPE")
                 cscount++;
 
-            if (Bblock_tag[i].attributes.blockElementName.value == "CLOCK_c") {
+            if (Bblock_tag[i].attributes.blockElementName.value == "CLOCK_c"||Bblock_tag[i].attributes.blockElementName.value == "CLOCK_f") {
                 clkid[n++]= parseInt(Bblock_tag[i].attributes.id.value);
 
-                // in clock_c tag under 'scilab string' with 'exprs'
+                // in clock_c/clock_f tag under 'scilab string' with 'exprs'
                 // attribute store its parameters
                 var Sstr = Bblock_tag[i].getElementsByTagName("ScilabString");
                 for (var x=0;x<Sstr.length;x++) {
