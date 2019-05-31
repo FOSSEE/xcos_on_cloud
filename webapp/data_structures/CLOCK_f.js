@@ -2,31 +2,48 @@ function CLOCK_f() {
 
     CLOCK_f.prototype.get = function CLOCK_f() {
         var options = {
-            dt: ["Period", getData(this.x.model.rpar.objs[1].model.rpar)[0]],
-            t0: ["Init time", getData(this.x.model.rpar.objs[1].model.firing)],
+            dt: ["Period", this.dt],
+            t0: ["Init time", this.t0],
         };
         return options;
     }
     CLOCK_f.prototype.set = function CLOCK_f() {
-        if(this.dt<=0){
-                alert("period must be positive");
-                throw "incorrect";
+
+        var numeric_regex = /^[0-9]+\.?[0-9]*$/;
+        var dt_1 = arguments[0]["dt"].trim();
+        var t0_1 = arguments[0]["t0"].trim();
+        if(numeric_regex.test(dt_1) == false){
+            alert("Answer given for Period is incorrect: Undefined variable: "+ dt_1);
+            throw "incorrect";
         }
-        this.x.model.rpar.objs[1].model.firing = new ScilabDouble([arguments[0]["t0"]]);
-        this.x.model.rpar.objs[1].model.rpar = new ScilabDouble([arguments[0]["dt"]], [arguments[0]["t0"]]);
-        this.x.model.rpar.objs[1].graphics.exprs = new ScilabString([arguments[0]["dt"]], [arguments[0]["t0"]])
+        if(numeric_regex.test(t0_1) == false){
+            alert("Answer given for Init time is incorrect: Undefined variable: "+ t0_1);
+            throw "incorrect";
+        }
+        if(dt_1 <= 0){
+            alert("period must be positive");
+            throw "incorrect";
+        }
+        this.dt = parseFloat(dt_1);
+        this.t0 = parseFloat(t0_1);
+        var block = getRparObjByGui(this.x, 'EVTDLY_f');
+        block.model.firing = new ScilabDouble([this.t0]);
+        block.model.rpar = new ScilabDouble([this.dt], [this.t0]);
+        block.graphics.exprs = new ScilabString([this.dt], [this.t0]);
         return new BasicBlock(this.x);
     }
     CLOCK_f.prototype.define = function CLOCK_f() {
+        this.dt = 0.1;
+        this.t0 = 0.1;
         var evtdly = new EVTDLY_f().internal();
         evtdly.graphics.orig = new ScilabDouble([320, 232]);
         evtdly.graphics.sz = new ScilabDouble([40, 40]);
         evtdly.graphics.flip = new ScilabBoolean([true]);
-        evtdly.graphics.exprs = new ScilabString(["0.1"], ["0.1"]);
+        evtdly.graphics.exprs = new ScilabString([this.dt], [this.t0]);
         evtdly.graphics.pein = new ScilabDouble([6]);
         evtdly.graphics.peout = new ScilabDouble([3]);
-        evtdly.model.rpar = new ScilabDouble([0.1], [0.1]);
-        evtdly.model.firing = new ScilabDouble([0.1]);
+        evtdly.model.rpar = new ScilabDouble([this.dt], [this.t0]);
+        evtdly.model.firing = new ScilabDouble([this.t0]);
 
         evtdly.model.uid = new ScilabString([count]); // changed
         evtdly.doc = list(new ScilabString([count++]));
