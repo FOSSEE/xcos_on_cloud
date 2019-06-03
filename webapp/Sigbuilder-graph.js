@@ -393,7 +393,7 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     };
     //menu Data - > Load from Excel
     dataMenuOptions[4].onclick = function() {
-        loadFromExcel(graph_sigbuilder,drag_sig_chart);
+        loadFromExcel(graph_sigbuilder, drag_sig_chart, graphParameters, pointsHistory);
     };
     //menu Data - > Periodic signal
     dataMenuOptions[5].onclick = function() {
@@ -775,11 +775,17 @@ function loadPointsFromDatFile(graph,sigbuilder_Graph, graphParameters, pointsHi
                         }
                     }
                 }
+                graphParameters.mtd = 1;
                 graphParameters.graphPoints = points_ary.slice();
                 pointsHistory.push(graphParameters.graphPoints.slice());
                 var pointscount = sigbuilder_Graph.series[0].data.length;
                 var xmaxtitle = (sigbuilder_Graph.xAxis[0].getExtremes().dataMax).toFixed(6);
                 sigbuilder_Graph.setTitle(null, { text: updateSubtitleForSigbuilderGraph(pointscount, graphParameters.mtd, xmaxtitle, graphParameters.PeriodicOption)});
+                sigbuilder_Graph.series[0].update({
+                type: "line",
+                step: '',
+                name: ''
+                });
                 autoscaleFunctionalityForGraph(sigbuilder_Graph,graphParameters);
             };
             reader.readAsText(file);
@@ -945,7 +951,16 @@ function saveToTextFile(graph,sigbuilder_Graph){
     }
 }
 
-function loadFromExcel(graph,sigbuilder_Graph){
+function convertLetterToNumber(str) {
+  var out = 0;
+  var len = str.length;
+  for (var pos = 0; pos < len; pos++) {
+    out += (str.charCodeAt(pos) - 64) * Math.pow(26, len - pos - 1);
+  }
+  return parseFloat(out);
+}
+
+function loadFromExcel(graph, sigbuilder_Graph, graphParameters, pointsHistory){
 
     // Create basic structure for the form
     var content = document.createElement('div');
@@ -989,7 +1004,7 @@ function loadFromExcel(graph,sigbuilder_Graph){
         // Input
         var input = document.createElement("input");
         input.name = "edit_"+labelArray[i].toString();
-        input.placeholder = textValueArray[i];
+        input.value = textValueArray[i];
         input.setAttribute("id", "loadfromExcel_"+i.toString());
         input.setAttribute("class", "fieldInput");
         myform.appendChild(input);
@@ -1055,6 +1070,89 @@ function loadFromExcel(graph,sigbuilder_Graph){
     };
     // Executes when button 'ok_btn' is clicked
     ok_btn.onclick = function() {
+        sigbuilder_Graph.series[0].setData([]);
+        var regex_for_column_name = /^[a-zA-Z]\d+$/;
+        var x_range = (document.getElementById("loadfromExcel_2").value).trim();
+        var x_col = x_range.split(":");
+        var y_range = (document.getElementById("loadfromExcel_3").value).trim();
+        var y_col = y_range.split(":");
+        if(x_col.length !=2 && y_col.length !=2){
+            document.getElementById("messageLabel").innerHTML = "Cannot read your Excel file, please verify the parameters";
+            throw "incorrect";
+            wind.destroy();
+        }
+        if((regex_for_column_name.test(x_col[0]) != true) && (regex_for_column_name.test(x_col[1]) != true)){
+            document.getElementById("messageLabel").innerHTML = "Bad Address in X";
+            throw "incorrect";
+            wind.destroy();
+        }
+        if((regex_for_column_name.test(y_col[0]) != true) && (regex_for_column_name.test(y_col[1]) != true)){
+            document.getElementById("messageLabel").innerHTML = "Bad Address in Y";
+            throw "incorrect";
+            wind.destroy();
+        }
+        var x_start_col = x_col[0].substring(0, 1);
+        var x_start_col_range = parseFloat(x_col[0].substring(1, x_col[0].length))-1;
+        var x_end_col = x_col[1].substring(0, 1);
+        var x_end_col_range = parseFloat(x_col[1].substring(1, x_col[1].length))-1;
+        if(x_start_col != x_end_col){
+            document.getElementById("messageLabel").innerHTML = "Cannot read your Excel file, please verify the parameters";
+            throw "incorrect";
+            wind.destroy();
+        }
+        var y_start_col = y_col[0].substring(0, 1);
+        var y_start_col_range = parseFloat(y_col[0].substring(1, y_col[0].length))-1;
+        var y_end_col = y_col[1].substring(0, 1);
+        var y_end_col_range = parseFloat(y_col[1].substring(1, y_col[0].length))-1;
+        if(y_start_col != y_end_col){
+            document.getElementById("messageLabel").innerHTML = "Cannot read your Excel file, please verify the parameters";
+            throw "incorrect";
+            wind.destroy();
+        }
+        var x_col_num = convertLetterToNumber(x_start_col) - 1;
+        var y_col_num = convertLetterToNumber(y_start_col) - 1;
+        var x = document.getElementById("inputExcelFile");
+        var file = x.files[0];
+        if(file!=null){
+            var reader = new FileReader();
+            reader.onload = function(e){
+                var data = e.target.result;
+                data = new Uint8Array(data);
+                /* read the file */
+                var workbook = XLSX.read(data, {type: 'array'}); // parse the file
+                var sheet = workbook.Sheets[workbook.SheetNames[0]]; // get the first worksheet
+                var range = XLSX.utils.decode_range(sheet['!ref']);
+                var points_ary = [];
+                var k = 0;
+                for(var i = x_start_col_range, j = y_start_col_range; i <= x_end_col_range && j <= y_end_col_range; i++, j++){
+                    var cell_x = sheet[XLSX.utils.encode_cell({r: i, c: x_col_num})];
+                    var cell_y = sheet[XLSX.utils.encode_cell({r: j, c: y_col_num})];
+                    var x = parseFloat(cell_x.v);
+                    var y = parseFloat(cell_y.v);
+                    points_ary[k] = [x,y];
+                    sigbuilder_Graph.series[0].addPoint([x,y]);
+                    k++;
+                }
+                graphParameters.mtd = 1;
+                graphParameters.graphPoints = points_ary.slice();
+                pointsHistory.push(graphParameters.graphPoints.slice());
+                var pointscount = sigbuilder_Graph.series[0].data.length;
+                var xmaxtitle = (sigbuilder_Graph.xAxis[0].getExtremes().dataMax).toFixed(6);
+                sigbuilder_Graph.setTitle(null, { text: updateSubtitleForSigbuilderGraph(pointscount, graphParameters.mtd, xmaxtitle, graphParameters.PeriodicOption)});
+                sigbuilder_Graph.series[0].update({
+                type: "line",
+                step: '',
+                name: ''
+                });
+                autoscaleFunctionalityForGraph(sigbuilder_Graph,graphParameters);
+            };
+            reader.readAsArrayBuffer(file);
+            }else{
+                document.getElementById("messageLabel").innerHTML = "Please select the proper Excel file";
+                throw "incorrect";
+                wind.destroy();
+            }
+        document.getElementById("messageLabel").innerHTML = "";
         wind.destroy();
     };
 
