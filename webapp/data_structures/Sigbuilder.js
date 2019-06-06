@@ -398,9 +398,10 @@ function Sigbuilder() {
             }
             xy = JSON.parse(cleandata(xy.toString()));
             var N = xy.length;
-            if (graf1 == "y" || graf1 == "Y"){
+            if (graf1 == "y" || graf1 == "Y"){  //Opening graphics window
                 var ipar = [N,mtd,PO];
                 var rpar = [];
+
                 var graphPoints = [];
                 for(var i = 0;i<xx_arry.length;i++){
                     var arry = [];
@@ -452,7 +453,7 @@ function Sigbuilder() {
                     name: stepname
                 };
                 if(check_call != 2){
-                showGraphWindowSigBlk(graph_sigbuilder,graphParameters,cell_sigbuilder);
+                    showGraphWindowSigBlk(graph_sigbuilder,graphParameters,cell_sigbuilder);
                 }else{
                     check_call = 1 ;
                 }
@@ -462,13 +463,49 @@ function Sigbuilder() {
                 document.getElementById("yy").value = yy1;
                 document.getElementById("PeriodicOption").value = PeriodicOption1;
                 document.getElementById("graf").value = graf1;
-                this.Method = mtd;
-                this.xx = xx1;
-                this.yy = yy1;
-                this.PeriodicOption = PeriodicOption1;
-                this.graf = graf1;
+                //code comes from save/exit part for graph window
+                if(N == 1){
+                    mtd = 0;
+                }
+                var xy_1 = [];
+                for(var i = 0;i < xy.length;i++){
+                    xy_1[i] = xy[i][0];
+                }
+                var xy_2 = [];
+                for(var i = 0;i < xy.length;i++){
+                    xy_2[i] = xy[i][1];
+                }
+                var do_spline_values = Do_Spline(N,mtd,xy_1.toString(),xy_2.toString());
+                Xdummy = JSON.parse(do_spline_values.Xdummy.replace(" ",","));
+                Ydummy = JSON.parse(do_spline_values.Ydummy.replace(" ",","));
+                orpar = JSON.parse(do_spline_values.orpar.replace(" ",","));
+
+                var NOrder = ipar[1];
+                var PeridicOption = ipar[2];
+
+                METHOD = getmethod(NOrder);
+                if (METHOD == "periodic") {// periodic spline
+                    xy[N-1][1] = xy[0][1];
+                }
+                var xy_1_1 = [];
+                for(var i = 0;i < xy.length;i++){
+                    xy_1_1[i] = xy[i][0];
+                }
+                var xy_2_2 = [];
+                for(var i = 0;i < xy.length;i++){
+                    xy_2_2[i] = xy[i][1];
+                }
+
+                if (METHOD=="order 2" || METHOD=="not_a_knot"||METHOD=="periodic" || METHOD=="monotone"|| METHOD=="fast" ||METHOD=="clamped"){
+                    orpar = [xy_1_1,xy_2_2,orpar];
+                }else{
+                    if (METHOD=="zero order"||METHOD=="linear"){
+                        orpar = [xy_1_1,xy_2_2];
+                    }
+                }
+                oipar = [N,mtd,PO];
+                SaveExit = true;
                 throw "incorrect";
-            //Opening graphics window
             }else{
 
                 graf1 = "n";
