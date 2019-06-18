@@ -402,11 +402,18 @@ function Sigbuilder() {
                 var ipar = [N,mtd,PO];
                 var rpar = [];
 
+                var sorted_x_array = xx_arry.slice(0);
+                sorted_x_array.sort();
                 var graphPoints = [];
-                for(var i = 0;i<xx_arry.length;i++){
+                var original_X_Points = [];
+                var original_Y_Points = [];
+                for(var i = 0;i<sorted_x_array.length;i++){
+                    original_X_Points[i] = xx_arry[i];
+                    original_Y_Points[i] = yy_arry[i];
+                    var x_index = xx_arry.indexOf(sorted_x_array[i]);
                     var arry = [];
-                    arry[0] = xx_arry[i];
-                    arry[1] = yy_arry[i];
+                    arry[0] = sorted_x_array[i];
+                    arry[1] = yy_arry[x_index];
                     graphPoints[i] = arry;
                 }
                 var xmin = parseFloat(Math.min(...xx_arry));
@@ -437,6 +444,8 @@ function Sigbuilder() {
                 ymin = parseFloat(ymin - 1);
                 var points = xx_arry.length;
                 var graphParameters = {
+                    original_X_Points: original_X_Points,
+                    original_Y_Points: original_Y_Points,
                     graphPoints: graphPoints,
                     xmin: xmin,
                     xmax: xmax,

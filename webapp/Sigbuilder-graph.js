@@ -476,6 +476,13 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
             x_arr = "[0]";
             y_arr = "[0]";
         }
+        var sort_x_array = graphParameters.original_X_Points.slice(0);
+        sort_x_array.sort();
+        var compare_x_array = "["+sort_x_array.toString().replace(/,/g, ';')+"]";
+        if(compare_x_array.trim() == x_arr.trim()){
+            x_arr = "["+graphParameters.original_X_Points.toString().replace(/,/g, ';')+"]";
+            y_arr = "["+graphParameters.original_Y_Points.toString().replace(/,/g, ';')+"]";
+        }
         var propertiesObject = {
             id: cell.id
                 };
