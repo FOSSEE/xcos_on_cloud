@@ -397,23 +397,21 @@ function Sigbuilder() {
                 }
             }
             xy = JSON.parse(cleandata(xy.toString()));
+            console.log(xy);
             var N = xy.length;
             if (graf1 == "y" || graf1 == "Y"){  //Opening graphics window
                 var ipar = [N,mtd,PO];
                 var rpar = [];
 
-                var sorted_x_array = xx_arry.slice(0);
-                sorted_x_array.sort();
                 var graphPoints = [];
-                var original_X_Points = [];
-                var original_Y_Points = [];
-                for(var i = 0;i<sorted_x_array.length;i++){
-                    original_X_Points[i] = xx_arry[i];
-                    original_Y_Points[i] = yy_arry[i];
-                    var x_index = xx_arry.indexOf(sorted_x_array[i]);
+                var entered_X_Points = [];
+                var entered_Y_Points = [];
+                for(var i = 0;i < xy.length;i++){
+                    entered_X_Points[i] = xx_arry[i];
+                    entered_Y_Points[i] = yy_arry[i];
                     var arry = [];
-                    arry[0] = sorted_x_array[i];
-                    arry[1] = yy_arry[x_index];
+                    arry[0] =  xy[i][0];
+                    arry[1] = xy[i][1];
                     graphPoints[i] = arry;
                 }
                 var xmin = parseFloat(Math.min(...xx_arry));
@@ -438,14 +436,14 @@ function Sigbuilder() {
                 var stepname = "";
                 if(mtd == 0){
                     step = "left";
-                    stepname = "Left"
+                    stepname = "Left";
                 }
                 ymax = parseFloat(ymax + 1);
                 ymin = parseFloat(ymin - 1);
                 var points = xx_arry.length;
                 var graphParameters = {
-                    original_X_Points: original_X_Points,
-                    original_Y_Points: original_Y_Points,
+                    original_X_Points: entered_X_Points,
+                    original_Y_Points: entered_Y_Points,
                     graphPoints: graphPoints,
                     xmin: xmin,
                     xmax: xmax,
