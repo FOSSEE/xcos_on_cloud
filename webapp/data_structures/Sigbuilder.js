@@ -397,7 +397,6 @@ function Sigbuilder() {
                 }
             }
             xy = JSON.parse(cleandata(xy.toString()));
-            console.log(xy);
             var N = xy.length;
             if (graf1 == "y" || graf1 == "Y"){  //Opening graphics window
                 var ipar = [N,mtd,PO];

@@ -30,7 +30,7 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     tools.setAttribute('id','tools_menu');
     menuBar.appendChild(tools);
     //menu Edit
-    /*var edit = document.createElement('span');
+    var edit = document.createElement('span');
     edit.innerHTML= 'Edit';
     edit.setAttribute('class','menu');
     edit.setAttribute('id','edit_menu');
@@ -40,7 +40,7 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     question.innerHTML= '?';
     question.setAttribute('class','menu');
     question.setAttribute('id','question_menu');
-    menuBar.appendChild(question);*/
+    menuBar.appendChild(question);
     //menu Autoscale
     var autoscale = document.createElement('span');
     autoscale.innerHTML= 'Autoscale';
@@ -98,17 +98,30 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     toolsSubMenu.setAttribute('class','menuDropdown displayNone');
     tools.appendChild(toolsSubMenu);
     //Submenu for menu Edit option
-    /*var editOptions = ['Undo','Size','Replot','Ok','Abort'];
+    var editOptions = ['Select as current figure','Clear figure','Figure properties','Axes properties','Start entity picker',
+    'Stop entity picker','Start datatip manager','Stop datatip manager','Start curve data modification','Stop curve data modification'];
     var editMenuOptions=[];
-    var editMenu = document.createElement('div');
-    for (var i=0;i<=4;i++) {
+    var editSubMenu = document.createElement('div');
+    for (var i = 0; i < editOptions.length; i++) {
         editMenuOptions[i] = document.createElement('li');
         editMenuOptions[i].innerHTML = editOptions[i];
         editMenuOptions[i].setAttribute('class','optionsDropdown');
-        editMenu.appendChild(editMenuOptions[i]);
+        editSubMenu.appendChild(editMenuOptions[i]);
     };
-    editMenu.setAttribute('class','menuDropdown displayNone');
-    edit.appendChild(editMenu);*/
+    editSubMenu.setAttribute('class','menuDropdown displayNone');
+    edit.appendChild(editSubMenu);
+    //Submenu for menu question
+    var questionOptions = ['Scilab Help','About Scilab'];
+    var questionMenuOptions=[];
+    var questionSubMenu = document.createElement('div');
+    for (var i = 0; i < questionOptions.length; i++) {
+        questionMenuOptions[i] = document.createElement('li');
+        questionMenuOptions[i].innerHTML = questionOptions[i];
+        questionMenuOptions[i].setAttribute('class','optionsDropdown');
+        questionSubMenu.appendChild(questionMenuOptions[i]);
+    };
+    questionSubMenu.setAttribute('class','menuDropdown displayNone');
+    question.appendChild(questionSubMenu);
     //Submenu for menu Spline
     var splineOptions = ['zero order','linear','order 2','not_a_knot','periodic','monotone','fast','clamped'];
     var splineMenuOptions=[];
@@ -179,6 +192,8 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
         dataSubMenu.style.display = 'none';
         standardsSubMenu.style.display = 'none';
         exitSubMenu.style.display = 'none';
+        editSubMenu.style.display = 'none';
+        questionSubMenu.style.display = 'none';
     }
     filemenu.onclick = function(event) {
         event.stopPropagation();
@@ -188,6 +203,8 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
             dataSubMenu.style.display = 'none';
             standardsSubMenu.style.display = 'none';
             exitSubMenu.style.display = 'none';
+            editSubMenu.style.display = 'none';
+            questionSubMenu.style.display = 'none';
             fileSubMenu.style.display = 'block';
         }else{
             fileSubMenu.style.display = 'none';
@@ -201,6 +218,8 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
             standardsSubMenu.style.display = 'none';
             exitSubMenu.style.display = 'none';
             fileSubMenu.style.display = 'none';
+            editSubMenu.style.display = 'none';
+            questionSubMenu.style.display = 'none';
             toolsSubMenu.style.display = 'block';
         }else{
             toolsSubMenu.style.display = 'none';
@@ -213,21 +232,44 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
             standardsSubMenu.style.display = 'none';
             exitSubMenu.style.display = 'none';
             fileSubMenu.style.display = 'none';
+            editSubMenu.style.display = 'none';
             toolsSubMenu.style.display = 'none';
+            questionSubMenu.style.display = 'none';
             splineSubMenu.style.display = 'block';
         }else{
             splineSubMenu.style.display = 'none';
         }
     };
-    /*edit.onclick = function(event) {
+    edit.onclick = function(event) {
         event.stopPropagation();
-        if (editMenu.style.display == 'none') {
-            dataMenu.style.display = 'none';
-            editMenu.style.display = 'block';
+        if (editSubMenu.style.display == 'none') {
+            standardsSubMenu.style.display = 'none';
+            exitSubMenu.style.display = 'none';
+            fileSubMenu.style.display = 'none';
+            toolsSubMenu.style.display = 'none';
+            splineSubMenu.style.display = 'none';
+            dataSubMenu.style.display = 'none';
+            questionSubMenu.style.display = 'none';
+            editSubMenu.style.display = 'block';
         }else{
-            editMenu.style.display = 'none';
+            editSubMenu.style.display = 'none';
         }
-    };*/
+    };
+    question.onclick = function(event) {
+        event.stopPropagation();
+        if (questionSubMenu.style.display == 'none') {
+            standardsSubMenu.style.display = 'none';
+            exitSubMenu.style.display = 'none';
+            fileSubMenu.style.display = 'none';
+            toolsSubMenu.style.display = 'none';
+            splineSubMenu.style.display = 'none';
+            dataSubMenu.style.display = 'none';
+            editSubMenu.style.display = 'none';
+            questionSubMenu.style.display = 'block';
+        }else{
+            questionSubMenu.style.display = 'none';
+        }
+    };
     data.onclick = function(event) {
         event.stopPropagation();
         if (dataSubMenu.style.display == 'none') {
@@ -235,7 +277,9 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
             exitSubMenu.style.display = 'none';
             fileSubMenu.style.display = 'none';
             toolsSubMenu.style.display = 'none';
+            editSubMenu.style.display = 'none';
             splineSubMenu.style.display = 'none';
+            questionSubMenu.style.display = 'none';
             dataSubMenu.style.display = 'block';
         }else{
             dataSubMenu.style.display = 'none';
@@ -248,6 +292,8 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
             fileSubMenu.style.display = 'none';
             toolsSubMenu.style.display = 'none';
             splineSubMenu.style.display = 'none';
+            editSubMenu.style.display = 'none';
+            questionSubMenu.style.display = 'none';
             dataSubMenu.style.display = 'none';
             standardsSubMenu.style.display = 'block';
         }else{
@@ -261,6 +307,8 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
             toolsSubMenu.style.display = 'none';
             splineSubMenu.style.display = 'none';
             dataSubMenu.style.display = 'none';
+            editSubMenu.style.display = 'none';
+            questionSubMenu.style.display = 'none';
             standardsSubMenu.style.display = 'none';
             exitSubMenu.style.display = 'block';
         }else{
@@ -452,13 +500,13 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
         for (var i = 0; i < graphParameters.graphPoints.length; i++){
             var x = graphParameters.graphPoints[i][0];
             var y = graphParameters.graphPoints[i][1];
-            if((x.toString()).includes(".") == true){
+            if (x.toString().includes(".")){
                 var x_check = (x.toString()).split(".");
                 if(x_check[1].length > 7){
                     x = x.toFixed(7);
                 }
             }
-            if((y.toString()).includes(".") == true){
+            if (y.toString().includes(".")) {
                 var y_check = (y.toString()).split(".");
                 if(y_check[1].length > 7){
                     y = y.toFixed(7);
@@ -583,9 +631,9 @@ function editandUpdateDataBoundsValue(graph,sigbuilder_Graph){
         }
         // Input
         var input = document.createElement("input");
-        input.name = "edit_"+labelArray[i].toString();
+        input.name = "edit_"+labelArray[i];
         input.value = value;
-        input.setAttribute("id", "edit_"+labelArray[i].toString());
+        input.setAttribute("id", "edit_"+labelArray[i]);
         input.setAttribute("class", "fieldInput");
         myform.appendChild(input);
 
@@ -640,13 +688,13 @@ function editandUpdateDataBoundsValue(graph,sigbuilder_Graph){
             document.getElementById("messageLabel").innerHTML = "";
         }
         sigbuilder_Graph.xAxis[0].update({
-                max: parseFloat(x_max)
+                max: x_max
             });
         sigbuilder_Graph.yAxis[0].update({
-                max: parseFloat(y_max)
+                max: y_max
             });
         sigbuilder_Graph.yAxis[0].update({
-                min: parseFloat(y_min)
+                min: y_min
             });
         wind.destroy();
     };
@@ -695,9 +743,9 @@ function loadPointsFromDatFile(graph,sigbuilder_Graph, graphParameters, pointsHi
 
         // Input
         var input = document.createElement("input");
-        input.name = "edit_"+labelArray[i].toString();
+        input.name = "edit_"+labelArray[i];
         input.value = textValueArray[i];
-        input.setAttribute("id", "fileupload_"+i.toString());
+        input.setAttribute("id", "fileupload_"+i);
         input.setAttribute("class", "fieldInput");
         myform.appendChild(input);
 
@@ -841,9 +889,9 @@ function saveToTextFile(graph,sigbuilder_Graph){
 
         // Input
         var input = document.createElement("input");
-        input.name = "edit_"+labelArray[i].toString();
+        input.name = "edit_"+labelArray[i];
         input.value = textValueArray[i];
-        input.setAttribute("id", "filesave_"+i.toString());
+        input.setAttribute("id", "filesave_"+i);
         input.setAttribute("class", "fieldInput");
         myform.appendChild(input);
 
@@ -903,7 +951,8 @@ function saveToTextFile(graph,sigbuilder_Graph){
                 var y = 0;
                 for (var i=0;i<pointlength;i++) {
                     if(ary[0] == "%g"){
-                        if((sigbuilder_Graph.series[0].data[i].x).toString().includes(".")){
+                        var varx = sigbuilder_Graph.series[0].data[i].x;
+                        if (varx.toString().includes(".")) {
                             x = parseFloat(sigbuilder_Graph.series[0].data[i].x).toFixed(6);
                         }else{
                             x = parseFloat(sigbuilder_Graph.series[0].data[i].x);
@@ -912,7 +961,8 @@ function saveToTextFile(graph,sigbuilder_Graph){
                         x = parseFloat(sigbuilder_Graph.series[0].data[i].x).toFixed(6);
                     }
                     if(ary[1] == "%g"){
-                        if((sigbuilder_Graph.series[0].data[i].y).toString().includes(".")){
+                        var vary = sigbuilder_Graph.series[0].data[i].y;
+                        if (vary.toString().includes(".")) {
                             y = parseFloat(sigbuilder_Graph.series[0].data[i].y).toFixed(6);
                         }else{
                             y = parseFloat(sigbuilder_Graph.series[0].data[i].y);
@@ -1010,9 +1060,9 @@ function loadFromExcel(graph, sigbuilder_Graph, graphParameters, pointsHistory){
 
         // Input
         var input = document.createElement("input");
-        input.name = "edit_"+labelArray[i].toString();
+        input.name = "edit_"+labelArray[i];
         input.value = textValueArray[i];
-        input.setAttribute("id", "loadfromExcel_"+i.toString());
+        input.setAttribute("id", "loadfromExcel_"+i);
         input.setAttribute("class", "fieldInput");
         myform.appendChild(input);
 
@@ -1291,8 +1341,8 @@ function open_sine_wind(graph){
 
         // Input
         var input = document.createElement("input");
-        input.name = "edit_"+labelArray[i].toString();
-        input.setAttribute("id", "edit_sine_"+i.toString());
+        input.name = "edit_"+labelArray[i];
+        input.setAttribute("id", "edit_sine_"+i);
         input.setAttribute("class", "fieldInput");
         myform.appendChild(input);
 
@@ -1376,7 +1426,7 @@ function open_sawtooth1_wind(graph){
 
         // Input
         var input = document.createElement("input");
-        input.setAttribute("id", "edit_sawtooth1_"+i.toString());
+        input.setAttribute("id", "edit_sawtooth1_"+i);
         input.setAttribute("class", "fieldInput");
         myform.appendChild(input);
 
@@ -1460,7 +1510,7 @@ function open_sawtooth2_wind(graph){
 
         // Input
         var input = document.createElement("input");
-        input.setAttribute("id", "edit_sawtooth2_"+i.toString());
+        input.setAttribute("id", "edit_sawtooth2_"+i);
         input.setAttribute("class", "fieldInput");
         myform.appendChild(input);
 
@@ -1544,7 +1594,7 @@ function open_pulse_wind(graph){
 
         // Input
         var input = document.createElement("input");
-        input.setAttribute("id", "edit_pulse_"+i.toString());
+        input.setAttribute("id", "edit_pulse_"+i);
         input.setAttribute("class", "fieldInput");
         myform.appendChild(input);
 
@@ -1628,7 +1678,7 @@ function open_random_normal_wind(graph){
 
         // Input
         var input = document.createElement("input");
-        input.setAttribute("id", "edit_Random_Normal_"+i.toString());
+        input.setAttribute("id", "edit_Random_Normal_"+i);
         input.setAttribute("class", "fieldInput");
         myform.appendChild(input);
 
@@ -1712,7 +1762,7 @@ function open_random_uniform_wind(graph){
 
         // Input
         var input = document.createElement("input");
-        input.setAttribute("id", "edit_Random_Uniform_"+i.toString());
+        input.setAttribute("id", "edit_Random_Uniform_"+i);
         input.setAttribute("class", "fieldInput");
         myform.appendChild(input);
 
@@ -1800,9 +1850,9 @@ function editPointsValue(graphObject,graph,sigbuilder_Graph,graphParameters, poi
         }
         // Input
         var input = document.createElement("input");
-        input.name = "edit_"+keys[i].toString();
+        input.name = "edit_"+keys[i];
         input.value = value;
-        input.setAttribute("id", "edit_"+keys[i].toString());
+        input.setAttribute("id", "edit_"+keys[i]);
         input.setAttribute("class", "fieldInput");
         myform.appendChild(input);
 
