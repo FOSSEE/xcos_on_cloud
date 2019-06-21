@@ -1,4 +1,5 @@
 var check_call = 1;
+var wind = "";
 function showGraphWindowSigBlk(graph,graphParameters,cell) {
     var drag_sig_chart = "";
     var parameters = {
@@ -13,6 +14,7 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     var pointsHistory = [];
     // to contain menubar and graphic
     var content = document.createElement('div');
+    content.setAttribute('id','graphcontentwind');
     // to contain menubar
     var menuBar = document.createElement('div');
     menuBar.setAttribute('id','graphMenuBar');
@@ -178,10 +180,11 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     messageLabel.innerHTML = "";
     messageLabel.setAttribute('id','messageLabel');
     content.appendChild(messageLabel);
-    var wind = showModalWindow(graph, 'Graphic Window', content, 550, 480);
+    var graphic_window = showModalWindow(graph, 'Graphic Window', content, 550, 480);
     drag_sig_chart = create_draggable_points_chart_sigbuilder(graphParameters, pointsHistory, graphParameters.xmin, graphParameters.xmax, graphParameters.ymin, graphParameters.ymax, graphParameters.chartType, graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle,graphParameters.xpointInterval,graphParameters.step,graphParameters.stepname);
     get_parameters_wind_sigbuilder.hide();
-    wind.addListener(mxEvent.DESTROY, function(evt) {
+    graphic_window.addListener(mxEvent.DESTROY, function(evt) {
+        wind.destroy();
         get_parameters_wind_sigbuilder.show();
     });
     //For displaying and hiding of submenus
@@ -481,7 +484,7 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     };
     // menu Exit -> submenu Exit without save
     exitMenuOptions[1].onclick = function() {
-        wind.destroy();
+        graphic_window.destroy();
         get_parameters_wind_sigbuilder.show();
     };
     // menu Exit -> submenu Save/Exit
@@ -524,13 +527,6 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
             x_arr = "[0]";
             y_arr = "[0]";
         }
-        var sort_x_array = graphParameters.original_X_Points.slice(0);
-        sort_x_array.sort();
-        var compare_x_array = "["+sort_x_array.toString().replace(/,/g, ';')+"]";
-        if(compare_x_array.trim() == x_arr.trim()){
-            x_arr = "["+graphParameters.original_X_Points.toString().replace(/,/g, ';')+"]";
-            y_arr = "["+graphParameters.original_Y_Points.toString().replace(/,/g, ';')+"]";
-        }
         var propertiesObject = {
             id: cell.id
                 };
@@ -539,7 +535,7 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
         propertiesObject["Method"] = (graphParameters.mtd).toString();
         propertiesObject["PeriodicOption"] = (graphParameters.PeriodicOption).toString();
         propertiesObject["graf"] = "y";
-        wind.destroy();
+        graphic_window.destroy();
         get_parameters_wind_sigbuilder.show();
         check_call = 2;
         cell.blockInstance.instance.set(propertiesObject);
@@ -591,6 +587,9 @@ function clearPoints(sigbuilder_Graph, graphParameters, pointsHistory){
 }
 
 function editandUpdateDataBoundsValue(graph,sigbuilder_Graph){
+    //Making graph window inaccessible
+    var graph_wind = document.getElementById("graphcontentwind");
+    graph_wind.style.pointerEvents = "none";
     // Create basic structure for the form
     var content = document.createElement('div');
     content.setAttribute("id", "editDataBounds");
@@ -669,10 +668,11 @@ function editandUpdateDataBoundsValue(graph,sigbuilder_Graph){
     myform.appendChild(ok_btn);
     content.appendChild(myform);
     var height = 200;
-    var wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 300, height);
+    wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 300, height);
 
     // Executes when button 'cancel_btn' is clicked
     cancel_btn.onclick = function() {
+        graph_wind.style.pointerEvents = "auto";
         document.getElementById("messageLabel").innerHTML = "";
         wind.destroy();
     };
@@ -696,12 +696,16 @@ function editandUpdateDataBoundsValue(graph,sigbuilder_Graph){
         sigbuilder_Graph.yAxis[0].update({
                 min: y_min
             });
+        graph_wind.style.pointerEvents = "auto";
         wind.destroy();
     };
 }
 
 function loadPointsFromDatFile(graph,sigbuilder_Graph, graphParameters, pointsHistory){
 
+    //Making graph window inaccessible
+    var graph_wind = document.getElementById("graphcontentwind");
+    graph_wind.style.pointerEvents = "none";
     // Create basic structure for the form
     var content = document.createElement('div');
     content.setAttribute("id", "loadFromDatFile");
@@ -729,6 +733,7 @@ function loadPointsFromDatFile(graph,sigbuilder_Graph, graphParameters, pointsHi
     var fileSelector = document.createElement("input");
     fileSelector.setAttribute("type","file");
     fileSelector.style.display = 'none';
+    fileSelector.setAttribute("accept",".txt, .dat");
     fileSelector.setAttribute("id","inputDatFile");
     myform.appendChild(fileSelector);
 
@@ -781,79 +786,80 @@ function loadPointsFromDatFile(graph,sigbuilder_Graph, graphParameters, pointsHi
     myform.appendChild(ok_btn);
     content.appendChild(myform);
     var height = 220;
-    var wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 300, height);
-
+    wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 300, height);
     var filename_input = document.getElementById("fileupload_0");
     filename_input.readOnly = true;
     filename_input.onclick = function(){
         fileSelector.click();
     };
-    fileSelector.onchange = function(){
-    var x = document.getElementById("inputDatFile");
-    var txt = "";
-    if ('files' in x) {
-        var file = x.files[0];
-        if ('name' in file){
-            txt = file.name;
-        }
-    }
-    var fileExtension = txt.substr((txt.lastIndexOf('.') + 1));
-    if(fileExtension == "dat"||fileExtension == "txt"){
-        document.getElementById("fileupload_0").value = txt;
-    }else{
-        alert("Only file with extension .dat and .txt is allowed");
-    }
-    };
     // Executes when button 'cancel_btn' is clicked
     cancel_btn.onclick = function() {
+        document.getElementById("messageLabel").innerHTML = "";
+        graph_wind.style.pointerEvents = "auto";
         wind.destroy();
     };
     // Executes when button 'ok_btn' is clicked
     ok_btn.onclick = function() {
-        sigbuilder_Graph.series[0].setData([]);
-        var points_ary = [];
-        var format = (document.getElementById("fileupload_1").value).trim();
-        var count = (format.match(/%/g) || []).length;
-        if(count == 2){
-            var x = document.getElementById("inputDatFile");
-            var file = x.files[0];
-            var reader = new FileReader();
-            reader.onload = function(progressEvent){
-            // By lines
-                var lines = this.result.split('\n');
-                for(var i = 0; i < lines.length; i++){
-                    var line = lines[i];
-                    if(line.length != 0){
+        if( document.getElementById("inputDatFile").files.length != 0 ){
+            sigbuilder_Graph.series[0].setData([]);
+            var points_ary = [];
+            var format = (document.getElementById("fileupload_1").value).trim();
+            var count = (format.match(/%/g) || []).length;
+            if(count == 2){
+                var x = document.getElementById("inputDatFile");
+                var file = x.files[0];
+                var reader = new FileReader();
+                reader.onload = function(progressEvent){
+                // By lines
+                    var lines = this.result.split('\n');
+                    for(var i = 0; i < lines.length; i++){
+                        var line = lines[i];
+                        if(line.length != 0){
                             points_ary[i] = scan(line.trim(),format);
-                        if((points_ary[i][0]!=""||points_ary[i][0]!="undefined")&&(points_ary[i][1]!=""||points_ary[i][1]!="undefined")){
-                            sigbuilder_Graph.series[0].addPoint([points_ary[i][0],points_ary[i][1]]);
+                            if((points_ary[i][0]!=""||points_ary[i][0]!="undefined")&&
+                            (points_ary[i][1]!=""||points_ary[i][1]!="undefined")){
+                                sigbuilder_Graph.series[0].addPoint([points_ary[i][0],points_ary[i][1]]);
+                            }
                         }
                     }
-                }
-                graphParameters.mtd = 1;
-                graphParameters.graphPoints = points_ary.slice();
-                pointsHistory.push(graphParameters.graphPoints.slice());
-                var pointscount = sigbuilder_Graph.series[0].data.length;
-                var xmaxtitle = (sigbuilder_Graph.xAxis[0].getExtremes().dataMax).toFixed(6);
-                sigbuilder_Graph.setTitle(null, { text: updateSubtitleForSigbuilderGraph(pointscount, graphParameters.mtd, xmaxtitle, graphParameters.PeriodicOption)});
-                sigbuilder_Graph.series[0].update({
-                type: "line",
-                step: '',
-                name: ''
-                });
-                autoscaleFunctionalityForGraph(sigbuilder_Graph,graphParameters);
-            };
-            reader.readAsText(file);
+                    graphParameters.mtd = 1;
+                    graphParameters.graphPoints = points_ary.slice();
+                    pointsHistory.push(graphParameters.graphPoints.slice());
+                    var pointscount = sigbuilder_Graph.series[0].data.length;
+                    var xmaxtitle = (sigbuilder_Graph.xAxis[0].getExtremes().dataMax).toFixed(6);
+                    sigbuilder_Graph.setTitle(null, { text: updateSubtitleForSigbuilderGraph(pointscount, graphParameters.mtd, xmaxtitle, graphParameters.PeriodicOption)});
+                    sigbuilder_Graph.series[0].update({
+                    type: "line",
+                    step: '',
+                    name: ''
+                    });
+                    autoscaleFunctionalityForGraph(sigbuilder_Graph,graphParameters);
+                };
+                reader.readAsText(file);
+            }else{
+                graph_wind.style.pointerEvents = "auto";
+                wind.destroy();
+                document.getElementById("messageLabel").innerHTML = "Bad Format";
+                throw "incorrect";
+            }
         }else{
-            document.getElementById("messageLabel").innerHTML ="Bad Format";
+            graph_wind.style.pointerEvents = "auto";
+            wind.destroy();
+            document.getElementById("messageLabel").innerHTML = "No File Selected, Please select a proper file";
+            throw "incorrect";
         }
+        graph_wind.style.pointerEvents = "auto";
         wind.destroy();
+        document.getElementById("messageLabel").innerHTML = "";
     };
 
 }
 
 function saveToTextFile(graph,sigbuilder_Graph){
 
+    //Making graph window inaccessible
+    var graph_wind = document.getElementById("graphcontentwind");
+    graph_wind.style.pointerEvents = "none";
     // Create basic structure for the form
     var content = document.createElement('div');
     content.setAttribute("id", "saveToDatFile");
@@ -927,11 +933,12 @@ function saveToTextFile(graph,sigbuilder_Graph){
     myform.appendChild(ok_btn);
     content.appendChild(myform);
     var height = 180;
-    var wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 300, height);
+    wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 300, height);
 
     // Executes when button 'cancel_btn' is clicked
     cancel_btn.onclick = function() {
         document.getElementById("messageLabel").innerHTML = "";
+        graph_wind.style.pointerEvents = "auto";
         wind.destroy();
     };
     // Executes when button 'ok_btn' is clicked
@@ -995,12 +1002,20 @@ function saveToTextFile(graph,sigbuilder_Graph){
                 alert("Your browser does not support the HTML5 Blob.");
             }
             }else{
+                graph_wind.style.pointerEvents = "auto";
+                wind.destroy();
                 document.getElementById("messageLabel").innerHTML = "Bad format in writing data file";
+                throw "incorrect";
             }
         }else{
+            graph_wind.style.pointerEvents = "auto";
+            wind.destroy();
             document.getElementById("messageLabel").innerHTML = "Bad format in writing data file";
+            throw "incorrect";
         }
+        graph_wind.style.pointerEvents = "auto";
         wind.destroy();
+        document.getElementById("messageLabel").innerHTML = "";
     };
 
     function destroyClickedElement(event) {
@@ -1019,6 +1034,9 @@ function convertLetterToNumber(str) {
 
 function loadFromExcel(graph, sigbuilder_Graph, graphParameters, pointsHistory){
 
+    //Making graph window inaccessible
+    var graph_wind = document.getElementById("graphcontentwind");
+    graph_wind.style.pointerEvents = "none";
     // Create basic structure for the form
     var content = document.createElement('div');
     content.setAttribute("id", "loadFromExcel");
@@ -1046,6 +1064,7 @@ function loadFromExcel(graph, sigbuilder_Graph, graphParameters, pointsHistory){
     var fileSelector = document.createElement("input");
     fileSelector.setAttribute("type","file");
     fileSelector.style.display = 'none';
+    fileSelector.setAttribute("accept",".xls, .xlsx");
     fileSelector.setAttribute("id","inputExcelFile");
     myform.appendChild(fileSelector);
 
@@ -1098,119 +1117,112 @@ function loadFromExcel(graph, sigbuilder_Graph, graphParameters, pointsHistory){
     myform.appendChild(ok_btn);
     content.appendChild(myform);
     var height = 220;
-    var wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 300, height);
+    wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 300, height);
 
     var filename_input = document.getElementById("loadfromExcel_0");
     filename_input.readOnly = true;
     filename_input.onclick = function(){
         fileSelector.click();
     };
-    fileSelector.onchange = function(){
-    var x = document.getElementById("inputExcelFile");
-    var txt = "";
-    if ('files' in x) {
-        var file = x.files[0];
-        if ('name' in file){
-            txt = file.name;
-        }
-    }
-    var fileExtension = txt.substr((txt.lastIndexOf('.') + 1));
-    if(fileExtension == "xls"||fileExtension == "xlsx"){
-        document.getElementById("loadfromExcel_0").value = txt;
-    }else{
-        alert("Only file with extension .xls and .xlsx is allowed");
-    }
-    };
     // Executes when button 'cancel_btn' is clicked
     cancel_btn.onclick = function() {
+        document.getElementById("messageLabel").innerHTML = "";
+        graph_wind.style.pointerEvents = "auto";
         wind.destroy();
     };
     // Executes when button 'ok_btn' is clicked
     ok_btn.onclick = function() {
-        sigbuilder_Graph.series[0].setData([]);
-        var regex_for_column_name = /^[a-zA-Z]\d+$/;
-        var x_range = (document.getElementById("loadfromExcel_2").value).trim();
-        var x_col = x_range.split(":");
-        var y_range = (document.getElementById("loadfromExcel_3").value).trim();
-        var y_col = y_range.split(":");
-        if(x_col.length !=2 && y_col.length !=2){
-            document.getElementById("messageLabel").innerHTML = "Cannot read your Excel file, please verify the parameters";
-            throw "incorrect";
-            wind.destroy();
-        }
-        if((regex_for_column_name.test(x_col[0]) != true) && (regex_for_column_name.test(x_col[1]) != true)){
-            document.getElementById("messageLabel").innerHTML = "Bad Address in X";
-            throw "incorrect";
-            wind.destroy();
-        }
-        if((regex_for_column_name.test(y_col[0]) != true) && (regex_for_column_name.test(y_col[1]) != true)){
-            document.getElementById("messageLabel").innerHTML = "Bad Address in Y";
-            throw "incorrect";
-            wind.destroy();
-        }
-        var x_start_col = x_col[0].substring(0, 1);
-        var x_start_col_range = parseFloat(x_col[0].substring(1, x_col[0].length))-1;
-        var x_end_col = x_col[1].substring(0, 1);
-        var x_end_col_range = parseFloat(x_col[1].substring(1, x_col[1].length))-1;
-        if(x_start_col != x_end_col){
-            document.getElementById("messageLabel").innerHTML = "Cannot read your Excel file, please verify the parameters";
-            throw "incorrect";
-            wind.destroy();
-        }
-        var y_start_col = y_col[0].substring(0, 1);
-        var y_start_col_range = parseFloat(y_col[0].substring(1, y_col[0].length))-1;
-        var y_end_col = y_col[1].substring(0, 1);
-        var y_end_col_range = parseFloat(y_col[1].substring(1, y_col[0].length))-1;
-        if(y_start_col != y_end_col){
-            document.getElementById("messageLabel").innerHTML = "Cannot read your Excel file, please verify the parameters";
-            throw "incorrect";
-            wind.destroy();
-        }
-        var x_col_num = convertLetterToNumber(x_start_col) - 1;
-        var y_col_num = convertLetterToNumber(y_start_col) - 1;
-        var x = document.getElementById("inputExcelFile");
-        var file = x.files[0];
-        if(file!=null){
-            var reader = new FileReader();
-            reader.onload = function(e){
-                var data = e.target.result;
-                data = new Uint8Array(data);
-                /* read the file */
-                var workbook = XLSX.read(data, {type: 'array'}); // parse the file
-                var sheet = workbook.Sheets[workbook.SheetNames[0]]; // get the first worksheet
-                var range = XLSX.utils.decode_range(sheet['!ref']);
-                var points_ary = [];
-                var k = 0;
-                for(var i = x_start_col_range, j = y_start_col_range; i <= x_end_col_range && j <= y_end_col_range; i++, j++){
-                    var cell_x = sheet[XLSX.utils.encode_cell({r: i, c: x_col_num})];
-                    var cell_y = sheet[XLSX.utils.encode_cell({r: j, c: y_col_num})];
-                    var x = parseFloat(cell_x.v);
-                    var y = parseFloat(cell_y.v);
-                    points_ary[k] = [x,y];
-                    sigbuilder_Graph.series[0].addPoint([x,y]);
-                    k++;
-                }
-                graphParameters.mtd = 1;
-                graphParameters.graphPoints = points_ary.slice();
-                pointsHistory.push(graphParameters.graphPoints.slice());
-                var pointscount = sigbuilder_Graph.series[0].data.length;
-                var xmaxtitle = (sigbuilder_Graph.xAxis[0].getExtremes().dataMax).toFixed(6);
-                sigbuilder_Graph.setTitle(null, { text: updateSubtitleForSigbuilderGraph(pointscount, graphParameters.mtd, xmaxtitle, graphParameters.PeriodicOption)});
-                sigbuilder_Graph.series[0].update({
-                type: "line",
-                step: '',
-                name: ''
-                });
-                autoscaleFunctionalityForGraph(sigbuilder_Graph,graphParameters);
-            };
-            reader.readAsArrayBuffer(file);
-            }else{
-                document.getElementById("messageLabel").innerHTML = "Please select the proper Excel file";
+        if( document.getElementById("inputExcelFile").files.length != 0 ){
+            sigbuilder_Graph.series[0].setData([]);
+            var regex_for_column_name = /^[a-zA-Z]\d+$/;
+            var x_range = (document.getElementById("loadfromExcel_2").value).trim();
+            var x_col = x_range.split(":");
+            var y_range = (document.getElementById("loadfromExcel_3").value).trim();
+            var y_col = y_range.split(":");
+            if(x_col.length !=2 && y_col.length !=2){
+                document.getElementById("messageLabel").innerHTML = "Cannot read your Excel file, please verify the parameters";
                 throw "incorrect";
                 wind.destroy();
+                graph_wind.style.pointerEvents = "auto";
             }
-        document.getElementById("messageLabel").innerHTML = "";
+            if((regex_for_column_name.test(x_col[0]) != true) && (regex_for_column_name.test(x_col[1]) != true)){
+                document.getElementById("messageLabel").innerHTML = "Bad Address in X";
+                throw "incorrect";
+                wind.destroy();
+                graph_wind.style.pointerEvents = "auto";
+            }
+            if((regex_for_column_name.test(y_col[0]) != true) && (regex_for_column_name.test(y_col[1]) != true)){
+                document.getElementById("messageLabel").innerHTML = "Bad Address in Y";
+                throw "incorrect";
+                wind.destroy();
+                graph_wind.style.pointerEvents = "auto";
+            }
+            var x_start_col = x_col[0].substring(0, 1);
+            var x_start_col_range = parseFloat(x_col[0].substring(1, x_col[0].length))-1;
+            var x_end_col = x_col[1].substring(0, 1);
+            var x_end_col_range = parseFloat(x_col[1].substring(1, x_col[1].length))-1;
+            if(x_start_col != x_end_col){
+                document.getElementById("messageLabel").innerHTML = "Cannot read your Excel file, please verify the parameters";
+                throw "incorrect";
+                wind.destroy();
+                graph_wind.style.pointerEvents = "auto";
+            }
+            var y_start_col = y_col[0].substring(0, 1);
+            var y_start_col_range = parseFloat(y_col[0].substring(1, y_col[0].length))-1;
+            var y_end_col = y_col[1].substring(0, 1);
+            var y_end_col_range = parseFloat(y_col[1].substring(1, y_col[0].length))-1;
+            if(y_start_col != y_end_col){
+                document.getElementById("messageLabel").innerHTML = "Cannot read your Excel file, please verify the parameters";
+                throw "incorrect";
+                wind.destroy();
+                graph_wind.style.pointerEvents = "auto";
+            }
+            var x_col_num = convertLetterToNumber(x_start_col) - 1;
+            var y_col_num = convertLetterToNumber(y_start_col) - 1;
+            var x = document.getElementById("inputExcelFile");
+            var file = x.files[0];
+            var reader = new FileReader();
+            reader.onload = function(e){
+            var data = e.target.result;
+            data = new Uint8Array(data);
+            /* read the file */
+            var workbook = XLSX.read(data, {type: 'array'}); // parse the file
+            var sheet = workbook.Sheets[workbook.SheetNames[0]]; // get the first worksheet
+            var range = XLSX.utils.decode_range(sheet['!ref']);
+            var points_ary = [];
+            var k = 0;
+            for(var i = x_start_col_range, j = y_start_col_range; i <= x_end_col_range && j <= y_end_col_range; i++, j++){
+                var cell_x = sheet[XLSX.utils.encode_cell({r: i, c: x_col_num})];
+                var cell_y = sheet[XLSX.utils.encode_cell({r: j, c: y_col_num})];
+                var x = parseFloat(cell_x.v);
+                var y = parseFloat(cell_y.v);
+                points_ary[k] = [x,y];
+                sigbuilder_Graph.series[0].addPoint([x,y]);
+                k++;
+            }
+            graphParameters.mtd = 1;
+            graphParameters.graphPoints = points_ary.slice();
+            pointsHistory.push(graphParameters.graphPoints.slice());
+            var pointscount = sigbuilder_Graph.series[0].data.length;
+            var xmaxtitle = (sigbuilder_Graph.xAxis[0].getExtremes().dataMax).toFixed(6);
+            sigbuilder_Graph.setTitle(null, { text: updateSubtitleForSigbuilderGraph(pointscount, graphParameters.mtd, xmaxtitle, graphParameters.PeriodicOption)});
+            sigbuilder_Graph.series[0].update({
+            type: "line",
+            step: '',
+            name: ''
+            });
+            autoscaleFunctionalityForGraph(sigbuilder_Graph,graphParameters);
+        };
+        reader.readAsArrayBuffer(file);
+        }else{
+            graph_wind.style.pointerEvents = "auto";
+            wind.destroy();
+            document.getElementById("messageLabel").innerHTML = "Please select the proper Excel file";
+            throw "incorrect";
+        }
+        graph_wind.style.pointerEvents = "auto";
         wind.destroy();
+        document.getElementById("messageLabel").innerHTML = "";
     };
 
 
@@ -1218,6 +1230,9 @@ function loadFromExcel(graph, sigbuilder_Graph, graphParameters, pointsHistory){
 
 function openPeriodicSignal(graph, graphParameters, drag_sig_chart){
 
+    //Making graph window inaccessible
+    var graph_wind = document.getElementById("graphcontentwind");
+    graph_wind.style.pointerEvents = "none";
     // Create basic structure for the form
     var content = document.createElement('div');
     content.setAttribute("id", "periodicSignal");
@@ -1284,10 +1299,12 @@ function openPeriodicSignal(graph, graphParameters, drag_sig_chart){
     myform.appendChild(ok_btn);
     content.appendChild(myform);
     var height = 120;
-    var wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 200, height);
+    wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 200, height);
 
     // Executes when button 'cancel_btn' is clicked
     cancel_btn.onclick = function() {
+        document.getElementById("messageLabel").innerHTML = "";
+        graph_wind.style.pointerEvents = "auto";
         wind.destroy();
     };
     // Executes when button 'ok_btn' is clicked
@@ -1301,12 +1318,18 @@ function openPeriodicSignal(graph, graphParameters, drag_sig_chart){
         var pointscount = drag_sig_chart.series[0].data.length;
         xmaxtitle = (drag_sig_chart.xAxis[0].getExtremes().dataMax).toFixed(6);
         drag_sig_chart.setTitle(null, { text: updateSubtitleForSigbuilderGraph(pointscount, graphParameters.mtd, xmaxtitle, graphParameters.PeriodicOption)});
+        document.getElementById("messageLabel").innerHTML = "";
+        graph_wind.style.pointerEvents = "auto";
         wind.destroy();
     };
 
 }
 
 function open_sine_wind(graph){
+
+    //Making graph window inaccessible
+    var graph_wind = document.getElementById("graphcontentwind");
+    graph_wind.style.pointerEvents = "none";
     // Create basic structure for the form
     var content = document.createElement('div');
     content.setAttribute("id", "openSineWnd");
@@ -1378,13 +1401,17 @@ function open_sine_wind(graph){
     myform.appendChild(ok_btn);
     content.appendChild(myform);
     var height = 240;
-    var wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 320, height);
+    wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 320, height);
     // Executes when button 'cancel_btn' is clicked
     cancel_btn.onclick = function() {
+        document.getElementById("messageLabel").innerHTML = "";
+        graph_wind.style.pointerEvents = "auto";
         wind.destroy();
     };
     // Executes when button 'ok_btn' is clicked
     ok_btn.onclick = function() {
+        document.getElementById("messageLabel").innerHTML = "";
+        graph_wind.style.pointerEvents = "auto";
         wind.destroy();
     };
 
@@ -1392,6 +1419,9 @@ function open_sine_wind(graph){
 
 function open_sawtooth1_wind(graph){
 
+    //Making graph window inaccessible
+    var graph_wind = document.getElementById("graphcontentwind");
+    graph_wind.style.pointerEvents = "none";
     // Create basic structure for the form
     var content = document.createElement('div');
     content.setAttribute("id", "openSawtooth1Wnd");
@@ -1462,13 +1492,17 @@ function open_sawtooth1_wind(graph){
     myform.appendChild(ok_btn);
     content.appendChild(myform);
     var height = 200;
-    var wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 250, height);
+    wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 250, height);
     // Executes when button 'cancel_btn' is clicked
     cancel_btn.onclick = function() {
+        document.getElementById("messageLabel").innerHTML = "";
+        graph_wind.style.pointerEvents = "auto";
         wind.destroy();
     };
     // Executes when button 'ok_btn' is clicked
     ok_btn.onclick = function() {
+        document.getElementById("messageLabel").innerHTML = "";
+        graph_wind.style.pointerEvents = "auto";
         wind.destroy();
     };
 
@@ -1476,6 +1510,9 @@ function open_sawtooth1_wind(graph){
 
 function open_sawtooth2_wind(graph){
 
+    //Making graph window inaccessible
+    var graph_wind = document.getElementById("graphcontentwind");
+    graph_wind.style.pointerEvents = "none";
     // Create basic structure for the form
     var content = document.createElement('div');
     content.setAttribute("id", "openSawtooth2Wnd");
@@ -1546,13 +1583,17 @@ function open_sawtooth2_wind(graph){
     myform.appendChild(ok_btn);
     content.appendChild(myform);
     var height = 180;
-    var wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 250, height);
+    wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 250, height);
     // Executes when button 'cancel_btn' is clicked
     cancel_btn.onclick = function() {
+        document.getElementById("messageLabel").innerHTML = "";
+        graph_wind.style.pointerEvents = "auto";
         wind.destroy();
     };
     // Executes when button 'ok_btn' is clicked
     ok_btn.onclick = function() {
+        document.getElementById("messageLabel").innerHTML = "";
+        graph_wind.style.pointerEvents = "auto";
         wind.destroy();
     };
 
@@ -1560,6 +1601,9 @@ function open_sawtooth2_wind(graph){
 
 function open_pulse_wind(graph){
 
+    //Making graph window inaccessible
+    var graph_wind = document.getElementById("graphcontentwind");
+    graph_wind.style.pointerEvents = "none";
     // Create basic structure for the form
     var content = document.createElement('div');
     content.setAttribute("id", "openPulseWnd");
@@ -1630,13 +1674,17 @@ function open_pulse_wind(graph){
     myform.appendChild(ok_btn);
     content.appendChild(myform);
     var height = 240;
-    var wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 300, height);
+    wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 300, height);
     // Executes when button 'cancel_btn' is clicked
     cancel_btn.onclick = function() {
+        document.getElementById("messageLabel").innerHTML = "";
+        graph_wind.style.pointerEvents = "auto";
         wind.destroy();
     };
     // Executes when button 'ok_btn' is clicked
     ok_btn.onclick = function() {
+        document.getElementById("messageLabel").innerHTML = "";
+        graph_wind.style.pointerEvents = "auto";
         wind.destroy();
     };
 
@@ -1644,6 +1692,9 @@ function open_pulse_wind(graph){
 
 function open_random_normal_wind(graph){
 
+    //Making graph window inaccessible
+    var graph_wind = document.getElementById("graphcontentwind");
+    graph_wind.style.pointerEvents = "none";
     // Create basic structure for the form
     var content = document.createElement('div');
     content.setAttribute("id", "openRandomNormalWnd");
@@ -1714,13 +1765,17 @@ function open_random_normal_wind(graph){
     myform.appendChild(ok_btn);
     content.appendChild(myform);
     var height = 240;
-    var wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 300, height);
+    wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 300, height);
     // Executes when button 'cancel_btn' is clicked
     cancel_btn.onclick = function() {
+        document.getElementById("messageLabel").innerHTML = "";
+        graph_wind.style.pointerEvents = "auto";
         wind.destroy();
     };
     // Executes when button 'ok_btn' is clicked
     ok_btn.onclick = function() {
+        document.getElementById("messageLabel").innerHTML = "";
+        graph_wind.style.pointerEvents = "auto";
         wind.destroy();
     };
 
@@ -1728,6 +1783,9 @@ function open_random_normal_wind(graph){
 
 function open_random_uniform_wind(graph){
 
+    //Making graph window inaccessible
+    var graph_wind = document.getElementById("graphcontentwind");
+    graph_wind.style.pointerEvents = "none";
     // Create basic structure for the form
     var content = document.createElement('div');
     content.setAttribute("id", "openRandomUniformWnd");
@@ -1798,13 +1856,17 @@ function open_random_uniform_wind(graph){
     myform.appendChild(ok_btn);
     content.appendChild(myform);
     var height = 240;
-    var wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 300, height);
+    wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 300, height);
     // Executes when button 'cancel_btn' is clicked
     cancel_btn.onclick = function() {
+        document.getElementById("messageLabel").innerHTML = "";
+        graph_wind.style.pointerEvents = "auto";
         wind.destroy();
     };
     // Executes when button 'ok_btn' is clicked
     ok_btn.onclick = function() {
+        document.getElementById("messageLabel").innerHTML = "";
+        graph_wind.style.pointerEvents = "auto";
         wind.destroy();
     };
 
@@ -1813,6 +1875,9 @@ function open_random_uniform_wind(graph){
 
 function editPointsValue(graphObject,graph,sigbuilder_Graph,graphParameters, pointsHistory, method){
 
+    //Making graph window inaccessible
+    var graph_wind = document.getElementById("graphcontentwind");
+    graph_wind.style.pointerEvents = "none";
     // Create basic structure for the form
     var content = document.createElement('div');
     content.setAttribute("id", "editCoordinates");
@@ -1888,10 +1953,12 @@ function editPointsValue(graphObject,graph,sigbuilder_Graph,graphParameters, poi
     myform.appendChild(ok_btn);
     content.appendChild(myform);
     var height = 150;
-    var wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 200, height);
+    wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 200, height);
 
     // Executes when button 'cancel_btn' is clicked
     cancel_btn.onclick = function() {
+        document.getElementById("messageLabel").innerHTML = "";
+        graph_wind.style.pointerEvents = "auto";
         wind.destroy();
     };
     // Executes when button 'ok_btn' is clicked
@@ -1900,6 +1967,8 @@ function editPointsValue(graphObject,graph,sigbuilder_Graph,graphParameters, poi
         var y_value = parseFloat(document.getElementById("edit_y").value);
         removePointsFromChart(graphObject,sigbuilder_Graph,graphParameters, pointsHistory,method);
         addPointsOnChart(sigbuilder_Graph,graphParameters, pointsHistory,x_value,y_value,method);
+        graph_wind.style.pointerEvents = "auto";
+        document.getElementById("messageLabel").innerHTML = "";
         wind.destroy();
     };
 }
