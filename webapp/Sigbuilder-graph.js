@@ -184,7 +184,9 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     drag_sig_chart = create_draggable_points_chart_sigbuilder(graphParameters, pointsHistory, graphParameters.xmin, graphParameters.xmax, graphParameters.ymin, graphParameters.ymax, graphParameters.chartType, graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle,graphParameters.xpointInterval,graphParameters.step,graphParameters.stepname);
     get_parameters_wind_sigbuilder.hide();
     graphic_window.addListener(mxEvent.DESTROY, function(evt) {
-        wind.destroy();
+        if(wind != ""){
+            wind.destroy();
+        }
         get_parameters_wind_sigbuilder.show();
     });
     //For displaying and hiding of submenus
@@ -504,13 +506,13 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
             var x = graphParameters.graphPoints[i][0];
             var y = graphParameters.graphPoints[i][1];
             if (x.toString().includes(".")){
-                var x_check = (x.toString()).split(".");
+                var x_check = x.toString().split(".");
                 if(x_check[1].length > 7){
                     x = x.toFixed(7);
                 }
             }
             if (y.toString().includes(".")) {
-                var y_check = (y.toString()).split(".");
+                var y_check = y.toString().split(".");
                 if(y_check[1].length > 7){
                     y = y.toFixed(7);
                 }
@@ -532,8 +534,8 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
                 };
         propertiesObject["xx"] = x_arr;
         propertiesObject["yy"] = y_arr;
-        propertiesObject["Method"] = (graphParameters.mtd).toString();
-        propertiesObject["PeriodicOption"] = (graphParameters.PeriodicOption).toString();
+        propertiesObject["Method"] = graphParameters.mtd.toString();
+        propertiesObject["PeriodicOption"] = graphParameters.PeriodicOption.toString();
         propertiesObject["graf"] = "y";
         graphic_window.destroy();
         get_parameters_wind_sigbuilder.show();
@@ -545,15 +547,15 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
 
 function autoscaleFunctionalityForGraph(drag_sig_chart,graphParameters){
     //Added for postive/maximum value autoscale functionality
-        var max_x_value_new = (drag_sig_chart.xAxis[0].getExtremes().dataMax).toFixed(1);
-        var min_x_value_new = (drag_sig_chart.xAxis[0].getExtremes().dataMin).toFixed(1);
-        var max_y_value_new = (drag_sig_chart.yAxis[0].getExtremes().dataMax).toFixed(1);
-        var min_y_value_new = (drag_sig_chart.yAxis[0].getExtremes().dataMin).toFixed(1);
+        var max_x_value_new = drag_sig_chart.xAxis[0].getExtremes().dataMax;
+        var min_x_value_new = drag_sig_chart.xAxis[0].getExtremes().dataMin;
+        var max_y_value_new = drag_sig_chart.yAxis[0].getExtremes().dataMax;
+        var min_y_value_new = drag_sig_chart.yAxis[0].getExtremes().dataMin;
         var max_x = drag_sig_chart.xAxis[0].getExtremes().max;
         var max_y = drag_sig_chart.yAxis[0].getExtremes().max;
         var min_y = drag_sig_chart.yAxis[0].getExtremes().min;
-        var diff_x = (((Math.abs(max_x_value_new - min_x_value_new))/100)*10).toFixed(2);
-        var diff_y = (((Math.abs(max_y_value_new - min_y_value_new))/100)*10).toFixed(2);
+        var diff_x = (((Math.abs(max_x_value_new - min_x_value_new))/100)*10);
+        var diff_y = (((Math.abs(max_y_value_new - min_y_value_new))/100)*10);
         if(Math.abs(max_x - max_x_value_new) < parseFloat(diff_x)){
             max_x = parseFloat(parseFloat(max_x) + parseFloat(diff_x)).toFixed(1);
             drag_sig_chart.xAxis[0].update({
@@ -960,22 +962,22 @@ function saveToTextFile(graph,sigbuilder_Graph){
                     if(ary[0] == "%g"){
                         var varx = sigbuilder_Graph.series[0].data[i].x;
                         if (varx.toString().includes(".")) {
-                            x = parseFloat(sigbuilder_Graph.series[0].data[i].x).toFixed(6);
+                            x = parseFloat(varx).toFixed(6);
                         }else{
-                            x = parseFloat(sigbuilder_Graph.series[0].data[i].x);
+                            x = parseFloat(varx);
                         }
                     }else{
-                        x = parseFloat(sigbuilder_Graph.series[0].data[i].x).toFixed(6);
+                        x = parseFloat(varx).toFixed(6);
                     }
                     if(ary[1] == "%g"){
                         var vary = sigbuilder_Graph.series[0].data[i].y;
                         if (vary.toString().includes(".")) {
-                            y = parseFloat(sigbuilder_Graph.series[0].data[i].y).toFixed(6);
+                            y = parseFloat(vary).toFixed(6);
                         }else{
-                            y = parseFloat(sigbuilder_Graph.series[0].data[i].y);
+                            y = parseFloat(vary);
                         }
                     }else{
-                        y = parseFloat(sigbuilder_Graph.series[0].data[i].y).toFixed(6);
+                        y = parseFloat(vary).toFixed(6);
                     }
                     var replace_1 = format.replace(ary[0],x);
                     var replace_2 = replace_1.replace(ary[1],y);
