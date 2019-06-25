@@ -399,7 +399,7 @@ var create_draggable_points_chart = function(graphPoints, pointsHistory, xmin, x
 };
 
 // Function to create a chart with responsive points for Sigbuilder
-var create_draggable_points_chart_sigbuilder = function(graphParameters, pointsHistory, xmin, xmax, ymin, ymax, chart_type, points, method, xmaxtitle,xpointinterval,step,stepname) {
+var create_draggable_points_chart_sigbuilder = function(graphParameters, pointsHistory, xmin, xmax, ymin, ymax, chart_type, points, method, xmaxtitle,step,stepname) {
 
     var subtitle = updateSubtitleForSigbuilderGraph(points, method, xmaxtitle,graphParameters.PeriodicOption);
     pointsHistory.push(graphParameters.graphPoints.slice());
@@ -442,7 +442,6 @@ var create_draggable_points_chart_sigbuilder = function(graphParameters, pointsH
             },
             min: parseFloat(xmin),
             max: parseFloat(xmax),
-            tickInterval: xpointinterval,
             gridLineWidth: 1,
             gridLineDashStyle: 'dash'
         },
