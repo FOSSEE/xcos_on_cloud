@@ -1,16 +1,8 @@
 var check_call = 1;
 var wind = "";
+var sigbuilder_Graph = "";
 function showGraphWindowSigBlk(graph,graphParameters,cell) {
-    var drag_sig_chart = "";
-    var parameters = {
-        xx: "",
-        yy: "",
-        mtd: "",
-        PeriodicOption: "",
-        graf: ""
-    };
-    var defaultPoints = graphParameters.graphPoints.slice();
-    // to store all the states of graph points for undo function
+    // to store all the states of graph points
     var pointsHistory = [];
     // to contain menubar and graphic
     var content = document.createElement('div');
@@ -181,7 +173,8 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     messageLabel.setAttribute('id','messageLabel');
     content.appendChild(messageLabel);
     var graphic_window = showModalWindow(graph, 'Graphic Window', content, 550, 480);
-    drag_sig_chart = create_draggable_points_chart_sigbuilder(graphParameters, pointsHistory, graphParameters.xmin, graphParameters.xmax, graphParameters.ymin, graphParameters.ymax, graphParameters.chartType, graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle,graphParameters.xpointInterval,graphParameters.step,graphParameters.stepname);
+    sigbuilder_Graph = create_draggable_points_chart_sigbuilder(graphParameters, pointsHistory, graphParameters.xmin, graphParameters.xmax, graphParameters.ymin, graphParameters.ymax, graphParameters.chartType, graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle,graphParameters.step,graphParameters.stepname);
+    autoscaleFunctionalityForGraph(sigbuilder_Graph, graphParameters, pointsHistory);
     get_parameters_wind_sigbuilder.hide();
     graphic_window.addListener(mxEvent.DESTROY, function(evt) {
         if(wind != ""){
@@ -325,18 +318,21 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     //menu Autoscale
     autoscale_menu.onclick = function() {
         //Called function for autoscaling axis
-        autoscaleFunctionalityForGraph(drag_sig_chart,graphParameters);
+        autoscaleFunctionalityForGraph(sigbuilder_Graph, graphParameters, pointsHistory);
     };
     // menu Spline -> submenus 'zero order','linear','order 2','not_a_knot','periodic','monotone','fast','clamped'
     splineMenuOptions[0].onclick = function() {
         // zero order
         graphParameters.mtd = 0;
-        graphParameters.points = (drag_sig_chart.series[0].points).length;
-        graphParameters.xmaxTitle = (drag_sig_chart.xAxis[0].getExtremes().dataMax).toFixed(6)
-        drag_sig_chart.setTitle(null, {
+        graphParameters.points = sigbuilder_Graph.series[0].points.length;
+        graphParameters.xmaxTitle = sigbuilder_Graph.xAxis[0].getExtremes().dataMax.toFixed(6);
+        graphParameters.chartType = "line";
+        graphParameters.step = "left";
+        graphParameters.stepname = "Left";
+        sigbuilder_Graph.setTitle(null, {
             text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle, graphParameters.PeriodicOption)
             });
-        drag_sig_chart.series[0].update({
+        sigbuilder_Graph.series[0].update({
                 type: "line",
                 step: 'left',
                 name: 'Left'
@@ -345,12 +341,15 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     splineMenuOptions[1].onclick = function() {
         // linear
         graphParameters.mtd = 1;
-        graphParameters.points =(drag_sig_chart.series[0].points).length;
-        graphParameters.xmaxTitle = (drag_sig_chart.xAxis[0].getExtremes().dataMax).toFixed(6)
-        drag_sig_chart.setTitle(null, {
+        graphParameters.points = sigbuilder_Graph.series[0].points.length;
+        graphParameters.xmaxTitle = sigbuilder_Graph.xAxis[0].getExtremes().dataMax.toFixed(6);
+        graphParameters.chartType = "line";
+        graphParameters.step = "";
+        graphParameters.stepname = "";
+        sigbuilder_Graph.setTitle(null, {
             text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle, graphParameters.PeriodicOption)
             });
-        drag_sig_chart.series[0].update({
+        sigbuilder_Graph.series[0].update({
                 type: "line",
                 step: '',
                 name: ''
@@ -359,98 +358,116 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     splineMenuOptions[2].onclick = function() {
         // order 2
         graphParameters.mtd = 2;
-        graphParameters.points = (drag_sig_chart.series[0].points).length;
-        graphParameters.xmaxTitle = (drag_sig_chart.xAxis[0].getExtremes().dataMax).toFixed(6)
-        drag_sig_chart.setTitle(null, {
+        graphParameters.points = sigbuilder_Graph.series[0].points.length;
+        graphParameters.xmaxTitle = sigbuilder_Graph.xAxis[0].getExtremes().dataMax.toFixed(6);
+        graphParameters.chartType = "spline";
+        graphParameters.step = "";
+        graphParameters.stepname = "";
+        sigbuilder_Graph.setTitle(null, {
             text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle, graphParameters.PeriodicOption)
         });
-        drag_sig_chart.series[0].update({
+        sigbuilder_Graph.series[0].update({
             type: "spline"
         });
     };
     splineMenuOptions[3].onclick = function() {
         // not_a_knot
         graphParameters.mtd = 3;
-        graphParameters.points = (drag_sig_chart.series[0].points).length;
-        graphParameters.xmaxTitle = (drag_sig_chart.xAxis[0].getExtremes().dataMax).toFixed(6)
-        drag_sig_chart.setTitle(null, {
+        graphParameters.points = sigbuilder_Graph.series[0].points.length;
+        graphParameters.xmaxTitle = sigbuilder_Graph.xAxis[0].getExtremes().dataMax.toFixed(6);
+        graphParameters.chartType = "spline";
+        graphParameters.step = "";
+        graphParameters.stepname = "";
+        sigbuilder_Graph.setTitle(null, {
             text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle, graphParameters.PeriodicOption)
             });
-        drag_sig_chart.series[0].update({
+        sigbuilder_Graph.series[0].update({
                 type: "spline"
         });
     };
     splineMenuOptions[4].onclick = function() {
         // periodic
         graphParameters.mtd = 4;
-        graphParameters.points = (drag_sig_chart.series[0].points).length;
-        graphParameters.xmaxTitle = (drag_sig_chart.xAxis[0].getExtremes().dataMax).toFixed(6)
-        drag_sig_chart.setTitle(null, {
+        graphParameters.points = sigbuilder_Graph.series[0].points.length;
+        graphParameters.xmaxTitle = sigbuilder_Graph.xAxis[0].getExtremes().dataMax.toFixed(6);
+        graphParameters.chartType = "spline";
+        graphParameters.step = "";
+        graphParameters.stepname = "";
+        sigbuilder_Graph.setTitle(null, {
             text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle, graphParameters.PeriodicOption)
             });
-        drag_sig_chart.series[0].update({
+        sigbuilder_Graph.series[0].update({
                 type: "spline"
         });
     };
     splineMenuOptions[5].onclick = function() {
         // monotone
         graphParameters.mtd = 5;
-        graphParameters.points = (drag_sig_chart.series[0].points).length;
-        graphParameters.xmaxTitle = (drag_sig_chart.xAxis[0].getExtremes().dataMax).toFixed(6)
-        drag_sig_chart.setTitle(null, {
+        graphParameters.points = sigbuilder_Graph.series[0].points.length;
+        graphParameters.xmaxTitle = sigbuilder_Graph.xAxis[0].getExtremes().dataMax.toFixed(6);
+        graphParameters.chartType = "spline";
+        graphParameters.step = "";
+        graphParameters.stepname = "";
+        sigbuilder_Graph.setTitle(null, {
             text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle, graphParameters.PeriodicOption)
             });
-        drag_sig_chart.series[0].update({
+        sigbuilder_Graph.series[0].update({
                 type: "spline"
         });
     };
     splineMenuOptions[6].onclick = function() {
         // fast
         graphParameters.mtd = 6;
-        graphParameters.points = (drag_sig_chart.series[0].points).length;
-        graphParameters.xmaxTitle = (drag_sig_chart.xAxis[0].getExtremes().dataMax).toFixed(6)
-        drag_sig_chart.setTitle(null, {
+        graphParameters.points = sigbuilder_Graph.series[0].points.length;
+        graphParameters.xmaxTitle = sigbuilder_Graph.xAxis[0].getExtremes().dataMax.toFixed(6);
+        graphParameters.chartType = "spline";
+        graphParameters.step = "";
+        graphParameters.stepname = "";
+        sigbuilder_Graph.setTitle(null, {
             text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle, graphParameters.PeriodicOption)
             });
-        drag_sig_chart.series[0].update({
+        sigbuilder_Graph.series[0].update({
                 type: "spline"
         });
     };
     splineMenuOptions[7].onclick = function() {
         //clamped
         graphParameters.mtd = 7;
-        graphParameters.points = (drag_sig_chart.series[0].points).length;
-        graphParameters.xmaxTitle = (drag_sig_chart.xAxis[0].getExtremes().dataMax).toFixed(6)
-        drag_sig_chart.setTitle(null, {
+        graphParameters.points = sigbuilder_Graph.series[0].points.length;
+        graphParameters.xmaxTitle = sigbuilder_Graph.xAxis[0].getExtremes().dataMax.toFixed(6);
+        graphParameters.chartType = "spline";
+        graphParameters.step = "";
+        graphParameters.stepname = "";
+        sigbuilder_Graph.setTitle(null, {
             text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle, graphParameters.PeriodicOption)
             });
-        drag_sig_chart.series[0].update({
+        sigbuilder_Graph.series[0].update({
                 type: "spline"
         });
     };
     //menu Data - > Clear
     dataMenuOptions[0].onclick = function() {
-        clearPoints(drag_sig_chart, graphParameters, pointsHistory);
+        clearPoints(sigbuilder_Graph, graphParameters, pointsHistory);
     };
     //menu Data - > Data Bounds
     dataMenuOptions[1].onclick = function() {
-        editandUpdateDataBoundsValue(graph_sigbuilder,drag_sig_chart);
+        editandUpdateDataBoundsValue(graph_sigbuilder,sigbuilder_Graph);
     };
     //menu Data - > Load from text file
     dataMenuOptions[2].onclick = function() {
-        loadPointsFromDatFile(graph_sigbuilder,drag_sig_chart, graphParameters, pointsHistory);
+        loadPointsFromDatFile(graph_sigbuilder,sigbuilder_Graph, graphParameters, pointsHistory);
     };
     //menu Data - > Save to text file
     dataMenuOptions[3].onclick = function() {
-        saveToTextFile(graph_sigbuilder,drag_sig_chart,graphParameters);
+        saveToTextFile(graph_sigbuilder,sigbuilder_Graph,graphParameters);
     };
     //menu Data - > Load from Excel
     dataMenuOptions[4].onclick = function() {
-        loadFromExcel(graph_sigbuilder, drag_sig_chart, graphParameters, pointsHistory);
+        loadFromExcel(graph_sigbuilder, sigbuilder_Graph, graphParameters, pointsHistory);
     };
     //menu Data - > Periodic signal
     dataMenuOptions[5].onclick = function() {
-        openPeriodicSignal(graph_sigbuilder, graphParameters, drag_sig_chart);
+        openPeriodicSignal(graph_sigbuilder, graphParameters, sigbuilder_Graph);
     };
     //menu Standards - > sine
     standardsMenuOptions[0].onclick = function() {
@@ -495,8 +512,6 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
         var x_arr = "";
         var y_arr = "";
         if(graphParameters.graphPoints!=[] && graphParameters.graphPoints.length!=0){
-        //Called function for autoscaling axis according to new points
-        autoscaleFunctionalityForGraph(drag_sig_chart,graphParameters);
 
         //Saving points and sending it to set method of JS
         x_arr = "[";
@@ -545,36 +560,19 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     check_call = 1;
 }
 
-function autoscaleFunctionalityForGraph(drag_sig_chart,graphParameters){
+function autoscaleFunctionalityForGraph(sigbuilder_Graph, graphParameters, pointsHistory){
     //Added for postive/maximum value autoscale functionality
-        var max_x_value_new = drag_sig_chart.xAxis[0].getExtremes().dataMax;
-        var min_x_value_new = drag_sig_chart.xAxis[0].getExtremes().dataMin;
-        var max_y_value_new = drag_sig_chart.yAxis[0].getExtremes().dataMax;
-        var min_y_value_new = drag_sig_chart.yAxis[0].getExtremes().dataMin;
-        var max_x = drag_sig_chart.xAxis[0].getExtremes().max;
-        var max_y = drag_sig_chart.yAxis[0].getExtremes().max;
-        var min_y = drag_sig_chart.yAxis[0].getExtremes().min;
-        var diff_x = (((Math.abs(max_x_value_new - min_x_value_new))/100)*10);
-        var diff_y = (((Math.abs(max_y_value_new - min_y_value_new))/100)*10);
-        if(Math.abs(max_x - max_x_value_new) < parseFloat(diff_x)){
-            max_x = parseFloat(parseFloat(max_x) + parseFloat(diff_x)).toFixed(1);
-            drag_sig_chart.xAxis[0].update({
-                max: parseFloat(max_x)
-            });
-        }
-        if(Math.abs(max_y - max_y_value_new) < parseFloat(diff_y)){
-            max_y = parseFloat(parseFloat(max_y) + parseFloat(diff_y)).toFixed(1);
-            drag_sig_chart.yAxis[0].update({
-                max: parseFloat(max_y)
-            });
-        }
-        //Added for negative/minimum value autoscale functionality for y axis
-        if(Math.abs(min_y - min_y_value_new) < parseFloat(diff_y)){
-            min_y = parseFloat(parseFloat(min_y) - parseFloat(diff_y)).toFixed(1);
-            drag_sig_chart.yAxis[0].update({
-                min: parseFloat(min_y)
-            });
-        }
+        var max_x_value_new = sigbuilder_Graph.xAxis[0].getExtremes().dataMax; //get max x point's value
+        var min_x_value_new = sigbuilder_Graph.xAxis[0].getExtremes().dataMin; //get min x point's value
+        var max_y_value_new = sigbuilder_Graph.yAxis[0].getExtremes().dataMax; //get max y point's value
+        var min_y_value_new = sigbuilder_Graph.yAxis[0].getExtremes().dataMin; //get min y point's value
+        var diff_x = ((Math.abs(max_x_value_new - min_x_value_new))/100)*10;
+        var diff_y = ((Math.abs(max_y_value_new - min_y_value_new))/100)*10;
+        graphParameters.xmin = min_x_value_new; //set min x axis value
+        graphParameters.xmax = max_x_value_new + diff_x; //set max x axis value
+        graphParameters.ymin = min_y_value_new - diff_y; //set min y axis value
+        graphParameters.ymax = max_y_value_new + diff_y; //set max y axis value
+        sigbuilder_Graph = create_draggable_points_chart_sigbuilder(graphParameters, pointsHistory, graphParameters.xmin, graphParameters.xmax, graphParameters.ymin, graphParameters.ymax, graphParameters.chartType, graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle, graphParameters.step, graphParameters.stepname);
 }
 
 function clearPoints(sigbuilder_Graph, graphParameters, pointsHistory){
@@ -583,9 +581,9 @@ function clearPoints(sigbuilder_Graph, graphParameters, pointsHistory){
     graphParameters.graphPoints = [];
     graphParameters.mtd = 0;
     pointsHistory = [];
-    var pointscount = sigbuilder_Graph.series[0].data.length;
-    xmaxtitle = (sigbuilder_Graph.xAxis[0].getExtremes().dataMax).toFixed(6);
-    sigbuilder_Graph.setTitle(null, { text: updateSubtitleForSigbuilderGraph(pointscount, graphParameters.mtd, xmaxtitle, graphParameters.PeriodicOption)});
+    graphParameters.points = sigbuilder_Graph.series[0].data.length;
+    graphParameters.xmaxtitle = sigbuilder_Graph.xAxis[0].getExtremes().dataMax.toFixed(6);
+    sigbuilder_Graph.setTitle(null, { text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle, graphParameters.PeriodicOption)});
 }
 
 function editandUpdateDataBoundsValue(graph,sigbuilder_Graph){
@@ -805,7 +803,7 @@ function loadPointsFromDatFile(graph,sigbuilder_Graph, graphParameters, pointsHi
         if( document.getElementById("inputDatFile").files.length != 0 ){
             sigbuilder_Graph.series[0].setData([]);
             var points_ary = [];
-            var format = (document.getElementById("fileupload_1").value).trim();
+            var format = document.getElementById("fileupload_1").value.trim();
             var count = (format.match(/%/g) || []).length;
             if(count == 2){
                 var x = document.getElementById("inputDatFile");
@@ -827,15 +825,18 @@ function loadPointsFromDatFile(graph,sigbuilder_Graph, graphParameters, pointsHi
                     graphParameters.mtd = 1;
                     graphParameters.graphPoints = points_ary.slice();
                     pointsHistory.push(graphParameters.graphPoints.slice());
-                    var pointscount = sigbuilder_Graph.series[0].data.length;
-                    var xmaxtitle = (sigbuilder_Graph.xAxis[0].getExtremes().dataMax).toFixed(6);
-                    sigbuilder_Graph.setTitle(null, { text: updateSubtitleForSigbuilderGraph(pointscount, graphParameters.mtd, xmaxtitle, graphParameters.PeriodicOption)});
+                    graphParameters.points = sigbuilder_Graph.series[0].data.length;
+                    graphParameters.xmaxTitle = sigbuilder_Graph.xAxis[0].getExtremes().dataMax.toFixed(6);
+                    sigbuilder_Graph.setTitle(null, { text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle, graphParameters.PeriodicOption)});
+                    graphParameters.chartType = "line";
+                    graphParameters.step = "";
+                    graphParameters.stepname = "";
                     sigbuilder_Graph.series[0].update({
                     type: "line",
                     step: '',
                     name: ''
                     });
-                    autoscaleFunctionalityForGraph(sigbuilder_Graph,graphParameters);
+                    autoscaleFunctionalityForGraph(sigbuilder_Graph, graphParameters, pointsHistory);
                 };
                 reader.readAsText(file);
             }else{
@@ -946,7 +947,7 @@ function saveToTextFile(graph,sigbuilder_Graph){
     // Executes when button 'ok_btn' is clicked
     ok_btn.onclick = function() {
         var pointlength = sigbuilder_Graph.series[0].data.length;
-        var format = (document.getElementById("filesave_1").value).trim();
+        var format = document.getElementById("filesave_1").value.trim();
         var count = (format.match(/%/g) || []).length;
         if(count == 2){
             var firstchar = format.charAt((format.indexOf("%"))+1);
@@ -1137,9 +1138,9 @@ function loadFromExcel(graph, sigbuilder_Graph, graphParameters, pointsHistory){
         if( document.getElementById("inputExcelFile").files.length != 0 ){
             sigbuilder_Graph.series[0].setData([]);
             var regex_for_column_name = /^[a-zA-Z]\d+$/;
-            var x_range = (document.getElementById("loadfromExcel_2").value).trim();
+            var x_range = document.getElementById("loadfromExcel_2").value.trim();
             var x_col = x_range.split(":");
-            var y_range = (document.getElementById("loadfromExcel_3").value).trim();
+            var y_range = document.getElementById("loadfromExcel_3").value.trim();
             var y_col = y_range.split(":");
             if(x_col.length !=2 && y_col.length !=2){
                 document.getElementById("messageLabel").innerHTML = "Cannot read your Excel file, please verify the parameters";
@@ -1205,15 +1206,18 @@ function loadFromExcel(graph, sigbuilder_Graph, graphParameters, pointsHistory){
             graphParameters.mtd = 1;
             graphParameters.graphPoints = points_ary.slice();
             pointsHistory.push(graphParameters.graphPoints.slice());
-            var pointscount = sigbuilder_Graph.series[0].data.length;
-            var xmaxtitle = (sigbuilder_Graph.xAxis[0].getExtremes().dataMax).toFixed(6);
-            sigbuilder_Graph.setTitle(null, { text: updateSubtitleForSigbuilderGraph(pointscount, graphParameters.mtd, xmaxtitle, graphParameters.PeriodicOption)});
+            graphParameters.points = sigbuilder_Graph.series[0].data.length;
+            graphParameters.xmaxTitle = sigbuilder_Graph.xAxis[0].getExtremes().dataMax.toFixed(6);
+            graphParameters.chartType = "line";
+            graphParameters.step = "";
+            graphParameters.stepname = "";
+            sigbuilder_Graph.setTitle(null, { text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle, graphParameters.PeriodicOption)});
             sigbuilder_Graph.series[0].update({
             type: "line",
             step: '',
             name: ''
             });
-            autoscaleFunctionalityForGraph(sigbuilder_Graph,graphParameters);
+            autoscaleFunctionalityForGraph(sigbuilder_Graph, graphParameters, pointsHistory);
         };
         reader.readAsArrayBuffer(file);
         }else{
@@ -1230,7 +1234,7 @@ function loadFromExcel(graph, sigbuilder_Graph, graphParameters, pointsHistory){
 
 }
 
-function openPeriodicSignal(graph, graphParameters, drag_sig_chart){
+function openPeriodicSignal(graph, graphParameters, sigbuilder_Graph){
 
     //Making graph window inaccessible
     var graph_wind = document.getElementById("graphcontentwind");
@@ -1311,15 +1315,15 @@ function openPeriodicSignal(graph, graphParameters, drag_sig_chart){
     };
     // Executes when button 'ok_btn' is clicked
     ok_btn.onclick = function() {
-        var periodicSignal = document.getElementById("edit_periodicSignal").value;
+        var periodicSignal = document.getElementById("edit_periodicSignal").value.trim();
         if(periodicSignal == "y"||periodicSignal == "Y"){
             graphParameters.PeriodicOption = "y";
         }else{
             graphParameters.PeriodicOption = "n";
         }
-        var pointscount = drag_sig_chart.series[0].data.length;
-        xmaxtitle = (drag_sig_chart.xAxis[0].getExtremes().dataMax).toFixed(6);
-        drag_sig_chart.setTitle(null, { text: updateSubtitleForSigbuilderGraph(pointscount, graphParameters.mtd, xmaxtitle, graphParameters.PeriodicOption)});
+        graphParameters.points = sigbuilder_Graph.series[0].data.length;
+        graphParameters.xmaxTitle = sigbuilder_Graph.xAxis[0].getExtremes().dataMax.toFixed(6);
+        sigbuilder_Graph.setTitle(null, { text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle, graphParameters.PeriodicOption)});
         document.getElementById("messageLabel").innerHTML = "";
         graph_wind.style.pointerEvents = "auto";
         wind.destroy();
@@ -1966,9 +1970,13 @@ function editPointsValue(graphObject,graph,sigbuilder_Graph,graphParameters, poi
     // Executes when button 'ok_btn' is clicked
     ok_btn.onclick = function() {
         var x_value = parseFloat(document.getElementById("edit_x").value);
+        if(x_value < 0){
+            x_value = 0;
+        }
         var y_value = parseFloat(document.getElementById("edit_y").value);
         removePointsFromChart(graphObject,sigbuilder_Graph,graphParameters, pointsHistory,method);
         addPointsOnChart(sigbuilder_Graph,graphParameters, pointsHistory,x_value,y_value,method);
+        autoscaleFunctionalityForGraph(sigbuilder_Graph, graphParameters, pointsHistory);
         graph_wind.style.pointerEvents = "auto";
         document.getElementById("messageLabel").innerHTML = "";
         wind.destroy();
@@ -1979,15 +1987,17 @@ function removePointsFromChart(graphObject, sigbuilder_Graph, graphParameters, p
     var counter = graphObject.point.index;
     sigbuilder_Graph.series[0].data[counter].remove();
     pointsHistory.push(graphParameters.graphPoints.slice());
-    var pointscount = sigbuilder_Graph.series[0].data.length;
-    xmaxtitle = (sigbuilder_Graph.xAxis[0].getExtremes().dataMax).toFixed(6);
-    sigbuilder_Graph.setTitle(null, { text: updateSubtitleForSigbuilderGraph(pointscount, method, xmaxtitle, graphParameters.PeriodicOption)});
+    graphParameters.points = sigbuilder_Graph.series[0].data.length;
+    graphParameters.mtd = method;
+    graphParameters.xmaxTitle = sigbuilder_Graph.xAxis[0].getExtremes().dataMax.toFixed(6);
+    sigbuilder_Graph.setTitle(null, { text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle, graphParameters.PeriodicOption)});
 }
 
 function addPointsOnChart(sigbuilder_Graph, graphParameters, pointsHistory, x_value, y_value, method){
     sigbuilder_Graph.series[0].addPoint([x_value, y_value]);
     pointsHistory.push(graphParameters.graphPoints.slice());
-    var pointscount = sigbuilder_Graph.series[0].data.length;
-    xmaxtitle = (sigbuilder_Graph.xAxis[0].getExtremes().dataMax).toFixed(6);
-    sigbuilder_Graph.setTitle(null, { text: updateSubtitleForSigbuilderGraph(pointscount, method, xmaxtitle, graphParameters.PeriodicOption)});
+    graphParameters.points = sigbuilder_Graph.series[0].data.length;
+    graphParameters.mtd = method;
+    graphParameters.xmaxTitle = sigbuilder_Graph.xAxis[0].getExtremes().dataMax.toFixed(6);
+    sigbuilder_Graph.setTitle(null, { text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle, graphParameters.PeriodicOption)});
 }

@@ -417,15 +417,12 @@ function Sigbuilder() {
                 var ymin = parseFloat(Math.min(...yy_arry));
                 var ymax = parseFloat(Math.max(...yy_arry));
                 var charttype = getcharttype(mtd);
-                var xpointinterval = parseFloat(0.5);
                 var xmaxTitle = xmax;
-                if(xmax <= 2){
-                    xpointinterval = parseFloat(0.2);
-                    xmax = parseFloat(xmax + xpointinterval);
+                if(xmax == 2){
+                    xmax = parseFloat(xmax + 0.2);
                 }else{
                     var diff_x = parseFloat((((Math.abs(xmax - xmin))/100)*10).toFixed(1));
-                    xmax = parseFloat(xmax + diff_x).toFixed(1);
-                    xpointinterval = diff_x;
+                    xmax = xmax + diff_x;
                 }
                 var step = "";
                 var stepname = "";
@@ -448,9 +445,8 @@ function Sigbuilder() {
                     PeriodicOption: PeriodicOption1,
                     graf: graf1,
                     xmaxTitle: xmaxTitle,
-                    xpointInterval: xpointinterval,
                     step: step,
-                    name: stepname
+                    stepname: stepname
                 };
                 if(check_call != 2){
                     showGraphWindowSigBlk(graph_sigbuilder,graphParameters,cell_sigbuilder);
