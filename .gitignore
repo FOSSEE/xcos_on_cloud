@@ -1,3 +1,5 @@
+*.orig
+*.rej
 combined.js
 /webapp/res_imgs/*.jpg
 hs_err_*.log
