@@ -1,5 +1,6 @@
 Click==7.0
-flake8==3.6.0
+entrypoints==0.3
+flake8==3.7.7
 Flask==1.0.2
 Flask-Caching==1.7.0
 Flask-Session==0.3.1
@@ -10,8 +11,8 @@ itsdangerous==1.1.0
 Jinja2==2.10.1
 MarkupSafe==1.1.1
 mccabe==0.6.1
-pycodestyle==2.4.0
-pyflakes==2.0.0
+pycodestyle==2.5.0
+pyflakes==2.1.1
 setuptools==40.8.0
 Werkzeug==0.15.2
 wheel==0.33.1
