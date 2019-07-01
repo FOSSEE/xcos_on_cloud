@@ -396,6 +396,10 @@ function Sigbuilder() {
                     xy += xx_arry[i]+","+yy_arry[i];
                 }
             }
+            var flag_for_zeros =  false;
+            if(xy.includes("0,0")){
+                flag_for_zeros = true;
+            }
             xy = JSON.parse(cleandata(xy.toString()));
             var N = xy.length;
             if (graf1 == "y" || graf1 == "Y"){  //Opening graphics window
@@ -433,21 +437,31 @@ function Sigbuilder() {
                 ymax = parseFloat(ymax + 1);
                 ymin = parseFloat(ymin - 1);
                 var points = xx_arry.length;
-                var graphParameters = {
-                    graphPoints: graphPoints,
-                    xmin: xmin,
-                    xmax: xmax,
-                    ymin: ymin,
-                    ymax: ymax,
-                    chartType: charttype,
-                    points: points,
-                    mtd: mtd,
-                    PeriodicOption: PeriodicOption1,
-                    graf: graf1,
-                    xmaxTitle: xmaxTitle,
-                    step: step,
-                    stepname: stepname
-                };
+                var result = checkDuplicate_X_values(xx_arry);
+                var graphParameters = {};
+                if(result && (mtd == 0||mtd == 1||mtd == 2)){
+                    graphParameters = {
+                        graphPoints: graphPoints,
+                        xmin: xmin,
+                        xmax: xmax,
+                        ymin: ymin,
+                        ymax: ymax,
+                        chartType: charttype,
+                        points: points,
+                        mtd: mtd,
+                        PeriodicOption: PeriodicOption1,
+                        graf: graf1,
+                        xmaxTitle: xmaxTitle,
+                        step: step,
+                        stepname: stepname,
+                        flag_for_zeros : flag_for_zeros
+                    };
+                }else{
+                    graphParameters = {
+                        mtd: mtd,
+                        flag_for_zeros : flag_for_zeros
+                    };
+                }
                 if(check_call != 2){
                     showGraphWindowSigBlk(graph_sigbuilder,graphParameters,cell_sigbuilder);
                 }else{
