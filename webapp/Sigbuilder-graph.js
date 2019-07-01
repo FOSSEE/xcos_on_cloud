@@ -7,6 +7,8 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     // to contain menubar and graphic
     var content = document.createElement('div');
     content.setAttribute('id','graphcontentwind');
+    content.style.width = "550px";
+    content.style.height = "460px";
     // to contain menubar
     var menuBar = document.createElement('div');
     menuBar.setAttribute('id','graphMenuBar');
@@ -168,20 +170,44 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     var chart = document.createElement('div');
     chart.setAttribute('id','drag_sig_chart');
     content.appendChild(chart);
+    var message_div = document.createElement('div');
+    message_div.setAttribute('id','message_div');
     var messageLabel = document.createElement('span');
     messageLabel.innerHTML = "";
     messageLabel.setAttribute('id','messageLabel');
-    content.appendChild(messageLabel);
-    var graphic_window = showModalWindow(graph, 'Graphic Window', content, 550, 480);
-    sigbuilder_Graph = create_draggable_points_chart_sigbuilder(graphParameters, pointsHistory, graphParameters.xmin, graphParameters.xmax, graphParameters.ymin, graphParameters.ymax, graphParameters.chartType, graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle,graphParameters.step,graphParameters.stepname);
-    autoscaleFunctionalityForGraph(sigbuilder_Graph, graphParameters, pointsHistory);
-    get_parameters_wind_sigbuilder.hide();
-    graphic_window.addListener(mxEvent.DESTROY, function(evt) {
-        if(wind != ""){
-            wind.destroy();
-        }
-        get_parameters_wind_sigbuilder.show();
-    });
+    message_div.appendChild(messageLabel);
+    content.appendChild(message_div);
+    var graphic_window = "";
+    console.log(graphParameters);
+    var par_check = Object.keys(graphParameters).length;
+    if(par_check > 2){
+        menuBar.style.display = 'block';
+        graphic_window = showModalWindow(graph, 'Graphic Window', content, 550, 480);
+        graphParameters.points = graphParameters.graphPoints.length;
+        sigbuilder_Graph = create_draggable_points_chart_sigbuilder(graphParameters, pointsHistory, graphParameters.xmin, graphParameters.xmax, graphParameters.ymin, graphParameters.ymax, graphParameters.chartType, graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle,graphParameters.step,graphParameters.stepname);
+        autoscaleFunctionalityForGraph(sigbuilder_Graph, graphParameters, pointsHistory);
+        get_parameters_wind_sigbuilder.hide();
+        graphic_window.addListener(mxEvent.DESTROY, function(evt) {
+            if(wind != ""){
+                wind.destroy();
+            }
+            graphParameters.flag_for_zeros = false;
+            messageLabel.innerHTML = "";
+            get_parameters_wind_sigbuilder.show();
+        });
+    }else{
+        graphic_window = showModalWindow(graph, 'Graphic Window', content, 550, 480);
+        menuBar.style.display = 'none';
+        message_div.style.marginTop = "430px";
+        messageLabel.innerHTML = "ERROR IN SPLINE : "+ getmethod(graphParameters.mtd);
+        graphic_window.addListener(mxEvent.DESTROY, function(evt) {
+            if(wind != ""){
+                wind.destroy();
+            }
+            graphParameters.flag_for_zeros = false;
+            messageLabel.innerHTML = "";
+        });
+    }
     //For displaying and hiding of submenus
     content.onclick = function() {
         fileSubMenu.style.display = 'none';
@@ -504,6 +530,7 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     // menu Exit -> submenu Exit without save
     exitMenuOptions[1].onclick = function() {
         graphic_window.destroy();
+        graphParameters.flag_for_zeros = false;
         get_parameters_wind_sigbuilder.show();
     };
     // menu Exit -> submenu Save/Exit
@@ -520,24 +547,48 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
         for (var i = 0; i < graphParameters.graphPoints.length; i++){
             var x = graphParameters.graphPoints[i][0];
             var y = graphParameters.graphPoints[i][1];
-            if (x.toString().includes(".")){
-                var x_check = x.toString().split(".");
-                if(x_check[1].length > 7){
-                    x = x.toFixed(7);
+            if(x == 0 && y ==0){
+                if(graphParameters.flag_for_zeros){
+                    if (x.toString().includes(".")){
+                        var x_check = x.toString().split(".");
+                        if(x_check[1].length > 7){
+                            x = x.toFixed(7);
+                        }
+                    }
+                    if (y.toString().includes(".")) {
+                        var y_check = y.toString().split(".");
+                        if(y_check[1].length > 7){
+                            y = y.toFixed(7);
+                        }
+                    }
+                    if(i == (graphParameters.graphPoints.length-1)){
+                        x_arr += x + "]";
+                        y_arr += y + "]";
+                    }else{
+                        x_arr += x + ";";
+                        y_arr += y + ";";
+                    }
                 }
-            }
-            if (y.toString().includes(".")) {
-                var y_check = y.toString().split(".");
-                if(y_check[1].length > 7){
-                    y = y.toFixed(7);
-                }
-            }
-            if(i == (graphParameters.graphPoints.length-1)){
-                x_arr += x + "]";
-                y_arr += y + "]";
             }else{
-                x_arr += x + ";";
-                y_arr += y + ";";
+                if (x.toString().includes(".")){
+                    var x_check = x.toString().split(".");
+                    if(x_check[1].length > 7){
+                        x = x.toFixed(7);
+                    }
+                }
+                if (y.toString().includes(".")) {
+                    var y_check = y.toString().split(".");
+                    if(y_check[1].length > 7){
+                        y = y.toFixed(7);
+                    }
+                }
+                if(i == (graphParameters.graphPoints.length-1)){
+                    x_arr += x + "]";
+                    y_arr += y + "]";
+                }else{
+                    x_arr += x + ";";
+                    y_arr += y + ";";
+                }
             }
         }
         }else{
@@ -553,6 +604,7 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
         propertiesObject["PeriodicOption"] = graphParameters.PeriodicOption.toString();
         propertiesObject["graf"] = "y";
         graphic_window.destroy();
+        graphParameters.flag_for_zeros = false;
         get_parameters_wind_sigbuilder.show();
         check_call = 2;
         cell.blockInstance.instance.set(propertiesObject);
@@ -568,10 +620,14 @@ function autoscaleFunctionalityForGraph(sigbuilder_Graph, graphParameters, point
         var min_y_value_new = sigbuilder_Graph.yAxis[0].getExtremes().dataMin; //get min y point's value
         var diff_x = ((Math.abs(max_x_value_new - min_x_value_new))/100)*10;
         var diff_y = ((Math.abs(max_y_value_new - min_y_value_new))/100)*10;
-        graphParameters.xmin = min_x_value_new; //set min x axis value
+        graphParameters.xmin = 0; //set min x axis value
         graphParameters.xmax = max_x_value_new + diff_x; //set max x axis value
+        if(min_y_value_new > 0){
+            min_y_value_new = 0;
+        }
         graphParameters.ymin = min_y_value_new - diff_y; //set min y axis value
         graphParameters.ymax = max_y_value_new + diff_y; //set max y axis value
+        graphParameters.points = graphParameters.graphPoints.length;
         sigbuilder_Graph = create_draggable_points_chart_sigbuilder(graphParameters, pointsHistory, graphParameters.xmin, graphParameters.xmax, graphParameters.ymin, graphParameters.ymax, graphParameters.chartType, graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle, graphParameters.step, graphParameters.stepname);
 }
 
@@ -816,9 +872,14 @@ function loadPointsFromDatFile(graph,sigbuilder_Graph, graphParameters, pointsHi
                         var line = lines[i];
                         if(line.length != 0){
                             points_ary[i] = scan(line.trim(),format);
-                            if((points_ary[i][0]!=""||points_ary[i][0]!="undefined")&&
-                            (points_ary[i][1]!=""||points_ary[i][1]!="undefined")){
-                                sigbuilder_Graph.series[0].addPoint([points_ary[i][0],points_ary[i][1]]);
+                            var x = points_ary[i][0];
+                            var y = points_ary[i][1];
+                            if((x != "" || x != "undefined")&&
+                            (y != "" || y != "undefined")){
+                                if(x == 0 && y == 0){
+                                    graphParameters.flag_for_zeros = true;
+                                }
+                                sigbuilder_Graph.series[0].addPoint([x,y]);
                             }
                         }
                     }
@@ -1200,6 +1261,9 @@ function loadFromExcel(graph, sigbuilder_Graph, graphParameters, pointsHistory){
                 var x = parseFloat(cell_x.v);
                 var y = parseFloat(cell_y.v);
                 points_ary[k] = [x,y];
+                if(x == 0 && y == 0){
+                    graphParameters.flag_for_zeros = true;
+                }
                 sigbuilder_Graph.series[0].addPoint([x,y]);
                 k++;
             }
@@ -1974,12 +2038,26 @@ function editPointsValue(graphObject,graph,sigbuilder_Graph,graphParameters, poi
             x_value = 0;
         }
         var y_value = parseFloat(document.getElementById("edit_y").value);
-        removePointsFromChart(graphObject,sigbuilder_Graph,graphParameters, pointsHistory,method);
-        addPointsOnChart(sigbuilder_Graph,graphParameters, pointsHistory,x_value,y_value,method);
-        autoscaleFunctionalityForGraph(sigbuilder_Graph, graphParameters, pointsHistory);
-        graph_wind.style.pointerEvents = "auto";
-        document.getElementById("messageLabel").innerHTML = "";
-        wind.destroy();
+        var points = graphParameters.graphPoints;
+        var x_arry = [];
+        for(var i = 0;i < points.length;i++){
+            x_arry[i] = points[i][0];
+        }
+        x_arry[points.length] = x_value;
+        var result = checkDuplicate_X_values(x_arry);
+        if(result){
+            removePointsFromChart(graphObject,sigbuilder_Graph,graphParameters, pointsHistory,method);
+            addPointsOnChart(sigbuilder_Graph,graphParameters, pointsHistory,x_value,y_value,method);
+            autoscaleFunctionalityForGraph(sigbuilder_Graph, graphParameters, pointsHistory);
+            document.getElementById("messageLabel").innerHTML = "";
+            graph_wind.style.pointerEvents = "auto";
+            wind.destroy();
+        }else{
+            document.getElementById("messageLabel").innerHTML = "ERROR IN SPLINE : x cant have duplicate entries";
+            wind.destroy();
+            graph_wind.style.pointerEvents = "auto";
+            throw "incorrect";
+        }
     };
 }
 
@@ -1994,10 +2072,39 @@ function removePointsFromChart(graphObject, sigbuilder_Graph, graphParameters, p
 }
 
 function addPointsOnChart(sigbuilder_Graph, graphParameters, pointsHistory, x_value, y_value, method){
-    sigbuilder_Graph.series[0].addPoint([x_value, y_value]);
-    pointsHistory.push(graphParameters.graphPoints.slice());
-    graphParameters.points = sigbuilder_Graph.series[0].data.length;
-    graphParameters.mtd = method;
-    graphParameters.xmaxTitle = sigbuilder_Graph.xAxis[0].getExtremes().dataMax.toFixed(6);
-    sigbuilder_Graph.setTitle(null, { text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle, graphParameters.PeriodicOption)});
+    if(x_value == 0 && y_value == 0){
+        graphParameters.flag_for_zeros = true;
+    }
+    var points = graphParameters.graphPoints;
+    var x_arry = [];
+    for(var i = 0;i < points.length;i++){
+        x_arry[i] = points[i][0];
+    }
+    x_arry[points.length] = x_value;
+    var result = checkDuplicate_X_values(x_arry);
+    if(result){
+        sigbuilder_Graph.series[0].addPoint([x_value, y_value]);
+        pointsHistory.push(graphParameters.graphPoints.slice());
+        graphParameters.points = sigbuilder_Graph.series[0].data.length;
+        graphParameters.mtd = method;
+        graphParameters.xmaxTitle = sigbuilder_Graph.xAxis[0].getExtremes().dataMax.toFixed(6);
+        sigbuilder_Graph.setTitle(null, { text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd,   graphParameters.xmaxTitle, graphParameters.PeriodicOption)});
+    }else{
+        document.getElementById("messageLabel").innerHTML = "ERROR IN SPLINE : x cant have duplicate entries";
+        throw "incorrect";
+    }
+}
+
+function checkDuplicate_X_values(xx_arry){
+    var array_for_compare = [];
+    var result = xx_arry.slice(0).every(function(item, index, array){
+        if(array_for_compare.indexOf(item) > -1){
+            array.length = 0;
+            return false;
+        }else{
+            array_for_compare.push(item);
+            return true;
+        }
+    });
+    return result;
 }
