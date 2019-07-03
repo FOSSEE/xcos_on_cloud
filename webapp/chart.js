@@ -400,8 +400,8 @@ var create_draggable_points_chart = function(graphPoints, pointsHistory, xmin, x
 
 // Function to create a chart with responsive points for Sigbuilder
 var create_draggable_points_chart_sigbuilder = function(graphParameters, pointsHistory, xmin, xmax, ymin, ymax, chart_type, points, method, xmaxtitle,step,stepname) {
-
-    var subtitle = updateSubtitleForSigbuilderGraph(points, method, xmaxtitle,graphParameters.PeriodicOption);
+    graphParameters.mtd = method;
+    var subtitle = updateSubtitleForSigbuilderGraph(points, graphParameters.mtd, xmaxtitle,graphParameters.PeriodicOption);
     pointsHistory.push(graphParameters.graphPoints.slice());
 
     sigbuilder_Graph = Highcharts.chart('drag_sig_chart', {
@@ -412,7 +412,7 @@ var create_draggable_points_chart_sigbuilder = function(graphParameters, pointsH
                 click: function (e) {
                     var x_value = e.xAxis[0].value;
                     var y_value = e.yAxis[0].value;
-                    addPointsOnChart(sigbuilder_Graph, graphParameters, pointsHistory, x_value, y_value, method);
+                    addPointsOnChart(sigbuilder_Graph, graphParameters, pointsHistory, x_value, y_value);
                 }
             }
         },
@@ -473,11 +473,11 @@ var create_draggable_points_chart_sigbuilder = function(graphParameters, pointsH
                         },
                         dblclick: function (e) {
                             var graphObject = e;
-                            editPointsValue(graphObject, graph_sigbuilder, sigbuilder_Graph, graphParameters, pointsHistory, method);
+                            editPointsValue(graphObject, graph_sigbuilder, sigbuilder_Graph, graphParameters, pointsHistory);
                         },
                         contextmenu: function (e) {
                             var graphObject = e;
-                            removePointsFromChart(graphObject, sigbuilder_Graph, graphParameters, pointsHistory, method);
+                            removePointsFromChart(graphObject, sigbuilder_Graph, graphParameters, pointsHistory);
                         }
                     },
                     stickyTracking: false

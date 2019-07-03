@@ -178,7 +178,6 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     message_div.appendChild(messageLabel);
     content.appendChild(message_div);
     var graphic_window = "";
-    console.log(graphParameters);
     var par_check = Object.keys(graphParameters).length;
     if(par_check > 2){
         menuBar.style.display = 'block';
@@ -349,6 +348,7 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     // menu Spline -> submenus 'zero order','linear','order 2','not_a_knot','periodic','monotone','fast','clamped'
     splineMenuOptions[0].onclick = function() {
         // zero order
+        document.getElementById("messageLabel").innerHTML = "";
         graphParameters.mtd = 0;
         graphParameters.points = sigbuilder_Graph.series[0].points.length;
         graphParameters.xmaxTitle = sigbuilder_Graph.xAxis[0].getExtremes().dataMax.toFixed(6);
@@ -366,6 +366,7 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     };
     splineMenuOptions[1].onclick = function() {
         // linear
+        document.getElementById("messageLabel").innerHTML = "";
         graphParameters.mtd = 1;
         graphParameters.points = sigbuilder_Graph.series[0].points.length;
         graphParameters.xmaxTitle = sigbuilder_Graph.xAxis[0].getExtremes().dataMax.toFixed(6);
@@ -383,6 +384,7 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     };
     splineMenuOptions[2].onclick = function() {
         // order 2
+        document.getElementById("messageLabel").innerHTML = "";
         graphParameters.mtd = 2;
         graphParameters.points = sigbuilder_Graph.series[0].points.length;
         graphParameters.xmaxTitle = sigbuilder_Graph.xAxis[0].getExtremes().dataMax.toFixed(6);
@@ -398,78 +400,123 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     };
     splineMenuOptions[3].onclick = function() {
         // not_a_knot
-        graphParameters.mtd = 3;
-        graphParameters.points = sigbuilder_Graph.series[0].points.length;
-        graphParameters.xmaxTitle = sigbuilder_Graph.xAxis[0].getExtremes().dataMax.toFixed(6);
-        graphParameters.chartType = "spline";
-        graphParameters.step = "";
-        graphParameters.stepname = "";
-        sigbuilder_Graph.setTitle(null, {
-            text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle, graphParameters.PeriodicOption)
+        document.getElementById("messageLabel").innerHTML = "";
+        var x_array = sigbuilder_Graph.series[0].xData;
+        var result = checkDuplicate_X_values(x_array);
+        if(result){
+            graphParameters.mtd = 3;
+            graphParameters.points = sigbuilder_Graph.series[0].points.length;
+            graphParameters.xmaxTitle = sigbuilder_Graph.xAxis[0].getExtremes().dataMax.toFixed(6);
+            graphParameters.chartType = "spline";
+            graphParameters.step = "";
+            graphParameters.stepname = "";
+            sigbuilder_Graph.setTitle(null, {
+                text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle, graphParameters.PeriodicOption)
             });
-        sigbuilder_Graph.series[0].update({
+            sigbuilder_Graph.series[0].update({
                 type: "spline"
-        });
+            });
+        }else{
+            graphParameters.mtd = 3;
+            document.getElementById("messageLabel").innerHTML = "ERROR IN SPLINE : "+getmethod(graphParameters.mtd);
+            throw "incorrect";
+        }
     };
     splineMenuOptions[4].onclick = function() {
         // periodic
-        graphParameters.mtd = 4;
-        graphParameters.points = sigbuilder_Graph.series[0].points.length;
-        graphParameters.xmaxTitle = sigbuilder_Graph.xAxis[0].getExtremes().dataMax.toFixed(6);
-        graphParameters.chartType = "spline";
-        graphParameters.step = "";
-        graphParameters.stepname = "";
-        sigbuilder_Graph.setTitle(null, {
-            text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle, graphParameters.PeriodicOption)
+        document.getElementById("messageLabel").innerHTML = "";
+        var x_array = sigbuilder_Graph.series[0].xData;
+        var result = checkDuplicate_X_values(x_array);
+        if(result){
+            graphParameters.mtd = 4;
+            graphParameters.points = sigbuilder_Graph.series[0].points.length;
+            graphParameters.xmaxTitle = sigbuilder_Graph.xAxis[0].getExtremes().dataMax.toFixed(6);
+            graphParameters.chartType = "spline";
+            graphParameters.step = "";
+            graphParameters.stepname = "";
+            sigbuilder_Graph.setTitle(null, {
+                text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle, graphParameters.PeriodicOption)
             });
-        sigbuilder_Graph.series[0].update({
+            sigbuilder_Graph.series[0].update({
                 type: "spline"
-        });
+            });
+        }else{
+            graphParameters.mtd = 4;
+            document.getElementById("messageLabel").innerHTML = "ERROR IN SPLINE : "+getmethod(graphParameters.mtd);
+            throw "incorrect";
+        }
     };
     splineMenuOptions[5].onclick = function() {
         // monotone
-        graphParameters.mtd = 5;
-        graphParameters.points = sigbuilder_Graph.series[0].points.length;
-        graphParameters.xmaxTitle = sigbuilder_Graph.xAxis[0].getExtremes().dataMax.toFixed(6);
-        graphParameters.chartType = "spline";
-        graphParameters.step = "";
-        graphParameters.stepname = "";
-        sigbuilder_Graph.setTitle(null, {
-            text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle, graphParameters.PeriodicOption)
+        document.getElementById("messageLabel").innerHTML = "";
+        var x_array = sigbuilder_Graph.series[0].xData;
+        var result = checkDuplicate_X_values(x_array);
+        if(result){
+            graphParameters.mtd = 5;
+            graphParameters.points = sigbuilder_Graph.series[0].points.length;
+            graphParameters.xmaxTitle = sigbuilder_Graph.xAxis[0].getExtremes().dataMax.toFixed(6);
+            graphParameters.chartType = "spline";
+            graphParameters.step = "";
+            graphParameters.stepname = "";
+            sigbuilder_Graph.setTitle(null, {
+                text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle, graphParameters.PeriodicOption)
             });
-        sigbuilder_Graph.series[0].update({
+            sigbuilder_Graph.series[0].update({
                 type: "spline"
-        });
+            });
+        }else{
+            graphParameters.mtd = 5;
+            document.getElementById("messageLabel").innerHTML = "ERROR IN SPLINE : "+getmethod(graphParameters.mtd);
+            throw "incorrect";
+        }
     };
     splineMenuOptions[6].onclick = function() {
         // fast
-        graphParameters.mtd = 6;
-        graphParameters.points = sigbuilder_Graph.series[0].points.length;
-        graphParameters.xmaxTitle = sigbuilder_Graph.xAxis[0].getExtremes().dataMax.toFixed(6);
-        graphParameters.chartType = "spline";
-        graphParameters.step = "";
-        graphParameters.stepname = "";
-        sigbuilder_Graph.setTitle(null, {
-            text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle, graphParameters.PeriodicOption)
+        document.getElementById("messageLabel").innerHTML = "";
+        var x_array = sigbuilder_Graph.series[0].xData;
+        var result = checkDuplicate_X_values(x_array);
+        if(result){
+            graphParameters.mtd = 6;
+            graphParameters.points = sigbuilder_Graph.series[0].points.length;
+            graphParameters.xmaxTitle = sigbuilder_Graph.xAxis[0].getExtremes().dataMax.toFixed(6);
+            graphParameters.chartType = "spline";
+            graphParameters.step = "";
+            graphParameters.stepname = "";
+            sigbuilder_Graph.setTitle(null, {
+                text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle, graphParameters.PeriodicOption)
             });
-        sigbuilder_Graph.series[0].update({
+            sigbuilder_Graph.series[0].update({
                 type: "spline"
-        });
+            });
+        }else{
+            graphParameters.mtd = 6;
+            document.getElementById("messageLabel").innerHTML = "ERROR IN SPLINE : "+getmethod(graphParameters.mtd);
+            throw "incorrect";
+        }
     };
     splineMenuOptions[7].onclick = function() {
         //clamped
-        graphParameters.mtd = 7;
-        graphParameters.points = sigbuilder_Graph.series[0].points.length;
-        graphParameters.xmaxTitle = sigbuilder_Graph.xAxis[0].getExtremes().dataMax.toFixed(6);
-        graphParameters.chartType = "spline";
-        graphParameters.step = "";
-        graphParameters.stepname = "";
-        sigbuilder_Graph.setTitle(null, {
-            text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle, graphParameters.PeriodicOption)
+        document.getElementById("messageLabel").innerHTML = "";
+        var x_array = sigbuilder_Graph.series[0].xData;
+        var result = checkDuplicate_X_values(x_array);
+        if(result){
+            graphParameters.mtd = 7;
+            graphParameters.points = sigbuilder_Graph.series[0].points.length;
+            graphParameters.xmaxTitle = sigbuilder_Graph.xAxis[0].getExtremes().dataMax.toFixed(6);
+            graphParameters.chartType = "spline";
+            graphParameters.step = "";
+            graphParameters.stepname = "";
+            sigbuilder_Graph.setTitle(null, {
+                text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle, graphParameters.PeriodicOption)
             });
-        sigbuilder_Graph.series[0].update({
+            sigbuilder_Graph.series[0].update({
                 type: "spline"
-        });
+            });
+        }else{
+            graphParameters.mtd = 7;
+            document.getElementById("messageLabel").innerHTML = "ERROR IN SPLINE : "+getmethod(graphParameters.mtd);
+            throw "incorrect";
+        }
     };
     //menu Data - > Clear
     dataMenuOptions[0].onclick = function() {
@@ -538,15 +585,15 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
 
         var x_arr = "";
         var y_arr = "";
+        var graph_points = [];
         if(graphParameters.graphPoints!=[] && graphParameters.graphPoints.length!=0){
-
         //Saving points and sending it to set method of JS
+        graph_points = objToArrayList(graphParameters.graphPoints);
         x_arr = "[";
         y_arr = "[";
-        graphParameters.graphPoints = objToArrayList(graphParameters.graphPoints);
-        for (var i = 0; i < graphParameters.graphPoints.length; i++){
-            var x = graphParameters.graphPoints[i][0];
-            var y = graphParameters.graphPoints[i][1];
+        for (var i = 0; i < graph_points.length; i++){
+            var x = graph_points[i][0];
+            var y = graph_points[i][1];
             if(x == 0 && y ==0){
                 if(graphParameters.flag_for_zeros){
                     if (x.toString().includes(".")){
@@ -561,7 +608,7 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
                             y = y.toFixed(7);
                         }
                     }
-                    if(i == (graphParameters.graphPoints.length-1)){
+                    if(i == graph_points.length-1)){
                         x_arr += x + "]";
                         y_arr += y + "]";
                     }else{
@@ -582,7 +629,7 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
                         y = y.toFixed(7);
                     }
                 }
-                if(i == (graphParameters.graphPoints.length-1)){
+                if(i == (graph_points.length-1)){
                     x_arr += x + "]";
                     y_arr += y + "]";
                 }else{
@@ -595,6 +642,14 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
             x_arr = "[0]";
             y_arr = "[0]";
         }
+
+        var xx_arry = [];
+        for (var i = 0; i < graph_points.length; i++){
+             xx_arry[i] = graph_points[i][0];
+        }
+        var result = checkDuplicate_X_values(xx_arry);
+        var mtd_check = [0, 1, 2].includes(graphParameters.mtd);
+        // Property object
         var propertiesObject = {
             id: cell.id
                 };
@@ -603,11 +658,27 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
         propertiesObject["Method"] = graphParameters.mtd.toString();
         propertiesObject["PeriodicOption"] = graphParameters.PeriodicOption.toString();
         propertiesObject["graf"] = "y";
-        graphic_window.destroy();
-        graphParameters.flag_for_zeros = false;
-        get_parameters_wind_sigbuilder.show();
-        check_call = 2;
-        cell.blockInstance.instance.set(propertiesObject);
+
+        if(result){
+            graphic_window.destroy();
+            graphParameters.flag_for_zeros = false;
+            get_parameters_wind_sigbuilder.show();
+            check_call = 2;
+            cell.blockInstance.instance.set(propertiesObject);
+        }else{
+             if(mtd_check){
+                graphic_window.destroy();
+                graphParameters.flag_for_zeros = false;
+                get_parameters_wind_sigbuilder.show();
+                check_call = 2;
+                cell.blockInstance.instance.set(propertiesObject);
+             }else{
+                graphic_window.destroy();
+                graphParameters.flag_for_zeros = false;
+                get_parameters_wind_sigbuilder.show();
+                check_call = 2;
+             }
+        }
     };
     check_call = 1;
 }
@@ -1943,8 +2014,9 @@ function open_random_uniform_wind(graph){
 }
 
 
-function editPointsValue(graphObject,graph,sigbuilder_Graph,graphParameters, pointsHistory, method){
+function editPointsValue(graphObject,graph,sigbuilder_Graph,graphParameters, pointsHistory){
 
+    document.getElementById("messageLabel").innerHTML = "";
     //Making graph window inaccessible
     var graph_wind = document.getElementById("graphcontentwind");
     graph_wind.style.pointerEvents = "none";
@@ -2045,33 +2117,44 @@ function editPointsValue(graphObject,graph,sigbuilder_Graph,graphParameters, poi
         }
         x_arry[points.length] = x_value;
         var result = checkDuplicate_X_values(x_arry);
+        var mtd_check = [0, 1, 2].includes(graphParameters.mtd);
         if(result){
-            removePointsFromChart(graphObject,sigbuilder_Graph,graphParameters, pointsHistory,method);
-            addPointsOnChart(sigbuilder_Graph,graphParameters, pointsHistory,x_value,y_value,method);
+            removePointsFromChart(graphObject,sigbuilder_Graph,graphParameters, pointsHistory);
+            addPointsOnChart(sigbuilder_Graph,graphParameters, pointsHistory,x_value,y_value);
             autoscaleFunctionalityForGraph(sigbuilder_Graph, graphParameters, pointsHistory);
             document.getElementById("messageLabel").innerHTML = "";
             graph_wind.style.pointerEvents = "auto";
             wind.destroy();
         }else{
-            document.getElementById("messageLabel").innerHTML = "ERROR IN SPLINE : x cant have duplicate entries";
-            wind.destroy();
-            graph_wind.style.pointerEvents = "auto";
-            throw "incorrect";
+            if(mtd_check){
+                removePointsFromChart(graphObject,sigbuilder_Graph,graphParameters, pointsHistory);
+                addPointsOnChart(sigbuilder_Graph,graphParameters, pointsHistory,x_value,y_value);
+                autoscaleFunctionalityForGraph(sigbuilder_Graph, graphParameters, pointsHistory);
+                document.getElementById("messageLabel").innerHTML = "";
+                graph_wind.style.pointerEvents = "auto";
+                wind.destroy();
+            }else{
+                document.getElementById("messageLabel").innerHTML = "ERROR IN SPLINE : "+getmethod(graphParameters.mtd);
+                wind.destroy();
+                graph_wind.style.pointerEvents = "auto";
+                throw "incorrect";
+            }
         }
     };
 }
 
-function removePointsFromChart(graphObject, sigbuilder_Graph, graphParameters, pointsHistory, method){
+function removePointsFromChart(graphObject, sigbuilder_Graph, graphParameters, pointsHistory){
     var counter = graphObject.point.index;
     sigbuilder_Graph.series[0].data[counter].remove();
     pointsHistory.push(graphParameters.graphPoints.slice());
     graphParameters.points = sigbuilder_Graph.series[0].data.length;
-    graphParameters.mtd = method;
+    graphParameters.mtd = graphParameters.mtd;
     graphParameters.xmaxTitle = sigbuilder_Graph.xAxis[0].getExtremes().dataMax.toFixed(6);
     sigbuilder_Graph.setTitle(null, { text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle, graphParameters.PeriodicOption)});
 }
 
-function addPointsOnChart(sigbuilder_Graph, graphParameters, pointsHistory, x_value, y_value, method){
+function addPointsOnChart(sigbuilder_Graph, graphParameters, pointsHistory, x_value, y_value){
+    document.getElementById("messageLabel").innerHTML = "";
     if(x_value == 0 && y_value == 0){
         graphParameters.flag_for_zeros = true;
     }
@@ -2082,16 +2165,26 @@ function addPointsOnChart(sigbuilder_Graph, graphParameters, pointsHistory, x_va
     }
     x_arry[points.length] = x_value;
     var result = checkDuplicate_X_values(x_arry);
+    var mtd_check = [0, 1, 2].includes(graphParameters.mtd);
     if(result){
         sigbuilder_Graph.series[0].addPoint([x_value, y_value]);
         pointsHistory.push(graphParameters.graphPoints.slice());
         graphParameters.points = sigbuilder_Graph.series[0].data.length;
-        graphParameters.mtd = method;
+        graphParameters.mtd = graphParameters.mtd;
         graphParameters.xmaxTitle = sigbuilder_Graph.xAxis[0].getExtremes().dataMax.toFixed(6);
         sigbuilder_Graph.setTitle(null, { text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd,   graphParameters.xmaxTitle, graphParameters.PeriodicOption)});
     }else{
-        document.getElementById("messageLabel").innerHTML = "ERROR IN SPLINE : x cant have duplicate entries";
-        throw "incorrect";
+        if(mtd_check){
+            sigbuilder_Graph.series[0].addPoint([x_value, y_value]);
+            pointsHistory.push(graphParameters.graphPoints.slice());
+            graphParameters.points = sigbuilder_Graph.series[0].data.length;
+            graphParameters.mtd = graphParameters.mtd;
+            graphParameters.xmaxTitle = sigbuilder_Graph.xAxis[0].getExtremes().dataMax.toFixed(6);
+            sigbuilder_Graph.setTitle(null, { text: updateSubtitleForSigbuilderGraph(graphParameters.points, graphParameters.mtd,   graphParameters.xmaxTitle, graphParameters.PeriodicOption)});
+        }else{
+            document.getElementById("messageLabel").innerHTML = "ERROR IN SPLINE : "+getmethod(graphParameters.mtd);
+            throw "incorrect";
+        }
     }
 }
 
