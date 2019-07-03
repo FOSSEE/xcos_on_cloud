@@ -402,6 +402,8 @@ function Sigbuilder() {
             }
             xy = JSON.parse(cleandata(xy.toString()));
             var N = xy.length;
+            var result = checkDuplicate_X_values(xx_arry);
+            var mtd_check = [0, 1, 2].includes(mtd);
             if (graf1 == "y" || graf1 == "Y"){  //Opening graphics window
                 var ipar = [N,mtd,PO];
                 var rpar = [];
@@ -437,9 +439,8 @@ function Sigbuilder() {
                 ymax = parseFloat(ymax + 1);
                 ymin = parseFloat(ymin - 1);
                 var points = xx_arry.length;
-                var result = checkDuplicate_X_values(xx_arry);
                 var graphParameters = {};
-                if(result && (mtd == 0||mtd == 1||mtd == 2)){
+                if(result){
                     graphParameters = {
                         graphPoints: graphPoints,
                         xmin: xmin,
@@ -457,10 +458,29 @@ function Sigbuilder() {
                         flag_for_zeros : flag_for_zeros
                     };
                 }else{
-                    graphParameters = {
-                        mtd: mtd,
-                        flag_for_zeros : flag_for_zeros
-                    };
+                    if(mtd_check){
+                        graphParameters = {
+                            graphPoints: graphPoints,
+                            xmin: xmin,
+                            xmax: xmax,
+                            ymin: ymin,
+                            ymax: ymax,
+                            chartType: charttype,
+                            points: points,
+                            mtd: mtd,
+                            PeriodicOption: PeriodicOption1,
+                            graf: graf1,
+                            xmaxTitle: xmaxTitle,
+                            step: step,
+                            stepname: stepname,
+                            flag_for_zeros : flag_for_zeros
+                        };
+                    }else{
+                        graphParameters = {
+                            mtd: mtd,
+                            flag_for_zeros : flag_for_zeros
+                        };
+                    }
                 }
                 if(check_call != 2){
                     showGraphWindowSigBlk(graph_sigbuilder,graphParameters,cell_sigbuilder);
@@ -517,7 +537,12 @@ function Sigbuilder() {
                 SaveExit = true;
                 throw "incorrect";
             }else{
-
+                if(!result){
+                    if(!mtd_check){
+                        alert("ERROR IN SPLINE : "+METHOD);
+                        throw "incorrect";
+                    }
+                }
                 graf1 = "n";
                 var xy_1 = [];
                 for(var i = 0;i < xy.length;i++){
