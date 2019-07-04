@@ -8,7 +8,7 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
     var content = document.createElement('div');
     content.setAttribute('id','graphcontentwind');
     content.style.width = "550px";
-    content.style.height = "460px";
+    content.style.height = "450px";
     // to contain menubar
     var menuBar = document.createElement('div');
     menuBar.setAttribute('id','graphMenuBar');
@@ -186,6 +186,11 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
         sigbuilder_Graph = create_draggable_points_chart_sigbuilder(graphParameters, pointsHistory, graphParameters.xmin, graphParameters.xmax, graphParameters.ymin, graphParameters.ymax, graphParameters.chartType, graphParameters.points, graphParameters.mtd, graphParameters.xmaxTitle,graphParameters.step,graphParameters.stepname);
         autoscaleFunctionalityForGraph(sigbuilder_Graph, graphParameters, pointsHistory);
         get_parameters_wind_sigbuilder.hide();
+        graphic_window.addListener(mxEvent.ACTIVATE, function(e){
+            graphic_window.div.style = "z-index: 1";
+            var position = getXandYPosition(550, 480);
+            graphic_window.setLocation(position[0], position[1]);
+        });
         graphic_window.addListener(mxEvent.DESTROY, function(evt) {
             if(wind != ""){
                 wind.destroy();
@@ -791,7 +796,9 @@ function editandUpdateDataBoundsValue(graph,sigbuilder_Graph){
     content.appendChild(myform);
     var height = 200;
     wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 300, height);
-
+    wind.addListener(mxEvent.DESTROY, function(evt) {
+        graph_wind.style.pointerEvents = "auto";
+    });
     // Executes when button 'cancel_btn' is clicked
     cancel_btn.onclick = function() {
         graph_wind.style.pointerEvents = "auto";
@@ -909,6 +916,9 @@ function loadPointsFromDatFile(graph,sigbuilder_Graph, graphParameters, pointsHi
     content.appendChild(myform);
     var height = 220;
     wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 300, height);
+    wind.addListener(mxEvent.DESTROY, function(evt) {
+        graph_wind.style.pointerEvents = "auto";
+    });
     var filename_input = document.getElementById("fileupload_0");
     filename_input.readOnly = true;
     filename_input.onclick = function(){
@@ -1064,7 +1074,9 @@ function saveToTextFile(graph,sigbuilder_Graph){
     content.appendChild(myform);
     var height = 180;
     wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 300, height);
-
+    wind.addListener(mxEvent.DESTROY, function(evt) {
+        graph_wind.style.pointerEvents = "auto";
+    });
     // Executes when button 'cancel_btn' is clicked
     cancel_btn.onclick = function() {
         document.getElementById("messageLabel").innerHTML = "";
@@ -1248,7 +1260,9 @@ function loadFromExcel(graph, sigbuilder_Graph, graphParameters, pointsHistory){
     content.appendChild(myform);
     var height = 220;
     wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 300, height);
-
+    wind.addListener(mxEvent.DESTROY, function(evt) {
+        graph_wind.style.pointerEvents = "auto";
+    });
     var filename_input = document.getElementById("loadfromExcel_0");
     filename_input.readOnly = true;
     filename_input.onclick = function(){
@@ -1436,7 +1450,9 @@ function openPeriodicSignal(graph, graphParameters, sigbuilder_Graph){
     content.appendChild(myform);
     var height = 120;
     wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 200, height);
-
+    wind.addListener(mxEvent.DESTROY, function(evt) {
+        graph_wind.style.pointerEvents = "auto";
+    });
     // Executes when button 'cancel_btn' is clicked
     cancel_btn.onclick = function() {
         document.getElementById("messageLabel").innerHTML = "";
@@ -1538,6 +1554,9 @@ function open_sine_wind(graph){
     content.appendChild(myform);
     var height = 240;
     wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 320, height);
+    wind.addListener(mxEvent.DESTROY, function(evt) {
+        graph_wind.style.pointerEvents = "auto";
+    });
     // Executes when button 'cancel_btn' is clicked
     cancel_btn.onclick = function() {
         document.getElementById("messageLabel").innerHTML = "";
@@ -1629,6 +1648,9 @@ function open_sawtooth1_wind(graph){
     content.appendChild(myform);
     var height = 200;
     wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 250, height);
+    wind.addListener(mxEvent.DESTROY, function(evt) {
+        graph_wind.style.pointerEvents = "auto";
+    });
     // Executes when button 'cancel_btn' is clicked
     cancel_btn.onclick = function() {
         document.getElementById("messageLabel").innerHTML = "";
@@ -1720,6 +1742,9 @@ function open_sawtooth2_wind(graph){
     content.appendChild(myform);
     var height = 180;
     wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 250, height);
+    wind.addListener(mxEvent.DESTROY, function(evt) {
+        graph_wind.style.pointerEvents = "auto";
+    });
     // Executes when button 'cancel_btn' is clicked
     cancel_btn.onclick = function() {
         document.getElementById("messageLabel").innerHTML = "";
@@ -1811,6 +1836,9 @@ function open_pulse_wind(graph){
     content.appendChild(myform);
     var height = 240;
     wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 300, height);
+    wind.addListener(mxEvent.DESTROY, function(evt) {
+        graph_wind.style.pointerEvents = "auto";
+    });
     // Executes when button 'cancel_btn' is clicked
     cancel_btn.onclick = function() {
         document.getElementById("messageLabel").innerHTML = "";
@@ -1902,6 +1930,9 @@ function open_random_normal_wind(graph){
     content.appendChild(myform);
     var height = 240;
     wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 300, height);
+    wind.addListener(mxEvent.DESTROY, function(evt) {
+        graph_wind.style.pointerEvents = "auto";
+    });
     // Executes when button 'cancel_btn' is clicked
     cancel_btn.onclick = function() {
         document.getElementById("messageLabel").innerHTML = "";
@@ -1993,6 +2024,9 @@ function open_random_uniform_wind(graph){
     content.appendChild(myform);
     var height = 240;
     wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 300, height);
+    wind.addListener(mxEvent.DESTROY, function(evt) {
+        graph_wind.style.pointerEvents = "auto";
+    });
     // Executes when button 'cancel_btn' is clicked
     cancel_btn.onclick = function() {
         document.getElementById("messageLabel").innerHTML = "";
@@ -2091,7 +2125,9 @@ function editPointsValue(graphObject,graph,sigbuilder_Graph,graphParameters, poi
     content.appendChild(myform);
     var height = 150;
     wind = showModalWindow(graph, 'Scilab Multiple Values Request', content, 200, height);
-
+    wind.addListener(mxEvent.DESTROY, function(evt) {
+        graph_wind.style.pointerEvents = "auto";
+    });
     // Executes when button 'cancel_btn' is clicked
     cancel_btn.onclick = function() {
         document.getElementById("messageLabel").innerHTML = "";
@@ -2195,4 +2231,16 @@ function checkDuplicate_X_values(xx_arry){
         }
     });
     return result;
+}
+
+function getXandYPosition(width, height){
+
+    var position = [];
+    var x_position = Math.max(0, document.body.scrollWidth / 2 - width / 2);
+    var y_position = Math.max(10, (document.body.scrollHeight || document.documentElement.scrollHeight) / 2 - height * 2 / 3);
+    position[0] = x_position;
+    position[1] = y_position;
+
+    return position;
+
 }
