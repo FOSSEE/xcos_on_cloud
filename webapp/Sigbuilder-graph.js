@@ -417,8 +417,7 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
                 type: "spline"
             });
         }else{
-            graphParameters.mtd = 3;
-            document.getElementById("messageLabel").innerHTML = "ERROR IN SPLINE : "+getmethod(graphParameters.mtd);
+            document.getElementById("messageLabel").innerHTML = "ERROR IN SPLINE : "+getmethod(3);
             throw "incorrect";
         }
     };
@@ -441,8 +440,7 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
                 type: "spline"
             });
         }else{
-            graphParameters.mtd = 4;
-            document.getElementById("messageLabel").innerHTML = "ERROR IN SPLINE : "+getmethod(graphParameters.mtd);
+            document.getElementById("messageLabel").innerHTML = "ERROR IN SPLINE : "+getmethod(4);
             throw "incorrect";
         }
     };
@@ -465,8 +463,7 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
                 type: "spline"
             });
         }else{
-            graphParameters.mtd = 5;
-            document.getElementById("messageLabel").innerHTML = "ERROR IN SPLINE : "+getmethod(graphParameters.mtd);
+            document.getElementById("messageLabel").innerHTML = "ERROR IN SPLINE : "+getmethod(5);
             throw "incorrect";
         }
     };
@@ -489,8 +486,7 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
                 type: "spline"
             });
         }else{
-            graphParameters.mtd = 6;
-            document.getElementById("messageLabel").innerHTML = "ERROR IN SPLINE : "+getmethod(graphParameters.mtd);
+            document.getElementById("messageLabel").innerHTML = "ERROR IN SPLINE : "+getmethod(6);
             throw "incorrect";
         }
     };
@@ -513,8 +509,7 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
                 type: "spline"
             });
         }else{
-            graphParameters.mtd = 7;
-            document.getElementById("messageLabel").innerHTML = "ERROR IN SPLINE : "+getmethod(graphParameters.mtd);
+            document.getElementById("messageLabel").innerHTML = "ERROR IN SPLINE : "+getmethod(7);
             throw "incorrect";
         }
     };
@@ -608,7 +603,7 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
                             y = y.toFixed(7);
                         }
                     }
-                    if(i == graph_points.length-1)){
+                    if(i == graph_points.length-1){
                         x_arr += x + "]";
                         y_arr += y + "]";
                     }else{
