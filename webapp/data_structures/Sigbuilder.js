@@ -345,27 +345,31 @@ function Sigbuilder() {
         if(xx2.includes(";") == true){
             var x = xx2.split(/[;]+/);
             for(var i = 0;i<x.length;i++){
-                xx_arry[i] = x[i];
+                xx_arry[i] = parseFloat(x[i]);
             }
         }else{
             if((xx2.includes(",") == true)){
                 var x_size = xx2.split(/[,]+/);
                 for(var i = 0;i<x_size.length;i++){
-                    xx_arry[i] = x_size[i];
+                    xx_arry[i] = parseFloat(x_size[i]);
                 }
+            }else{
+                xx_arry[0] = parseFloat(0);
             }
         }
         if(yy2.includes(";") == true){
             var y = yy2.split(/[;]+/);
             for(var i = 0;i<y.length;i++){
-                yy_arry[i] = y[i];
+                yy_arry[i] = parseFloat(y[i]);
             }
         }else{
             if((yy2.includes(",") == true)){
                 var y_size = yy2.split(/[,]+/);
                 for(var i = 0;i<y_size.length;i++){
-                    yy_arry[i] = y_size[i];
+                    yy_arry[i] = parseFloat(y_size[i]);
                 }
+            }else{
+                yy_arry[0] = parseFloat(0);
             }
         }
 
@@ -392,16 +396,153 @@ function Sigbuilder() {
                     xy += xx_arry[i]+","+yy_arry[i];
                 }
             }
+            var flag_for_zeros =  false;
+            if(xy.includes("0,0")){
+                flag_for_zeros = true;
+            }
             xy = JSON.parse(cleandata(xy.toString()));
             var N = xy.length;
-            if (graf1 == "y" || graf1 == "Y"){
+            var result = checkDuplicate_X_values(xx_arry);
+            var mtd_check = [0, 1, 2].includes(mtd);
+            if (graf1 == "y" || graf1 == "Y"){  //Opening graphics window
                 var ipar = [N,mtd,PO];
                 var rpar = [];
 
-            //Opening graphics window
+                var graphPoints = [];
+                for(var i = 0;i < xy.length;i++){
+                    var arry = [];
+                    arry[0] =  xy[i][0];
+                    arry[1] = xy[i][1];
+                    graphPoints[i] = arry;
+                }
+                var xmin = parseFloat(Math.min(...xx_arry));
+                if(xmin < 0){
+                    xmin = 0;
+                }
+                var xmax = parseFloat(Math.max(...xx_arry));
+                var ymin = parseFloat(Math.min(...yy_arry));
+                var ymax = parseFloat(Math.max(...yy_arry));
+                var charttype = getcharttype(mtd);
+                var xmaxTitle = xmax;
+                if(xmax == 2){
+                    xmax = parseFloat(xmax + 0.2);
+                }else{
+                    var diff_x = parseFloat((((Math.abs(xmax - xmin))/100)*10).toFixed(1));
+                    xmax = xmax + diff_x;
+                }
+                var step = "";
+                var stepname = "";
+                if(mtd == 0){
+                    step = "left";
+                    stepname = "Left";
+                }
+                ymax = parseFloat(ymax + 1);
+                ymin = parseFloat(ymin - 1);
+                var points = xx_arry.length;
+                var graphParameters = {};
+                if(result){
+                    graphParameters = {
+                        graphPoints: graphPoints,
+                        xmin: xmin,
+                        xmax: xmax,
+                        ymin: ymin,
+                        ymax: ymax,
+                        chartType: charttype,
+                        points: points,
+                        mtd: mtd,
+                        PeriodicOption: PeriodicOption1,
+                        graf: graf1,
+                        xmaxTitle: xmaxTitle,
+                        step: step,
+                        stepname: stepname,
+                        flag_for_zeros : flag_for_zeros
+                    };
+                }else{
+                    if(mtd_check){
+                        graphParameters = {
+                            graphPoints: graphPoints,
+                            xmin: xmin,
+                            xmax: xmax,
+                            ymin: ymin,
+                            ymax: ymax,
+                            chartType: charttype,
+                            points: points,
+                            mtd: mtd,
+                            PeriodicOption: PeriodicOption1,
+                            graf: graf1,
+                            xmaxTitle: xmaxTitle,
+                            step: step,
+                            stepname: stepname,
+                            flag_for_zeros : flag_for_zeros
+                        };
+                    }else{
+                        graphParameters = {
+                            mtd: mtd,
+                            flag_for_zeros : flag_for_zeros
+                        };
+                    }
+                }
+                if(check_call != 2){
+                    showGraphWindowSigBlk(graph_sigbuilder,graphParameters,cell_sigbuilder);
+                }else{
+                    check_call = 1 ;
+                }
+                graf1 = "n";
+                document.getElementById("Method").value = Method1;
+                document.getElementById("xx").value = xx1;
+                document.getElementById("yy").value = yy1;
+                document.getElementById("PeriodicOption").value = PeriodicOption1;
+                document.getElementById("graf").value = graf1;
+                //code comes from save/exit part for graph window
+                if(N == 1){
+                    mtd = 0;
+                }
+                var xy_1 = [];
+                for(var i = 0;i < xy.length;i++){
+                    xy_1[i] = xy[i][0];
+                }
+                var xy_2 = [];
+                for(var i = 0;i < xy.length;i++){
+                    xy_2[i] = xy[i][1];
+                }
+                var do_spline_values = Do_Spline(N,mtd,xy_1.toString(),xy_2.toString());
+                Xdummy = JSON.parse(do_spline_values.Xdummy.replace(" ",","));
+                Ydummy = JSON.parse(do_spline_values.Ydummy.replace(" ",","));
+                orpar = JSON.parse(do_spline_values.orpar.replace(" ",","));
 
+                var NOrder = ipar[1];
+                var PeridicOption = ipar[2];
+
+                METHOD = getmethod(NOrder);
+                if (METHOD == "periodic") {// periodic spline
+                    xy[N-1][1] = xy[0][1];
+                }
+                var xy_1_1 = [];
+                for(var i = 0;i < xy.length;i++){
+                    xy_1_1[i] = xy[i][0];
+                }
+                var xy_2_2 = [];
+                for(var i = 0;i < xy.length;i++){
+                    xy_2_2[i] = xy[i][1];
+                }
+
+                if (METHOD=="order 2" || METHOD=="not_a_knot"||METHOD=="periodic" || METHOD=="monotone"|| METHOD=="fast" ||METHOD=="clamped"){
+                    orpar = [xy_1_1,xy_2_2,orpar];
+                }else{
+                    if (METHOD=="zero order"||METHOD=="linear"){
+                        orpar = [xy_1_1,xy_2_2];
+                    }
+                }
+                oipar = [N,mtd,PO];
+                SaveExit = true;
+                throw "incorrect";
             }else{
-
+                if(!result){
+                    if(!mtd_check){
+                        alert("ERROR IN SPLINE : "+METHOD);
+                        throw "incorrect";
+                    }
+                }
                 graf1 = "n";
                 var xy_1 = [];
                 for(var i = 0;i < xy.length;i++){

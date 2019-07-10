@@ -1,3 +1,6 @@
+var graph_sigbuilder = ""; //For storing graph for sigbuilder block
+var cell_sigbuilder = ""; //For storing graph for sigbuilder block
+var get_parameters_wind_sigbuilder = "";
 // function which makes the Ajax 'post' request with data sent in arguments
 function myAjaxreq(k,functionName) {
     var mbl = new Blob([k], { type: 'text/plain' });  // store the data in blob
@@ -2903,6 +2906,13 @@ function showPropertiesWindow(graph, cell, diagRoot) {
                         propertiesObject[key] = document.getElementById(key.toString()).value;
                     }
                 }
+                if(name == 'Sigbuilder'){
+                    var key = "graf";
+                    if(propertiesObject[key] == "y"){
+                        graph_sigbuilder = graph;
+                        cell_sigbuilder = cell;
+                    }
+                }
                 var geometry = cell.getGeometry();
                 var x=geometry.x;
                 var y=geometry.y;
@@ -3158,6 +3168,9 @@ function showPropertiesWindow(graph, cell, diagRoot) {
 
         content.appendChild(myform);
         var wind = showModalWindow(graph, 'Properties', content, 450, height);
+        if(name == 'Sigbuilder'){
+            get_parameters_wind_sigbuilder = wind;
+        }
     } else {
         // This function is specifically for sciFunc_block_m
         if (name=="scifunc_block_m") {

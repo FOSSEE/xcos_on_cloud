@@ -2211,3 +2211,19 @@ function getmethod(mtd){
     return METHOD;
 }
 
+//for parameters for different Chart
+function getcharttype(mtd){
+    var chartType = "";
+    switch (mtd){
+        case 0: chartType = "line"; break;
+        case 1: chartType = "line"; break;
+        case 2: chartType = "spline"; break;
+        case 3: chartType = "spline"; break;
+        case 4: chartType = "spline"; break;
+        case 5: chartType = "spline"; break;
+        case 6: chartType = "spline"; break;
+        case 7: chartType = "spline"; break;
+    }
+    return chartType;
+}
+
