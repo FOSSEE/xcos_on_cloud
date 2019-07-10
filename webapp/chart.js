@@ -398,6 +398,122 @@ var create_draggable_points_chart = function(graphPoints, pointsHistory, xmin, x
     });
 };
 
+// Function to create a chart with responsive points for Sigbuilder
+var create_draggable_points_chart_sigbuilder = function(graphParameters, pointsHistory, xmin, xmax, ymin, ymax, chart_type, points, method, xmaxtitle,step,stepname) {
+    graphParameters.mtd = method;
+    var subtitle = updateSubtitleForSigbuilderGraph(points, graphParameters.mtd, xmaxtitle,graphParameters.PeriodicOption);
+    pointsHistory.push(graphParameters.graphPoints.slice());
+
+    sigbuilder_Graph = Highcharts.chart('drag_sig_chart', {
+        chart: {
+            type: chart_type,
+            animation: false,
+            events: {
+                click: function (e) {
+                    var x_value = e.xAxis[0].value;
+                    var y_value = e.yAxis[0].value;
+                    addPointsOnChart(sigbuilder_Graph, graphParameters, pointsHistory, x_value, y_value);
+                }
+            }
+        },
+        tooltip: {
+            enabled: false
+        },
+        title: {
+            text: ""
+        },
+        subtitle: {
+            text: subtitle
+        },
+
+        yAxis: {
+            title: {
+                text: 'Output'
+            },
+            min: parseFloat(ymin),
+            max: parseFloat(ymax),
+            gridLineWidth: 1,
+            gridLineDashStyle: 'dash'
+        },
+
+        xAxis: {
+            title: {
+                text: 'time'
+            },
+            min: parseFloat(xmin),
+            max: parseFloat(xmax),
+            gridLineWidth: 1,
+            gridLineDashStyle: 'dash'
+        },
+
+        plotOptions: {
+            series: {
+                point: {
+                    events: {
+                        drag: function (e) {
+                            if (e.y >= ymax) {
+                                this.y = ymax;
+                                return false;
+                            }
+                            if (e.y <= ymin) {
+                                this.y = ymin;
+                                return false;
+                            }
+                            if (e.x >= xmax) {
+                                this.x = xmax;
+                                return false;
+                            }
+                            if (e.x <= xmin) {
+                                this.x = xmin;
+                                return false;
+                            }
+                        },
+                        drop: function (e) {
+                            pointsHistory.push(graphParameters.graphPoints.slice());
+                        },
+                        dblclick: function (e) {
+                            var graphObject = e;
+                            editPointsValue(graphObject, graph_sigbuilder, sigbuilder_Graph, graphParameters, pointsHistory);
+                        },
+                        contextmenu: function (e) {
+                            var graphObject = e;
+                            removePointsFromChart(graphObject, sigbuilder_Graph, graphParameters, pointsHistory);
+                        }
+                    },
+                    stickyTracking: false
+                },
+                column: {
+                    stacking: 'normal'
+                },
+                marker: {
+                    enabled: true,
+                    symbol: 'url(../images/plus-icon.png)'
+                }
+            }
+        },
+        series: [{
+            draggableX: true,
+            draggableY: true,
+            showInLegend: false,
+            data: graphParameters.graphPoints,
+            step: step,
+            name: stepname
+        }]
+    });
+    return sigbuilder_Graph;
+};
+
+function updateSubtitleForSigbuilderGraph(points, method, xmaxtitle, periodicFlag){
+
+    var subTitle = "";
+    if(periodicFlag == "y"){
+        subTitle = "<b>"+points+" points, Method: "+getmethod(method)+", periodic, T = "+xmaxtitle+"</b>";
+    }else{
+        subTitle = "<b>"+points+" points, Method: "+getmethod(method)+", aperiodic</b>";
+    }
+    return subTitle;
+}
+
 function chart_init(wnd, affichwnd, with_interval, with_interval2) {
     var block;
     // define buffer for CANIMXY3D
