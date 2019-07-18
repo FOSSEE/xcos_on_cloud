@@ -2917,7 +2917,6 @@ function showPropertiesWindow(graph, cell, diagRoot) {
                 var x=geometry.x;
                 var y=geometry.y;
 
-                var details_instance = new window[name]();
                 var details = cell.blockInstance.instance.set(propertiesObject);
                 // window[name]("set",cell.value,propertiesObject);
                 editor.execute('deleteBlock',(editor, cell));
@@ -4034,24 +4033,33 @@ function createPortsWithGeometry(graph, block, dataArray, nodeDataObject) {
     for (var i in dataArray) {
         var dataPort = dataArray[i];
         var geometryCell = dataPort.geometryCell;
-        var offset = geometryCell.offset;
-        var offsetx = 0;
-        var offsety = 0;
-        if (offset != null) {
-            offsetx = offset.x;
-            offsety = offset.y;
-        }
-        var cellx;
-        var celly;
-        if (geometryCell.relative == 1) {
-            cellx = geometryCell.x + offsetx / block.geometry.width;
-            celly = geometryCell.y + offsety / block.geometry.height;
+        var cellx, celly, width, height;
+        if (geometryCell != null) {
+            var offset = geometryCell.offset;
+            var offsetx = 0;
+            var offsety = 0;
+            if (offset != null) {
+                offsetx = offset.x;
+                offsety = offset.y;
+            }
+            if (geometryCell.relative == 1) {
+                cellx = geometryCell.x + offsetx / block.geometry.width;
+                celly = geometryCell.y + offsety / block.geometry.height;
+            } else {
+                /* TODO: use offset here */
+                cellx = geometryCell.x / block.geometry.width;
+                celly = geometryCell.y / block.geometry.height;
+            }
+            width = geometryCell.width;
+            height = geometryCell.height;
         } else {
-            /* TODO: use offset here */
-            cellx = geometryCell.x / block.geometry.width;
-            celly = geometryCell.y / block.geometry.height;
+            /* TODO: calculate cellx and celly */
+            cellx = 0;
+            celly = 0;
+            width = 8;
+            height = 8;
         }
-        var port = graph.insertVertex(block, null, dataPort.nodename, cellx, celly, geometryCell.width, geometryCell.height, dataPort.style, true);
+        var port = graph.insertVertex(block, null, dataPort.nodename, cellx, celly, width, height, dataPort.style, true);
         port.ordering = dataPort.ordering;
         port.dataLines = dataPort.dataLines;
         port.dataColumns = dataPort.dataColumns;
