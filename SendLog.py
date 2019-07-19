@@ -16,6 +16,7 @@ from flask_caching import Cache
 import flask_session
 from flaskext.versioned import Versioned
 import glob
+from importlib import reload
 import json
 import logging
 from logging.handlers import TimedRotatingFileHandler
@@ -195,6 +196,7 @@ def version_check():
     if time() > VERSIONED_CHECK_TIME:
         with VERSIONED_LOCK:
             if time() > VERSIONED_CHECK_TIME:
+                reload(config)
                 modified = is_versioned_file_modified()
                 VERSIONED_CHECK_TIME = time() + config.VERSIONED_CHECK_INTERVAL
 
