@@ -59,7 +59,7 @@ function TCLSS() {
             alert("A matrix must be square");
             TCLSS.get();
         }
-        var io = check_io(this.x.model,this.x.graphics,[[this.in],[this.ms]],[this.out],1,[])
+        var io = check_io(this.x.model,this.x.graphics,[[this.in],[ms]],[this.out],1,[])
         var exprs = new ScilabString([sci2exp(this.A)],[sci2exp(this.B)],[sci2exp(this.C)],[sci2exp(this.D)],[sci2exp(this.x0)])
         this.x.graphics.exprs=exprs
         var rpar = new ScilabDouble(...colon_operator(this.A),...colon_operator(this.B),...colon_operator(this.C),...colon_operator(this.D))
