@@ -208,15 +208,18 @@ ABS_VALUE.prototype.importset = function ABS_VALUE() {
     this.zcr = ary[0];
 }
 AFFICH_m.prototype.importset = function AFFICH_m() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.in = ary[0];
+    this.in = inverse(ary[0]);
     this.font = ary[1];
     this.fontsize = ary[2];
     this.colr = ary[3];
     this.nt = ary[4];
     this.nd = ary[5];
-    this.herit = ary[6];
+    this.herit = parseInt(ary[6]);
+
+    set_io(model, graphics, this.in, [], ones(1 - this.herit, 1), []);
 }
 AUTOMAT.prototype.importset = function AUTOMAT() {
     var model = this.x.model;
@@ -280,18 +283,28 @@ BIGSOM_f.prototype.importset = function BIGSOM_f() {
     check_io(model, graphics, in1, [-1], [], []);
 }
 BITCLEAR.prototype.importset = function BITCLEAR() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.Datatype = ary[0];
+    this.Datatype = parseInt(ary[0]);
     this.bit = ary[1];
     this.displayParameter = [this.bit];
+
+    var in1 = math.concat(getData(model.in), getData(model.in2));
+    var out1 = [1, 1];
+    set_io(model, graphics, list(in1, this.Datatype), list(out1, this.Datatype), [], []);
 }
 BITSET.prototype.importset = function BITSET() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.Datatype = ary[0];
+    this.Datatype = parseInt(ary[0]);
     this.bit = ary[1];
     this.displayParameter = [this.bit];
+
+    var in1 = math.concat(getData(model.in), getData(model.in2));
+    var out1 = [1, 1];
+    set_io(model, graphics, list(in1, this.Datatype), list(out1, this.Datatype), [], []);
 }
 BOUNCE.prototype.importset = function BOUNCE() {
     var graphics = this.x.graphics;
@@ -332,9 +345,10 @@ BPLATFORM.prototype.importset = function BPLATFORM() {
     this.ymax = ary[6];
 }
 CANIMXY3D.prototype.importset = function CANIMXY3D() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.nbr_curves = ary[0];
+    this.nbr_curves = parseInt(ary[0]);
     this.clrs = ary[1];
     this.siz = ary[2];
     this.win = ary[3];
@@ -345,11 +359,19 @@ CANIMXY3D.prototype.importset = function CANIMXY3D() {
     this.vec_z = ary[8];
     this.param3ds = ary[9];
     this.N = ary[10];
+
+    var in1 = ones(3, 1);
+    var in2 = ones(3, 1);
+    for (var i = 0; i < in1.length; i++) {
+        in1[i][0] = in1[i][0] * this.nbr_curves;
+    }
+    set_io(model, graphics, math.concat(in1, in2), [], ones(1, 1), []);
 }
 CANIMXY.prototype.importset = function CANIMXY() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.nbr_curves = ary[0];
+    this.nbr_curves = parseInt(ary[0]);
     this.clrs = ary[1];
     this.siz = ary[2];
     this.win = ary[3];
@@ -360,6 +382,13 @@ CANIMXY.prototype.importset = function CANIMXY() {
     this.ymin = ary[8];
     this.ymax = ary[9];
     this.N = ary[10];
+
+    var in1 = ones(2, 1);
+    var in2 = ones(2, 1);
+    for (var i = 0; i < in1.length; i++) {
+        in1[i][0] = in1[i][0] * this.nbr_curves;
+    }
+    set_io(model, graphics, math.concat(in1, in2), [], ones(1, 1), []);
 }
 Capacitor.prototype.importset = function Capacitor() {
     var graphics = this.x.graphics;
@@ -422,14 +451,17 @@ CBLOCK.prototype.importset = function CBLOCK() {
     this.displayParameter = [funam];
 }
 CEVENTSCOPE.prototype.importset = function CEVENTSCOPE() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.nclock = ary[0];
+    this.nclock = parseInt(ary[0]);
     this.clrs = ary[1];
     this.win = ary[2];
     this.wpos = ary[3];
     this.wdim = ary[4];
     this.per = ary[5];
+
+    set_io(model, graphics, list(), list(), ones(this.nclock, 1), []);
 }
 CFSCOPE.prototype.importset = function CFSCOPE() {
     var graphics = this.x.graphics;
@@ -537,9 +569,10 @@ CMATVIEW.prototype.importset = function CMATVIEW() {
     this.size_c = this.colormap.replace(/.*\((.*)\).*/, "$1");
 }
 CMSCOPE.prototype.importset = function CMSCOPE() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.in = ary[0];
+    this.in = inverse(ary[0]);
     this.clrs = ary[1];
     this.win = ary[2];
     this.wpos = ary[3];
@@ -548,8 +581,13 @@ CMSCOPE.prototype.importset = function CMSCOPE() {
     this.ymax = ary[6];
     this.per = ary[7];
     this.N = ary[8];
-    this.heritance = ary[9];
+    this.heritance = parseInt(ary[9]);
     this.nom = ary[10];
+
+    this.in = colon_operator(this.in);
+    var a = size(this.in, 1);
+    var in2 = ones(a, 1);
+    set_io(model, graphics, math.concat(this.in, in2), [], ones(1 - this.heritance, 1), []);
 }
 ConstantVoltage.prototype.importset = function ConstantVoltage() {
     var graphics = this.x.graphics;
@@ -604,6 +642,7 @@ Counter.prototype.importset = function Counter() {
     this.displayParameter = [[this.minim], [this.maxim]];
 }
 CSCOPE.prototype.importset = function CSCOPE() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
     this.clrs = ary[0];
@@ -614,10 +653,13 @@ CSCOPE.prototype.importset = function CSCOPE() {
     this.ymax = ary[5];
     this.per = ary[6];
     this.N = ary[7];
-    this.heritance = ary[8];
+    this.heritance = parseInt(ary[8]);
     this.nom = ary[9];
+
+    set_io(model, graphics, [[-1], [1]], [], ones(1 - this.heritance, 1), []);
 }
 CSCOPXY3D.prototype.importset = function CSCOPXY3D() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
     this.nbr_curves = ary[0];
@@ -631,6 +673,13 @@ CSCOPXY3D.prototype.importset = function CSCOPXY3D() {
     this.vec_z = ary[8];
     this.param3ds = ary[9];
     this.N = ary[10];
+
+    var in1 = ones(3, 1);
+    var in2 = ones(3, 1);
+    for (var i = 0; i < in1.length; i++) {
+        in1[i][0] = in1[i][0] * this.nbr_curves;
+    }
+    set_io(model, graphics, math.concat(in1, in2), [], ones(1, 1), []);
 }
 CSCOPXY.prototype.importset = function CSCOPXY() {
     var graphics = this.x.graphics;
@@ -648,10 +697,15 @@ CSCOPXY.prototype.importset = function CSCOPXY() {
     this.N = ary[10];
 }
 CUMSUM.prototype.importset = function CUMSUM() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.typ = ary[0];
+    this.typ = parseInt(ary[0]);
     this.decomptyp = ary[1];
+
+    var in1 = math.concat(getData(model.in), getData(model.in2));
+    var out1 = math.concat(getData(model.out), getData(model.out2));
+    set_io(model, graphics, list(in1, this.typ), list(out1, this.typ), [], []);
 }
 CURV_f.prototype.importset = function CURV_f() {
     var model = this.x.model;
@@ -797,16 +851,34 @@ DOLLAR_f.prototype.importset = function DOLLAR_f() {
     check_io(model, graphics, [-1], [-1], ones(1 - this.inh, 1), []);
 }
 DOLLAR.prototype.importset = function DOLLAR() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.a = ary[0];
-    this.inh = ary[1];
+    this.a = inverse(ary[0]);
+    this.inh = parseInt(ary[1]);
+
+    var out1 = [[size(this.a, 1)], [size(this.a, 2)]];
+    if (out1 == 0)
+        out1 = [];
+    var in1 = out1;
+    var it = 1;
+    var ot = 1;
+    set_io(model, graphics, list(in1, it), list(out1, ot), ones(1 - this.inh, 1), []);
 }
 DOLLAR_m.prototype.importset = function DOLLAR_m() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.a = ary[0];
-    this.inh = ary[1];
+    this.a = inverse(ary[0]);
+    this.inh = parseInt(ary[1]);
+
+    var out1 = [[size(this.a, 1)], [size(this.a, 2)]];
+    if (out1 == 0)
+        out1 = [];
+    var in1 = out1;
+    var it = 1;
+    var ot = 1;
+    set_io(model, graphics, list(in1, it), list(out1, ot), ones(1 - this.inh, 1), []);
 }
 EDGE_TRIGGER.prototype.importset = function EDGE_TRIGGER() {
     var block = getRparObjByGui(this.x, 'EDGETRIGGER');
@@ -894,20 +966,32 @@ EXPRESSION.prototype.importset = function EXPRESSION() {
     check_io(model, graphics, in1, [1], [], []);
 }
 EXTRACTBITS.prototype.importset = function EXTRACTBITS() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.Datatype = ary[0];
+    this.Datatype = parseInt(ary[0]);
     this.rule = ary[1];
     this.bit = ary[2];
     this.scal = ary[3];
     this.displayParameter = [this.rule];
+
+    var in1 = math.concat(getData(model.in), getData(model.in2));
+    var out1 = [1, 1];
+    set_io(model, graphics, list(in1, this.Datatype), list(out1, this.Datatype), [], []);
 }
 EXTRACT.prototype.importset = function EXTRACT() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.typ = ary[0];
-    this.a = ary[1];
-    this.b = ary[2];
+    this.typ = parseInt(ary[0]);
+    this.a = inverse(ary[1]);
+    this.b = inverse(ary[2]);
+
+    var ma = size(this.a, 1);
+    var mb = size(this.b, 1);
+    var in1 = math.concat(getData(model.in), getData(model.in2));
+    var out1 = [ma, mb];
+    set_io(model, graphics, list(in1, this.typ), list(out1, this.typ), [], []);
 }
 EXTRACTOR.prototype.importset = function EXTRACTOR() {
     var graphics = this.x.graphics;
@@ -959,12 +1043,15 @@ FROMWSB.prototype.importset = function FROMWSB() {
     var block = getRparObjByGui(this.x, 'FROMWS_c');
     if (block == null)
         return;
+    var model = block.model;
     var graphics = block.graphics;
     var ary = getData(graphics.exprs);
     this.varnam = ary[0];
     this.Method = ary[1];
     this.ZC = ary[2];
     this.OutEnd = ary[3];
+
+    set_io(model, graphics, list(), list([-1, -2], -1), 1, 1);
 }
 GAINBLK_f.prototype.importset = function GAINBLK_f() {
     var model = this.x.model;
@@ -978,11 +1065,33 @@ GAINBLK_f.prototype.importset = function GAINBLK_f() {
     check_io(model, graphics, [in1], [out1], [], []);
 }
 GAINBLK.prototype.importset = function GAINBLK() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
     this.gain = ary[0];
     this.over = ary[1];
     this.displayParameter = [this.gain];
+
+    var value = this.gain;
+    if (value.match(/[a-z()+\-*/.^{}]/i)) {
+        value = getValueOfImaginaryInput(value);
+    } else {
+        value = convertInputVectorFormat(value);
+        this.gain = inverse(value);
+        value = this.gain;
+    }
+    var in1 = size(value, 2);
+    var out1 = size(value, 1);
+    var in2;
+    var out2;
+    if (in1 * out1 == 1) {
+        in2 = [[-1], [-2]]
+        out2 = [[-1], [-2]]
+    } else {
+        in2 = [[in1], [-1]];
+        out2 = [[out1], [-1]];
+    }
+    set_io(model, graphics, in2, out2, [], []);
 }
 GAIN_f.prototype.importset = function GAIN_f() {
     var model = this.x.model;
@@ -1002,16 +1111,17 @@ GENERAL_f.prototype.importset = function GENERAL_f() {
     this.out = ary[1];
 }
 generic_block3.prototype.importset = function generic_block3() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
     this.function_name = ary[0];
     this.funtyp = ary[1];
-    this.in = ary[2];
-    this.it = ary[3];
-    this.out = ary[4];
-    this.ot = ary[5];
-    this.ci = ary[6];
-    this.co = ary[7];
+    this.in = inverse(ary[2]);
+    this.it = parseInt(ary[3]);
+    this.out = inverse(ary[4]);
+    this.ot = parseInt(ary[5]);
+    this.ci = inverse(ary[6]);
+    this.co = inverse(ary[7]);
     this.xx = ary[8];
     this.z = ary[9];
     this.oz = ary[10];
@@ -1024,6 +1134,8 @@ generic_block3.prototype.importset = function generic_block3() {
     this.depu = ary[17];
     this.dept = ary[18];
     this.displayParameter = [this.function_name];
+
+    set_io(model, graphics, list(this.in, this.it), list(this.out, this.ot), this.ci, this.co);
 }
 GENSIN_f.prototype.importset = function GENSIN_f() {
     var model = this.x.model;
@@ -1131,13 +1243,35 @@ INTEGRAL_f.prototype.importset = function INTEGRAL_f() {
     this.x0 = ary[0];
 }
 INTEGRAL_m.prototype.importset = function INTEGRAL_m() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.x0 = ary[0];
-    this.reinit = ary[1];
+    this.x0 = inverse(ary[0]);
+    this.reinit = parseInt(ary[1]);
     this.satur = ary[2];
     this.maxp = ary[3];
     this.lowp = ary[4];
+
+    var Datatype = 1;
+    var it = [1, ...ones(this.reinit, 1)];
+    var ot = 1;
+    if (Datatype == 2) {
+        for (var i = 0; i < it.length; i++) {
+            it[i] *= 2;
+        }
+        ot *= 2;
+    }
+    var inp1 = [1, ...ones(this.reinit, 1)];
+    for (var i = 0; i < inp1.length; i++) {
+        inp1[i] = inp1[i] * size(this.x0, 1);
+    }
+    var inp2 = [1, ...ones(this.reinit, 1)];
+    for (var i = 0; i < inp2.length; i++) {
+        inp2[i] = inp2[i] * size(this.x0, 2);
+    }
+    var in1 = [...inp1, ...inp2];
+    var out1 = size(this.x0);
+    set_io(model, graphics, list(in1, it), list(out1, ot), ones(this.reinit, 1), []);
 }
 INTMUL.prototype.importset = function INTMUL() {
     var graphics = this.x.graphics;
@@ -1169,9 +1303,19 @@ JKFLIPFLOP.prototype.importset = function JKFLIPFLOP() {
     var block = getRparObjByGui(this.x, 'DOLLAR_m');
     if (block == null)
         return;
+    var model = block.model;
     var graphics = block.graphics;
     var ary = getData(graphics.exprs);
-    this.initialvalue = ary[0];
+    this.a = inverse(ary[0]);
+    this.inh = parseInt(ary[1]);
+
+    var out1 = [[size(this.a, 1)], [size(this.a, 2)]];
+    if (out1 == 0)
+        out1 = [];
+    var in1 = out1;
+    var it = 1;
+    var ot = 1;
+    set_io(model, graphics, list(in1, it), list(out1, ot), ones(1 - this.inh, 1), []);
 }
 LOGBLK_f.prototype.importset = function LOGBLK_f() {
     var graphics = this.x.graphics;
@@ -1214,10 +1358,19 @@ LOGICAL_OP.prototype.importset = function LOGICAL_OP() {
     check_io(model, graphics, in1, out1, [], []);
 }
 LOGIC.prototype.importset = function LOGIC() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.mat = ary[0];
-    this.herit = ary[1];
+    this.mat = inverse(ary[0]);
+    this.herit = parseInt(ary[1]);
+
+    var nin = log(size(this.mat, 1)) / log(2);
+    var nout = size(this.mat, 2);
+    var in1 = math.concat(ones(nin, 1), ones(nin, 1));
+    var out1 = math.concat(ones(nout, 1), ones(nout, 1));
+    var it = ones(1, nin);
+    var ot = ones(1, nout);
+    set_io(model, graphics, list(in1, it), list(out1, ot), ones(1 - this.herit, 1), []);
 }
 LOOKUP_f.prototype.importset = function LOOKUP_f() {
     var model = this.x.model;
@@ -1235,14 +1388,44 @@ MATBKSL.prototype.importset = function MATBKSL() {
     this.typ = ary[0];
 }
 MATCATH.prototype.importset = function MATCATH() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.nin = ary[0];
+    this.nin = parseInt(ary[0]);
+
+    var inp1 = ones(this.nin, 1);
+    for (var i = 0; i < inp1.length; i++) {
+        inp1[i] *= -1;
+    }
+    var inp2 = [];
+    for (var i = 2; i < this.nin + 2; i++) {
+        inp2.push(-i);
+    }
+    var in1 = math.concat(inp1, inp2);
+    var out1 = [-1, 0];
+    var it = inp1;
+    var ot = -1;
+    set_io(model, graphics, list(in1, it), list(out1, ot), [], []);
 }
 MATCATV.prototype.importset = function MATCATV() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.nin = ary[0];
+    this.nin = parseInt(ary[0]);
+
+    var inp1 = [];
+    for (var i = 2; i < this.nin + 2; i++) {
+        inp1.push(-i);
+    }
+    var inp2 = ones(this.nin, 1);
+    for (var i = 0; i < inp2.length; i++) {
+        inp2[i] *= -1;
+    }
+    var in1 = math.concat(inp1, inp2);
+    var out1 = [0, -1];
+    var it = inp2;
+    var ot = -1;
+    set_io(model, graphics, list(in1, it), list(out1, ot), [], []);
 }
 MATDET.prototype.importset = function MATDET() {
     var graphics = this.x.graphics;
@@ -1260,10 +1443,28 @@ MATDIV.prototype.importset = function MATDIV() {
     this.typ = ary[0];
 }
 MATEIG.prototype.importset = function MATEIG() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.typ = ary[0];
-    this.decomptyp = ary[1];
+    this.typ = parseInt(ary[0]);
+    this.decomptyp = parseInt(ary[1]);
+
+    var in1 = [-1, 1];
+    var it = this.typ;
+    var out1;
+    var ot;
+    switch (this.decomptyp) {
+        case 1:
+            out1 = [-1, 1];
+            ot = 2;
+            break;
+
+        case 2:
+            out = [[-1, -1], [-1, -1]];
+            ot = [2, 2];
+            break;
+    }
+    set_io(model, graphics, list(in1, it), list(out1, ot), [], []);
 }
 MATEXPM.prototype.importset = function MATEXPM() {
     var graphics = this.x.graphics;
@@ -1281,16 +1482,65 @@ MATLU.prototype.importset = function MATLU() {
     this.typ = ary[0];
 }
 MATMAGPHI.prototype.importset = function MATMAGPHI() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.decomptyp = ary[0];
+    this.decomptyp = parseInt(ary[0]);
+
+    var in1;
+    var it;
+    var out1;
+    var ot;
+    switch (this.decomptyp) {
+        case 1:
+            in1 = [-1, -2];
+            it = 2;
+            out1 = [[-1, -2], [-1, -2]];
+            ot = [1, 1];
+            break;
+
+        case 2:
+            in1 = [[-1, -2], [-1, -2]];
+            it = [1, 1];
+            out1 = [-1, -2];
+            ot = 2;
+            break;
+    }
+    set_io(model, graphics, list(in1, it), list(out1, ot), [], []);
 }
 MATMUL.prototype.importset = function MATMUL() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.dtype = ary[0];
-    this.rule = ary[1];
+    this.dtype = parseInt(ary[0]);
+    this.rule = parseInt(ary[1]);
     this.np = ary[2];
+
+    var in1;
+    var it = ones(1, 2);
+    for (var i = 0; i < it[0].length; i++) {
+        it[0][i] *= this.dtype;
+    }
+    var out1;
+    var ot = this.dtype;
+    switch (this.rule) {
+        case 1:
+            in1 = [[-1, -2], [-2, -3]];
+            out1 = [-1, -3];
+            break;
+
+        case 2:
+            in1 = [[-1, -2], [-1, -2]];
+            out1 = [-1, -2];
+            break;
+
+        case 3:
+        default:
+            in1 = [[-1, -2], [1, 1]];
+            out1 = [-1, -2];
+            break;
+    }
+    set_io(model, graphics, list(in1, it), list(out1, ot), [], []);
 }
 MATPINV.prototype.importset = function MATPINV() {
     var graphics = this.x.graphics;
@@ -1298,23 +1548,88 @@ MATPINV.prototype.importset = function MATPINV() {
     this.typ = ary[0];
 }
 MATRESH.prototype.importset = function MATRESH() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.typ = ary[0];
-    this.l1 = ary[1];
-    this.out = ary[2];
+    this.typ = parseInt(ary[0]);
+    this.l1 = inverse(ary[1]);
+    this.out = inverse(ary[2]);
+
+    var it = this.typ;
+    var ot = this.typ;
+    set_io(model, graphics, list(this.l1, it), list(this.out, ot), [], []);
 }
 MATSING.prototype.importset = function MATSING() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.typ = ary[0];
-    this.decomptyp = ary[1];
+    this.typ = parseInt(ary[0]);
+    this.decomptyp = parseInt(ary[1]);
+
+    var in1;
+    var it = this.typ;
+    var out1;
+    var ot;
+    switch (this.typ) {
+        case 1:
+            switch (this.decomptyp) {
+                case 1:
+                    in1 = [-1, -2];
+                    out1 = [-1, 1];
+                    ot = 1;
+                    break;
+
+                case 2:
+                    in1 = [-1, -2];
+                    out1 = [[-1, -1], [-1, -2], [-2, -2]];
+                    ot = [1, 1, 1];
+                    break;
+            }
+            break;
+
+        case 2:
+            switch (this.decomptyp) {
+                case 1:
+                    in1 = [-1, -2];
+                    out1 = [-1, 1];
+                    ot = 1;
+                    break;
+
+                case 2:
+                    in1 = [-1, -2];
+                    out1 = [[-1, -1], [-1, -2], [-2, -2]];
+                    ot = [2, 1, 2];
+                    break;
+            }
+            break;
+    }
+    set_io(model, graphics, list(in1, it), list(out1, ot), [], []);
 }
 MATSUM.prototype.importset = function MATSUM() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.typ = ary[0];
-    this.decomptyp = ary[1];
+    this.typ = parseInt(ary[0]);
+    this.decomptyp = parseInt(ary[1]);
+
+    var in1 = math.concat(getData(model.in), getData(model.in2));
+    var it = this.typ;
+    var out1;
+    var ot = this.typ;
+    switch (this.decomptyp) {
+        case 0:
+            out1 = [1, 1];
+            break;
+
+        case 1:
+            out1 = [1, -2];
+            break;
+
+        case 2:
+            out1 = [-1, 1];
+            break;
+    }
+    set_io(model, graphics, list(in1, it), list(out1, ot), [], []);
 }
 MATTRAN.prototype.importset = function MATTRAN() {
     var graphics = this.x.graphics;
@@ -1323,9 +1638,31 @@ MATTRAN.prototype.importset = function MATTRAN() {
     this.rule = ary[1];
 }
 MATZREIM.prototype.importset = function MATZREIM() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.decomptyp = ary[0];
+    this.decomptyp = parseInt(ary[0]);
+
+    var in1;
+    var it;
+    var out1;
+    var ot;
+    switch (this.decomptyp) {
+        case 1:
+            in1 = [-1, -2];
+            it = 2;
+            out1 = [-1, -2], [-1, -2];
+            ot = [1, 1];
+            break;
+
+        case 2:
+            in1 = [-1, -2], [-1, -2];
+            it = [1, 1];
+            out1 = [-1, -2];
+            ot = 2;
+            break;
+    }
+    set_io(model, graphics, list(in1, it), list(out1, ot), [], []);
 }
 MAXMIN.prototype.importset = function MAXMIN() {
     var model = this.x.model;
@@ -1374,10 +1711,16 @@ MFCLCK_f.prototype.importset = function MFCLCK_f() {
     this.nn = ary[1];
 }
 M_freq.prototype.importset = function M_freq() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.frequ = ary[0];
-    this.offset = ary[1];
+    this.frequ = inverse(ary[0]);
+    this.offset = inverse(ary[1]);
+
+    var mainre = mfrequ_clk(this.frequ, this.offset);
+    var m1 = mainre[4];
+    var mn = 2**size(m1, "*") - 1;
+    set_io(model, graphics, list(), list(), 1, ones(mn, 1));
 }
 Modulo_Count.prototype.importset = function Modulo_Count() {
     var graphics = this.x.graphics;
@@ -1628,10 +1971,14 @@ REGISTER_f.prototype.importset = function REGISTER_f() {
     this.z0 = ary[0];
 }
 REGISTER.prototype.importset = function REGISTER() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
     this.z0 = ary[0];
-    this.it = ary[1];
+    this.it = parseInt(ary[1]);
+
+    var in1 = [1, 1];
+    set_io(model, graphics, list(in1, this.it), list(in1, this.it), 1, []);
 }
 RELATIONALOP.prototype.importset = function RELATIONALOP() {
     var graphics = this.x.graphics;
@@ -1689,15 +2036,26 @@ RICC.prototype.importset = function RICC() {
     this.mod = ary[1];
 }
 ROOTCOEF.prototype.importset = function ROOTCOEF() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.typ = ary[0];
-    this.inp = ary[1];
+    this.typ = parseInt(ary[0]);
+    this.inp = parseInt(ary[1]);
+
+    var in1 = [this.inp, ...getData(model.in2)];
+    var it = this.typ;
+    var out1 = [this.inp + 1, ...getData(model.out2)];
+    var ot = this.typ;
+    set_io(model, graphics, list(in1, it), list(out1, ot), [], []);
 }
 SAMPHOLD_m.prototype.importset = function SAMPHOLD_m() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.it = ary[0];
+    this.it = parseInt(ary[0]);
+
+    var in1 = math.concat(getData(model.in), getData(model.in2));
+    set_io(model, graphics, list(in1, this.it), list(in1, this.it), 1, []);
 }
 SampleCLK.prototype.importset = function SampleCLK() {
     var graphics = this.x.graphics;
@@ -1721,18 +2079,23 @@ SCALAR2VECTOR.prototype.importset = function SCALAR2VECTOR() {
     check_io(model, graphics, [1], [this.nout], [], []);
 }
 scifunc_block_m.prototype.importset = function scifunc_block_m() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
-    var ary = getData(graphics.exprs);
-    this.i = ary[0];
-    this.o = ary[1];
-    this.ci = ary[2];
-    this.co = ary[3];
+    var ary = getData(graphics.exprs[0]);
+    this.i = inverse(ary[0]);
+    this.o = inverse(ary[1]);
+    this.ci = inverse(ary[2]);
+    this.co = inverse(ary[3]);
     this.xx = ary[4];
     this.z = ary[5];
     this.rpar = ary[6];
     this.auto0 = ary[7];
     this.deptime = ary[8];
     this.displayParameter = [this.o]; // TODO: should come from popup 2
+
+    var it = ones(1, size(this.i, 1));
+    var ot = ones(1, size(this.o, 1));
+    set_io(model, graphics, list(this.i, it), list(this.o, ot), this.ci, this.co);
 }
 SELECT_m.prototype.importset = function SELECT_m() {
     var graphics = this.x.graphics;
@@ -1742,12 +2105,17 @@ SELECT_m.prototype.importset = function SELECT_m() {
     this.z0 = ary[2];
 }
 SHIFT.prototype.importset = function SHIFT() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.Datatype = ary[0];
+    this.Datatype = parseInt(ary[0]);
     this.nb = ary[1];
     this.np = ary[2];
     this.displayParameter = [this.nb];
+
+    var it = this.Datatype;
+    var ot = this.Datatype;
+    set_io(model, graphics, list([-1, -2], it), list([-1, -2], ot), [], []);
 }
 Sigbuilder.prototype.importset = function Sigbuilder() {
     var block = getRparObjByGui(this.x, 'CURVE_c');
@@ -1785,9 +2153,16 @@ SourceP.prototype.importset = function SourceP() {
     this.option_temperature = ary[3];
 }
 SQRT.prototype.importset = function SQRT() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.typ = ary[0];
+    this.typ = parseInt(ary[0]);
+
+    var in1 = math.concat(getData(model.in), getData(model.in2));
+    var it = this.typ;
+    var out1 = math.concat(getData(model.out), getData(model.out2));
+    var ot = this.typ;
+    set_io(model, graphics, list(in1, it), list(out1, ot), [], []);
 }
 SRFLIPFLOP.prototype.importset = function SRFLIPFLOP() {
     var block = getRparObjByGui(this.x, 'DOLLAR_m');
@@ -1808,21 +2183,71 @@ STEP_FUNCTION.prototype.importset = function STEP_FUNCTION() {
     this.final = ary[2];
 }
 SUBMAT.prototype.importset = function SUBMAT() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.typ = ary[0];
-    this.a = ary[1];
-    this.b = ary[2];
-    this.c = ary[3];
-    this.d = ary[4];
-    this.inp = ary[5];
+    this.typ = parseInt(ary[0]);
+    this.a = parseInt(ary[1]);
+    this.b = parseInt(ary[2]);
+    this.c = parseInt(ary[3]);
+    this.d = parseInt(ary[4]);
+    this.inp = inverse(ary[5]);
+
+    var in1 = [parseInt(this.inp[0]), parseInt(this.inp[1])];
+    var it = this.typ;
+    var out1 = [this.b - this.a + 1, this.d - this.c + 1];
+    var ot = this.typ;
+    set_io(model, graphics, list(in1, it), list(out1, ot), [], []);
 }
 SUMMATION.prototype.importset = function SUMMATION() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.Datatype = ary[0];
-    this.sgn = ary[1];
+    this.Datatype = parseInt(ary[0]);
+    this.sgn = inverse(ary[1]);
     this.satur = ary[2];
+
+    var in1;
+    var in2;
+    var nout1;
+    var nout2;
+    if (size(this.sgn, 1) == 1) {
+        var sgn = this.sgn[0];
+        if (sgn == 1) {
+            in1 = -1;
+            in2 = -2;
+            nout1 = 1;
+            nout2 = 1;
+        } else if (sgn > 1) {
+            in1 = ones(sgn, 1);
+            for (var i = 0; i < in1.length; i++) {
+                in1[i] *= -1;
+            }
+            in2 = ones(sgn, 1);
+            for (var i = 0; i < in2.length; i++) {
+                in2[i] *= -2;
+            }
+            nout1 = -1;
+            nout2 = -2;
+        }
+    } else {
+        in1 = ones(size(this.sgn, 1), 1);
+        for (var i = 0; i < in1.length; i++) {
+            in1[i] *= -1;
+        }
+        in2 = ones(size(this.sgn, 1), 1);
+        for (var i = 0; i < in2.length; i++) {
+            in2[i] *= -2;
+        }
+        nout1 = -1;
+        nout2 = -2;
+    }
+    var it = ones(1, size(in1, 1));
+    for (var i = 0; i < it.length; i++) {
+        it[i] *= this.Datatype;
+    }
+    var ot = this.Datatype;
+    set_io(model, graphics, list([in1, in2], it), list([nout1, nout2], ot), [], []);
 }
 SWITCH2_m.prototype.importset = function SWITCH2_m() {
     var graphics = this.x.graphics;
@@ -1889,12 +2314,15 @@ TKSCALE.prototype.importset = function TKSCALE() {
     this.f = ary[2];
 }
 TOWS_c.prototype.importset = function TOWS_c() {
+    var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
     this.nz = ary[0];
     this.varnam = ary[1];
-    this.herit = ary[2];
+    this.herit = parseInt(ary[2]);
     this.displayParameter = [[this.varnam], [this.nz]];
+
+    set_io(model, graphics, list([-1, -2], -1), list(), ones(1 - this.herit, 1), []);
 }
 TrigFun.prototype.importset = function TrigFun() {
     var graphics = this.x.graphics;
