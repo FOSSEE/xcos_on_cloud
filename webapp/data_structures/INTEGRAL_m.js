@@ -49,7 +49,7 @@ function INTEGRAL_m() {
 
         this.Datatype = 1 // assuming x0 is real
         if(this.reinit != 0)
-            this.reint = 1
+            this.reinit = 1
 
         if(this.satur != 0){
             this.satur = 1
