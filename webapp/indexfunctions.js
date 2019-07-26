@@ -1262,7 +1262,7 @@ function main(container, outline, toolbar, sidebar, status) {
         else {
             var xml = mxUtils.parseXml(xmlFromExportXML);
 
-            resultDocument = getXsltProcessor().transformToDocument(xml);
+            var resultDocument = getXsltProcessor().transformToDocument(xml);
             /*
              * Maverick
              * Using resultDocument.documentElement to remove an additional
