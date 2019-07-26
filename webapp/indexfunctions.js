@@ -52,7 +52,7 @@ function loadXMLDoc(filename) {
 }
 
 function getXsltProcessor() {
-    var xsl = loadXMLDoc("finalmodsheet.xsl");
+    var xsl = loadXMLDoc(finalmodsheet);
     var xsltProcessor = new XSLTProcessor();
     xsltProcessor.importStylesheet(xsl);
     return xsltProcessor;
