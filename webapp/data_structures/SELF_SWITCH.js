@@ -28,11 +28,22 @@ function SELF_SWITCH() {
         return this.x;
     }
     SELF_SWITCH.prototype.get=function SELF_SWITCH(){
-        alert("parameters can not be changed");
+        var options = {
+            stateOpen:["stateOpen",this.stateOpen],
+        }
+        return options
     }
     SELF_SWITCH.prototype.set=function SELF_SWITCH(){
-       this.x.graphics.style = new ScilabString(["SELF_SWITCH;SELF_SWITCH_ON"]);
-	return new BasicBlock(this.x);
+        this.stateOpen = arguments[0]["stateOpen"];
+        if (this.stateOpen == false){
+            this.x.graphics.style = new ScilabString(["SELF_SWITCH;SELF_SWITCH_OFF"]);
+        }else{
+            this.x.graphics.style = new ScilabString(["SELF_SWITCH;SELF_SWITCH_ON"]);
+        }
+        this.x.model.rpar = genSwitchInnerDiagram(!this.stateOpen);
+        this.x.model.opar = list(new ScilabBoolean([!this.stateOpen]));
+        this.stateOpen = !this.stateOpen;
+	    return new BasicBlock(this.x);
     }
 
     SELF_SWITCH.prototype.get_popup_title = function SELF_SWITCH() {
