@@ -432,21 +432,29 @@ function set_io() {
         var out_implicit = []
     }
 
+    if (typeof inp == 'number')
+        inp = [inp];
     if(inp.length != 0 && inp[0] != undefined)
         inp = array_matrix(inp)
+
+    if (typeof out == 'number')
+        out = [out];
     if(out.length != 0 && out[0] != undefined)
         out = array_matrix(out)
-    if(clkout.length != 0 && clkout[0] != undefined)
-        clkout = array_matrix(clkout)
+
+    if (typeof clkin == 'number')
+        clkin = [clkin];
     if(clkin.length != 0 && clkin[0] != undefined)
         clkin = array_matrix(clkin)
-
-
     for (var i = clkin.length - 1; i >= 0; i--) {
         clkin[i] = [Math.floor(clkin[i])]
     }
     var nclkin = size(clkin,1)
 
+    if (typeof clkout == 'number')
+        clkout = [clkout];
+    if(clkout.length != 0 && clkout[0] != undefined)
+        clkout = array_matrix(clkout)
     for (var i = clkout.length - 1; i >= 0; i--) {
         clkout[i] = [Math.floor(clkout[i])]
     }
@@ -599,14 +607,21 @@ function check_io() {
         var in_implicit = []
         var out_implicit = []
     }
+
+    if (typeof inp == 'number')
+        inp = [inp];
     if(inp.length != 0 && inp[0] != undefined)
         inp = array_matrix(inp)
     this.nin = size(inp,1)
 
+    if (typeof out == 'number')
+        out = [out];
     if(out.length != 0 && out[0] != undefined)
         out = array_matrix(out)
     this.nout = size(out,1)
 
+    if (typeof clkin == 'number')
+        clkin = [clkin];
     if(clkin.length != 0 && clkin[0] != undefined)
         clkin = array_matrix(clkin)
     for (var i = clkin.length - 1; i >= 0; i--) {
@@ -614,6 +629,10 @@ function check_io() {
     }
     this.nclkin = size(clkin,1)
 
+    if (typeof clkout == 'number')
+        clkout = [clkout];
+    if(clkout.length != 0 && clkout[0] != undefined)
+        clkout = array_matrix(clkout)
     for (var i = clkout.length - 1; i >= 0; i--) {
         clkout[i] = [Math.floor(clkout[i])]
     }
