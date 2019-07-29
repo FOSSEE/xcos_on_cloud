@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
+<!--
 eXtensible Stylesheet for converting GUI-obtained XML to Scilab-compatible XML.
-Authors: Maverick & Karma 
+Authors: Maverick & Karma
 -->
 <!-- Maverick -->
-<!-- 
+<!--
 NOTES:
 Look for TAG:Break1!!!
          TAG:Break2!!!
@@ -16,11 +16,6 @@ Look for TAG:Break1!!!
     </xsl:template>
     <xsl:template name="XcosDiagram" match="XcosDiagram">
         <xsl:element name="XcosDiagram">
-            <!-- <xsl:if test="@background">
-            <xsl:attribute name="background">
-            <xsl:value-of select="@background"/>
-            </xsl:attribute>
-            </xsl:if> -->
             <xsl:attribute name="background">-1</xsl:attribute>
             <xsl:if test="@debugLevel">
                 <xsl:attribute name="debugLevel">
@@ -87,11 +82,6 @@ Look for TAG:Break1!!!
                     <xsl:value-of select="@solver" />
                 </xsl:attribute>
             </xsl:if>
-            <!-- <xsl:if test="@title">
-            <xsl:attribute name="title">
-            <xsl:value-of select="@title"/>
-            </xsl:attribute>
-            </xsl:if> -->
             <xsl:attribute name="title">MavXcos</xsl:attribute>
             <xsl:if test="@toleranceOnTime">
                 <xsl:attribute name="toleranceOnTime">
@@ -157,14 +147,12 @@ Look for TAG:Break1!!!
                     </xsl:when>
                     <xsl:otherwise>
                         <!-- Maverick -->
-                        <!-- TAG:Break1 
+                        <!-- TAG:Break1
                              This line has been commented because Javascript was having
-                             some problem with the function call. 
-
+                             some problem with the function call.
                              Commenting doesn't bring any change to the result now, but
-                             may cause some problems in the future. 
+                             may cause some problems in the future.
                         -->
-                        <!-- <xsl:apply-templates select="name(*[1])"/> -->
                         <xsl:apply-templates />
                     </xsl:otherwise>
                 </xsl:choose>
@@ -188,9 +176,10 @@ Look for TAG:Break1!!!
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
+    <xsl:template match="Object[@as = 'ports']" />
     <xsl:template name="Object" match="Object">
         <xsl:element name="Array">
-            <xsl:if test="name(..)='BasicBlock' or name(..)='AfficheBlock' or name(..)='BigSom' or name(..)='RoundBlock' or name(..)='GroundBlock'  or name(..)='EventInBlock'  or name(..)='EventOutBlock'   or name(..)='ImplicitInBlock'  or name(..)='Product'  or name(..)='ImplicitOutBlock' or name(..)='SuperBlock' or name(..)='ExplicitInBlock' or name(..)='ExplicitOutBlock' or name(..)='Summation' or name(..)='TextBlock' or name(..)='VoltageSensorBlock' or name(..)='SuperBlock'">
+            <xsl:if test="name(..)='BasicBlock' or name(..)='AfficheBlock' or name(..)='BigSom' or name(..)='RoundBlock' or name(..)='GroundBlock' or name(..)='EventInBlock' or name(..)='EventOutBlock' or name(..)='ImplicitInBlock' or name(..)='Product' or name(..)='ImplicitOutBlock' or name(..)='SuperBlock' or name(..)='ExplicitInBlock' or name(..)='ExplicitOutBlock' or name(..)='Summation' or name(..)='TextBlock' or name(..)='VoltageSensorBlock' or name(..)='SuperBlock'">
                 <xsl:if test="@as">
                     <xsl:attribute name="as">
                         <xsl:value-of select="@as" />
@@ -202,23 +191,18 @@ Look for TAG:Break1!!!
                     <xsl:value-of select="@scilabClass" />
                 </xsl:attribute>
             </xsl:if>
-            <!-- <xsl:if test="@varName">
-                <xsl:attribute name="varName">
-                    <xsl:value-of select="@varName" />
-                </xsl:attribute>
-            </xsl:if> -->
             <xsl:apply-templates />
         </xsl:element>
     </xsl:template>
-
     <!-- Maverick -->
-    <!-- TAG:Break2 
+    <!-- TAG:Break2
          The template handles the 'as' attribute rather loosely and demands
          proper handling.
     -->
+    <xsl:template match="Array[@as = 'waypoints']" />
     <xsl:template name="Array" match="Array">
         <xsl:element name="Array">
-            <xsl:if test="name(..)='BasicBlock' or @as='context' or name(..)='AfficheBlock' or name(..)='BigSom' or name(..)='RoundBlock' or name(..)='GroundBlock'  or name(..)='EventInBlock'  or name(..)='EventOutBlock'   or name(..)='ImplicitInBlock'  or name(..)='Product'  or name(..)='ImplicitOutBlock' or name(..)='SuperBlock' or name(..)='ExplicitInBlock' or name(..)='ExplicitOutBlock' or name(..)='Summation' or name(..)='TextBlock' or name(..)='VoltageSensorBlock' or name(..)='SuperBlock'">
+            <xsl:if test="@as='context' or @as='points' or name(..)='BasicBlock' or name(..)='AfficheBlock' or name(..)='BigSom' or name(..)='RoundBlock' or name(..)='GroundBlock' or name(..)='EventInBlock' or name(..)='EventOutBlock' or name(..)='ImplicitInBlock' or name(..)='Product' or name(..)='ImplicitOutBlock' or name(..)='SuperBlock' or name(..)='ExplicitInBlock' or name(..)='ExplicitOutBlock' or name(..)='Summation' or name(..)='TextBlock' or name(..)='VoltageSensorBlock' or name(..)='SuperBlock'">
                 <xsl:if test="@as">
                     <xsl:attribute name="as">
                         <xsl:value-of select="@as" />
@@ -1487,61 +1471,6 @@ Look for TAG:Break1!!!
             <xsl:apply-templates />
         </xsl:element>
     </xsl:template>
-    <!--  <xsl:template name="mxCell" match="mxCell">
-            <xsl:element name="mxCell">
-            
-
-            <xsl:if test="name(..)='BasicBlock'">
-            <xsl:if test="@as">
-            <xsl:attribute name="as">
-            <xsl:value-of select="@as"/>
-            </xsl:attribute>
-            </xsl:if>
-                </xsl:if>
-
-            <xsl:if test="@connectable">
-            <xsl:attribute name="connectable">
-            <xsl:value-of select="@connectable"/>
-            </xsl:attribute>
-            </xsl:if>
-            <xsl:if test="@edge">
-            <xsl:attribute name="edge">
-            <xsl:value-of select="@edge"/>
-            </xsl:attribute>
-            </xsl:if>
-            <xsl:if test="@id">
-            <xsl:attribute name="id">
-            <xsl:value-of select="@id"/>
-            </xsl:attribute>
-            </xsl:if>
-            <xsl:if test="@parent">
-            <xsl:attribute name="parent">
-            <xsl:value-of select="@parent"/>
-            </xsl:attribute>
-            </xsl:if>
-            <xsl:if test="@source">
-            <xsl:attribute name="source">
-            <xsl:value-of select="@source"/>
-            </xsl:attribute>
-            </xsl:if>
-            <xsl:if test="@style">
-            <xsl:attribute name="style">
-            <xsl:value-of select="@style"/>
-            </xsl:attribute>
-            </xsl:if>
-            <xsl:if test="@value">
-            <xsl:attribute name="value">
-            <xsl:value-of select="@value"/>
-            </xsl:attribute>
-            </xsl:if>
-            <xsl:if test="@vertex">
-            <xsl:attribute name="vertex">
-            <xsl:value-of select="@vertex"/>
-            </xsl:attribute>
-            </xsl:if>
-            <xsl:apply-templates/>
-            </xsl:element>
-    </xsl:template> -->
     <xsl:template name="mxPoint" match="mxPoint">
         <xsl:element name="mxPoint">
             <xsl:if test="@as">
@@ -1599,7 +1528,7 @@ Look for TAG:Break1!!!
     </xsl:template>
     <xsl:template name="ScilabDouble" match="ScilabDouble">
         <xsl:element name="ScilabDouble">
-            <xsl:if test="name(..)='BasicBlock' or name(..)='AfficheBlock' or name(..)='BigSom' or name(..)='RoundBlock' or name(..)='GroundBlock'  or name(..)='EventInBlock'  or name(..)='EventOutBlock'  or name(..)='ImplicitInBlock'  or name(..)='Product'  or name(..)='ImplicitOutBlock' or name(..)='SuperBlock' or name(..)='ExplicitInBlock' or name(..)='ExplicitOutBlock' or name(..)='Summation' or name(..)='TextBlock' or name(..)='VoltageSensorBlock' or name(..)='SuperBlock'">
+            <xsl:if test="name(..)='BasicBlock' or name(..)='AfficheBlock' or name(..)='BigSom' or name(..)='RoundBlock' or name(..)='GroundBlock' or name(..)='EventInBlock' or name(..)='EventOutBlock' or name(..)='ImplicitInBlock' or name(..)='Product' or name(..)='ImplicitOutBlock' or name(..)='SuperBlock' or name(..)='ExplicitInBlock' or name(..)='ExplicitOutBlock' or name(..)='Summation' or name(..)='TextBlock' or name(..)='VoltageSensorBlock' or name(..)='SuperBlock'">
                 <xsl:if test="@as">
                     <xsl:attribute name="as">
                         <xsl:value-of select="@as" />
@@ -1631,7 +1560,7 @@ Look for TAG:Break1!!!
     </xsl:template>
     <xsl:template name="ScilabString" match="ScilabString">
         <xsl:element name="ScilabString">
-            <xsl:if test="name(..)='BasicBlock' or name(..)='AfficheBlock' or name(..)='BigSom' or name(..)='RoundBlock' or name(..)='GroundBlock'  or name(..)='EventInBlock'  or name(..)='EventOutBlock'   or name(..)='ImplicitInBlock'  or name(..)='Product'  or name(..)='ImplicitOutBlock' or name(..)='SuperBlock' or name(..)='ExplicitInBlock' or name(..)='ExplicitOutBlock' or name(..)='Summation' or name(..)='TextBlock' or name(..)='VoltageSensorBlock' or name(..)='SuperBlock'">
+            <xsl:if test="name(..)='BasicBlock' or name(..)='AfficheBlock' or name(..)='BigSom' or name(..)='RoundBlock' or name(..)='GroundBlock' or name(..)='EventInBlock' or name(..)='EventOutBlock' or name(..)='ImplicitInBlock' or name(..)='Product' or name(..)='ImplicitOutBlock' or name(..)='SuperBlock' or name(..)='ExplicitInBlock' or name(..)='ExplicitOutBlock' or name(..)='Summation' or name(..)='TextBlock' or name(..)='VoltageSensorBlock' or name(..)='SuperBlock'">
                 <xsl:if test="@as">
                     <xsl:attribute name="as">
                         <xsl:value-of select="@as" />
@@ -1680,11 +1609,6 @@ Look for TAG:Break1!!!
                     <xsl:value-of select="@connectedLinkId" />
                 </xsl:attribute>
             </xsl:if>
-            <!-- <xsl:if test="@dataType">
-                <xsl:attribute name="dataType">
-                    <xsl:value-of select="@dataType" />
-                </xsl:attribute>
-            </xsl:if> -->
             <xsl:attribute name="dataType">UNKNOW_TYPE</xsl:attribute>
             <xsl:if test="@id">
                 <xsl:attribute name="id">
@@ -1706,15 +1630,9 @@ Look for TAG:Break1!!!
                     <xsl:value-of select="@style" />
                 </xsl:attribute>
             </xsl:if>
-            <!-- <xsl:if test="@value">
-                <xsl:attribute name="value">
-                    <xsl:value-of select="@value" />
-                </xsl:attribute>
-            </xsl:if> -->
-            
-            <xsl:if test="@visbile">
-                <xsl:attribute name="visbile">
-                    <xsl:value-of select="@visbile" />
+            <xsl:if test="@visible">
+                <xsl:attribute name="visible">
+                    <xsl:value-of select="@visible" />
                 </xsl:attribute>
             </xsl:if>
             <xsl:apply-templates />
@@ -1814,11 +1732,6 @@ Look for TAG:Break1!!!
                     <xsl:value-of select="@style" />
                 </xsl:attribute>
             </xsl:if>
-            <!-- <xsl:if test="@value">
-                <xsl:attribute name="value">
-                    <xsl:value-of select="@value" />
-                </xsl:attribute>
-            </xsl:if> -->
             <xsl:if test="@visible">
                 <xsl:attribute name="visible">
                     <xsl:value-of select="@visible" />
@@ -1886,11 +1799,6 @@ Look for TAG:Break1!!!
                     <xsl:value-of select="@style" />
                 </xsl:attribute>
             </xsl:if>
-           <!--  <xsl:if test="@value">
-                <xsl:attribute name="value">
-                    <xsl:value-of select="@value" />
-                </xsl:attribute>
-            </xsl:if> -->
             <xsl:if test="@visible">
                 <xsl:attribute name="visible">
                     <xsl:value-of select="@visible" />
@@ -1958,11 +1866,6 @@ Look for TAG:Break1!!!
                     <xsl:value-of select="@style" />
                 </xsl:attribute>
             </xsl:if>
-           <!--  <xsl:if test="@value">
-                <xsl:attribute name="value">
-                    <xsl:value-of select="@value" />
-                </xsl:attribute>
-            </xsl:if> -->
             <xsl:if test="@visible">
                 <xsl:attribute name="visible">
                     <xsl:value-of select="@visible" />
@@ -2030,11 +1933,6 @@ Look for TAG:Break1!!!
                     <xsl:value-of select="@style" />
                 </xsl:attribute>
             </xsl:if>
-            <!-- <xsl:if test="@value">
-                <xsl:attribute name="value">
-                    <xsl:value-of select="@value" />
-                </xsl:attribute>
-            </xsl:if> -->
             <xsl:if test="@visible">
                 <xsl:attribute name="visible">
                     <xsl:value-of select="@visible" />
@@ -2149,11 +2047,6 @@ Look for TAG:Break1!!!
                     <xsl:value-of select="@connectedLinkId" />
                 </xsl:attribute>
             </xsl:if>
-            <!-- <xsl:if test="@dataType">
-                <xsl:attribute name="dataType">
-                    <xsl:value-of select="@dataType" />
-                </xsl:attribute>
-            </xsl:if> -->
             <xsl:attribute name="dataType">UNKNOW_TYPE</xsl:attribute>
             <xsl:if test="@id">
                 <xsl:attribute name="id">
