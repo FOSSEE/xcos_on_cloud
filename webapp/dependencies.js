@@ -1421,7 +1421,10 @@ function MatrixInverse() {
 function inverse() {
     var str = "[["
     var arg = arguments[0];
-    if (arg != "[]") {
+    if (typeof arg == 'number') {
+        str += arg + "]]";
+    } else if (arg != "[]") {
+        arg = arg.replace(/int8\(([^)]*)\)/, "$1");
         arg = arg.replace(/[\[\]; ]+/g, " ").trim();
         arg = arg.replace(/ /g, "],[");
         str += arg + "]]";

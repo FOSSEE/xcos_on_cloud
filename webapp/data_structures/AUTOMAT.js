@@ -80,6 +80,7 @@ function AUTOMAT() {
         var Y0=math.matrix(this.X0);
         var rpar=Y0.resize([this.NX,1]);// put X0 in a column vector;
         var INP=ones(this.NMode,1);
+        var OUT;
         if(this.NX>0)
             OUT=[[2],[2*this.NX]];
         else

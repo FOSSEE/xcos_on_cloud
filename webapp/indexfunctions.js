@@ -52,7 +52,7 @@ function loadXMLDoc(filename) {
 }
 
 function getXsltProcessor() {
-    var xsl = loadXMLDoc("finalmodsheet.xsl");
+    var xsl = loadXMLDoc(finalmodsheet);
     var xsltProcessor = new XSLTProcessor();
     xsltProcessor.importStylesheet(xsl);
     return xsltProcessor;
@@ -1592,9 +1592,6 @@ function main(container, outline, toolbar, sidebar, status) {
                             var affich_details = importBlock(currentNode, cell, details_instance);
                         }
 
-                        // findAndCreatePorts(graph,v1,doc,curId,codec);
-                        // createPorts(graph, v1, inputPorts, controlPorts, outputPorts, commandPorts, null, null, details_instance.x.model);
-
                         v1.setConnectable(false);
                     }
 
@@ -2775,11 +2772,127 @@ function showSetContext(graph, diagRoot) {
     var wind = showModalWindow(graph, 'Set Context', content, 450, 350);
 }
 
+function modifyPorts(graph, cell, ports, portPosition, a1, a2) {
+    var diff = a2.length - a1.length;
+    var mx = diff >= 0 ? a1.length : a2.length;
+
+    if (diff > 0) {
+        for (var i = a1.length; i < a2.length; i++) {
+            var x, y, portType;
+            switch (portPosition) {
+                case 'left':   x = 0; y = parseFloat(((i + 0.5) / a2.length).toFixed(4)); break;
+                case 'top':    x = parseFloat(((i + 0.5) / a2.length).toFixed(4)); y = 0; break;
+                case 'right':  x = 1; y = parseFloat(((i + 0.5) / a2.length).toFixed(4)); break;
+                case 'bottom': x = parseFloat(((i + 0.5) / a2.length).toFixed(4)); y = 1; break;
+            }
+            switch (a2[i]) {
+                case 'I':
+                    switch (portPosition) {
+                        case 'left': case 'top':     portType = 'ImplicitInputPort';  break;
+                        case 'right': case 'bottom': portType = 'ImplicitOutputPort'; break;
+                    }
+                    break;
+                case 'E':
+                    switch (portPosition) {
+                        case 'left': case 'top':     portType = 'ExplicitInputPort';  break;
+                        case 'right': case 'bottom': portType = 'ExplicitOutputPort'; break;
+                    }
+                    break;
+                case 'COMMAND':
+                    portType = 'CommandPort';
+                    break;
+                case 'CONTROL':
+                    portType = 'ControlPort';
+                    break;
+            }
+            port = graph.insertVertex(cell, null, portType, x, y, 8, 8, portType, true);
+            switch (portPosition) {
+                case 'left':   port.geometry.offset = new mxPoint(-8, -4); break;
+                case 'top':    port.geometry.offset = new mxPoint(-4, -8); break;
+                case 'right':  port.geometry.offset = new mxPoint(0, -4);  break;
+                case 'bottom': port.geometry.offset = new mxPoint(-4, 0);  break;
+            }
+            ports.push(port);
+        }
+    } else if (diff < 0) {
+        for (var i = a1.length - 1; i >= a2.length; i--) {
+            var port = ports.pop();
+            graph.removeCells([port]);
+        }
+    }
+
+    for (i = 0; i < mx; i++) {
+        var port = ports[i];
+        if (a2[i] != a1[i]) {
+            console.log('change port', i, a1[i], a2[i], port);
+        }
+        if (diff != 0) {
+            var x = 0;
+            var y = 0;
+            switch (portPosition) {
+                case 'left':   x = 0; y = parseFloat(((i + 0.5) / a2.length).toFixed(4)); break;
+                case 'top':    x = parseFloat(((i + 0.5) / a2.length).toFixed(4)); y = 0; break;
+                case 'right':  x = 1; y = parseFloat(((i + 0.5) / a2.length).toFixed(4)); break;
+                case 'bottom': x = parseFloat(((i + 0.5) / a2.length).toFixed(4)); y = 1; break;
+            }
+            port.geometry.x = x;
+            port.geometry.y = y;
+            switch (portPosition) {
+                case 'left':   port.geometry.offset = new mxPoint(-8, -4); break;
+                case 'top':    port.geometry.offset = new mxPoint(-4, -8); break;
+                case 'right':  port.geometry.offset = new mxPoint(0, -4);  break;
+                case 'bottom': port.geometry.offset = new mxPoint(-4, 0);  break;
+            }
+        }
+    }
+}
+
+function getPorts(details_instance) {
+    var model = details_instance.x.model;
+    var graphics = details_instance.x.graphics;
+
+    var inputPorts = [];
+    var outputPorts = [];
+    var controlPorts = [];
+    var commandPorts = [];
+    if (model.in.height != null) {
+        var arr = getData(graphics.in_implicit);
+        if (arr.length != 0) {
+            inputPorts = arr;
+        } else {
+            for (i = 0; i < model.in.height; i++) {
+                inputPorts.push("E");
+            }
+        }
+    }
+    if (model.out.height != null) {
+        var arr = getData(graphics.out_implicit);
+        if (arr.length != 0) {
+            outputPorts = arr;
+        } else {
+            for (i = 0; i < model.out.height; i++) {
+                outputPorts.push("E");
+            }
+        }
+    }
+    if (model.evtin.height != null) {
+        for (i = 0; i < model.evtin.height; i++) {
+            controlPorts.push("CONTROL");
+        }
+    }
+    if (model.evtout.height != null) {
+        for (i = 0; i < model.evtout.height; i++) {
+            commandPorts.push("COMMAND");
+        }
+    }
+    var rv = { inputPorts, outputPorts, controlPorts, commandPorts };
+    return rv;
+}
+
 function showPropertiesWindow(graph, cell, diagRoot) {
     var name = cell.getAttribute('blockElementName');
     if (name!="LOOKUP_f" && name!="CURV_f" && name != "scifunc_block_m") {
         var defaultProperties = cell.blockInstance.instance.get();
-        // window[name]("get");
         /*
          * {
          *   nbr_curves: ["Number of curves", 1],
@@ -2795,8 +2908,6 @@ function showPropertiesWindow(graph, cell, diagRoot) {
          *   N: ["Buffer size", 2]
          * };
          */
-
-        // var defaultProperties=window["CONST_m"]("get");
 
         // Create basic structure for the form
         var content = document.createElement('div');
@@ -2817,18 +2928,16 @@ function showPropertiesWindow(graph, cell, diagRoot) {
         var linebreak = document.createElement('br');
         myform.appendChild(linebreak);
 
-        for (var key in defaultProperties) {
-            if (defaultProperties.hasOwnProperty(key)) {
+        for (var [key, value] of Object.entries(defaultProperties)) {
                 // Input Title
-                var fieldName = defaultProperties[key];
                 var namelabel = document.createElement('label');
-                namelabel.innerHTML = defaultProperties[key][0];
+                namelabel.innerHTML = value[0];
                 myform.appendChild(namelabel);
 
                 // Input
                 var input = document.createElement("input");
                 input.name = key;
-                input.value = defaultProperties[key][1];
+                input.value = value[1];
                 input.setAttribute("id", key.toString());
                 input.setAttribute("class", "fieldInput");
                 myform.appendChild(input);
@@ -2840,7 +2949,6 @@ function showPropertiesWindow(graph, cell, diagRoot) {
                 // Line break
                 var linebreak = document.createElement('br');
                 myform.appendChild(linebreak);
-            }
         }
 
         // Line break
@@ -2856,55 +2964,13 @@ function showPropertiesWindow(graph, cell, diagRoot) {
 
         // Executes when button 'btn' is clicked
         btn.onclick = function() {
-            /*
-             * Loading XML of last graph configuration so that all the links
-             * nodes of the previous xml can be copied to the new XML
-             */
-
-            var encPrevXml = new mxCodec(mxUtils.createXmlDocument());
-            var nodePrevXml = encPrevXml.encode(diagRoot);
-            var strPrevXml = mxUtils.getPrettyXml(nodePrevXml);
-            strPrevXml = mxUtils.parseXml(strPrevXml);
-            var resultDocumentPrevXml = getXsltProcessor().transformToDocument(strPrevXml);
-            /*
-             * Maverick
-             * Using resultDocument.documentElement to remove an additional tag
-             * "<#document>" created by the XSLTProcessor.
-             */
-            strPrevXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n" + mxUtils.getPrettyXml(resultDocumentPrevXml.documentElement);
-            strPrevXml = strPrevXml.replace(/\n\n/g, "\n");
-            strPrevXml = strPrevXml.replace(/\n*/, '');
-            strPrevXml = strPrevXml.replace(/>\s*</g, '><');
-            strPrevXml = strPrevXml.replace(/<!--[\s\S]*?-->/g, '');
-            var docPrevXml = mxUtils.parseXml(strPrevXml);
-            var codecPrevXml = new mxCodec(docPrevXml);
-            var rootNode = docPrevXml.documentElement;
-            while (rootNode.nodeName != 'root') {
-                if (rootNode.nodeName == 'Array') {
-                    rootNode = rootNode.nextSibling;
-                } else if (rootNode.nodeName == '#comment') {
-                    rootNode = rootNode.nextSibling;
-                } else {
-                    rootNode = rootNode.firstChild;
-                }
-            }
-            var currentNode = rootNode.firstChild;
-
             // Updating model
-            var parent = graph.getDefaultParent();
             var model = graph.getModel();
-            var v1 = null;
-            var doc = mxUtils.createXmlDocument();
             model.beginUpdate();
             try {
-                var propertiesObject = {
-                    id: cell.id
-                };
-
-                for (var key in defaultProperties) {
-                    if (defaultProperties.hasOwnProperty(key)) {
+                var propertiesObject = { };
+                for (var [key, value] of Object.entries(defaultProperties)) {
                         propertiesObject[key] = document.getElementById(key.toString()).value;
-                    }
                 }
                 if(name == 'Sigbuilder'){
                     var key = "graf";
@@ -2913,233 +2979,18 @@ function showPropertiesWindow(graph, cell, diagRoot) {
                         cell_sigbuilder = cell;
                     }
                 }
-                var geometry = cell.getGeometry();
-                var x=geometry.x;
-                var y=geometry.y;
 
-                var details = cell.blockInstance.instance.set(propertiesObject);
-                // window[name]("set",cell.value,propertiesObject);
-                editor.execute('deleteBlock',(editor, cell));
-                var enc = new mxCodec(mxUtils.createXmlDocument());
-                var node = enc.encode(details);
-                var temp = enc.encode(parent);
-
-                // Get the stylesheet for the graph
-                var stylesheet = graph.getStylesheet();
-                // From the stylesheet, get the style of the particular block
-                var style = stylesheet.styles[name];
-                // To get dimension(height,width) of a block
-                var dimensionForBlock = cell.blockInstance.instance.getDimensionForDisplay();
-                var height = dimensionForBlock["height"]; // return height of block
-                var width = dimensionForBlock["width"]; // return width of block
-                if (geometry.height != null)
-                    height = geometry.height;
-                if (geometry.width != null)
-                    width = geometry.width;
-
-                /*
-                 * When a particular block is loaded for the first time, the
-                 * image in the style of the block will be a path to the image.
-                 * Set the label in the style property of the block has a html
-                 * image, and set the image in the style property as null
-                 *
-                 * NOTE: Since the image of any block need not be changed for
-                 * for every movement of that block, the image must be set only
-                 * once.
-                 */
-
-                if (style != null && style['image'] != null) {
-                    // Make label as a image html element
-                    var label = '<img src="' + style['image'] + '" height="' + (height*0.9) + '" width="' + (width*0.9) + '">';
-                    // Set label
-                    style['label'] = label;
-
-                    style['imagePath'] = style['image'];
-
-                    // Set image as null
-                    style['image'] = null;
-
-                    // Add the label as a part of node
-                    node.setAttribute('label', label);
-                }
-
-                /*
-                 * If a particular block with image tag in its style property
-                 * has been invoked already, the image tag would be null for
-                 * any successive instances of the same block. Hence, set the
-                 * label from the label tag in style which was set when that
-                 * blockModel was invoked on the first time.
-                 */
-
-                if (style != null && style['label'] != null) {
-                    // Set label from the label field in the style property
-                    node.setAttribute('label', style['label']);
-                }
-
-                node.setAttribute('parent', temp.getAttribute('id'));
-                var i, arr = [];
-                var details_instance=cell.blockInstance.instance;
-                var blockModel = details_instance.x.model;
-                var graphics = details_instance.x.graphics;
-
-                /* To determine number and type of Port */
-                var inputPorts = [];
-                var outputPorts = [];
-                var controlPorts = [];
-                var commandPorts = [];
-                if (blockModel.in.height != null) {
-                    arr = getData(graphics.in_implicit);
-                    if (arr.length != 0) {
-                        inputPorts = arr;
-                    } else {
-                        for (i = 0; i < blockModel.in.height; i++) {
-                            inputPorts.push("E");
-                        }
-                    }
-                }
-                if (blockModel.out.height != null) {
-                    arr = getData(graphics.out_implicit);
-                    if (arr.length != 0) {
-                        outputPorts = arr;
-                    } else {
-                        for (i = 0; i < blockModel.out.height; i++) {
-                            outputPorts.push("E");
-                        }
-                    }
-                }
-                if (blockModel.evtin.height != null) {
-                    for (i = 0; i < blockModel.evtin.height; i++) {
-                        controlPorts.push("CONTROL");
-                    }
-                }
-                if (blockModel.evtout.height != null) {
-                    for (i = 0; i < blockModel.evtout.height; i++) {
-                        commandPorts.push("COMMAND");
-                    }
-                }
-                v1 = graph.insertVertex(parent, null, node, x, y, width, height, name);
-
-                // @Chhavi: Additional attribute to store the block's instance
-                v1.blockInstance = createInstanceTag(details_instance);
-                v1.currentAngle = 0;
-                v1.flipX = 1;
-                v1.flipY = 1;
-                createPorts(graph, v1, inputPorts, controlPorts, outputPorts, commandPorts, null, null, details_instance.x.model);
-                v1.setConnectable(false);
+                var oldPorts = getPorts(cell.blockInstance.instance);
+                cell.blockInstance.instance.set(propertiesObject);
+                var newPorts = getPorts(cell.blockInstance.instance);
+                modifyPorts(graph, cell, cell.ports.left, 'left', oldPorts.inputPorts, newPorts.inputPorts);
+                modifyPorts(graph, cell, cell.ports.top, 'top', oldPorts.controlPorts, newPorts.controlPorts);
+                modifyPorts(graph, cell, cell.ports.right, 'right', oldPorts.outputPorts, newPorts.outputPorts);
+                modifyPorts(graph, cell, cell.ports.bottom, 'bottom', oldPorts.commandPorts, newPorts.commandPorts);
             } finally {
                 model.endUpdate();
             }
 
-            /*
-             * The code below is responsible for moving the new (non-links)
-             * node created after the set function is called back to their
-             * previous positions as in their previous XML. This is done to
-             * retain the id's so that the Link node of previous XML can be
-             * used to create connecting wires for the new XML also.
-             */
-
-            var referenceModelCount = referenceModelProps.length;
-            var missingKeys = [];
-            var lastId = Math.max(...Object.keys(model.cells));
-
-            for (var i=0;i< referenceModelCount ; i++) {
-                var present = false;
-                for (var key in model.cells) {
-                    if (model.cells.hasOwnProperty(key)) {
-                        if (referenceModelProps[i].id == key) {
-                            present = true;
-                            break;
-                        }
-                    }
-                }
-                if (present == false)
-                    missingKeys.push(referenceModelProps[i].id);
-            }
-
-            var newIDs= [];
-            for (var i=modelNextId;i<=lastId;i++)
-                newIDs.push(i);
-            var j = 0;
-
-            for (var i = 0; i < missingKeys.length; i++) {
-                // To find the style(name) of the block with the id equal to
-                // missingKeys[i]
-                var referenceModelStyle = referenceModelProps.find( function (obj) {
-                    return obj.id == missingKeys[i];
-                }).style;
-
-                var curCell = model.cells[newIDs[j]];
-                var curStyle = curCell != null ? curCell.style : null;
-                if (curStyle != null && curStyle.endsWith('Port')) {
-                    if (referenceModelStyle == curStyle) {
-                        model.cells[missingKeys[i]] = model.cells[newIDs[j]];
-                        model.cells[missingKeys[i]].id = String(missingKeys[i]);
-                        delete model.cells[newIDs[j++]];
-                    } else {
-                        var tempId = j;
-                        while (newIDs[++j] <= lastId) {
-                            if (referenceModelStyle == curStyle) {
-                                model.cells[missingKeys[i]] = model.cells[newIDs[j]];
-                                model.cells[missingKeys[i]].id = String(missingKeys[i]);
-                                delete model.cells[newIDs[j]];
-                                newIDs.splice(j,1);
-                                j = tempId;
-                                curCell = model.cells[newIDs[j]];
-                                curStyle = curCell != null ? curCell.style : null;
-                                break;
-                            }
-                        }
-                    }
-                } else if (curStyle) {
-                    model.cells[missingKeys[i]] = model.cells[newIDs[j]];
-                    model.cells[missingKeys[i]].id = String(missingKeys[i]);
-                    delete model.cells[newIDs[j++]];
-                }
-            }
-            referenceModelProps = [];
-            newIDs = [];
-
-            model.beginUpdate();
-            try {
-                // Connecting the blocks by inserting link nodes
-                while (currentNode!=null) {
-                    var curNodeName = currentNode.nodeName;
-                    if (curNodeName.endsWith('Link')) {
-                        var pointsArray = [];
-                        var newSourceCell = graph.getModel().getCell(currentNode.getAttribute('source'));
-                        var newTargetCell = graph.getModel().getCell(currentNode.getAttribute('target'));
-
-                        if (newSourceCell != null && newSourceCell.getEdgeCount() <= 0 &&
-                            newTargetCell != null && newTargetCell.getEdgeCount() <= 0) {
-                            var childNode = currentNode.firstChild;
-                            if (childNode != null) {
-                                if (childNode.nodeName == 'mxGeometry') {
-                                    var tempNode = childNode.firstChild;
-                                    if (tempNode != null) {
-                                        if (tempNode.nodeName == 'mxPoint') {
-                                            pointsArray.push(new mxPoint(tempNode.getAttribute('x'), tempNode.getAttribute('y')));
-                                        } else {
-                                            if (tempNode.nodeName == 'Array') {
-                                                var mxPointNode = tempNode.firstChild;
-                                                while (mxPointNode != null) {
-                                                    pointsArray.push(new mxPoint(mxPointNode.getAttribute('x'), mxPointNode.getAttribute('y')));
-                                                    mxPointNode = mxPointNode.nextSibling;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
-                            createEdgeObject(graph, newSourceCell, newTargetCell, null);
-                        }
-                    }
-                    currentNode=currentNode.nextSibling;
-                }
-            } finally {
-                model.endUpdate();
-            }
-            graph.setSelectionCell(v1);
             graph.refresh();
             wind.destroy();
         };
@@ -3153,11 +3004,9 @@ function showPropertiesWindow(graph, cell, diagRoot) {
         btn.id = "resetButtonProperties";
         btn.onclick = function() {
             // Reset
-            for (var key in defaultProperties) {
-                if (defaultProperties.hasOwnProperty(key)) {
+            for (var [key, value] of Object.entries(defaultProperties)) {
                     var element = document.getElementById(key.toString());
-                    element.value = defaultProperties[key][1];
-                }
+                    element.value = value[1];
             }
         };
 
@@ -3179,21 +3028,6 @@ function showPropertiesWindow(graph, cell, diagRoot) {
             showGraphWindow(graph,cell,diagRoot);
         }
     }
-
-    /*
-     * alert("lookup_f block ");
-     * // Create basic structure for the form
-     * var content = document.createElement('div');
-     * content.setAttribute("id", "lookup_f_Properties");
-
-     * // Heading of content
-     * var heading = document.createElement('div');
-     * heading.innerHTML = "<ul id='menu'><li><a href='#'>Main Tab</a><ul><li><a href='#'>This is link A</a></li><li><a href='#'>This is link B</a></li></ul></li></ul>";
-     * // heading.id = "headingProperties"
-     * height=300;
-     * content.appendChild(heading);
-     * var wind = showModalWindow(graph, 'edit_curv', content, 450, height);
-     */
 }
 
 /*
@@ -4025,14 +3859,21 @@ function getPortDataType(typ) {
  * between the newly assigned Ids and imported Ids.
  */
 function createPorts(graph, block, left, top, right, bottom, parentObj, nodeDataObject, instanceModel) {
+    ('ports' in block) || (block.ports = {});
     createInputPorts(graph, block, left, top, parentObj, nodeDataObject, instanceModel);
     createOutputPorts(graph, block, right, bottom, parentObj, nodeDataObject, instanceModel);
 }
 
 function createPortsWithGeometry(graph, block, dataArray, nodeDataObject) {
+    ('ports' in block) || (block.ports = {});
+    block.ports.left = new Array();
+    block.ports.top = new Array();
+    block.ports.right = new Array();
+    block.ports.bottom = new Array();
     for (var i in dataArray) {
         var dataPort = dataArray[i];
         var geometryCell = dataPort.geometryCell;
+        var nodename = dataPort.nodename;
         var cellx, celly, width, height;
         if (geometryCell != null) {
             var offset = geometryCell.offset;
@@ -4059,7 +3900,7 @@ function createPortsWithGeometry(graph, block, dataArray, nodeDataObject) {
             width = 8;
             height = 8;
         }
-        var port = graph.insertVertex(block, null, dataPort.nodename, cellx, celly, width, height, dataPort.style, true);
+        var port = graph.insertVertex(block, null, nodename, cellx, celly, width, height, dataPort.style, true);
         port.ordering = dataPort.ordering;
         port.dataLines = dataPort.dataLines;
         port.dataColumns = dataPort.dataColumns;
@@ -4076,65 +3917,85 @@ function createPortsWithGeometry(graph, block, dataArray, nodeDataObject) {
             obj.oldId = dataPort.id;
             nodeDataObject[dataPort.id] = obj;
         }
+
+        switch (nodename) {
+            case 'ImplicitInputPort': case 'ExplicitInputPort':
+                block.ports.left.push(port);
+                break;
+            case 'ControlPort':
+                block.ports.top.push(port);
+                break;
+            case 'ImplicitOutputPort': case 'ExplicitOutputPort':
+                block.ports.right.push(port);
+                break;
+            case 'CommandPort':
+                block.ports.bottom.push(port);
+                break;
+        }
     }
 }
 
 function createInputPorts(graph, block, leftArray, topArray, parentObj, nodeDataObject, instanceModel) {
-    var topNumber = topArray.length;
     var leftNumber = leftArray.length;
-
-    if (leftNumber != 0) {
-        for (var i = 1; i <= leftNumber; i++) {
-            var x = 0;
-            var y = (i / (leftNumber + 1)).toFixed(4);
-            var portType = leftArray[i - 1];
-            if (parentObj != null) {
-                createInputPort(graph, block, x, y, portType, 'left', i, nodeDataObject, parentObj.inputIds, instanceModel);
-            } else {
-                createInputPort(graph, block, x, y, portType, 'left', i, null, null, instanceModel);
-            }
+    block.ports.left = new Array();
+    for (var i = 1; i <= leftNumber; i++) {
+        var x = 0;
+        var y = parseFloat(((i - 0.5) / leftNumber).toFixed(4));
+        var portType = leftArray[i - 1];
+        var leftPort;
+        if (parentObj != null) {
+            leftPort = createInputPort(graph, block, x, y, portType, 'left', i, nodeDataObject, parentObj.inputIds, instanceModel);
+        } else {
+            leftPort = createInputPort(graph, block, x, y, portType, 'left', i, null, null, instanceModel);
         }
+        block.ports.left[i - 1] = leftPort;
     }
-    if (topNumber != 0) {
-        for (var i = 1; i <= topNumber; i++) {
-            var x = (i / (topNumber + 1)).toFixed(4);
-            var y = 0;
-            var portType = topArray[i - 1];
-            if (parentObj != null) {
-                createInputPort(graph, block, x, y, portType, 'top', i, nodeDataObject, parentObj.controlIds, instanceModel);
-            } else {
-                createInputPort(graph, block, x, y, portType, 'top', i, null, null, instanceModel);
-            }
+
+    var topNumber = topArray.length;
+    block.ports.top = new Array();
+    for (var i = 1; i <= topNumber; i++) {
+        var x = parseFloat(((i - 0.5) / topNumber).toFixed(4));
+        var y = 0;
+        var portType = topArray[i - 1];
+        var topPort;
+        if (parentObj != null) {
+            topPort = createInputPort(graph, block, x, y, portType, 'top', i, nodeDataObject, parentObj.controlIds, instanceModel);
+        } else {
+            topPort = createInputPort(graph, block, x, y, portType, 'top', i, null, null, instanceModel);
         }
+        block.ports.top[i - 1] = topPort;
     }
 }
 
 function createOutputPorts(graph, block, rightArray, bottomArray, parentObj, nodeDataObject, instanceModel) {
-    var bottomNumber = bottomArray.length;
     var rightNumber = rightArray.length;
-    if (rightNumber != 0) {
-        for (var i = 1; i <= rightNumber; i++) {
-            var x = 1;
-            var y = (i / (rightNumber + 1)).toFixed(4);
-            var portType = rightArray[i - 1];
-            if (parentObj != null) {
-                createOutputPort(graph, block, x, y, portType, 'right', i, nodeDataObject, parentObj.outputIds, instanceModel);
-            } else {
-                createOutputPort(graph, block, x, y, portType, 'right', i, null, null, instanceModel);
-            }
+    block.ports.right = new Array();
+    for (var i = 1; i <= rightNumber; i++) {
+        var x = 1;
+        var y = parseFloat(((i - 0.5) / rightNumber).toFixed(4));
+        var portType = rightArray[i - 1];
+        var rightPort;
+        if (parentObj != null) {
+            rightPort = createOutputPort(graph, block, x, y, portType, 'right', i, nodeDataObject, parentObj.outputIds, instanceModel);
+        } else {
+            rightPort = createOutputPort(graph, block, x, y, portType, 'right', i, null, null, instanceModel);
         }
+        block.ports.right[i - 1] = rightPort;
     }
-    if (bottomNumber != 0) {
-        for (var i = 1; i <= bottomNumber; i++) {
-            var x = (i / (bottomNumber + 1)).toFixed(4);
-            var y = 1;
-            var portType = bottomArray[i - 1];
-            if (parentObj != null) {
-                createOutputPort(graph, block, x, y, portType, 'bottom', i, nodeDataObject, parentObj.commandIds, instanceModel);
-            } else {
-                createOutputPort(graph, block, x, y, portType, 'bottom', i, null, null, instanceModel);
-            }
+
+    var bottomNumber = bottomArray.length;
+    block.ports.bottom = new Array();
+    for (var i = 1; i <= bottomNumber; i++) {
+        var x = parseFloat(((i - 0.5) / bottomNumber).toFixed(4));
+        var y = 1;
+        var portType = bottomArray[i - 1];
+        var bottomPort;
+        if (parentObj != null) {
+            bottomPort = createOutputPort(graph, block, x, y, portType, 'bottom', i, nodeDataObject, parentObj.commandIds, instanceModel);
+        } else {
+            bottomPort = createOutputPort(graph, block, x, y, portType, 'bottom', i, null, null, instanceModel);
         }
+        block.ports.bottom[i - 1] = bottomPort;
     }
 }
 
@@ -4151,9 +4012,9 @@ function createInputPort(graph, block, x, y, portType, position, ordering, nodeD
     }
     if (port != null) {
         if (position == 'top') {
-            port.geometry.offset = new mxPoint(-6, -8);
+            port.geometry.offset = new mxPoint(-4, -8);
         } else if (position == 'left') {
-            port.geometry.offset = new mxPoint(-8, -6);
+            port.geometry.offset = new mxPoint(-8, -4);
         }
         port.ordering = ordering;
         if (instanceModel != null) {
@@ -4180,6 +4041,7 @@ function createInputPort(graph, block, x, y, portType, position, ordering, nodeD
             port.setConnectable(false);
         }
     }
+    return port;
 }
 
 function createOutputPort(graph, block, x, y, portType, position, ordering, nodeDataObject, idArray, instanceModel) {
@@ -4196,10 +4058,10 @@ function createOutputPort(graph, block, x, y, portType, position, ordering, node
     }
     if (port != null) {
         if (position == 'bottom') {
-            port.geometry.offset = new mxPoint(-6, 0);
+            port.geometry.offset = new mxPoint(-4, 0);
         }
         if (position == 'right') {
-            port.geometry.offset = new mxPoint(0, -6);
+            port.geometry.offset = new mxPoint(0, -4);
         }
         port.ordering = ordering;
         if (instanceModel != null) {
@@ -4226,6 +4088,7 @@ function createOutputPort(graph, block, x, y, portType, position, ordering, node
             port.setConnectable(false);
         }
     }
+    return port;
 }
 
 function configureStylesheet(graph) {

@@ -53,14 +53,15 @@ VERSIONED_FILES = [
     "custom.js",
     "dependencies.js",
     "details.js",
+    "finalmodsheet.xsl",
     "importparameters.js",
     "indexfunctions.js",
     "LOOKUP_CURV.js",
-    "Sigbuilder-graph.js",
     "only_scifunc_code.js",
     "orientation.js",
     "prerequisitefile.js",
     "setup.js",
+    "Sigbuilder-graph.js",
 ]
 VERSIONED_CHECK_INTERVAL = 15
 
