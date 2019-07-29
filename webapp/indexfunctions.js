@@ -2845,7 +2845,7 @@ function getPorts(details_instance) {
 
 function showPropertiesWindow(graph, cell, diagRoot) {
     var name = cell.getAttribute('blockElementName');
-    if (name!="LOOKUP_f" && name!="CURV_f" && name != "scifunc_block_m") {
+    if (name!="LOOKUP_f" && name!="CURV_f" && name != "scifunc_block_m" && name != "SELF_SWITCH") {
         var defaultProperties = cell.blockInstance.instance.get();
         /*
          * {
@@ -2977,7 +2977,49 @@ function showPropertiesWindow(graph, cell, diagRoot) {
         // This function is specifically for sciFunc_block_m
         if (name=="scifunc_block_m") {
             create_scifunc_popups(graph,cell,name,diagRoot);
-        } else {
+        } else if(name == "SELF_SWITCH"){
+            var details_instance = new window[name]();
+            var defaultProperties = cell.blockInstance.instance.get();
+            // Updating model
+            var model = graph.getModel();
+            model.beginUpdate();
+            try{
+                var propertiesObject = {};
+                var key = defaultProperties.stateOpen[0];
+                var value = defaultProperties.stateOpen[1];
+                propertiesObject[key] = value;
+                cell.blockInstance.instance.set(propertiesObject);
+                var style_name = "";
+                if (value == false){
+                    style_name = "SELF_SWITCH_OFF";
+                }else{
+                    style_name = "SELF_SWITCH_ON";
+                }
+                var stylesheet = graph.getStylesheet();
+                var style = stylesheet.styles[style_name];
+                var dimensionForBlock = details_instance.getDimensionForDisplay();
+                height = dimensionForBlock["height"]; //returns height of block
+                width = dimensionForBlock["width"]; //returns width of block
+                if (style != null && style['image'] != null) {
+                    var label = '<img src="' + style['image'] + '" height="' + (height*0.9) + '" width="' + (width*0.9) + '">';
+
+                    style['label'] = label;
+
+                    style['imagePath'] = style['image'];
+
+                    style['image'] = null;
+
+                    cell.setAttribute('label', label);
+                }
+                if (style != null && style['label'] != null) {
+                    cell.setAttribute('label', style['label']);
+                }
+
+            } finally {
+                model.endUpdate();
+            }
+            graph.refresh();
+        }else {
             /* Function is present inside LOOKUP_CURV.js */
             showGraphWindow(graph,cell,diagRoot);
         }
