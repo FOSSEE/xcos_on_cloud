@@ -1522,8 +1522,12 @@ function main(container, outline, toolbar, sidebar, status) {
                         var fullStyleName = styleName;
                         if (styleName!=null) {
                             var idx = styleName.indexOf(';');
-                            if (idx != -1) {
-                                styleName = styleName.substring(0, idx);
+                            if(styleName.startsWith("SELF_SWITCH")){
+                                styleName = styleName.substring(idx + 1, styleName.length);
+                            }else{
+                                if (idx != -1) {
+                                    styleName = styleName.substring(0, idx);
+                                }
                             }
                         }
                         var style = stylesheet.styles[styleName];
@@ -2978,47 +2982,7 @@ function showPropertiesWindow(graph, cell, diagRoot) {
         if (name=="scifunc_block_m") {
             create_scifunc_popups(graph,cell,name,diagRoot);
         } else if(name == "SELF_SWITCH"){
-            var details_instance = new window[name]();
-            var defaultProperties = cell.blockInstance.instance.get();
-            // Updating model
-            var model = graph.getModel();
-            model.beginUpdate();
-            try{
-                var propertiesObject = {};
-                var key = defaultProperties.stateOpen[0];
-                var value = defaultProperties.stateOpen[1];
-                propertiesObject[key] = value;
-                cell.blockInstance.instance.set(propertiesObject);
-                var style_name = "";
-                if (value == false){
-                    style_name = "SELF_SWITCH_OFF";
-                }else{
-                    style_name = "SELF_SWITCH_ON";
-                }
-                var stylesheet = graph.getStylesheet();
-                var style = stylesheet.styles[style_name];
-                var dimensionForBlock = details_instance.getDimensionForDisplay();
-                height = dimensionForBlock["height"]; //returns height of block
-                width = dimensionForBlock["width"]; //returns width of block
-                if (style != null && style['image'] != null) {
-                    var label = '<img src="' + style['image'] + '" height="' + (height*0.9) + '" width="' + (width*0.9) + '">';
-
-                    style['label'] = label;
-
-                    style['imagePath'] = style['image'];
-
-                    style['image'] = null;
-
-                    cell.setAttribute('label', label);
-                }
-                if (style != null && style['label'] != null) {
-                    cell.setAttribute('label', style['label']);
-                }
-
-            } finally {
-                model.endUpdate();
-            }
-            graph.refresh();
+            set_Self_Switch_values(name, cell, graph);
         }else {
             /* Function is present inside LOOKUP_CURV.js */
             showGraphWindow(graph,cell,diagRoot);

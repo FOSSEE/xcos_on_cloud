@@ -2105,9 +2105,8 @@ SELECT_m.prototype.importset = function SELECT_m() {
     this.z0 = ary[2];
 }
 SELF_SWITCH.prototype.importset = function SELF_SWITCH() {
-    var graphics = this.x.graphics;
-    var ary = getData(graphics.style);
-    if(ary[0] == "SELF_SWITCH_OFF"){
+    var stateOpen = this.x.model.opar[0].data00.value;
+    if(stateOpen == "true"){
         this.stateOpen = true;
     }else{
         this.stateOpen = false;

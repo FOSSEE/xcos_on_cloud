@@ -2230,3 +2230,55 @@ function getcharttype(mtd){
     return chartType;
 }
 
+// for self_switch for UI change and parameter
+function set_Self_Switch_values(name, cell, graph){
+    var details_instance = new window[name]();
+    var defaultProperties = cell.blockInstance.instance.get();
+    // Updating model
+    var model = graph.getModel();
+    model.beginUpdate();
+    try{
+        var propertiesObject = {};
+        var key = defaultProperties.stateOpen[0];
+        var value = defaultProperties.stateOpen[1];
+        var style_name = "";
+        if (value == false){
+            style_name = "SELF_SWITCH_OFF";
+        }else{
+            style_name = "SELF_SWITCH_ON";
+        }
+        var stylesheet = graph.getStylesheet();
+        var style = stylesheet.styles[style_name];
+        var dimensionForBlock = details_instance.getDimensionForDisplay();
+        height = dimensionForBlock["height"]; //returns height of block
+        width = dimensionForBlock["width"]; //returns width of block
+        if (style != null && style['image'] != null) {
+            var label = '<img src="' + style['image'] + '" height="' + (height*0.9) + '" width="' + (width*0.9) + '">';
+
+            style['label'] = label;
+
+            style['imagePath'] = style['image'];
+
+            style['image'] = null;
+
+            cell.setAttribute('label', label);
+        }
+        if (style != null && style['label'] != null) {
+            cell.setAttribute('label', style['label']);
+        }
+        propertiesObject[key] = value;
+        var oldPorts = getPorts(cell.blockInstance.instance);
+        cell.blockInstance.instance.set(propertiesObject);
+        var newPorts = getPorts(cell.blockInstance.instance);
+        modifyPorts(graph, cell, cell.ports.left, 'left', oldPorts.inputPorts, newPorts.inputPorts);
+        modifyPorts(graph, cell, cell.ports.top, 'top', oldPorts.controlPorts, newPorts.controlPorts);
+        modifyPorts(graph, cell, cell.ports.right, 'right', oldPorts.outputPorts, newPorts.outputPorts);
+        modifyPorts(graph, cell, cell.ports.bottom, 'bottom', oldPorts.commandPorts, newPorts.commandPorts);
+
+    } finally {
+        model.endUpdate();
+    }
+    graph.refresh();
+
+}
+
