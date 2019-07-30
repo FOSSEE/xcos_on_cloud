@@ -18,9 +18,10 @@ function displayPrerequisiteFile(graph) {
         +"<textarea id='resultTextArea'></textarea>"
         +"</div>"
         +"</td></tr><tr><td style='padding-top:60px'>"
-        +"<button id='executePrerequisite' onclick='executePrerequisiteFile();' title='Start execution'>Execute</button>"
-        +"<button id='stopPrerequisite' style='margin-left:60px' onclick='stopPrerequisiteFile();' title='Stop execution'>Stop</button>"
-        +"<button id='showresult' style='margin-left:60px' onclick='displayResultforCode(true);'>Show Result</button>"
+        +"<button id='uploadPrerequisite' onclick='uploadPrerequisiteFile();' title='Upload and Execute Script'>Upload</button>"
+        +"<button id='executePrerequisite' style='margin-left:60px' onclick='executePrerequisiteFile();' title='Execute Script'>Execute</button>"
+        +"<button id='stopPrerequisite' style='margin-left:60px' onclick='stopPrerequisiteFile();' title='Stop Script'>Stop</button>"
+        +"<button id='showresult' style='margin-left:60px' onclick='displayResultforCode(true);' title='Show Script Result'>Show Result</button>"
         +"</td></tr></table>";
     showModalWindow(graph, 'Prerequisite File', maindiv, 900, 500);
     var editorTextArea = document.getElementById("editorTextArea");
@@ -45,6 +46,13 @@ function displayPrerequisiteFile(graph) {
 
     setScriptSimulationFlags(scriptSimulationStarted);
     displayResultforCode(prerequisite_output != '');
+}
+
+function displayCode() {
+    var codediv = document.getElementById("codediv");
+    if (codediv === null)
+        return;
+    editorCodeMirror.setValue(prerequisite_content);
 }
 
 //Function to display/hide result window of scilab code
@@ -75,6 +83,82 @@ function displayResultforCode(visible_flag) {
 
 var old_script_id = null;
 var script_id = null;
+
+function clean_text_2(s) {
+    // handle whitespace
+    s = s.replace(/[\b\f\r\v]/g, '');
+    s = s.replace(/\t/g, '    ');
+    s = s.replace(/ +(\n|$)/g, '\n');
+    s = s.replace(/\n+$/g, '');
+    return s;
+}
+
+function uploadPrerequisiteFile() {
+    if (!(window.File && window.FileReader && window.Blob && window.FileList)) {
+        alert('This browser doesn\'t support this feature.');
+        return;
+    }
+
+    var wind;
+    var new_prerequisite_content = '';
+
+    var fileNode = document.createElement('input');
+    fileNode.type = 'file';
+    fileNode.accept = '.sci,.sce'
+    fileNode.style = "margin:30px 30px 40px 30px;";
+    fileNode.addEventListener('change', function(evt) {
+        var f = evt.target.files[0];
+
+        if (!(f.name.endsWith(".sci") || f.name.endsWith(".sce"))) {
+            alert("Choose proper file! Only sci/sce files can be uploaded!");
+            return false;
+        }
+
+        var r = new FileReader();
+        r.onload = function(e) {
+            new_prerequisite_content = clean_text_2(e.target.result);
+        }
+        r.readAsText(f);
+    }, false);
+
+    var button = document.createElement('button');
+    button.innerHTML = 'Submit';
+    button.type = "button";
+    button.name = "submit";
+    button.style = "margin:0px 113px 30px 113px;";
+    button.onclick = function() {
+        if (new_prerequisite_content == '') {
+            alert("Enter filename!");
+            return false;
+        }
+        if (prerequisite_content != '') {
+            if (!confirm("Uploading this file will remove the existing script. Are you sure you want to continue?"))
+                return false;
+        }
+        prerequisite_content = new_prerequisite_content;
+        displayCode();
+        wind.destroy();
+
+        executePrerequisiteFile();
+    }
+
+    var breakNode1 = document.createElement('br');
+
+    var breakNode2 = document.createElement('br');
+
+    var node = document.createElement('form');
+    node.appendChild(fileNode);
+    node.appendChild(button);
+    node.appendChild(breakNode1);
+    node.appendChild(breakNode2);
+    node.style.visibility = "visible";
+
+    var div = document.createElement('div');
+    div.setAttribute("style", "height:100;width:100");
+    div.appendChild(node);
+
+    wind = showModalWindow(editor.graph, 'Upload Sci File', div, 268, 162);
+}
 
 function executePrerequisiteFile() {
     if (prerequisite_content == "")
