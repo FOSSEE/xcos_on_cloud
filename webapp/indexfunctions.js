@@ -72,6 +72,9 @@ var stopButton = null;
 
 function setScriptSimulationFlags(flag) {
     scriptSimulationStarted = flag;
+    var uploadPrerequisiteButton = document.getElementById('uploadPrerequisite');
+    if (uploadPrerequisiteButton != null)
+        uploadPrerequisiteButton.disabled = flag;
     executeScriptButton.disabled = flag || prerequisite_content.length == 0;
     var executePrerequisiteButton = document.getElementById('executePrerequisite');
     if (executePrerequisiteButton != null)
