@@ -1898,16 +1898,16 @@ function main(container, outline, toolbar, sidebar, status) {
         clearPrerequisiteFile();
     });
 
-    addToolbarButton(editor, toolbar, 'showScript', 'Show Script', 'images/script.png');
-    uploadScriptButton = addToolbarButton(editor, toolbar, 'uploadScript', 'Upload Script', 'images/script.png');
-    executeScriptButton = addToolbarButton(editor, toolbar, 'executeScript', 'Execute Script', 'images/script.png');
-    stopScriptButton = addToolbarButton(editor, toolbar, 'stopScript', 'Stop Script', 'images/script.png');
-    clearScriptButton = addToolbarButton(editor, toolbar, 'clearScript', 'Clear Script', 'images/script.png');
+    addToolbarButton(editor, toolbar, 'showScript', 'Show', 'images/script.png', false, false, 'Show Script');
+    uploadScriptButton = addToolbarButton(editor, toolbar, 'uploadScript', 'Upload', 'images/script.png', false, false, 'Upload Script');
+    executeScriptButton = addToolbarButton(editor, toolbar, 'executeScript', 'Execute', 'images/script.png', false, false, 'Execute Script');
+    stopScriptButton = addToolbarButton(editor, toolbar, 'stopScript', 'Stop', 'images/script.png', false, false, 'Stop Script');
+    clearScriptButton = addToolbarButton(editor, toolbar, 'clearScript', 'Clear', 'images/script.png', false, false, 'Clear Script');
     setScriptSimulationFlags(false);
     toolbar.appendChild(spacer.cloneNode(true));
 
     simulateButton = addToolbarButton(editor, toolbar, 'simulate', 'Simulate', 'images/ScilabExecute.png');
-    stopButton = addToolbarButton(editor, toolbar, 'processStop', ' Stop', 'images/process-stop.png');
+    stopButton = addToolbarButton(editor, toolbar, 'processStop', 'Stop', 'images/process-stop.png', false, false, 'Stop Simulation');
     setSimulationFlags(false);
     toolbar.appendChild(spacer.cloneNode(true));
 
@@ -2506,10 +2506,10 @@ function main(container, outline, toolbar, sidebar, status) {
     // Adds toolbar buttons into the status bar at the bottom
     // of the window.
 
-    addToolbarButton(editor, status, 'zoomIn', '', 'images/zoom_in.png', true);
-    addToolbarButton(editor, status, 'zoomOut', '', 'images/zoom_out.png', true);
-    addToolbarButton(editor, status, 'actualSize', '', 'images/view_1_1.png', true);
-    addToolbarButton(editor, status, 'fit', '', 'images/fit_to_size.png', true);
+    addToolbarButton(editor, status, 'zoomIn', 'Zoom In', 'images/zoom_in.png', true, true);
+    addToolbarButton(editor, status, 'zoomOut', 'Zoom Out', 'images/zoom_out.png', true, true);
+    addToolbarButton(editor, status, 'actualSize', '100%', 'images/view_1_1.png', true, true);
+    addToolbarButton(editor, status, 'fit', 'Zoom To Fit', 'images/fit_to_size.png', true, true);
 
     // Creates the outline (navigator, overview) for moving
     // around the graph in the top, right corner of the window.
@@ -3618,7 +3618,7 @@ function addIcons(graph, sidebar) {
     }
 }
 
-function addToolbarButton(editor, toolbar, action, label, image, isTransparent, asTitle = false) {
+function addToolbarButton(editor, toolbar, action, label, image, isTransparent, asTitle = false, altTitle = '') {
     var button = document.createElement('button');
     button.style.fontSize = '10';
     button.style.borderWidth = '2px';
@@ -3636,6 +3636,8 @@ function addToolbarButton(editor, toolbar, action, label, image, isTransparent, 
         button.title = label;
     else
         mxUtils.write(button, label);
+    if (altTitle != '')
+        button.title = altTitle;
     button.setAttribute('id', action);
     toolbar.appendChild(button);
     return button;
