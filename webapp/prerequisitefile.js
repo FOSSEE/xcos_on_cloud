@@ -1,5 +1,6 @@
 //Function to display content of prerequisite file
 
+var prerequisite_window = null;
 var editorCodeMirror = null;
 var resultCodeMirror = null;
 
@@ -23,7 +24,10 @@ function displayPrerequisiteFile(graph) {
         +"<button id='stopPrerequisite' style='margin-left:60px' onclick='stopPrerequisiteFile();' title='Stop Script'>Stop</button>"
         +"<button id='showresult' style='margin-left:60px' onclick='displayResultforCode(true);' title='Show Script Result'>Show Result</button>"
         +"</td></tr></table>";
-    showModalWindow(graph, 'Prerequisite File', maindiv, 900, 500);
+    prerequisite_window = showModalWindow(graph, 'Prerequisite File', maindiv, 900, 500);
+    prerequisite_window.addListener(mxEvent.DESTROY, function(evt) {
+        prerequisite_window = null;
+    });
     var editorTextArea = document.getElementById("editorTextArea");
     var resultTextArea = document.getElementById("resultTextArea");
     editorTextArea.value = prerequisite_content;
@@ -158,6 +162,13 @@ function uploadPrerequisiteFile() {
     div.appendChild(node);
 
     wind = showModalWindow(editor.graph, 'Upload Sci File', div, 268, 162);
+    wind.addListener(mxEvent.DESTROY, function(evt) {
+        if (prerequisite_window != null)
+            prerequisite_window.setVisible(true);
+    });
+
+    if (prerequisite_window != null)
+        prerequisite_window.setVisible(false);
 }
 
 function executePrerequisiteFile() {
