@@ -62,6 +62,7 @@ var wnd = null;
 var affichwnd = null;
 
 var scriptSimulationStarted = false;
+var uploadScriptButton = null;
 var executeScriptButton = null;
 var stopScriptButton = null;
 var clearScriptButton = null;
@@ -72,6 +73,7 @@ var stopButton = null;
 
 function setScriptSimulationFlags(flag) {
     scriptSimulationStarted = flag;
+    uploadScriptButton.disabled = flag;
     var uploadPrerequisiteButton = document.getElementById('uploadPrerequisite');
     if (uploadPrerequisiteButton != null)
         uploadPrerequisiteButton.disabled = flag;
@@ -1214,17 +1216,17 @@ function main(container, outline, toolbar, sidebar, status) {
     addToolbarButton(editor, toolbar, 'toggle', 'Expand All', 'images/navigate_plus.png');
     toolbar.appendChild(spacer.cloneNode(true));
 
-    addToolbarButton(editor, toolbar, 'cut', 'Cut', 'images/cut.png');
-    addToolbarButton(editor, toolbar, 'copy', 'Copy', 'images/copy.png');
-    addToolbarButton(editor, toolbar, 'paste', 'Paste', 'images/paste.png');
+    addToolbarButton(editor, toolbar, 'cut', 'Cut', 'images/cut.png', false, true);
+    addToolbarButton(editor, toolbar, 'copy', 'Copy', 'images/copy.png', false, true);
+    addToolbarButton(editor, toolbar, 'paste', 'Paste', 'images/paste.png', false, true);
     toolbar.appendChild(spacer.cloneNode(true));
 
-    addToolbarButton(editor, toolbar, 'deleteBlock', 'Delete', 'images/delete2.png');
-    addToolbarButton(editor, toolbar, 'undo', '', 'images/undo.png');
-    addToolbarButton(editor, toolbar, 'redo', '', 'images/redo.png');
+    addToolbarButton(editor, toolbar, 'deleteBlock', 'Delete', 'images/delete2.png', false, true);
+    addToolbarButton(editor, toolbar, 'undo', 'Undo', 'images/undo.png', false, true);
+    addToolbarButton(editor, toolbar, 'redo', 'Redo', 'images/redo.png', false, true);
     toolbar.appendChild(spacer.cloneNode(true));
 
-    addToolbarButton(editor, toolbar, 'print', 'Print Xcos', 'images/printer.png');
+    addToolbarButton(editor, toolbar, 'print', 'Print Xcos', 'images/printer.png', false, true);
     toolbar.appendChild(spacer.cloneNode(true));
 
     /*
@@ -1880,6 +1882,10 @@ function main(container, outline, toolbar, sidebar, status) {
         displayPrerequisiteFile(graph);
     });
 
+    editor.addAction('uploadScript', function(editor, cell) {
+        uploadPrerequisiteFile();
+    });
+
     editor.addAction('executeScript', function(editor, cell) {
         executePrerequisiteFile();
     });
@@ -1893,6 +1899,7 @@ function main(container, outline, toolbar, sidebar, status) {
     });
 
     addToolbarButton(editor, toolbar, 'showScript', 'Show Script', 'images/script.png');
+    uploadScriptButton = addToolbarButton(editor, toolbar, 'uploadScript', 'Upload Script', 'images/script.png');
     executeScriptButton = addToolbarButton(editor, toolbar, 'executeScript', 'Execute Script', 'images/script.png');
     stopScriptButton = addToolbarButton(editor, toolbar, 'stopScript', 'Stop Script', 'images/script.png');
     clearScriptButton = addToolbarButton(editor, toolbar, 'clearScript', 'Clear Script', 'images/script.png');
@@ -3611,7 +3618,7 @@ function addIcons(graph, sidebar) {
     }
 }
 
-function addToolbarButton(editor, toolbar, action, label, image, isTransparent) {
+function addToolbarButton(editor, toolbar, action, label, image, isTransparent, asTitle = false) {
     var button = document.createElement('button');
     button.style.fontSize = '10';
     button.style.borderWidth = '2px';
@@ -3625,7 +3632,10 @@ function addToolbarButton(editor, toolbar, action, label, image, isTransparent) 
     mxEvent.addListener(button, 'click', function(evt) {
         editor.execute(action);
     });
-    mxUtils.write(button, label);
+    if (asTitle)
+        button.title = label;
+    else
+        mxUtils.write(button, label);
     button.setAttribute('id', action);
     toolbar.appendChild(button);
     return button;
