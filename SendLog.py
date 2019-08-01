@@ -21,7 +21,7 @@ import json
 import logging
 from logging.handlers import TimedRotatingFileHandler
 import os
-from os.path import abspath, basename, dirname, exists, isfile, join, splitext
+from os.path import abspath, dirname, exists, isfile, join, splitext
 import re
 import requests
 import signal
@@ -30,7 +30,6 @@ from tempfile import mkdtemp, mkstemp
 from threading import Timer, current_thread
 from time import time
 import uuid
-from werkzeug import secure_filename
 from xml.dom import minidom
 
 from db_connection import connection
@@ -180,6 +179,7 @@ SCILAB_VARS = [
     "messagebox",
     "syslin",
     "tf2ss",
+    "xinfo",
 ]
 
 USER_DATA = {}
@@ -486,18 +486,13 @@ class Script:
 
 class SciFile:
     '''Variables used in sci-func block'''
-    filename = None
     file_image = ''
-    flag_sci = False
     instance = None
 
     def clean(self):
         if self.instance is not None:
             kill_scifile(self)
             self.instance = None
-        if self.filename is not None:
-            remove(self.filename)
-            self.filename = None
         if self.file_image != '':
             remove(join(IMAGEDIR, self.file_image))
             self.file_image = ''
@@ -984,88 +979,6 @@ def kill_script(script=None):
     return "ok"
 
 
-@app.route('/uploadsci', methods=['POST'])
-def uploadsci():
-    '''
-    Below route is called for uploading sci file which is required in sci-func
-    block (called in Javscript only_scifunc_code.js)
-    '''
-    (__, __, __, scifile, sessiondir, __) = init_session()
-
-    if scifile.instance is not None:
-        msg = 'Cannot execute more than one script at the same time.'
-        return msg
-
-    file = request.files['file']  # to get uploaded file
-    # Check if the file is not null
-    if not file:
-        return "error"
-
-    ts = datetime.now()
-    # file name is created with timestamp
-    fname = join(sessiondir, SCIFUNC_FILES_FOLDER,
-                 str(ts) + secure_filename(file.filename))
-    file.save(fname)  # file is saved in scifunc_files folder
-    scifile.filename = fname
-    scifile.flag_sci = True  # flag for file saved
-
-    if is_unsafe_script(scifile.filename):
-        msg = ("System calls are not allowed in .sci file!\n"
-               "Please upload another .sci file!!")
-        scifile.filename = None
-        # flag for file saved will be set as False
-        scifile.flag_sci = False
-        return msg
-
-    # scilab command is created to run that uploaded sci file which will be
-    # used by sci-func block
-    command = "exec('" + scifile.filename + "');"
-
-    scifile.instance = run_scilab(command, scifile)
-
-    if scifile.instance is None:
-        msg = "Resource not available"
-        remove(scifile.filename)
-        scifile.filename = None
-        scifile.flag_sci = False
-        return msg
-
-    try:
-        # output from scilab terminal is saved for checking error msg
-        proc = scifile.instance.proc
-        out = proc.communicate(timeout=30)[0]
-        remove_scilab_instance(scifile.instance)
-        scifile.instance = None
-
-        if proc.returncode < 0:
-            msg = 'Cancelled'
-            remove(scifile.filename)
-            scifile.filename = None
-            scifile.flag_sci = False
-            return msg
-
-        # if error is encountered while execution of sci file, then error msg
-        # is returned to user. in case no error is encountered, file uploaded
-        # successful msg is sent to user.
-        if '!--error' in out:
-            error_index = out.index('!')
-            msg = out[error_index:-9]
-            # Delete saved file if error is encountered while executing sci
-            # function in that file
-            remove(scifile.filename)
-            scifile.filename = None
-            # flag for file saved will be set as False
-            scifile.flag_sci = False
-            return msg
-
-        msg = "File is uploaded successfully!!"
-        return msg
-    except subprocess.TimeoutExpired:
-        kill_scifile(scifile)
-        msg = 'Timeout'
-        return msg
-
-
 @app.route('/stopscifile')
 def kill_scifile(scifile=None):
     '''Below route is called for stopping a running sci file.'''
@@ -1076,17 +989,9 @@ def kill_scifile(scifile=None):
 
     stop_scilab_instance(scifile)
 
-    if scifile.filename is None:
-        logger.warn('empty scifile')
-    else:
-        remove(scifile.filename)
-        scifile.filename = None
-
     if scifile.file_image != '':
-        remove(scifile.file_image)
+        remove(join(IMAGEDIR, scifile.file_image))
         scifile.file_image = ''
-
-    scifile.flag_sci = False
 
     return "ok"
 
@@ -1100,12 +1005,6 @@ def sendfile():
     '''
     (__, __, __, scifile, __, __) = init_session()
 
-    if scifile.flag_sci:
-        scifile.file_image = ('img_test%s.jpg' %
-                              splitext(basename(scifile.filename))[0])
-    else:
-        scifile.file_image = ''
-    scifile.flag_sci = False
     return scifile.file_image
 
 
@@ -1249,9 +1148,6 @@ def start_scilab():
             # For FROMWSB block and also workspace dat file exist
             command += load_variables(workspace)
 
-        if diagram.workspace_counter == 5:
-            command += "exec('" + scifile.filename + "');"
-
         command += "errcatch(-1,'stop');"
 
     # Scilab Commands for running of scilab based on existence of different
@@ -1274,6 +1170,7 @@ def start_scilab():
         pass
     elif diagram.workspace_counter == 5:
         # For Sci-Func block (Image are return as output in some cases)
+        scifile.file_image = 'img_%s.jpg' % str(uuid.uuid1())
         command += "xs2jpg(gcf(),'%s/%s');" % (IMAGEDIR, scifile.file_image)
     else:
         # For all other block
@@ -1327,6 +1224,11 @@ def start_scilab():
             diagram.instance = None
             return "Error in xcos diagram. Please check diagram"
 
+        if "Simulation problem:" in scilab_out:
+            remove_scilab_instance(diagram.instance)
+            diagram.instance = None
+            return "Error in simulation. Please check script uploaded/executed"
+
         if "Cannot find scilab-bin" in scilab_out:
             remove_scilab_instance(diagram.instance)
             diagram.instance = None
@@ -1334,7 +1236,7 @@ def start_scilab():
                     "Follow the installation instructions")
 
         if os.stat(instance.log_name).st_size == 0 and \
-                diagram.workspace_counter != 1:
+                diagram.workspace_counter not in (1, 5):
             remove_scilab_instance(diagram.instance)
             diagram.instance = None
             return "log file is empty"
@@ -1342,10 +1244,6 @@ def start_scilab():
     # For processes taking more than 10 seconds
     except subprocess.TimeoutExpired:
         pass
-
-    if diagram.workspace_counter == 5:
-        Timer(15.0, delete_image, [scifile]).start()
-        Timer(10.0, delete_scifile, [scifile]).start()
 
     return ""
 
@@ -1376,13 +1274,16 @@ def event_stream():
         gevent.sleep(LOOK_DELAY)
     if os.stat(diagram.instance.log_name).st_size == 0 and \
             diagram.instance.proc.poll() is not None:
-        if diagram.workspace_counter != 1:
-            logger.warn('log file is empty')
-            yield "event: ERROR\ndata: log file is empty\n\n"
-        else:
+        if diagram.workspace_counter == 1:
             # for Only TOWS_c block
             logger.info('variables are saved in workspace')
             yield "event: MESSAGE\ndata: Workspace saved successfully\n\n"
+        elif diagram.workspace_counter == 5:
+            logger.info('image created')
+            yield "event: DONE\ndata: None\n\n"
+        else:
+            logger.warn('log file is empty')
+            yield "event: ERROR\ndata: log file is empty\n\n"
         remove_scilab_instance(diagram.instance)
         diagram.instance = None
         return
@@ -1411,18 +1312,6 @@ def event_stream():
 
     # Notify Client
     yield "event: DONE\ndata: None\n\n"
-
-
-def delete_image(scifile):
-    if scifile.file_image != '':
-        remove(join(IMAGEDIR, scifile.file_image))
-        scifile.file_image = ''
-
-
-def delete_scifile(scifile):
-    if scifile.filename is not None:
-        remove(scifile.filename)
-        scifile.filename = None
 
 
 def AppendtoTKfile(diagram):
@@ -1644,27 +1533,28 @@ def upload():
     # List to contain all affich blocks
     blockaffich = new_xml.getElementsByTagName("AfficheBlock")
     for block in blockaffich:
-        if block.getAttribute("interfaceFunctionName") == "AFFICH_m":
+        interfaceFunctionName = block.getAttribute("interfaceFunctionName")
+        if interfaceFunctionName == "AFFICH_m":
             diagram.workspace_counter = 4
 
     # List to contain all the block IDs of tkscales so that we can create
     # read blocks with these IDs
     block_id = []
     for block in blocks:
-        if block.getAttribute("interfaceFunctionName") == "TKSCALE":
+        interfaceFunctionName = block.getAttribute("interfaceFunctionName")
+        if interfaceFunctionName == "TKSCALE":
             block_id.append(block.getAttribute("id"))
             block.setAttribute('id', '-1')
             tk_is_present = True
             # Changed the ID of tkscales to -1 so that virtually the
             # tkscale blocks get disconnected from diagram at the backend
         # Taking workspace_counter 1 for TOWS_c and 2 for FROMWSB
-        if block.getAttribute(
-                "interfaceFunctionName") == "scifunc_block_m":
+        elif interfaceFunctionName == "scifunc_block_m":
             diagram.workspace_counter = 5
-        if block.getAttribute("interfaceFunctionName") == "TOWS_c":
+        elif interfaceFunctionName == "TOWS_c":
             diagram.workspace_counter = 1
             flag1 = 1
-        if block.getAttribute("interfaceFunctionName") == "FROMWSB":
+        elif interfaceFunctionName == "FROMWSB":
             diagram.workspace_counter = 2
             flag2 = 1
     if flag1 and flag2:
