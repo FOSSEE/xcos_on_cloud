@@ -95,7 +95,8 @@ COPIED_CURVE_c_SCI_FRM_SCILAB = abspath("copied_curve_c_from_scilab.sci")
 CLEANDATA_SCI_FUNC_WRITE = abspath("scifunc-cleandata-do_spline.sci")
 EXP_SCI_FUNC_WRITE = abspath("expression-sci-function.sci")
 BASEDIR = abspath('webapp')
-IMAGEDIR = join(BASEDIR, 'res_imgs')
+IMAGEDIR = join(BASEDIR, config.IMAGEDIR)
+IMAGEURLDIR = '/' + config.IMAGEDIR + '/'
 XCOSSOURCEDIR = abspath(config.XCOSSOURCEDIR)
 SESSIONDIR = abspath(config.SESSIONDIR)
 FLASKSESSIONDIR = abspath(config.FLASKSESSIONDIR)
@@ -141,8 +142,6 @@ UPLOAD_FOLDER = 'uploads'  # to store xcos file
 VALUES_FOLDER = 'values'  # to store files related to tkscale block
 # to store uploaded sci files for sci-func block
 SCRIPT_FILES_FOLDER = 'script_files'
-# to store uploaded sci files for sci-func block
-SCIFUNC_FILES_FOLDER = 'scifunc_files'
 # to store workspace files for TOWS_c block
 WORKSPACE_FILES_FOLDER = 'workspace_files'
 
@@ -437,6 +436,7 @@ class Diagram:
     tk_times = None
     # List to store figure IDs from log_name
     figure_list = None
+    file_image = ''
 
     def __init__(self):
         self.figure_list = []
@@ -455,6 +455,9 @@ class Diagram:
         if self.workspace_filename is not None:
             remove(self.workspace_filename)
             self.workspace_filename = None
+        if self.file_image != '':
+            remove(join(IMAGEDIR, self.file_image))
+            self.file_image = ''
 
 
 class Script:
@@ -486,16 +489,12 @@ class Script:
 
 class SciFile:
     '''Variables used in sci-func block'''
-    file_image = ''
     instance = None
 
     def clean(self):
         if self.instance is not None:
             kill_scifile(self)
             self.instance = None
-        if self.file_image != '':
-            remove(join(IMAGEDIR, self.file_image))
-            self.file_image = ''
 
 
 class UserData:
@@ -538,7 +537,6 @@ class UserData:
         sessiondir = self.sessiondir
 
         rmdir(join(sessiondir, WORKSPACE_FILES_FOLDER), 'workspace files')
-        rmdir(join(sessiondir, SCIFUNC_FILES_FOLDER), 'scifunc files')
         rmdir(join(sessiondir, SCRIPT_FILES_FOLDER), 'script files')
         rmdir(join(sessiondir, VALUES_FOLDER), 'values')
         rmdir(join(sessiondir, UPLOAD_FOLDER), 'upload')
@@ -566,7 +564,7 @@ class line_and_state:
 
 def set_session():
     if 'uid' not in session:
-        session['uid'] = str(uuid.uuid1())
+        session['uid'] = str(uuid.uuid4())
 
     uid = session['uid']
     if not hasattr(current_thread(), 's_name'):
@@ -590,7 +588,6 @@ def init_session():
     makedirs(join(sessiondir, UPLOAD_FOLDER), 'upload')
     makedirs(join(sessiondir, VALUES_FOLDER), 'values')
     makedirs(join(sessiondir, SCRIPT_FILES_FOLDER), 'script files')
-    makedirs(join(sessiondir, SCIFUNC_FILES_FOLDER), 'scifunc files')
     makedirs(join(sessiondir, WORKSPACE_FILES_FOLDER), 'workspace files')
 
     return (ud.diagrams, ud.scripts, ud.getscriptcount, ud.scifile, sessiondir,
@@ -630,26 +627,25 @@ def clean_sessions_thread():
 def get_diagram(xcos_file_id, remove=False):
     if not xcos_file_id:
         logger.warn('no id')
-        return (None, None)
+        return None
     xcos_file_id = int(xcos_file_id)
 
-    (diagrams, __, __, scifile, __, __) = init_session()
+    (diagrams, __, __, __, __, __) = init_session()
 
     if xcos_file_id < 0 or xcos_file_id >= len(diagrams):
         logger.warn('id %s not in diagrams', xcos_file_id)
-        return (None, None)
+        return None
 
     diagram = diagrams[xcos_file_id]
 
     if remove:
         diagrams[xcos_file_id] = Diagram()
 
-    return (diagram, scifile)
+    return diagram
 
 
 def add_diagram():
-    (diagrams, scripts, getscriptcount, scifile, sessiondir,
-     diagramlock) = init_session()
+    (diagrams, scripts, __, __, sessiondir, diagramlock) = init_session()
 
     with diagramlock:
         diagram = Diagram()
@@ -657,7 +653,7 @@ def add_diagram():
         diagram.sessiondir = sessiondir
         diagrams.append(diagram)
 
-    return (diagram, scripts, getscriptcount, scifile, sessiondir)
+    return (diagram, scripts, sessiondir)
 
 
 def get_script(script_id, scripts=None, remove=False):
@@ -683,7 +679,7 @@ def get_script(script_id, scripts=None, remove=False):
 
 
 def add_script():
-    (__, scripts, getscriptcount, __, sessiondir, diagramlock) = init_session()
+    (__, scripts, getscriptcount, __, sessiondir, __) = init_session()
 
     script_id = getscriptcount()
 
@@ -989,23 +985,23 @@ def kill_scifile(scifile=None):
 
     stop_scilab_instance(scifile)
 
-    if scifile.file_image != '':
-        remove(join(IMAGEDIR, scifile.file_image))
-        scifile.file_image = ''
-
     return "ok"
 
 
-@app.route('/requestfilename', methods=['POST'])
+@app.route('/requestfilename')
 def sendfile():
     '''
-    This route is used in index.html for checking condition
-    if sci file is uploaded for sci-func block diagram imported directly using
-    import (will confirm again)
+    This route is used in chart.js for sending image filename
     '''
-    (__, __, __, scifile, __, __) = init_session()
+    diagram = get_diagram(get_request_id())
+    if diagram is None:
+        logger.warn('no diagram')
+        return ''
+    if diagram.file_image == '':
+        logger.warn('no diagram image')
+        return ''
 
-    return scifile.file_image
+    return IMAGEURLDIR + diagram.file_image
 
 
 def kill_scilab_with(proc, sgnl):
@@ -1070,7 +1066,7 @@ def get_script_id(key='script_id', default=''):
 def kill_scilab(diagram=None):
     '''Define function to kill scilab(if still running) and remove files'''
     if diagram is None:
-        (diagram, __) = get_diagram(get_request_id(), True)
+        diagram = get_diagram(get_request_id(), True)
 
     if diagram is None:
         logger.warn('no diagram')
@@ -1085,6 +1081,9 @@ def kill_scilab(diagram=None):
         # Remove xcos file
         remove(diagram.xcos_file_name)
         diagram.xcos_file_name = None
+
+    if diagram.file_image != '':
+        logger.warn('not removing %s', diagram.file_image)
 
     stopDetailsThread(diagram)
 
@@ -1117,7 +1116,7 @@ def start_scilab():
 
     This function is called in app route 'start_scilab' below
     '''
-    (diagram, scifile) = get_diagram(get_request_id())
+    diagram = get_diagram(get_request_id())
     if diagram is None:
         logger.warn('no diagram')
         return "error"
@@ -1170,9 +1169,10 @@ def start_scilab():
         pass
     elif diagram.workspace_counter == 5:
         # For Sci-Func block (Image are return as output in some cases)
-        scifile.file_image = 'img_%s.jpg' % str(uuid.uuid1())
-        command += "xs2jpg(gcf(),'%s/%s');" % (IMAGEDIR, scifile.file_image)
-    else:
+        diagram.file_image = 'img-%s-%s.jpg' % (
+            datetime.now().strftime('%Y%m%d'), str(uuid.uuid4()))
+        command += "xs2jpg(gcf(),'%s/%s');" % (IMAGEDIR, diagram.file_image)
+    elif config.CREATEIMAGE:
         # For all other block
         command += "xs2jpg(gcf(),'%s/%s');" % (IMAGEDIR, 'img_test.jpg')
 
@@ -1256,7 +1256,7 @@ def event_stream():
 
     This function is called in app route 'SendLog' below
     '''
-    (diagram, __) = get_diagram(get_request_id())
+    diagram = get_diagram(get_request_id())
     if diagram is None:
         logger.warn('no diagram')
         yield "event: ERROR\ndata: no diagram\n\n"
@@ -1363,7 +1363,7 @@ def upload():
     list1 = []
     list2 = []
     # Make the filename safe, remove unsupported chars
-    (diagram, scripts, __, scifile, sessiondir) = add_diagram()
+    (diagram, scripts, sessiondir) = add_diagram()
     script = get_script(get_script_id(default=None), scripts=scripts)
     if script is not None:
         diagram.workspace_filename = script.workspace_filename
@@ -1637,7 +1637,7 @@ def filenames():
 
 @app.route('/UpdateTKfile', methods=['POST'])
 def UpdateTKfile():
-    (diagram, __) = get_diagram(get_request_id())
+    diagram = get_diagram(get_request_id())
     if diagram is None:
         logger.warn('no diagram')
         return "error"
@@ -1743,7 +1743,7 @@ def stop():
 @app.route('/endBlock/<fig_id>')
 def endBlock(fig_id):
     '''route to end blocks with no Ending parameter'''
-    (diagram, __) = get_diagram(get_request_id())
+    diagram = get_diagram(get_request_id())
     if diagram is None:
         logger.warn('no diagram')
         return
