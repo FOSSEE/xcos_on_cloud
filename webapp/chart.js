@@ -753,8 +753,8 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
         if (show_image) {
             stopSimulationWindows();
             $.ajax({
-                type:"post",
-                url: "/requestfilename",
+                type: "GET",
+                url: "/requestfilename?id=" + clientID,
                 async: true,
                 cache: false,
                 processData: false,
@@ -762,7 +762,7 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
                 success: function(name) {
                     var content = document.createElement('div');
                     var img_disp = document.createElement('img');
-                    img_disp.src = '/res_imgs/' + name;
+                    img_disp.src = name;
                     content.appendChild(img_disp);
                     showModalWindow(graph, "Output", content, 610, 480);
                 },
