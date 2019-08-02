@@ -514,7 +514,7 @@ function updateSubtitleForSigbuilderGraph(points, method, xmaxtitle, periodicFla
     return subTitle;
 }
 
-function chart_init(wnd, affichwnd, with_interval, with_interval2) {
+function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_image) {
     var block;
     // define buffer for CANIMXY3D
     var buffer;
@@ -749,6 +749,29 @@ function chart_init(wnd, affichwnd, with_interval, with_interval2) {
         $('#loader').hide();
         $('#img_loader').html("");
         isDone = true;
+
+        if (show_image) {
+            stopSimulationWindows();
+            $.ajax({
+                type: "GET",
+                url: "/requestfilename?id=" + clientID,
+                async: true,
+                cache: false,
+                processData: false,
+                contentType: false,
+                success: function(name) {
+                    var content = document.createElement('div');
+                    var img_disp = document.createElement('img');
+                    img_disp.src = name;
+                    content.appendChild(img_disp);
+                    showModalWindow(graph, "Output", content, 610, 480);
+                },
+                error: function(name) {
+                    alert("An error occurred!!");
+                    return false;
+                }
+            });
+        }
     }, false);
 
     if (with_interval) {
