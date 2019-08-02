@@ -1432,6 +1432,8 @@ function main(container, outline, toolbar, sidebar, status) {
             }
 
             var cells = [];
+            var scriptwarn = false;
+
             for (var currentNode = rootNode.firstChild;
                 currentNode != null;
                 currentNode = currentNode.nextSibling) {
@@ -1450,12 +1452,6 @@ function main(container, outline, toolbar, sidebar, status) {
                 /* parse only Block and Port nodes now */
 
                 var cell = codec.decode(currentNode);
-
-                if (cell.style) {
-                    if (cell.style.startsWith("scifunc_block_m")) {
-                        alert("Double click on scifunc_block_m to choose .sci file and set parameters");
-                    }
-                }
 
                 var curId = currentNode.getAttribute('id');
 
@@ -1510,7 +1506,9 @@ function main(container, outline, toolbar, sidebar, status) {
                     var details_instance=null
                     if (ifaceFuncName != null) {
                         details_instance = new window[ifaceFuncName]();
-                        // create_filebrowser();
+                        if (ifaceFuncName == "scifunc_block_m") {
+                            scriptwarn = true;
+                        }
                     }
 
                     if (details_instance != null) {
@@ -1633,6 +1631,10 @@ function main(container, outline, toolbar, sidebar, status) {
                     };
                     newParentObj.inputDataArray.push(curNodeData);
                 }
+            }
+
+            if (scriptwarn) {
+                alert("Upload a script to define functions used by the scifunc_block_m");
             }
 
             /*
@@ -1899,7 +1901,7 @@ function main(container, outline, toolbar, sidebar, status) {
     });
 
     addToolbarButton(editor, toolbar, 'showScript', 'Show', 'images/script.png', false, false, 'Show Script');
-    uploadScriptButton = addToolbarButton(editor, toolbar, 'uploadScript', 'Upload', 'images/script.png', false, false, 'Upload Script');
+    uploadScriptButton = addToolbarButton(editor, toolbar, 'uploadScript', 'Upload', 'images/script.png', false, false, 'Upload and Execute Script');
     executeScriptButton = addToolbarButton(editor, toolbar, 'executeScript', 'Execute', 'images/script.png', false, false, 'Execute Script');
     stopScriptButton = addToolbarButton(editor, toolbar, 'stopScript', 'Stop', 'images/script.png', false, false, 'Stop Script');
     clearScriptButton = addToolbarButton(editor, toolbar, 'clearScript', 'Clear', 'images/script.png', false, false, 'Clear Script');
@@ -2002,6 +2004,8 @@ function main(container, outline, toolbar, sidebar, status) {
         var j=1, k=0, l=0, m=0, n=0, o=0, p=0, y=0, count=1;
         var with_interval = false;
         var with_interval2 = false;
+        var flag1 = false;
+        var flag2 = false;
 
         // loop which iterates every 'BasicBlock' tag and take the required
         // details
@@ -2019,7 +2023,6 @@ function main(container, outline, toolbar, sidebar, status) {
              * wnd.setVisible(false);
              * }
              */
-            var req_block = new Array();
             var names = new Array();
             names[i] = Bblock_tag[i].attributes.blockElementName.value;
 
@@ -2061,12 +2064,10 @@ function main(container, outline, toolbar, sidebar, status) {
             }
 
             if (names.includes("scifunc_block_m")) {
-                req_block.push("scifunc_block_m");
-                var flag1 = true;
+                flag1 = true;
             }
             if (names.includes("CSCOPE")) {
-                req_block.push("CSCOPE");
-                var flag2 = true;
+                flag2 = true;
             }
 
             // if block is TKSCALE
@@ -2381,64 +2382,6 @@ function main(container, outline, toolbar, sidebar, status) {
             }
         }
 
-        if (flag1 == true && flag2 == true) {
-            $.ajax({
-                type:"post",
-                url: "/requestfilename",
-                async: true,
-                cache: false,
-                processData: false,
-                contentType: false,
-                success: function(name) {
-                    if (name == "") {
-                        stopSimulationWindows();
-                        alert("You have not uploaded a .sci file!\nUpload file to proceed further");
-                        return false;
-                    }
-                },
-                error: function(name) {
-                    alert("An error occurred!!");
-                    return false;
-                }
-            });
-        }
-
-        if (flag1 == true && flag2 == undefined) {
-            stopSimulationWindows();
-            $.ajax({
-                type:"post",
-                url: "/requestfilename",
-                async: true,
-                cache: false,
-                processData: false,
-                contentType: false,
-                success: function(name) {
-                    if (name == "") {
-                        alert("You have not uploaded a .sci file!\nUpload file to proceed further");
-                        return false;
-                    }
-                    display_scifunc_output(name);
-                },
-                error: function(name) {
-                    alert("An error occurred!!");
-                    return false;
-                }
-            });
-        }
-
-        function display_scifunc_output(name) {
-            setTimeout(function() { showimage(); }, 8000);
-            function showimage() {
-                var content = document.createElement('div');
-                content.id = "image_display";
-                var img_disp = document.createElement('img');
-                img_disp.id = 'img';
-                img_disp.src = '/res_imgs/' + name;
-                content.appendChild(img_disp);
-                var wind = showModalWindow(graph, "Output", content, 610, 480);
-            }
-        }
-
         /* function which creates a slider for the tkscale data */
         function CreateSlider() {
             for (var i=0;i<row;i++) {
@@ -2491,7 +2434,8 @@ function main(container, outline, toolbar, sidebar, status) {
                         // if tkblocks are <= 10 then create slider else not
                         CreateSlider();
                     }
-                    chart_init(wnd, affichwnd, with_interval, with_interval2);
+                    chart_init(graph, wnd, affichwnd, with_interval, with_interval2, flag1 && !flag2);
+
                 });
             } else {
                 document.title = 'Xcos';

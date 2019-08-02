@@ -172,4 +172,10 @@ SYSTEM_COMMANDS = (
     r'|newfun|execstr|ascii|mputl|dir\(\)'
 )
 
+# The directory where images are created
+IMAGEDIR = 'res_imgs'
+
+# Set CREATEIMAGE to True to create img_test.jpg in IMAGEDIR
+CREATEIMAGE = False
+
 REMOVEFILE = True
