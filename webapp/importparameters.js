@@ -1990,12 +1990,12 @@ RELATIONALOP.prototype.importset = function RELATIONALOP() {
     }
     var label = "";
     switch (this.rule) {
-        case "0": label = "=="; break;
-        case "1": label = "~="; break;
-        case "2": label = "<"; break;
-        case "3": label = "<="; break;
-        case "4": label = ">"; break;
-        case "5": label = ">="; break;
+        case 0: label = "=="; break;
+        case 1: label = "~="; break;
+        case 2: label = "<"; break;
+        case 3: label = "<="; break;
+        case 4: label = ">"; break;
+        case 5: label = ">="; break;
     }
     this.displayParameter = [label];
 }
