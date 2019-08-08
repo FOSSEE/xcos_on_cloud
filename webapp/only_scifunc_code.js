@@ -973,312 +973,69 @@ function create_scifunc_popups(graph,cell,name,diagRoot) {
         popup8submit_btn.type = "button";
 
         popup8submit_btn.onclick = function() {
-            var popup8value = Array();
-
             var popup8value1 = document.getElementById("p8input1").value;
-            popup8value.push(popup8value1);
-
             var popup8value2 = document.getElementById("p8input2").value;
-            popup8value.push(popup8value2);
-
             var popup8value3 = document.getElementById("p8input3").value;
-            popup8value.push(popup8value3);
-
-            if (out.length >= 9) {
-                var popup8value4 = document.getElementById("p8input4").value;
-                popup8value.push(popup8value4);
-            }
-
-            if (out.length >= 13) {
-                var popup8value5 = document.getElementById("p8input5").value;
-                popup8value.push(popup8value5);
-            }
-
-            if (out.length >= 17) {
-                var popup8value6 = document.getElementById("p8input6").value;
-                popup8value.push(popup8value6);
-            }
-
-            if (out.length >= 21) {
-                var popup8value7 = document.getElementById("p8input7").value;
-                popup8value.push(popup8value7);
-            }
-
-            if (out.length >= 25) {
-                var popup8value8 = document.getElementById("p8input8").value;
-                popup8value.push(popup8value8);
-            }
-
-            if (out.length >= 29) {
-                var popup8value9 = document.getElementById("p8input9").value;
-                popup8value.push(popup8value9);
-            }
-
+            var popup8value = [popup8value1, popup8value2, popup8value3];
             propertiesObject["popup8value"] = popup8value;
-
-            /*
-             * Loading XML of last graph configuration so that all the
-             * links nodes of the previous xml can be copied to the new XML
-             */
-
-            var encPrevXml = new mxCodec(mxUtils.createXmlDocument());
-            var nodePrevXml = encPrevXml.encode(diagRoot);
-            var strPrevXml = mxUtils.getPrettyXml(nodePrevXml);
-            strPrevXml = mxUtils.parseXml(strPrevXml);
-            var resultDocumentPrevXml = getXsltProcessor().transformToDocument(strPrevXml);
-            /*
-             * Maverick
-             * Using resultDocument.documentElement to remove an additional
-             * tag "<#document>" created by the XSLTProcessor.
-             */
-            strPrevXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n" + mxUtils.getPrettyXml(resultDocumentPrevXml.documentElement);
-            strPrevXml = strPrevXml.replace(/\n\n/g, "\n");
-            strPrevXml = strPrevXml.replace(/\n*/, '');
-            strPrevXml = strPrevXml.replace(/>\s*</g, '><');
-            strPrevXml = strPrevXml.replace(/<!--[\s\S]*?-->/g, '');
-            var docPrevXml = mxUtils.parseXml(strPrevXml);
-            var codecPrevXml = new mxCodec(docPrevXml);
-            var rootNode = docPrevXml.documentElement;
-            while (rootNode.nodeName != 'root') {
-                if (rootNode.nodeName == 'Array') {
-                    rootNode = rootNode.nextSibling;
-                } else if (rootNode.nodeName == '#comment') {
-                    rootNode = rootNode.nextSibling;
-                } else {
-                    rootNode = rootNode.firstChild;
-                }
+            if (out.length == 5) {
+                var popup8value = [popup8value1, popup8value2, popup8value3];
+                propertiesObject["popup8value"] = popup8value;
+            } else if (out.length == 9) {
+                var popup8value4 = document.getElementById("p8input4").value;
+                var popup8value = [popup8value1, popup8value2, popup8value3, popup8value4];
+                propertiesObject["popup8value"] = popup8value;
+            } else if (out.length == 13) {
+                var popup8value4 = document.getElementById("p8input4").value;
+                var popup8value5 = document.getElementById("p8input5").value;
+                var popup8value = [popup8value1, popup8value2, popup8value3, popup8value4, popup8value5];
+                propertiesObject["popup8value"] = popup8value;
+            } else if (out.length == 17) {
+                var popup8value4 = document.getElementById("p8input4").value;
+                var popup8value5 = document.getElementById("p8input5").value;
+                var popup8value6 = document.getElementById("p8input6").value;
+                var popup8value = [popup8value1, popup8value2, popup8value3, popup8value4, popup8value5, popup8value6];
+                propertiesObject["popup8value"] = popup8value;
+            } else if (out.length == 21) {
+                var popup8value4 = document.getElementById("p8input4").value;
+                var popup8value5 = document.getElementById("p8input5").value;
+                var popup8value6 = document.getElementById("p8input6").value;
+                var popup8value7 = document.getElementById("p8input7").value;
+                var popup8value = [popup8value1, popup8value2, popup8value3, popup8value4, popup8value5, popup8value6,popup8value7];
+                propertiesObject["popup8value"] = popup8value;
+            } else if (out.length == 25) {
+                var popup8value4 = document.getElementById("p8input4").value;
+                var popup8value5 = document.getElementById("p8input5").value;
+                var popup8value6 = document.getElementById("p8input6").value;
+                var popup8value7 = document.getElementById("p8input7").value;
+                var popup8value8 = document.getElementById("p8input8").value;
+                var popup8value = [popup8value1, popup8value2, popup8value3, popup8value4, popup8value5, popup8value6, popup8value7, popup8value8];
+                propertiesObject["popup8value"] = popup8value;
+            } else if (out.length == 29) {
+                var popup8value4 = document.getElementById("p8input4").value;
+                var popup8value5 = document.getElementById("p8input5").value;
+                var popup8value6 = document.getElementById("p8input6").value;
+                var popup8value7 = document.getElementById("p8input7").value;
+                var popup8value8 = document.getElementById("p8input8").value;
+                var popup8value9 = document.getElementById("p8input9").value;
+                var popup8value = [popup8value1, popup8value2, popup8value3, popup8value4, popup8value5, popup8value6, popup8value7, popup8value8, popup8value9];
+                propertiesObject["popup8value"] = popup8value;
             }
-            var currentNode = rootNode.firstChild;
 
-            var parent = graph.getDefaultParent();
             var model = graph.getModel();
-            var v1 = null;
-            var doc = mxUtils.createXmlDocument();
             model.beginUpdate();
             try {
-                var geometry = cell.getGeometry();
-                var x=geometry.x;
-                var y=geometry.y;
-
-                var details_instance = new window[name]();
-                var details = cell.blockInstance.instance.set(propertiesObject);
-                editor.execute('deleteBlock',(editor, cell));
-                var enc = new mxCodec(mxUtils.createXmlDocument());
-                var node = enc.encode(details);
-                var temp = enc.encode(parent);
-
-                // Get the stylesheet for the graph
-                var stylesheet = graph.getStylesheet();
-                // From the stylesheet, get the style of the particular
-                // block
-                var style = stylesheet.styles[name];
-                // To get dimension(height,width) of a block
-                var dimensionForBlock = cell.blockInstance.instance.getDimensionForDisplay();
-                var height = dimensionForBlock["height"]; // return height of block
-                var width = dimensionForBlock["width"]; // return width of block
-                if (geometry.height != null)
-                    height = geometry.height;
-                if (geometry.width != null)
-                    width = geometry.width;
-                /*
-                 * When a particular block is loaded for the first time,
-                 * the image in the style of the block will be a path to
-                 * the image.  Set the label in the style property of the
-                 * block has a html image, and set the image in the style
-                 * property as null
-                 *
-                 * NOTE: Since the image of any block need not be changed
-                 * for for every movement of that block, the image must be
-                 * set only once.
-                 */
-
-                if (style != null && style['image'] != null) {
-                    // Make label as a image html element
-                    var label = '<img src="' + style['image'] + '" height="' + (height*0.9) + '" width="' + (width*0.9) + '">';
-                    // Set label
-                    style['label'] = label;
-
-                    style['imagePath'] = style['image'];
-
-                    // Set image as null
-                    style['image'] = null;
-
-                    // Add the label as a part of node
-                    node.setAttribute('label', label);
-                }
-
-                /*
-                 * If a particular block with image tag in its style
-                 * property has been invoked already, the image tag would
-                 * be null for any successive instances of the same block.
-                 * Hence, set the label from the label tag in style which
-                 * was set when that blockModel was invoked on the first
-                 * time.
-                 */
-                if (style != null && style['label'] != null) {
-                    // Set label from the label field in the style property
-                    node.setAttribute('label', style['label']);
-                }
-                node.setAttribute("parent", temp.getAttribute("id"));
-                var i, arr = [];
-
-                var details_instance=cell.blockInstance.instance;
-
-                var blockModel = details_instance.x.model;
-                var graphics = details_instance.x.graphics;
-
-                /* To determine number and type of Port */
-                var inputPorts = [];
-                var outputPorts = [];
-                var controlPorts = [];
-                var commandPorts = [];
-                if (blockModel.in.height != null) {
-                    arr = getData(graphics.in_implicit);
-                    if (arr.length != 0) {
-                        inputPorts = arr;
-                    } else {
-                        for (i = 0; i < blockModel.in.height; i++) {
-                            inputPorts.push("E");
-                        }
-                    }
-                }
-                if (blockModel.out.height != null) {
-                    arr = getData(graphics.out_implicit);
-                    if (arr.length != 0) {
-                        outputPorts = arr;
-                    } else {
-                        for (i = 0; i < blockModel.out.height; i++) {
-                            outputPorts.push("E");
-                        }
-                    }
-                }
-                if (blockModel.evtin.height != null) {
-                    for (i = 0; i < blockModel.evtin.height; i++) {
-                        controlPorts.push("CONTROL");
-                    }
-                }
-                if (blockModel.evtout.height != null) {
-                    for (i = 0; i < blockModel.evtout.height; i++) {
-                        commandPorts.push("COMMAND");
-                    }
-                }
-                v1 = graph.insertVertex(parent, null, node, x, y, width, height, name);
-
-                // @Chhavi
-                // Additional attribute to store the block's instance
-                v1.blockInstance = createInstanceTag(details_instance);
-                v1.currentAngle = 0;
-                v1.flipX = 1;
-                v1.flipY = 1;
-                createPorts(graph, v1, inputPorts, controlPorts, outputPorts, commandPorts, null, null, details_instance.x.model);
-                v1.setConnectable(false);
+                var oldPorts = getPorts(cell.blockInstance.instance);
+                cell.blockInstance.instance.set(propertiesObject);
+                var newPorts = getPorts(cell.blockInstance.instance);
+                modifyPorts(graph, cell, cell.ports.left, 'left', oldPorts.inputPorts, newPorts.inputPorts);
+                modifyPorts(graph, cell, cell.ports.top, 'top', oldPorts.controlPorts, newPorts.controlPorts);
+                modifyPorts(graph, cell, cell.ports.right, 'right', oldPorts.outputPorts, newPorts.outputPorts);
+                modifyPorts(graph, cell, cell.ports.bottom, 'bottom', oldPorts.commandPorts, newPorts.commandPorts);
             } finally {
                 model.endUpdate();
             }
 
-            /*
-             * The code below is responsible for moving the new (non-links)
-             * node created after the set function is called back to their
-             * previous positions as in their previous XML. This is done to
-             * retain the id's so that the Link node of previous XML can be
-             * used to create connecting wires for the new XML also.
-             */
-
-            var referenceModelCount = referenceModelProps.length;
-            var missingKeys = [];
-            var lastId = Math.max(...Object.keys(model.cells));
-
-            for (var i=0;i< referenceModelCount ; i++) {
-                var present = false;
-                for (var key in model.cells) {
-                    if (model.cells.hasOwnProperty(key)) {
-                        if (referenceModelProps[i].id == key) {
-                            present = true;
-                            break;
-                        }
-                    }
-                }
-                if (present == false)
-                    missingKeys.push(referenceModelProps[i].id);
-            }
-
-            var newIDs= [];
-            for (var i=modelNextId;i<=lastId;i++)
-                newIDs.push(i);
-            var j = 0;
-
-            for (var i = 0; i < missingKeys.length; i++) {
-                var referenceModelStyle = referenceModelProps.find( function (obj) {
-                    return obj.id == missingKeys[i];
-                }).style;
-
-                if (model.cells[newIDs[j]].style.endsWith('Port')) {
-                    if (referenceModelStyle == model.cells[newIDs[j]].style) {
-                        model.cells[missingKeys[i]] = model.cells[newIDs[j]];
-                        model.cells[missingKeys[i]].id = String(missingKeys[i]);
-                        delete model.cells[newIDs[j++]];
-                    } else {
-                        var tempId = j;
-                        while (newIDs[++j] <= lastId) {
-                            if (referenceModelStyle == model.cells[newIDs[j]].style) {
-                                model.cells[missingKeys[i]] = model.cells[newIDs[j]];
-                                model.cells[missingKeys[i]].id = String(missingKeys[i]);
-                                delete model.cells[newIDs[j]];
-                                newIDs.splice(j,1);
-                                j = tempId;
-                                break;
-                            }
-                        }
-                    }
-                } else if (model.cells[newIDs[j]].style) {
-                    model.cells[missingKeys[i]] = model.cells[newIDs[j]];
-                    model.cells[missingKeys[i]].id = String(missingKeys[i]);
-                    delete model.cells[newIDs[j++]];
-                }
-            }
-            referenceModelProps = [];
-            newIDs = [];
-
-            model.beginUpdate();
-            try {
-                // Connecting the blocks by inserting link nodes
-                while (currentNode!=null) {
-                    var curNodeName = currentNode.nodeName;
-                    if (curNodeName.endsWith('Link')) {
-                        var pointsArray = [];
-                        var newSourceCell = graph.getModel().getCell(currentNode.getAttribute('source'));
-                        var newTargetCell = graph.getModel().getCell(currentNode.getAttribute('target'));
-
-                        if (newSourceCell.getEdgeCount() <=0 && newTargetCell.getEdgeCount()<=0) {
-                            var childNode = currentNode.firstChild;
-                            if (childNode != null) {
-                                if (childNode.nodeName == 'mxGeometry') {
-                                    var tempNode = childNode.firstChild;
-                                    if (tempNode != null) {
-                                        if (tempNode.nodeName == 'mxPoint') {
-                                            pointsArray.push(new mxPoint(tempNode.getAttribute('x'), tempNode.getAttribute('y')));
-                                        } else {
-                                            if (tempNode.nodeName == 'Array') {
-                                                var mxPointNode = tempNode.firstChild;
-                                                while (mxPointNode != null) {
-                                                    pointsArray.push(new mxPoint(mxPointNode.getAttribute('x'), mxPointNode.getAttribute('y')));
-                                                    mxPointNode = mxPointNode.nextSibling;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
-                            createEdgeObject(graph, newSourceCell, newTargetCell, null);
-                        }
-                    }
-                    currentNode=currentNode.nextSibling;
-                }
-            } finally {
-                model.endUpdate();
-            }
-            graph.setSelectionCell(v1);
             graph.refresh();
             wind8.destroy();
         }
