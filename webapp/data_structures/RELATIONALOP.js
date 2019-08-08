@@ -37,8 +37,9 @@ function RELATIONALOP() {
         this.rule = parseInt((arguments[0]["rule"]));
 	    this.zcr = parseInt((arguments[0]["zcr"]));
 	    this.Datatype = parseInt((arguments[0]["Datatype"]));
+	    var zcr1 = 0;
 	    if(this.zcr != 0){
-            this.zcr = 1;
+            zcr1 = 1;
 	    }
 	    if(this.rule < 0 || this.rule > 5){
             alert("Incorrect operator "+this.rule.toString()+" ; must be 0 to 5.");
@@ -92,6 +93,8 @@ function RELATIONALOP() {
         this.out = [[-1],[-2]];
         var io = set_io(this.x.model,this.x.graphics,this.in,this.out,[],[]);
         this.x.model.ipar = new ScilabDouble([this.rule]);
+        this.x.model.nmode = new ScilabDouble([zcr1]);
+        this.x.model.nzcross = new ScilabDouble([zcr1]);
 	    this.displayParameter = [this.label];
         this.x.graphics.exprs = new ScilabString([this.rule],[this.zcr],[this.Datatype]);
         this.x.graphics.style = new ScilabString(["fontSize=13;fontStyle=1;displayedLabel=" + label]);
