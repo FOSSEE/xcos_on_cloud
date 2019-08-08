@@ -771,6 +771,12 @@ function createInstanceTag() {
     return new instance(arguments[0]);
 }
 
+function updateDetails(cell, details) {
+    var enc = new mxCodec(mxUtils.createXmlDocument());
+    var node = enc.encode(details);
+    cell.setValue(node);
+}
+
 function BasicBlock() {
     if (arguments.length > 0) {
         var options = arguments[0];
