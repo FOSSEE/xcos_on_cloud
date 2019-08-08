@@ -659,25 +659,14 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
         propertiesObject["PeriodicOption"] = graphParameters.PeriodicOption.toString();
         propertiesObject["graf"] = "y";
 
-        if(result){
-            graphic_window.destroy();
-            graphParameters.flag_for_zeros = false;
-            get_parameters_wind_sigbuilder.show();
-            check_call = 2;
-            cell.blockInstance.instance.set(propertiesObject);
-        }else{
-             if(mtd_check){
-                graphic_window.destroy();
-                graphParameters.flag_for_zeros = false;
-                get_parameters_wind_sigbuilder.show();
-                check_call = 2;
-                cell.blockInstance.instance.set(propertiesObject);
-             }else{
-                graphic_window.destroy();
-                graphParameters.flag_for_zeros = false;
-                get_parameters_wind_sigbuilder.show();
-                check_call = 2;
-             }
+        graphic_window.destroy();
+        graphParameters.flag_for_zeros = false;
+        get_parameters_wind_sigbuilder.show();
+        check_call = 2;
+
+        if (result || mtd_check) {
+            var details = cell.blockInstance.instance.set(propertiesObject);
+            updateDetails(cell, details);
         }
     };
     check_call = 1;
