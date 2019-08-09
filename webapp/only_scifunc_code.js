@@ -1027,7 +1027,7 @@ function create_scifunc_popups(graph,cell,name,diagRoot) {
             try {
                 var oldPorts = getPorts(cell.blockInstance.instance);
                 var details = cell.blockInstance.instance.set(propertiesObject);
-                updateDetails(cell, details);
+                updateDetails(graph, cell, details);
                 var newPorts = getPorts(cell.blockInstance.instance);
                 modifyPorts(graph, cell, cell.ports.left, 'left', oldPorts.inputPorts, newPorts.inputPorts);
                 modifyPorts(graph, cell, cell.ports.top, 'top', oldPorts.controlPorts, newPorts.controlPorts);
