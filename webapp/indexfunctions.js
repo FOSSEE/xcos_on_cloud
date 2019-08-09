@@ -1522,8 +1522,19 @@ function main(container, outline, toolbar, sidebar, status) {
                         var fullStyleName = styleName;
                         if (styleName!=null) {
                             var idx = styleName.indexOf(';');
-                            if (idx != -1) {
-                                styleName = styleName.substring(0, idx);
+                            if (styleName.startsWith("SELF_SWITCH")) {
+                                var styleName1;
+                                var stateOpen = details.objectsParameters[0].data00.value;
+                                if (stateOpen == "false"){
+                                    styleName1 = "SELF_SWITCH_ON";
+                                }else{
+                                    styleName1 = "SELF_SWITCH_OFF";
+                                }
+                                styleName = styleName1;
+                            } else {
+                                if (idx != -1) {
+                                    styleName = styleName.substring(0, idx);
+                                }
                             }
                         }
                         var style = stylesheet.styles[styleName];
@@ -2845,7 +2856,7 @@ function getPorts(details_instance) {
 
 function showPropertiesWindow(graph, cell, diagRoot) {
     var name = cell.getAttribute('blockElementName');
-    if (name!="LOOKUP_f" && name!="CURV_f" && name != "scifunc_block_m") {
+    if (name!="LOOKUP_f" && name!="CURV_f" && name != "scifunc_block_m" && name != "SELF_SWITCH") {
         var defaultProperties = cell.blockInstance.instance.get();
         /*
          * {
@@ -2976,8 +2987,24 @@ function showPropertiesWindow(graph, cell, diagRoot) {
         }
     } else {
         // This function is specifically for sciFunc_block_m
-        if (name=="scifunc_block_m") {
+        if (name == "scifunc_block_m") {
             create_scifunc_popups(graph,cell,name,diagRoot);
+        } else if (name == "SELF_SWITCH"){
+            var model = graph.getModel();
+            model.beginUpdate();
+            try {
+                var oldPorts = getPorts(cell.blockInstance.instance);
+                var details = cell.blockInstance.instance.set();
+                updateDetails(graph, cell, details);
+                var newPorts = getPorts(cell.blockInstance.instance);
+                modifyPorts(graph, cell, cell.ports.left, 'left', oldPorts.inputPorts, newPorts.inputPorts);
+                modifyPorts(graph, cell, cell.ports.top, 'top', oldPorts.controlPorts, newPorts.controlPorts);
+                modifyPorts(graph, cell, cell.ports.right, 'right', oldPorts.outputPorts, newPorts.outputPorts);
+                modifyPorts(graph, cell, cell.ports.bottom, 'bottom', oldPorts.commandPorts, newPorts.commandPorts);
+            } finally {
+                model.endUpdate();
+            }
+            graph.refresh();
         } else {
             /* Function is present inside LOOKUP_CURV.js */
             showGraphWindow(graph,cell,diagRoot);
