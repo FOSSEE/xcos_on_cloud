@@ -764,7 +764,7 @@
 		<add as="displayedLabel" value="%s"/>
     </add>
     <add as="RELATIONALOP" extend="blockWithLabel">
-        <add as="displayedLabel" value="Relational&lt;BR&gt;         op : %s"/>
+        <add as="displayedLabel" value="%s"/>
         <!-- new value for the label defined in the interface function of block -->
     </add>
     <add as="TEXT_f" extend="Label">
