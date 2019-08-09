@@ -2104,6 +2104,10 @@ SELECT_m.prototype.importset = function SELECT_m() {
     this.nin = ary[1];
     this.z0 = ary[2];
 }
+SELF_SWITCH.prototype.importset = function SELF_SWITCH() {
+   var flag = this.x.model.opar[0].data00.value;
+   this.stateOpen = (flag == "true");
+}
 SHIFT.prototype.importset = function SHIFT() {
     var model = this.x.model;
     var graphics = this.x.graphics;
