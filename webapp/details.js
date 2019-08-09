@@ -771,6 +771,85 @@ function createInstanceTag() {
     return new instance(arguments[0]);
 }
 
+function updateDetails(graph, cell, details) {
+    var enc = new mxCodec(mxUtils.createXmlDocument());
+    var node = enc.encode(details);
+
+    var styleName = cell.style;
+    if (styleName != null) {
+        var idx = styleName.indexOf(';');
+        if (idx != -1) {
+            var styleName1 = styleName.substring(0, idx);
+            if (styleName1 == 'SELF_SWITCH') {
+                var styleName2 = styleName.substring(idx + 1);
+                idx = styleName2.indexOf(';');
+                if (idx != -1)
+                    styleName2 = styleName2.substring(0, idx);
+                styleName = (styleName2 != '') ? styleName2 : styleName1;
+            } else {
+                styleName = styleName1;
+            }
+        }
+    }
+
+    var stylesheet = graph.getStylesheet();
+    var style = stylesheet.styles[styleName];
+
+    var dimensionForBlock = cell.blockInstance.instance.getDimensionForDisplay();
+    var geometryCell = cell.geometry;
+    var height = dimensionForBlock["height"];
+    var width = dimensionForBlock["width"];
+    if (geometryCell.height != null)
+        height = geometryCell.height;
+    if (geometryCell.width != null)
+        width = geometryCell.width;
+
+    /*
+     * When a particular block is loaded for the first
+     * time, the image in the style of the block will be a
+     * path to the image. Set the label in the style
+     * property of the block has a html image, and set the
+     * image in the style property as null
+     *
+     * NOTE: Since the image of any block need not be
+     * changed for every movement of that block, the image
+     * must be set only once.
+     */
+    if (style != null && style['image'] != null) {
+        // Make label as a image html element
+        var label = '<img src="' + style['image'] + '" height="' + (height*0.9) + '" width="' + (width*0.9) + '">';
+
+        // Set label
+        style['label'] = label;
+        style['imagePath'] = style['image'];
+        // Set image as null
+        style['image'] = null;
+
+        // Add the label as a part of node
+        node.setAttribute('label', label);
+    }
+
+    /*
+     * If a particular block with image tag in its
+     * style property has been invoked already, the
+     * image tag would be null for any successive
+     * instances of the same block. Hence, set the
+     * label from the label tag in style which was
+     * set when that blockModel was invoked on the
+     * first time.
+     */
+    if (style != null && style['label'] != null) {
+        // Set label from the label field in the style
+        // property
+        node.setAttribute('label', style['label']);
+    }
+
+    var parent = graph.getDefaultParent();
+    node.setAttribute('parent', parent.id);
+
+    cell.setValue(node);
+}
+
 function BasicBlock() {
     if (arguments.length > 0) {
         var options = arguments[0];
