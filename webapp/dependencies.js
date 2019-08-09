@@ -2230,3 +2230,21 @@ function getcharttype(mtd){
     return chartType;
 }
 
+function update_self_switch_values(graph, cell){
+    var model = graph.getModel();
+    model.beginUpdate();
+    try {
+        var oldPorts = getPorts(cell.blockInstance.instance);
+        var details = cell.blockInstance.instance.set();
+        updateDetails(graph, cell, details);
+        var newPorts = getPorts(cell.blockInstance.instance);
+        modifyPorts(graph, cell, cell.ports.left, 'left', oldPorts.inputPorts, newPorts.inputPorts);
+        modifyPorts(graph, cell, cell.ports.top, 'top', oldPorts.controlPorts, newPorts.controlPorts);
+        modifyPorts(graph, cell, cell.ports.right, 'right', oldPorts.outputPorts, newPorts.outputPorts);
+        modifyPorts(graph, cell, cell.ports.bottom, 'bottom', oldPorts.commandPorts, newPorts.commandPorts);
+    } finally {
+        model.endUpdate();
+    }
+    graph.refresh();
+}
+
