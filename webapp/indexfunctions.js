@@ -1520,10 +1520,16 @@ function main(container, outline, toolbar, sidebar, status) {
                         var stylesheet = graph.getStylesheet();
                         var styleName = currentNode.getAttribute('style');
                         var fullStyleName = styleName;
-                        if (styleName!=null) {
+                        if (styleName != null) {
                             var idx = styleName.indexOf(';');
-                            if (idx != -1) {
-                                styleName = styleName.substring(0, idx);
+                            if (styleName.startsWith("SELF_SWITCH")) {
+                                var ary = getData(details.objectsParameters[0]);
+                                var stateOpen = ( ary[0] == "true");
+                                styleName = stateOpen ? "SELF_SWITCH_OFF" : "SELF_SWITCH_ON";
+                            }else{
+                                if (idx != -1) {
+                                    styleName = styleName.substring(0, idx);
+                                }
                             }
                         }
                         var style = stylesheet.styles[styleName];
@@ -2845,7 +2851,7 @@ function getPorts(details_instance) {
 
 function showPropertiesWindow(graph, cell, diagRoot) {
     var name = cell.getAttribute('blockElementName');
-    if (name!="LOOKUP_f" && name!="CURV_f" && name != "scifunc_block_m") {
+    if (name!="LOOKUP_f" && name!="CURV_f" && name != "scifunc_block_m" && name != "SELF_SWITCH") {
         var defaultProperties = cell.blockInstance.instance.get();
         /*
          * {
@@ -2976,8 +2982,10 @@ function showPropertiesWindow(graph, cell, diagRoot) {
         }
     } else {
         // This function is specifically for sciFunc_block_m
-        if (name=="scifunc_block_m") {
+        if (name == "scifunc_block_m") {
             create_scifunc_popups(graph,cell,name,diagRoot);
+        } else if (name == "SELF_SWITCH"){
+            update_self_switch_values(graph, cell);
         } else {
             /* Function is present inside LOOKUP_CURV.js */
             showGraphWindow(graph,cell,diagRoot);
