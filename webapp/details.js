@@ -779,15 +779,9 @@ function updateDetails(graph, cell, details) {
     if (styleName != null) {
         var idx = styleName.indexOf(';');
         if (styleName.startsWith("SELF_SWITCH")) {
-            var styleName1;
             var stateOpen = cell.blockInstance.instance.stateOpen;
-            if (stateOpen == false){
-                styleName1 = "SELF_SWITCH_ON";
-            }else{
-                styleName1 = "SELF_SWITCH_OFF";
-            }
-            styleName = styleName1;
-        } else {
+            styleName = stateOpen ? "SELF_SWITCH_OFF" : "SELF_SWITCH_ON";
+        }else{
             if (idx != -1) {
                 styleName = styleName.substring(0, idx);
             }

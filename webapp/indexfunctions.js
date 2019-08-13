@@ -1520,18 +1520,13 @@ function main(container, outline, toolbar, sidebar, status) {
                         var stylesheet = graph.getStylesheet();
                         var styleName = currentNode.getAttribute('style');
                         var fullStyleName = styleName;
-                        if (styleName!=null) {
+                        if (styleName != null) {
                             var idx = styleName.indexOf(';');
                             if (styleName.startsWith("SELF_SWITCH")) {
-                                var styleName1;
-                                var stateOpen = details.objectsParameters[0].data00.value;
-                                if (stateOpen == "false"){
-                                    styleName1 = "SELF_SWITCH_ON";
-                                }else{
-                                    styleName1 = "SELF_SWITCH_OFF";
-                                }
-                                styleName = styleName1;
-                            } else {
+                                var ary = getData(details.objectsParameters[0]);
+                                var stateOpen = ( ary[0] == "true");
+                                styleName = stateOpen ? "SELF_SWITCH_OFF" : "SELF_SWITCH_ON";
+                            }else{
                                 if (idx != -1) {
                                     styleName = styleName.substring(0, idx);
                                 }
