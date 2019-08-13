@@ -778,16 +778,12 @@ function updateDetails(graph, cell, details) {
     var styleName = cell.style;
     if (styleName != null) {
         var idx = styleName.indexOf(';');
-        if (idx != -1) {
-            var styleName1 = styleName.substring(0, idx);
-            if (styleName1 == 'SELF_SWITCH') {
-                var styleName2 = styleName.substring(idx + 1);
-                idx = styleName2.indexOf(';');
-                if (idx != -1)
-                    styleName2 = styleName2.substring(0, idx);
-                styleName = (styleName2 != '') ? styleName2 : styleName1;
-            } else {
-                styleName = styleName1;
+        if (styleName.startsWith("SELF_SWITCH")) {
+            var stateOpen = cell.blockInstance.instance.stateOpen;
+            styleName = stateOpen ? "SELF_SWITCH_OFF" : "SELF_SWITCH_ON";
+        }else{
+            if (idx != -1) {
+                styleName = styleName.substring(0, idx);
             }
         }
     }
