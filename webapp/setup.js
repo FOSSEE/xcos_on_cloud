@@ -8,7 +8,7 @@ var maxIntegrationTimeInterval = 1.00001E05;
 var solver = 0.0;
 var defaultProperties = null;
 
-var expressionArray = [""];
+var expressionArray = [];
 
 var solver_kind_array = ["LSodar", "Sundials/CVODE - BDF - NEWTON",
     "Sundials/CVODE - BDF - FUNCTIONAL",
@@ -24,7 +24,8 @@ var solver_kind_array = ["LSodar", "Sundials/CVODE - BDF - NEWTON",
 ];
 
 function setup() {
-    if (arguments[0] == "get") {
+    var method = arguments[0];
+    if (method == "get") {
         defaultProperties = {
             i_time: ["Final Integration Time", "finalIntegrationTime", finalIntegrationTime],
             ab_tolerance: ["Integrator Absolute Tolerance", "integratorAbsoluteTolerance", integratorAbsoluteTolerance],
@@ -36,36 +37,38 @@ function setup() {
             solv_kind: ["Solver Kind", "solver", solver]
         };
         return defaultProperties;
-    } else if (arguments[0] == "set") {
-        for (var prop in arguments[1]) {
+    } else if (method == "set") {
+        var setup_values = arguments[1]
+        for (var prop in setup_values) {
             // Eliminate null values
-            if (arguments[1][prop] == null || arguments[1][prop].length == 0)
-                arguments[1][prop]=0.1;
+            if (setup_values[prop] == null || setup_values[prop].length == 0)
+                setup_values[prop] = 0.1;
             // Convert parameters from String to float
-            arguments[1][prop]=parseFloat(arguments[1][prop]);
+            setup_values[prop] = parseFloat(arguments[1][prop]);
         }
 
-        var properties = arguments[1];
+        var properties = setup_values;
         for (key in properties) {
             window[key] = properties[key];
         }
-    } else if (arguments[0] == "getArray") {
+    } else if (method == "getArray") {
         return solver_kind_array;
     }
 }
 
 function handleContext() {
-    if (arguments[0] == "get") {
+    var method = arguments[0];
+    if (method == "get") {
         return expressionArray;
-    } else if (arguments[0] == "set") {
-        for (var prop in arguments[1]) {
-            // Eliminate null values
-            if (arguments[1][prop] == null || arguments[1][prop].length == 0)
-                arguments[1][prop]=0.1;
-            // Convert parameters from String to float
-            arguments[1][prop]=parseFloat(arguments[1][prop]);
+    } else if (method == "set") {
+        var contextValues = arguments[1];
+        for (var prop in contextValues) {
+                // Eliminate null values
+            if (contextValues[prop] == null || contextValues[prop].length == 0){
+                expressionArray[prop] = 0.1;
+            }else{
+                expressionArray[prop] = contextValues[prop];
+            }
         }
-
-        expressionArray = arguments[1];
     }
 }
