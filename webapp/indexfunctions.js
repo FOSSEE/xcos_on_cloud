@@ -2645,6 +2645,9 @@ function showSetContext(graph, diagRoot) {
     myform.method = "";
     myform.setAttribute("id", "formProperties");
 
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
     // Add set context string
     var descriptionSetContext = document.createElement("div");
     descriptionSetContext.innerHTML = "You may enter here scilab instructions to define symbolic parameters used in block definitions using Scilab instructions. These instructions are evaluated once confirmed(i.e. you click on OK and every time the diagram is loaded)";
@@ -2674,7 +2677,17 @@ function showSetContext(graph, diagRoot) {
     btn.innerHTML = 'Ok';
     btn.type = "button";
     btn.name = "submit";
+    btn.style.marginLeft = "270px";
     btn.setAttribute("id", "buttonSetContext");
+    myform.appendChild(btn);
+
+    // Button - Cancel
+    var cancel_btn = document.createElement("button");
+    cancel_btn.innerHTML = 'Cancel';
+    cancel_btn.type = "button";
+    cancel_btn.name = "cancel";
+    cancel_btn.style.marginLeft = "10px";
+    myform.appendChild(cancel_btn);
 
     var contextValue = handleContext("get");
 
@@ -2727,9 +2740,13 @@ function showSetContext(graph, diagRoot) {
         wind.destroy();
     };
 
-    myform.appendChild(btn);
+    // Executes when button 'btn' is clicked
+    cancel_btn.onclick = function() {
+        wind.destroy();
+    };
+
     content.appendChild(myform);
-    var wind = showModalWindow(graph, 'Set Context', content, 450, 350);
+    var wind = showModalWindow(graph, 'Set Context', content, 450, 370);
 }
 
 function modifyPorts(graph, cell, ports, portPosition, a1, a2) {
@@ -3358,11 +3375,16 @@ function showSetupWindow(graph, diagRoot) {
     var linebreak = document.createElement('br');
     myform.appendChild(linebreak);
 
-    // Button - Submit
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    // Button - Ok
     var btn = document.createElement("button");
-    btn.innerHTML = 'Submit';
+    btn.innerHTML = 'Ok';
     btn.type = "button";
     btn.name = "submit";
+    btn.style.marginLeft = "100px";
 
     // Executes when button 'btn' is clicked
     btn.onclick = function() {
@@ -3387,14 +3409,28 @@ function showSetupWindow(graph, diagRoot) {
 
     myform.appendChild(btn);
 
-    // Button - Reset
+    // Button - Cancel
     var btn = document.createElement("button");
-    btn.innerHTML = 'Reset';
+    btn.innerHTML = 'Cancel';
     btn.type = "button";
-    btn.name = "submit";
-    btn.id = "resetButtonProperties";
+    btn.name = "cancel";
+    btn.style.marginLeft = "130px";
+    // Executes when button 'btn' is clicked
     btn.onclick = function() {
-        // Reset
+        wind.destroy();
+    };
+
+    myform.appendChild(btn);
+
+
+    // Button - Default
+    var btn = document.createElement("button");
+    btn.innerHTML = 'Default';
+    btn.type = "button";
+    btn.name = "default";
+    btn.style.cssText = 'float: right';
+    btn.onclick = function() {
+        // Default
         for (var key in defaultProperties) {
             if (defaultProperties.hasOwnProperty(key)) {
                 var element = document.getElementById(key.toString());
