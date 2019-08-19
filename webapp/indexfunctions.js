@@ -2635,7 +2635,13 @@ function XcosDiagram(context, model, attributes) {
  * Maverick
  * Added 'diagRoot' parameter.
  */
+var set_context_wind = "";
 function showSetContext(graph, diagRoot) {
+
+    var setup_wind = document.getElementById("setup_contentProperties");
+    if(setup_wind != null){
+        setup_wind.style.pointerEvents = "none";
+    }
     // Create basic structure for the form
     var content = document.createElement('div');
     content.setAttribute("id", "setContext");
@@ -2737,16 +2743,27 @@ function showSetContext(graph, diagRoot) {
         diagRoot.context = contextValues;
         diagRoot.context.scilabClass = "String[]";
         handleContext("set", contextValues);
-        wind.destroy();
+        if(setup_wind != null){
+            setup_wind.style.pointerEvents = "auto";
+        }
+        set_context_wind.destroy();
     };
 
     // Executes when button 'btn' is clicked
     cancel_btn.onclick = function() {
-        wind.destroy();
+        if(setup_wind != null){
+            setup_wind.style.pointerEvents = "auto";
+        }
+        set_context_wind.destroy();
     };
 
     content.appendChild(myform);
-    var wind = showModalWindow(graph, 'Set Context', content, 450, 370);
+    set_context_wind = showModalWindow(graph, 'Set Context', content, 450, 370);
+    set_context_wind.addListener(mxEvent.DESTROY, function(evt) {
+        if(setup_wind != null){
+            setup_wind.style.pointerEvents = "auto";
+        }
+    });
 }
 
 function modifyPorts(graph, cell, ports, portPosition, a1, a2) {
@@ -3286,7 +3303,7 @@ function showSetupWindow(graph, diagRoot) {
 
     // Create basic structure for the form
     var content = document.createElement('div');
-    content.setAttribute("id", "contentProperties");
+    content.setAttribute("id", "setup_contentProperties");
 
     // Heading of content
     var heading = document.createElement('h2');
@@ -3404,7 +3421,7 @@ function showSetupWindow(graph, diagRoot) {
         }
 
         setup("set", propertiesObject);
-        wind.destroy();
+        setup_wind.destroy();
     };
 
     myform.appendChild(btn);
@@ -3417,7 +3434,7 @@ function showSetupWindow(graph, diagRoot) {
     btn.style.marginLeft = "130px";
     // Executes when button 'btn' is clicked
     btn.onclick = function() {
-        wind.destroy();
+        setup_wind.destroy();
     };
 
     myform.appendChild(btn);
@@ -3452,7 +3469,17 @@ function showSetupWindow(graph, diagRoot) {
     height = 135 + 26 * defaultProperties.length + 15;
 
     content.appendChild(myform);
-    var wind = showModalWindow(graph, 'Set Parameters', content, 450, height);
+    var setup_wind = showModalWindow(graph, 'Set Parameters', content, 450, height);
+    setup_wind.addListener(mxEvent.ACTIVATE, function(e){
+        setup_wind.div.style = "z-index: 1";
+        var position = getXandYPosition(450, height);
+        setup_wind.setLocation(position[0], position[1]);
+    });
+    setup_wind.addListener(mxEvent.DESTROY, function(e) {
+        if(set_context_wind != ""){
+            set_context_wind.destroy();
+        }
+    });
 }
 
 function showColorWheel(graph, cell, selectProperty) {
