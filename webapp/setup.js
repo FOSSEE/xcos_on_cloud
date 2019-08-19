@@ -38,7 +38,7 @@ function setup() {
         };
         return defaultProperties;
     } else if (method == "set") {
-        var setup_values = arguments[1]
+        var setup_values = arguments[1];
         for (var prop in setup_values) {
             // Eliminate null values
             if (setup_values[prop] == null || setup_values[prop].length == 0)
