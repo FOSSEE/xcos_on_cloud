@@ -61,11 +61,12 @@ function handleContext() {
     if (method == "get") {
         return expressionArray;
     } else if (method == "set") {
+        expressionArray = [];
         var contextValues = arguments[1];
         for (var prop in contextValues) {
                 // Eliminate null values
             if (contextValues[prop] == null || contextValues[prop].length == 0){
-                expressionArray[prop] = 0.1;
+                expressionArray[prop] = "";
             }else{
                 expressionArray[prop] = contextValues[prop];
             }
