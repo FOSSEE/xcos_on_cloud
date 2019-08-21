@@ -44,7 +44,7 @@ function setup() {
             if (setup_values[prop] == null || setup_values[prop].length == 0)
                 setup_values[prop] = 0.1;
             // Convert parameters from String to float
-            setup_values[prop] = parseFloat(arguments[1][prop]);
+            setup_values[prop] = parseFloat(setup_values[prop]);
         }
 
         var properties = setup_values;
