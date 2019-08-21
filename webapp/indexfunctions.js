@@ -2635,7 +2635,13 @@ function XcosDiagram(context, model, attributes) {
  * Maverick
  * Added 'diagRoot' parameter.
  */
+var set_context_wind = "";
 function showSetContext(graph, diagRoot) {
+
+    var setup_wind = document.getElementById("setup_contentProperties");
+    if(setup_wind != null){
+        setup_wind.style.pointerEvents = "none";
+    }
     // Create basic structure for the form
     var content = document.createElement('div');
     content.setAttribute("id", "setContext");
@@ -2645,6 +2651,9 @@ function showSetContext(graph, diagRoot) {
     myform.method = "";
     myform.setAttribute("id", "formProperties");
 
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
     // Add set context string
     var descriptionSetContext = document.createElement("div");
     descriptionSetContext.innerHTML = "You may enter here scilab instructions to define symbolic parameters used in block definitions using Scilab instructions. These instructions are evaluated once confirmed(i.e. you click on OK and every time the diagram is loaded)";
@@ -2674,7 +2683,17 @@ function showSetContext(graph, diagRoot) {
     btn.innerHTML = 'Ok';
     btn.type = "button";
     btn.name = "submit";
+    btn.style.marginLeft = "270px";
     btn.setAttribute("id", "buttonSetContext");
+    myform.appendChild(btn);
+
+    // Button - Cancel
+    var cancel_btn = document.createElement("button");
+    cancel_btn.innerHTML = 'Cancel';
+    cancel_btn.type = "button";
+    cancel_btn.name = "cancel";
+    cancel_btn.style.marginLeft = "10px";
+    myform.appendChild(cancel_btn);
 
     var contextValue = handleContext("get");
 
@@ -2724,12 +2743,27 @@ function showSetContext(graph, diagRoot) {
         diagRoot.context = contextValues;
         diagRoot.context.scilabClass = "String[]";
         handleContext("set", contextValues);
-        wind.destroy();
+        if(setup_wind != null){
+            setup_wind.style.pointerEvents = "auto";
+        }
+        set_context_wind.destroy();
     };
 
-    myform.appendChild(btn);
+    // Executes when button 'btn' is clicked
+    cancel_btn.onclick = function() {
+        if(setup_wind != null){
+            setup_wind.style.pointerEvents = "auto";
+        }
+        set_context_wind.destroy();
+    };
+
     content.appendChild(myform);
-    var wind = showModalWindow(graph, 'Set Context', content, 450, 350);
+    set_context_wind = showModalWindow(graph, 'Set Context', content, 450, 370);
+    set_context_wind.addListener(mxEvent.DESTROY, function(evt) {
+        if(setup_wind != null){
+            setup_wind.style.pointerEvents = "auto";
+        }
+    });
 }
 
 function modifyPorts(graph, cell, ports, portPosition, a1, a2) {
@@ -3269,7 +3303,7 @@ function showSetupWindow(graph, diagRoot) {
 
     // Create basic structure for the form
     var content = document.createElement('div');
-    content.setAttribute("id", "contentProperties");
+    content.setAttribute("id", "setup_contentProperties");
 
     // Heading of content
     var heading = document.createElement('h2');
@@ -3358,11 +3392,16 @@ function showSetupWindow(graph, diagRoot) {
     var linebreak = document.createElement('br');
     myform.appendChild(linebreak);
 
-    // Button - Submit
+    // Line break
+    var linebreak = document.createElement('br');
+    myform.appendChild(linebreak);
+
+    // Button - Ok
     var btn = document.createElement("button");
-    btn.innerHTML = 'Submit';
+    btn.innerHTML = 'Ok';
     btn.type = "button";
     btn.name = "submit";
+    btn.style.marginLeft = "100px";
 
     // Executes when button 'btn' is clicked
     btn.onclick = function() {
@@ -3382,19 +3421,33 @@ function showSetupWindow(graph, diagRoot) {
         }
 
         setup("set", propertiesObject);
-        wind.destroy();
+        setup_wind.destroy();
     };
 
     myform.appendChild(btn);
 
-    // Button - Reset
+    // Button - Cancel
     var btn = document.createElement("button");
-    btn.innerHTML = 'Reset';
+    btn.innerHTML = 'Cancel';
     btn.type = "button";
-    btn.name = "submit";
-    btn.id = "resetButtonProperties";
+    btn.name = "cancel";
+    btn.style.marginLeft = "130px";
+    // Executes when button 'btn' is clicked
     btn.onclick = function() {
-        // Reset
+        setup_wind.destroy();
+    };
+
+    myform.appendChild(btn);
+
+
+    // Button - Default
+    var btn = document.createElement("button");
+    btn.innerHTML = 'Default';
+    btn.type = "button";
+    btn.name = "default";
+    btn.style.cssText = 'float: right';
+    btn.onclick = function() {
+        // Default
         for (var key in defaultProperties) {
             if (defaultProperties.hasOwnProperty(key)) {
                 var element = document.getElementById(key.toString());
@@ -3416,7 +3469,17 @@ function showSetupWindow(graph, diagRoot) {
     height = 135 + 26 * defaultProperties.length + 15;
 
     content.appendChild(myform);
-    var wind = showModalWindow(graph, 'Set Parameters', content, 450, height);
+    var setup_wind = showModalWindow(graph, 'Set Parameters', content, 450, height);
+    setup_wind.addListener(mxEvent.ACTIVATE, function(e){
+        setup_wind.div.style = "z-index: 1";
+        var position = getXandYPosition(450, height);
+        setup_wind.setLocation(position[0], position[1]);
+    });
+    setup_wind.addListener(mxEvent.DESTROY, function(e) {
+        if(set_context_wind != ""){
+            set_context_wind.destroy();
+        }
+    });
 }
 
 function showColorWheel(graph, cell, selectProperty) {
