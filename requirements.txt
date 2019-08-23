@@ -14,5 +14,5 @@ mccabe==0.6.1
 pycodestyle==2.5.0
 pyflakes==2.1.1
 setuptools==40.8.0
-Werkzeug==0.15.2
+Werkzeug==0.15.5
 wheel==0.33.1
