@@ -1,14 +1,14 @@
 function scifunc_block_m() {
 
     scifunc_block_m.prototype.define = function scifunc_block_m() {
-        this.i = 1;
-        this.o = 1;
+        this.i = [[1],[1]];
+        this.o = [[1],[1]];
         this.ci = [];
         this.co = [];
         this.xx = [];
         this.z = [];
         this.auto0 = [];
-        this.deptime = 1;
+        this.deptime = 0;
         var in1 = 1;
         var out = 1;
         var clkin = [];
@@ -101,8 +101,8 @@ function scifunc_block_m() {
         this.z = MatrixInverse((arguments[0]["z"]))
         this.rpar = MatrixInverse((arguments[0]["rpar"]))
         this.auto0 = MatrixInverse((arguments[0]["auto0"]))
-        this.deptime = MatrixInverse((arguments[0]["deptime"]))
-        if(arguments[0]["o"] != ""){
+        this.deptime = parseFloat(arguments[0]["deptime"])
+        if(this.o != ""){
             this.popup2value = ((arguments[0]["popup2value"]))
             var to_display = this.popup2value[0];
 

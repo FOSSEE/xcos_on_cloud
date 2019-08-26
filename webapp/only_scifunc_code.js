@@ -60,80 +60,24 @@ function create_scifunc_popups(graph,cell,name,diagRoot) {
             for (var key in defaultProperties) {
                 if (defaultProperties.hasOwnProperty(key)) {
                     propertiesObject[key] = document.getElementById(key.toString()).value;
-                    if (key.toString()=="in1") {
+                    if (key.toString()=="i") {
                         in1 = document.getElementById(key.toString()).value;
-                        var pattern = "\[\]|\[[0-9]{1},[0-9]{1}\]|\[[0-9]{1},[0-9]{1};[0-9]{1},[0-9]{1}\]";
-                        if (!in1.match(pattern)) {
-                            alert("Enter input of form [1,1] or [1,1;1,1] in input port size");
-                            return false;
-                        }
-                    } else if (key.toString()=="out") {
+                    } else if (key.toString()=="o") {
                         out = document.getElementById(key.toString()).value;
-                        var pattern = "\[\]|\[[0-9]{1},[0-9]{1}\]|\[[0-9]{1},[0-9]{1};[0-9]{1},[0-9]{1}\]";
-                        if (!out.match(pattern)) {
-                            alert("Enter input of form [1,1] or [1,1;1,1] in output port size");
-                            return false;
-                        }
-                    } else if (key.toString()=="clkin") {
+                    } else if (key.toString()=="ci") {
                         clkin = document.getElementById(key.toString()).value;
-                        var pattern = "\[\]|\[[0-9]{1}|\[[0-9]{1};[0-9]{1}\]";
-                        if (clkin != "") {
-                            if (!clkin.match(pattern)||clkin == "") {
-                                alert("Enter input of form [1] or [1;1] in input event port size");
-                                return false;
-                            }
-                        }
-                    } else if (key.toString()=="clkout") {
+                    } else if (key.toString()=="co") {
                         clkout = document.getElementById(key.toString()).value;
-                        var pattern = "\[\]|\[[0-9]{1}|\[[0-9]{1};[0-9]{1}\]";
-                        if (clkout != "") {
-                            if (!clkout.match(pattern)) {
-                                alert("Enter input of form [1] or [1;1] in output event port size");
-                                return false;
-                            }
-                        }
-                    } else if (key.toString()=="x0") {
+                    } else if (key.toString()=="xx") {
                         x0 = document.getElementById(key.toString()).value;
-                        var pattern = "\[\]|\[[0-9]{1}|\[[0-9]{1};[0-9]{1}\]";
-                        if (x0 != "") {
-                            if (!x0.match(pattern)) {
-                                alert("Enter input of form [1] or [1;1] in initial continuous state");
-                                return false;
-                            }
-                        }
-                    } else if (key.toString()=="z0") {
+                    } else if (key.toString()=="z") {
                         z0 = document.getElementById(key.toString()).value;
-                        var pattern = "\[\]|\[[0-9]{1}|\[[0-9]{1};[0-9]{1}\]";
-                        if (z0 != "") {
-                            if (!z0.match(pattern)) {
-                                alert("Enter input of form [1] or [1;1] in initial discrete state");
-                                return false;
-                            }
-                        }
                     } else if (key.toString()=="rpar") {
                         rpar = document.getElementById(key.toString()).value;
-                        var pattern = "\[\]|\[[0-9]{1}|\[[0-9]{1};[0-9]{1}\]";
-                        if (rpar != "") {
-                            if (!rpar.match(pattern)) {
-                                alert("Enter input of form [1] or [1;1] in system parameters vector");
-                                return false;
-                            }
-                        }
-                    } else if (key.toString()=="auto") {
+                    } else if (key.toString()=="auto0") {
                         auto = document.getElementById(key.toString()).value;
-                        var pattern = "\[\]|\[[0-9]{1}|\[[0-9]{1};[0-9]{1}\]";
-                        if (auto != "") {
-                            if (!auto.match(pattern)) {
-                                alert("Enter input of form [1] or [1;1] in initial firing vector");
-                                return false;
-                            }
-                        }
-                    } else if (key.toString()=="it") {
+                    } else if (key.toString()=="deptime") {
                         it = document.getElementById(key.toString()).value;
-                        if (isNaN(it) || it == "") {
-                            alert("Incorrect value assigned to: is block always active");
-                            return false;
-                        }
                     }
                 }
             }
