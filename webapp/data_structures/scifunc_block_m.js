@@ -54,28 +54,28 @@ function scifunc_block_m() {
     scifunc_block_m.prototype.get = function scifunc_block_m() {
         //calling get and passing the labels
         if(this.popup2value == undefined || this.popup2value == ""){
-            this.popup2value = "y1=sin(u1)"
+            this.popup2value = "y1=sin(u1)";
         }
         if(this.popup3value == undefined || this.popup3value == ""){
-            this.popup3value = "xd = []"
+            this.popup3value = "xd = []";
         }
         if(this.popup4value == undefined || this.popup4value == ""){
-            this.popup4value = ""
+            this.popup4value = "";
         }
         if(this.popup5value == undefined || this.popup5value == ""){
             this.popup5value = "y1=sin(u1)";
         }
         if(this.popup6value == undefined || this.popup6value == ""){
-            this.popup6value = ""
+            this.popup6value = "";
         }
         if(this.popup7value == undefined || this.popup7value == ""){
-            this.popup7value = ""
+            this.popup7value = "";
         }
         if(this.popup7value == undefined || this.popup7value == ""){
-            this.popup7value = ""
+            this.popup7value = "";
         }
         if(this.popup8value == undefined || this.popup8value == ""){
-            this.popup8value = ""
+            this.popup8value = "";
         }
 
         var options ={
