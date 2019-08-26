@@ -61,21 +61,21 @@ function create_scifunc_popups(graph,cell,name,diagRoot) {
                 if (defaultProperties.hasOwnProperty(key)) {
                     propertiesObject[key] = document.getElementById(key.toString()).value;
                     if (key.toString()=="i") {
-                        in1 = document.getElementById(key.toString()).value;
+                        in1 = inverse(document.getElementById(key.toString()).value);
                     } else if (key.toString()=="o") {
-                        out = document.getElementById(key.toString()).value;
+                        out = inverse(document.getElementById(key.toString()).value);
                     } else if (key.toString()=="ci") {
-                        clkin = document.getElementById(key.toString()).value;
+                        clkin = inverse(document.getElementById(key.toString()).value);
                     } else if (key.toString()=="co") {
-                        clkout = document.getElementById(key.toString()).value;
+                        clkout = inverse(document.getElementById(key.toString()).value);
                     } else if (key.toString()=="xx") {
-                        x0 = document.getElementById(key.toString()).value;
+                        x0 = inverse(document.getElementById(key.toString()).value);
                     } else if (key.toString()=="z") {
-                        z0 = document.getElementById(key.toString()).value;
+                        z0 = inverse(document.getElementById(key.toString()).value);
                     } else if (key.toString()=="rpar") {
-                        rpar = document.getElementById(key.toString()).value;
+                        rpar = inverse(document.getElementById(key.toString()).value);
                     } else if (key.toString()=="auto0") {
-                        auto = document.getElementById(key.toString()).value;
+                        auto = inverse(document.getElementById(key.toString()).value);
                     } else if (key.toString()=="deptime") {
                         it = document.getElementById(key.toString()).value;
                     }
