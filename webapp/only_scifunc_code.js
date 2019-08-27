@@ -48,7 +48,7 @@ function create_scifunc_popups(graph,cell,name,diagRoot) {
         }
 
         var popup1submit_btn = document.createElement("button");
-        popup1submit_btn.innerHTML = 'Submit';
+        popup1submit_btn.innerHTML = 'OK';
         popup1submit_btn.type = "button";
         popup1submit_btn.name = "submit";
 
@@ -60,23 +60,49 @@ function create_scifunc_popups(graph,cell,name,diagRoot) {
             for (var key in defaultProperties) {
                 if (defaultProperties.hasOwnProperty(key)) {
                     propertiesObject[key] = document.getElementById(key.toString()).value;
-                    if (key.toString()=="i") {
+                    if (key.toString() == "i") {
                         in1 = inverse(document.getElementById(key.toString()).value);
-                    } else if (key.toString()=="o") {
+                        for(var i = 0; i < in1.length; i++){
+                            if(i == 0){
+                                if(in1[i].length == 1 || in1[i].length > 2){
+                                    alert("Answer given for input ports sizes \nhas invalid dimension:\nwaiting for dimension -1 x 2.");
+                                    throw "incorrect";
+                                }
+                            }else{
+                                if(in1[i].length == 1 || in1[i].length > 2){
+                                    alert("Answer given for input ports sizes \nis incorrect: Inconsistent row/column dimensions");
+                                    throw "incorrect";
+                                }
+                            }
+                        }
+                    } else if (key.toString() == "o") {
                         out = inverse(document.getElementById(key.toString()).value);
-                    } else if (key.toString()=="ci") {
+                        for(var i = 0; i < out.length; i++){
+                            if(i == 0){
+                                if(out[i].length == 1 || out[i].length > 2){
+                                    alert("Answer given for output ports sizes \nhas invalid dimension:\nwaiting for dimension -2 x 2");
+                                    throw "incorrect";
+                                }
+                            }else{
+                                if(out[i].length == 1 || out[i].length > 2){
+                                    alert("Answer given for output ports sizes \nis incorrect: Inconsistent row/column dimensions");
+                                    throw "incorrect";
+                                }
+                            }
+                        }
+                    } else if (key.toString() == "ci") {
                         clkin = inverse(document.getElementById(key.toString()).value);
-                    } else if (key.toString()=="co") {
+                    } else if (key.toString() == "co") {
                         clkout = inverse(document.getElementById(key.toString()).value);
-                    } else if (key.toString()=="xx") {
+                    } else if (key.toString() == "xx") {
                         x0 = inverse(document.getElementById(key.toString()).value);
-                    } else if (key.toString()=="z") {
+                    } else if (key.toString() == "z") {
                         z0 = inverse(document.getElementById(key.toString()).value);
-                    } else if (key.toString()=="rpar") {
+                    } else if (key.toString() == "rpar") {
                         rpar = inverse(document.getElementById(key.toString()).value);
-                    } else if (key.toString()=="auto0") {
+                    } else if (key.toString() == "auto0") {
                         auto = inverse(document.getElementById(key.toString()).value);
-                    } else if (key.toString()=="deptime") {
+                    } else if (key.toString() == "deptime") {
                         it = document.getElementById(key.toString()).value;
                     }
                 }
@@ -86,13 +112,13 @@ function create_scifunc_popups(graph,cell,name,diagRoot) {
              * calling appropriate popup depending on the different inputs
              * given in popup1
              */
-            if (out.length != 0) {
-                create_popup2(out,clkin,clkout,x0,z0,propertiesObject,defaultProperties);
-            } else if (!x0=="") {
+            if (out[0].length != 0) {
+                create_popup2(in1,out,clkin,clkout,x0,z0,propertiesObject,defaultProperties);
+            } else if (!x0 == "") {
                 create_popup3(out,clkin,clkout,x0,z0,propertiesObject,defaultProperties);
-            } else if (!z0=="") {
+            } else if (!z0 == "") {
                 create_popup4(out,clkin,clkout,x0,z0,propertiesObject,defaultProperties);
-            } else if (!clkin=="" && !clkout=="") {
+            } else if (!clkin == "" && !clkout == "") {
                 create_popup5(out,clkin,clkout,x0,z0,propertiesObject,defaultProperties);
             } else {
                 create_popup6(out,clkin,clkout,x0,z0,propertiesObject,defaultProperties);
@@ -100,7 +126,7 @@ function create_scifunc_popups(graph,cell,name,diagRoot) {
         }
 
         var popup1reset_btn = document.createElement("button");
-        popup1reset_btn.innerHTML = 'Reset';
+        popup1reset_btn.innerHTML = 'Cancel';
         popup1reset_btn.type = "button";
         popup1reset_btn.name = "submit";
         popup1reset_btn.id = "resetButtonProperties1";
@@ -112,13 +138,14 @@ function create_scifunc_popups(graph,cell,name,diagRoot) {
                     element.value = defaultProperties[key][1];
                 }
             }
+            wind1.destroy();
         };
 
         popup1form.appendChild(popup1reset_btn);
         popup1head.style.cssText = "margin-left: 15px";
         popup1form.style.cssText = "margin-left: 15px";
-        popup1reset_btn.style.cssText = "margin-top: 20px; margin-right: 15px; float: right";
-        popup1submit_btn.style.cssText = "margin-top: 20px";
+        popup1reset_btn.style.cssText = "margin-top: 20px; margin-right: 15px; float: right;margin-bottom: 5px";
+        popup1submit_btn.style.cssText = "margin-left: 320px; margin-top: 20px; margin-bottom: 5px";
         popup1div.style.cssText = "border: 1px solid black";
         popup1form.appendChild(popup1submit_btn);
         popup1div.appendChild(popup1form);
@@ -127,7 +154,7 @@ function create_scifunc_popups(graph,cell,name,diagRoot) {
         var wind1 = showModalWindow(graph, 'Properties', popup1div, 450, height);
     }
 
-    function create_popup2(out,clkin,clkout,x0,z0,propertiesObject,defaultProperties) {
+    function create_popup2(in1,out,clkin,clkout,x0,z0,propertiesObject,defaultProperties) {
         var popup2div = document.createElement("div");
         popup2div.id = "def_fun"
 
@@ -146,173 +173,87 @@ function create_scifunc_popups(graph,cell,name,diagRoot) {
         popup2form.appendChild(popup2label);
         var linebreak = document.createElement("br");
         popup2form.appendChild(linebreak);
-
-        var popuplabels = new Array();
-        for (var i=5; i<=out.length; i=i+4) {
+        var array_for_y_value = [];
+        for (var i = 0; i < out.length; i++) {
             /*
              * creating labels dynamically in popup2 depending on the no.
              * of outport ports in popup1
              */
-            popuplabels[i] = new Array();
-            popuplabels[i][0] = document.createElement("label");
-            popup2form.appendChild(popuplabels[i][0]);
+            var popuplabel_1 = document.createElement("label");
+            popup2form.appendChild(popuplabel_1);
             var linebreak = document.createElement("br");
             popup2form.appendChild(linebreak);
-            if (i == 5) {
-                popuplabels[i][0].innerHTML = "y1 = sin(u1)";
-            } else if (i == 9) {
-                popuplabels[i][0].innerHTML = "y2 = sin(u1)";
-            } else if (i == 13) {
-                popuplabels[i][0].innerHTML = "y3 = sin(u1)";
-            } else if (i == 17) {
-                popuplabels[i][0].innerHTML = "y4 = sin(u1)";
-            } else if (i == 21) {
-                popuplabels[i][0].innerHTML = "y5 = sin(u1)";
-            } else if (i == 25) {
-                popuplabels[i][0].innerHTML = "y6 = sin(u1)";
-            } else if (i == 29) {
-                popuplabels[i][0].innerHTML = "y7 = sin(u1)";
-            }
+            var label_with_index = "y"+(i + 1);
+            array_for_y_value[i] = label_with_index;
+            popuplabel_1.innerHTML = label_with_index+" (size: 1)";
         }
 
-        var popup2label5 = document.createElement("label");
-        popup2label5.innerHTML =  "as a function of t, u1 n_evi";
-        popup2form.appendChild(popup2label5);
+        var popup2label_2 = document.createElement("label");
+        /* for input port values ie 'u'  */
+        var u_text = ""
+        for(var i = 1; i <= in1.length; i++){
+            u_text += "u"+i+",";
+        }
+        popup2label_2.innerHTML =  "as a function of t,"+u_text+"n_evi";
+        popup2form.appendChild(popup2label_2);
         var linebreak = document.createElement("br");
         popup2form.appendChild(linebreak);
-
-        var popupinputs = new Array();
-        for (var i=5; i<=out.length; i=i+4) {
-            /*
-             * creating inputs dynamically in popup2 depending on the no.
-             * of outport ports in popup1
-             */
-            popupinputs[i] = new Array();
-            popupinputs[i][0] = document.createElement("input");
-            popupinputs[i][0].style.cssText = "width: 340px";
-            popup2form.appendChild(popupinputs[i][0]);
-            var linebreak = document.createElement("br");
-            popup2form.appendChild(linebreak);
-            if (i == 5) {
-                popupinputs[i][0].value = "y1 = sin(u1)";
-                popupinputs[i][0].id = "p2input1";
-            } else if (i == 9) {
-                popupinputs[i][0].value = "y2 = sin(u1)";
-                popupinputs[i][0].id = "p2input2";
-            } else if (i == 13) {
-                popupinputs[i][0].value = "y3 = sin(u1)";
-                popupinputs[i][0].id = "p2input3";
-            } else if (i == 17) {
-                popupinputs[i][0].value = "y4 = sin(u1)";
-                popupinputs[i][0].id = "p2input4";
-            } else if (i == 21) {
-                popupinputs[i][0].value = "y5 = sin(u1)";
-                popupinputs[i][0].id = "p2input5";
-            } else if (i == 25) {
-                popupinputs[i][0].value = "y6 = sin(u1)";
-                popupinputs[i][0].id = "p2input6";
-            } else if (i == 29) {
-                popupinputs[i][0].value = "y7 = sin(u1)";
-                popupinputs[i][0].id = "p2input7";
-            }
-        }
+        var popupinputtextarea = document.createElement("TEXTAREA");
+        popupinputtextarea.style.cssText = "width: 340px";
+        popupinputtextarea.value = "y1 = sin(u1)";
+        popupinputtextarea.id = "p2inputtextarea";
+        popup2form.appendChild(popupinputtextarea);
+        popup2form.appendChild(linebreak);
+        popup2form.appendChild(linebreak);
 
         var popup2submit_btn = document.createElement("button");
-        popup2submit_btn.innerHTML = "Submit";
+        popup2submit_btn.innerHTML = "OK";
         popup2submit_btn.type = "button";
         popup2submit_btn.onclick = function() {
-            var popup2value = Array();
-
-            if (out.length >= 5) {
-                var popup2value1 = document.getElementById("p2input1").value;
-                if (popup2value1 == "") {
-                    alert("y is not defined");
-                    return false;
+            var popup2value = document.getElementById("p2inputtextarea").value;
+            var value_array = popup2value.split(/[,;\n]+/);
+            var filterarray = []; //store proper value
+            var j = 0;
+            for(var i = 0; i < value_array.length; i++){
+                if(value_array[i].length != 0){
+                    filterarray[j] = value_array[i];
                 }
-                popup2value.push(popup2value1);
+                j++;
             }
-
-            if (out.length >= 9) {
-                var popup2value2 = document.getElementById("p2input2").value;
-                if (popup2value2 == "") {
-                    alert("y is not defined");
-                    return false;
+            for(var i = 0; i < array_for_y_value.length; i++){
+                var textfrompopup2 = filterarray.toString().replace(/\s\s+/g,"");
+                var check = textfrompopup2.includes(array_for_y_value[i]);
+                if(!check){
+                    alert("You did not define "+ array_for_y_value[i] +" (size: 1) !");
+                    throw "incorrect";
                 }
-                popup2value.push(popup2value2);
             }
-
-            if (out.length >= 13) {
-                var popup2value3 = document.getElementById("p2input3").value;
-                if (popup2value3 == "") {
-                    alert("y is not defined");
-                    return false;
-                }
-                popup2value.push(popup2value3);
-            }
-
-            if (out.length >= 17) {
-                var popup2value4 = document.getElementById("p2input4").value;
-                if (popup2value4 == "") {
-                    alert("y is not defined");
-                    return false;
-                }
-                popup2value.push(popup2value4);
-            }
-
-            if (out.length >= 21) {
-                var popup2value5 = document.getElementById("p2input5").value;
-                if (popup2value5 == "") {
-                    alert("y is not defined");
-                    return false;
-                }
-                popup2value.push(popup2value5);
-            }
-
-            if (out.length >= 25) {
-                var popup2value6 = document.getElementById("p2input6").value;
-                if (popup2value6 == "") {
-                    alert("y is not defined");
-                    return false;
-                }
-                popup2value.push(popup2value6);
-            }
-
-            if (out.length >= 29) {
-                var popup2value7 = document.getElementById("p2input7").value;
-                if (popup2value7 == "") {
-                    alert("y is not defined");
-                    return false;
-                }
-                popup2value.push(popup2value7);
-            }
-
-            propertiesObject["popup2value"] = popup2value;
-
+            propertiesObject["popup2value"] = filterarray;
             wind2.destroy();
             /* calling appropriate popup depending on the conditions */
-            if (!x0=="") {
+            if (!x0 == "") {
                 create_popup3(out,clkin,clkout,x0,z0,propertiesObject,defaultProperties);
-            } else if (!z0=="") {
+            } else if (!z0 == "") {
                 create_popup4(out,clkin,clkout,x0,z0,propertiesObject,defaultProperties);
-            } else if (!clkin=="" && !clkout=="") {
+            } else if (!clkin == "" && !clkout == "") {
                 create_popup5(out,clkin,clkout,x0,z0,propertiesObject,defaultProperties);
             } else {
                 create_popup6(out,clkin,clkout,x0,z0,propertiesObject,defaultProperties);
             }
         }
         var popup2reset_btn = document.createElement("button");
-        popup2reset_btn.innerHTML = 'Reset';
+        popup2reset_btn.innerHTML = 'Cancel';
         popup2reset_btn.type = "button";
         popup2reset_btn.name = "submit";
         popup2reset_btn.id = "resetButtonProperties2";
         popup2reset_btn.onclick = function() {
-            document.getElementById("p2input").value = "y1=sin(u1)";
+            wind2.destroy();
         }
         popup2form.appendChild(popup2reset_btn);
         popup2head.style.cssText = "margin-left: 15px";
         popup2form.style.cssText = "margin-left: 15px";
-        popup2submit_btn.style.cssText = "margin-top: 20px";
-        popup2reset_btn.style.cssText = "float: right; margin-top: 20px; margin-right: 15px";
+        popup2submit_btn.style.cssText = "margin-left: 320px; margin-top: 20px; margin-bottom: 5px";
+        popup2reset_btn.style.cssText = "float: right; margin-top: 20px; margin-right: 15px; margin-bottom: 5px";
         popup2div.style.cssText = "border: 1px solid black";
         popup2form.appendChild(popup2submit_btn);
         popup2div.appendChild(popup2form);
