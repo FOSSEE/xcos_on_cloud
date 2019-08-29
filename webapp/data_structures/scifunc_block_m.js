@@ -39,7 +39,7 @@ function scifunc_block_m() {
         model.blocktype = new ScilabString([this.typ]);
         model.firing = new ScilabDouble();
         model.dep_ut = new ScilabBoolean([true, false]);
-        var n = "scifunc";
+        var n = "y1=sin(u1)";
         this.displayParameter = [n];
         var exprs = list(new ScilabString([sci2exp([in1, in1])], [sci2exp([out, out])], [sci2exp(clkin)], [sci2exp(clkout)], [sci2exp(x0)], [sci2exp(z0)], [sci2exp(this.rpar)], [sci2exp(auto)], [sci2exp(0)]), list(new ScilabString(["y1=sin(u1)"]), new ScilabString([" "]), new ScilabString([" "]), new ScilabString(["y1=sin(u1)"]), new ScilabString([" "]), new ScilabString([" "]), new ScilabString([" "])));
 
@@ -52,40 +52,14 @@ function scifunc_block_m() {
     }
 
     scifunc_block_m.prototype.get = function scifunc_block_m() {
-        //calling get and passing the labels
-        if(this.popup2value == undefined || this.popup2value == ""){
-            this.popup2value = "y1=sin(u1)";
-        }
-        if(this.popup3value == undefined || this.popup3value == ""){
-            this.popup3value = "xd = []";
-        }
-        if(this.popup4value == undefined || this.popup4value == ""){
-            this.popup4value = "";
-        }
-        if(this.popup5value == undefined || this.popup5value == ""){
-            this.popup5value = "y1=sin(u1)";
-        }
-        if(this.popup6value == undefined || this.popup6value == ""){
-            this.popup6value = "";
-        }
-        if(this.popup7value == undefined || this.popup7value == ""){
-            this.popup7value = "";
-        }
-        if(this.popup7value == undefined || this.popup7value == ""){
-            this.popup7value = "";
-        }
-        if(this.popup8value == undefined || this.popup8value == ""){
-            this.popup8value = "";
-        }
-
-        var options ={
+        var options = {
             i : ["input port sizes", this.i],
             o : ["output port sizes", this.o],
             ci : ["input event port sizes", this.ci],
             co : ["output event port sizes", this.co],
             xx : ["initial continuous state", this.xx],
             z : ["initial discrete state", this.z],
-            rpar : ["system parameters vector", this.rpar],
+            rpar : ["System parameters vector", this.rpar],
             auto0 : ["initial firing vector(<0 for no firing)", this.auto0],
             deptime : ["is block always active(0:no, 1:yes)", this.deptime],
         }
@@ -331,7 +305,7 @@ function scifunc_block_m() {
     }
 
     scifunc_block_m.prototype.get_popup_title = function scifunc_block_m() {
-        var set_param_popup_title="Set parameters";
+        var set_param_popup_title = "Set scifunc_block parameters <br>only regular blocks supported";
         return set_param_popup_title
     }
     scifunc_block_m.prototype.getDimensionForDisplay = function scifunc_block_m(){

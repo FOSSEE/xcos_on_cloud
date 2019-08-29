@@ -2885,7 +2885,7 @@ function getPorts(details_instance) {
 
 function showPropertiesWindow(graph, cell, diagRoot) {
     var name = cell.getAttribute('blockElementName');
-    if (name!="LOOKUP_f" && name!="CURV_f" && name != "scifunc_block_m" && name != "SELF_SWITCH") {
+    if (name!="LOOKUP_f" && name!="CURV_f" && name != "SELF_SWITCH") {
         var defaultProperties = cell.blockInstance.instance.get();
         /*
          * {
@@ -3015,10 +3015,8 @@ function showPropertiesWindow(graph, cell, diagRoot) {
             get_parameters_wind_sigbuilder = wind;
         }
     } else {
-        // This function is specifically for sciFunc_block_m
-        if (name == "scifunc_block_m") {
-            create_scifunc_popups(graph,cell,name,diagRoot);
-        } else if (name == "SELF_SWITCH"){
+        // This function is specifically for self_switch
+        if (name == "SELF_SWITCH"){
             update_self_switch_values(graph, cell);
         } else {
             /* Function is present inside LOOKUP_CURV.js */
