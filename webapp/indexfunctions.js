@@ -1,6 +1,7 @@
 var graph_sigbuilder = ""; //For storing graph for sigbuilder block
 var cell_sigbuilder = ""; //For storing graph for sigbuilder block
 var get_parameters_wind_sigbuilder = "";
+var get_parameters_wind_scifunc = "";
 // function which makes the Ajax 'post' request with data sent in arguments
 function myAjaxreq(k,functionName) {
     var mbl = new Blob([k], { type: 'text/plain' });  // store the data in blob
@@ -3013,6 +3014,9 @@ function showPropertiesWindow(graph, cell, diagRoot) {
         var wind = showModalWindow(graph, 'Properties', content, 450, height);
         if(name == 'Sigbuilder'){
             get_parameters_wind_sigbuilder = wind;
+        }
+        if(name == 'scifunc_block_m'){
+            get_parameters_wind_scifunc = wind;
         }
     } else {
         // This function is specifically for self_switch
