@@ -1,3 +1,22 @@
+function genfunc2(exprs,in1,out,nci,nco,xx_size,z_size,nrp,typ){
+
+    var exprs_2 = [];
+    if(typeof exprs != 'undefined' || exprs != []){
+        for(var i = 0; i < exprs.length; i++){
+            var data = exprs[i].data00;
+            if(typeof data != 'undefined'){
+                exprs_2[i] = data.value;
+            }else{
+                exprs_2[i] = "";
+            }
+        }
+    }
+    get_parameters_wind_scifunc.destroy();
+    var ni = size(in1,1);
+    var no = size(out,1);
+}
+
+
 function create_scifunc_popups(graph,cell,name,diagRoot) {
 
     /* This is the code for getting parameters after double click on block */
