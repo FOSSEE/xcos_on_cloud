@@ -61,9 +61,9 @@ function scifunc_block_m() {
             z : ["initial discrete state", this.z],
             rpar : ["System parameters vector", this.rpar],
             auto0 : ["initial firing vector(<0 for no firing)", this.auto0],
-            deptime : ["is block always active(0:no, 1:yes)", this.deptime],
-        }
-        return options
+            deptime : ["is block always active(0:no, 1:yes)", this.deptime]
+        };
+        return options;
     }
 
     scifunc_block_m.prototype.set = function scifunc_block_m() {
@@ -229,9 +229,6 @@ function scifunc_block_m() {
         }
         this.deptime = deptime_2;
 
-
-        this.it = ones(size(in1,1),1);
-        this.ot = ones(size(out,1),1);
         var nrp = 0;
         if(rpar0.length != 0){
             nrp = rpar0.length * rpar0[0].length;
@@ -240,17 +237,17 @@ function scifunc_block_m() {
         var nco = clkout.length;
         var xx_size = x0.length;
         var z_size = z0.length;
-        //var exprs = this.x.graphics.exprs; //hv to get value only
-        //[ok,tt,dep_ut] = genfunc2(exprs[1],in1,out,nci,nco,xx_size,z_size,nrp,"c"); //have to write function
-
-
-        var io = set_io(this.x.model,this.x.graphics,list(...in1,...this.it),list(...out,...this.ot),clkin,clkout);
+        var exprs_2 = [];
+        exprs_2 = this.x.graphics.exprs[1];
+        genfunc2(exprs_2,in1,out,nci,nco,xx_size,z_size,nrp,this.typ); //have to write function
+        this.it = ones(size(in1,1),1);
+        this.ot = ones(size(out,1),1);
         //this.x.model.opar = list(this.popup2value_disp, new ScilabString([this.popup3value.toString()]), this.popup4value_disp, this.popup5value_disp, this.popup6value_disp, this.popup7value_disp, this.popup8value_disp)
-        //var exprs = list(new ScilabString([sci2exp(this.i)], [sci2exp(this.o)], [sci2exp(this.ci)], [sci2exp(this.co)], [sci2exp(this.xx)], [sci2exp(this.z)], [sci2exp(this.rpar)], [sci2exp(this.auto0)], [sci2exp(this.deptime)]), list(this.popup2value_disp, new ScilabString([this.popup3value.toString()]), this.popup4value_disp, this.popup5value_disp, this.popup6value_disp, this.popup7value_disp, this.popup8value_disp))
-         list();
-        this.x.graphics.exprs = exprs
+        var exprs = list(new ScilabString([sci2exp(this.i)], [sci2exp(this.o)], [sci2exp(this.ci)], [sci2exp(this.co)], [sci2exp(this.xx)], [sci2exp(this.z)], [sci2exp(this.rpar)], [sci2exp(this.auto0)], [sci2exp(this.deptime)]), list("", new ScilabString([""]), "", "", "", "", ""))
         var n = "y1=sin(u1)";
         this.displayParameter = [n];
+        var io = set_io(this.x.model,this.x.graphics,list(...in1,...this.it),list(...out,...this.ot),clkin,clkout);
+        this.x.graphics.exprs = exprs;
         return new BasicBlock(this.x)
     }
 
