@@ -1,20 +1,149 @@
-function genfunc2(exprs,in1,out,nci,nco,xx_size,z_size,nrp,typ){
+function genfunc2(exprs,in1,out,nci,nco,xx_size,z_size,nrp,typ,graph,cell){
 
-    var exprs_2 = [];
-    if(typeof exprs != 'undefined' || exprs != []){
+    var text_main_array = [];
+    if(exprs.length != 7){
+        text_main_array= [" "," "," "," "," "," "," "];
+    }else{
         for(var i = 0; i < exprs.length; i++){
-            var data = exprs[i].data00;
-            if(typeof data != 'undefined'){
-                exprs_2[i] = data.value;
-            }else{
-                exprs_2[i] = "";
-            }
+                var data = getData(exprs[i]);
+                text_main_array[i] = data;
         }
     }
-    get_parameters_wind_scifunc.destroy();
     var ni = size(in1,1);
     var no = size(out,1);
+    var mac = [];
+    var ok = false;
+    var dep_ut = [];
+
+    var dep_u = false;
+    var dep_t = false;
+    var depp = "t";
+    var deqq = "t";
+
+    var txt1 = text_main_array[0];
+    if(no > 0){
+        create_popup_for_define_function(no,ni,graph,cell,txt1);
+    }
+
+    var txt0 = text_main_array[1],txt2 = text_main_array[2],txt3 = text_main_array[3],txt4 = text_main_array[4],txt5 = text_main_array[5],txt6 = text_main_array[6];
+    var tt = [txt1,txt0,txt2,txt3,txt4,txt5,txt6];
+    var ok = true;
+    dep_ut = [dep_u,dep_t];
+    return [ok,tt,dep_ut];
 }
+
+function create_popup_for_define_function(no,ni,graph,cell,txt1) {
+        var first_wind_value = txt1;
+        var def_func_div = document.createElement("div");
+        def_func_div.id = "def_fun"
+
+        var def_func_head = document.createElement("h2");
+        def_func_head.id = "headp2";
+        def_func_head.innerHTML = "Define the function which computes the output";
+        def_func_div.appendChild(def_func_head);
+
+        var def_func_form = document.createElement("form");
+        def_func_form.id = "def_func_form";
+        var linebreak = document.createElement('br');
+        def_func_form.appendChild(linebreak);
+
+        var def_func_label = document.createElement("label");
+        def_func_label.innerHTML = "Enter scilab instruction defining";
+        def_func_form.appendChild(def_func_label);
+        var linebreak = document.createElement("br");
+        def_func_form.appendChild(linebreak);
+        var array_for_y_value = [];
+        for (var i = 0; i < no; i++) {
+            /*
+             * creating labels dynamically in def_func popup depending on the no.
+             * of outport ports in popup1
+             */
+            var def_func_label_1 = document.createElement("label");
+            def_func_form.appendChild(def_func_label_1);
+            var linebreak = document.createElement("br");
+            def_func_form.appendChild(linebreak);
+            var label_with_index = "y"+(i + 1);
+            array_for_y_value[i] = label_with_index;
+            def_func_label_1.innerHTML = label_with_index+" (size: 1)";
+        }
+
+        var def_func_label_2 = document.createElement("label");
+        /* for input port values ie 'u'  */
+        var u_text = ""
+        for(var i = 1; i < ni; i++){
+            u_text += "u"+i+",";
+        }
+        def_func_label_2.innerHTML =  "as a function of t,"+u_text+"n_evi";
+        def_func_form.appendChild(def_func_label_2);
+        var linebreak = document.createElement("br");
+        def_func_form.appendChild(linebreak);
+        var linebreak = document.createElement("br");
+        def_func_form.appendChild(linebreak);
+        var def_func_inputtextarea = document.createElement("TEXTAREA");
+        def_func_inputtextarea.style.cssText = "width: 340px";
+        def_func_inputtextarea.value = first_wind_value;
+        def_func_inputtextarea.id = "def_func_inputtextarea";
+        def_func_form.appendChild(def_func_inputtextarea);
+        def_func_form.appendChild(linebreak);
+        def_func_form.appendChild(linebreak);
+
+        var def_func_submit_btn = document.createElement("button");
+        def_func_submit_btn.innerHTML = "OK";
+        def_func_submit_btn.type = "button";
+        def_func_submit_btn.onclick = function() {
+            var def_func_value = document.getElementById("def_func_inputtextarea").value;
+            var value_array = def_func_value.split(/[,;\n]+/);
+            var text_value = "";
+            for(var i = 0; i < value_array.length; i++){
+                if(value_array[i].length != 0){
+                    text_value += value_array[i] +";";
+                }
+            }
+            var textfrom_def_func = text_value.toString().replace(/\s\s+/g,"");
+            for(var i = 0; i < array_for_y_value.length; i++){
+                var check = textfrom_def_func.includes(array_for_y_value[i]);
+                if(!check){
+                    alert("You did not define "+ array_for_y_value[i] +" (size: 1) !");
+                    throw "incorrect";
+                }
+            }
+            console.log(textfrom_def_func);
+            txt1 = textfrom_def_func;
+            wind2.destroy();
+            /* calling appropriate popup depending on the conditions */
+            /*if (!x0 == "") {
+                create_popup3(out,clkin,clkout,x0,z0,propertiesObject,defaultProperties);
+            } else if (!z0 == "") {
+                create_popup4(out,clkin,clkout,x0,z0,propertiesObject,defaultProperties);
+            } else if (!clkin == "" && !clkout == "") {
+                create_popup5(out,clkin,clkout,x0,z0,propertiesObject,defaultProperties);
+            } else {
+                create_popup6(out,clkin,clkout,x0,z0,propertiesObject,defaultProperties);
+            }*/
+        }
+        var def_func_reset_btn = document.createElement("button");
+        def_func_reset_btn.innerHTML = 'Cancel';
+        def_func_reset_btn.type = "button";
+        def_func_reset_btn.name = "submit";
+        def_func_reset_btn.id = "resetButtonProperties2";
+        def_func_reset_btn.onclick = function() {
+            wind2.destroy();
+        }
+        def_func_form.appendChild(def_func_reset_btn);
+        def_func_head.style.cssText = "margin-left: 15px";
+        def_func_form.style.cssText = "margin-left: 15px";
+        def_func_submit_btn.style.cssText = "margin-left: 320px; margin-top: 20px; margin-bottom: 5px";
+        def_func_reset_btn.style.cssText = "float: right; margin-top: 20px; margin-right: 15px; margin-bottom: 5px";
+        def_func_div.style.cssText = "border: 1px solid black";
+        def_func_form.appendChild(def_func_submit_btn);
+        def_func_div.appendChild(def_func_form);
+        var defaultProperties = cell.blockInstance.instance.get();
+        height = 135 + 26 * defaultProperties.length + 15;
+        var wind2 = showModalWindow(graph, 'Scilab Input Value Request', def_func_div, 450, height);
+
+    }
+
+
 
 
 function create_scifunc_popups(graph,cell,name,diagRoot) {
