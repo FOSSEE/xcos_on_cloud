@@ -1,7 +1,9 @@
 var graph_sigbuilder = ""; //For storing graph for sigbuilder block
-var cell_sigbuilder = ""; //For storing graph for sigbuilder block
-var get_parameters_wind_sigbuilder = "";
-var get_parameters_wind_scifunc = "";
+var cell_sigbuilder = ""; //For storing cell for sigbuilder block
+var get_parameters_wind_sigbuilder = ""; //for getting parameter window for closing
+var get_parameters_wind_scifunc = ""; // for getting particular block parameter window for closing
+var graph_scifunc_block_m = ""; //For storing graph for scifunc_block_m block
+var cell_scifunc_block_m = ""; //For storing cell for scifunc_block_m block
 // function which makes the Ajax 'post' request with data sent in arguments
 function myAjaxreq(k,functionName) {
     var mbl = new Blob([k], { type: 'text/plain' });  // store the data in blob
@@ -2974,6 +2976,10 @@ function showPropertiesWindow(graph, cell, diagRoot) {
                         cell_sigbuilder = cell;
                     }
                 }
+                if(name == 'scifunc_block_m'){
+                    graph_scifunc_block_m = graph;
+                    cell_scifunc_block_m = cell;
+                }
 
                 var oldPorts = getPorts(cell.blockInstance.instance);
                 var details = cell.blockInstance.instance.set(propertiesObject);
@@ -3011,7 +3017,7 @@ function showPropertiesWindow(graph, cell, diagRoot) {
         height = 135 + 26 * defaultProperties.length + 15;
 
         content.appendChild(myform);
-        var wind = showModalWindow(graph, 'Properties', content, 450, height);
+        var wind = showModalWindow(graph, 'Scilab Multiple Value Request', content, 450, height);
         if(name == 'Sigbuilder'){
             get_parameters_wind_sigbuilder = wind;
         }

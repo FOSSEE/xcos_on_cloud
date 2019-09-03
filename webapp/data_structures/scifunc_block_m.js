@@ -237,17 +237,18 @@ function scifunc_block_m() {
         var nco = clkout.length;
         var xx_size = x0.length;
         var z_size = z0.length;
-        var exprs_2 = [];
-        exprs_2 = this.x.graphics.exprs[1];
-        genfunc2(exprs_2,in1,out,nci,nco,xx_size,z_size,nrp,this.typ); //have to write function
         this.it = ones(size(in1,1),1);
         this.ot = ones(size(out,1),1);
-        //this.x.model.opar = list(this.popup2value_disp, new ScilabString([this.popup3value.toString()]), this.popup4value_disp, this.popup5value_disp, this.popup6value_disp, this.popup7value_disp, this.popup8value_disp)
-        var exprs = list(new ScilabString([sci2exp(this.i)], [sci2exp(this.o)], [sci2exp(this.ci)], [sci2exp(this.co)], [sci2exp(this.xx)], [sci2exp(this.z)], [sci2exp(this.rpar)], [sci2exp(this.auto0)], [sci2exp(this.deptime)]), list("", new ScilabString([""]), "", "", "", "", ""))
-        var n = "y1=sin(u1)";
-        this.displayParameter = [n];
+        var exprs_2 = [];
+        exprs_2 = this.x.model.opar;
+        var return_value = genfunc2(exprs_2,in1,out,nci,nco,xx_size,z_size,nrp,this.typ,graph_scifunc_block_m,cell_scifunc_block_m); //have to write function
+        console.log(return_value);
+        var tt = return_value[1];
+        var dep_ut = return_value[2];
+        this.x.model.opar = list(new ScilabString(tt[0]), new ScilabString(tt[1]), new ScilabString(tt[2]), new ScilabString(tt[2]), new ScilabString(tt[4]), new ScilabString(tt[5]), new ScilabString(tt[6]));
+        this.x.graphics.exprs = list(new ScilabString([sci2exp(this.i)], [sci2exp(this.o)], [sci2exp(this.ci)], [sci2exp(this.co)], [sci2exp(this.xx)], [sci2exp(this.z)], [sci2exp(this.rpar)], [sci2exp(this.auto0)], [sci2exp(this.deptime)]), list(new ScilabString(tt[0]), new ScilabString(tt[1]), new ScilabString(tt[2]), new ScilabString(tt[2]), new ScilabString(tt[4]), new ScilabString(tt[5]), new ScilabString(tt[6])));
+        this.displayParameter = [tt[0]];
         var io = set_io(this.x.model,this.x.graphics,list(...in1,...this.it),list(...out,...this.ot),clkin,clkout);
-        this.x.graphics.exprs = exprs;
         return new BasicBlock(this.x)
     }
 
