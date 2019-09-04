@@ -1,16 +1,43 @@
-function genfunc2(exprs,in1,out,nci,nco,xx_size,z_size,nrp,typ,graph,cell){
-
+var check_call_for_sci = 1;
+function genfunc2(opar,in1,out,nci,nco,xx_size,z_size,nrp,typ,graph,cell,clkin,clkout){
+     var defaultProperties = cell.blockInstance.instance.get();
+     var propertiesObject = {
+                id: cell.id
+            };
+     for (var key in defaultProperties) {
+            if (defaultProperties.hasOwnProperty(key)) {
+                propertiesObject[key]=defaultProperties[key][1];
+            }
+        }
+    var opar_len = opar.length;
     var text_main_array = [];
-    if(exprs.length != 7){
-        text_main_array= [" "," "," "," "," "," "," "];
+    if(opar_len != 7){
+        text_main_array = [" "," "," "," "," "," "," "];
     }else{
-        for(var i = 0; i < exprs.length; i++){
-                var data = getData(exprs[i]);
-                text_main_array[i] = data;
+        for(var i = 0; i < opar_len; i++){
+            var ary = getData(opar[i]);
+            text_main_array[i] = ary[0];
         }
     }
     var ni = size(in1,1);
     var no = size(out,1);
+
+    var in_1_arry = [];
+    var k = 0;
+    for(var i = 0; i < in1.length; i++){
+        for(var j = 0; j < in1[i].length; j++){
+            in_1_arry[k] = in1[i][j];
+            k++;
+        }
+    }
+    var out_1_arry = [];
+    var k = 0;
+    for(var i = 0; i < out.length; i++){
+        for(var j = 0; j < out[i].length; j++){
+            out_1_arry[k] = out[i][j];
+            k++;
+        }
+    }
     var mac = [];
     var ok = false;
     var dep_ut = [];
@@ -19,21 +46,54 @@ function genfunc2(exprs,in1,out,nci,nco,xx_size,z_size,nrp,typ,graph,cell){
     var dep_t = false;
     var depp = "t";
     var deqq = "t";
-
-    var txt1 = text_main_array[0];
+    get_parameters_wind_scifunc.destroy();
+    //flag 1
+    var first_text = text_main_array[0];
     if(no > 0){
-        create_popup_for_define_function(no,ni,graph,cell,txt1);
+        create_popup_for_define_function(no,ni,graph,cell,first_text,propertiesObject,in_1_arry,out_1_arry,clkin,clkout);
     }
+    //flag2
+    if(xx_size > 0){
 
-    var txt0 = text_main_array[1],txt2 = text_main_array[2],txt3 = text_main_array[3],txt4 = text_main_array[4],txt5 = text_main_array[5],txt6 = text_main_array[6];
-    var tt = [txt1,txt0,txt2,txt3,txt4,txt5,txt6];
-    var ok = true;
+    }
+    if((nci > 0 && (xx_size > 0 || z_size > 0))|| z_size > 0){
+
+    }
+    //flag = 3
+    if(nci>0 && nco>0){
+
+    }
+    //flag = 6
+    if(xx_size > 0 || z_size > 0 || no > 0){
+
+    }
     dep_ut = [dep_u,dep_t];
-    return [ok,tt,dep_ut];
+    check_call_for_sci = 1;
 }
 
-function create_popup_for_define_function(no,ni,graph,cell,txt1) {
-        var first_wind_value = txt1;
+function update_cell_object(graph,cell,propertiesObject,in_1_arry, out_1_arry, clkin,clkout){
+    check_call_for_sci = 2;
+    var model = graph.getModel();
+    model.beginUpdate();
+    try {
+        var oldPorts = getPorts(cell.blockInstance.instance);
+        var details = cell.blockInstance.instance.set(propertiesObject);
+        set_io(cell.blockInstance.instance.x.model, cell.blockInstance.instance.x.graphics,in_1_arry, out_1_arry, clkin,clkout);
+        updateDetails(graph, cell, details);
+        var newPorts = getPorts(cell.blockInstance.instance);
+        modifyPorts(graph, cell, cell.ports.left, 'left', oldPorts.inputPorts, newPorts.inputPorts);
+        modifyPorts(graph, cell, cell.ports.top, 'top', oldPorts.controlPorts, newPorts.controlPorts);
+        modifyPorts(graph, cell, cell.ports.right, 'right', oldPorts.outputPorts, newPorts.outputPorts);
+        modifyPorts(graph, cell, cell.ports.bottom, 'bottom', oldPorts.commandPorts, newPorts.commandPorts);
+    } finally {
+        model.endUpdate();
+    }
+    graph.refresh();
+
+}
+
+function create_popup_for_define_function(no,ni,graph,cell,first_text_value,propertiesObject,in_1_arry,out_1_arry,clkin,clkout) {
+        var first_wind_value = first_text_value.trim();
         var def_func_div = document.createElement("div");
         def_func_div.id = "def_fun"
 
@@ -81,7 +141,11 @@ function create_popup_for_define_function(no,ni,graph,cell,txt1) {
         def_func_form.appendChild(linebreak);
         var def_func_inputtextarea = document.createElement("TEXTAREA");
         def_func_inputtextarea.style.cssText = "width: 340px";
-        def_func_inputtextarea.value = first_wind_value;
+        if(first_wind_value.length > 0){
+            def_func_inputtextarea.value = first_wind_value;
+        }else{
+            def_func_inputtextarea.value = "y1=sin(u1)";
+        }
         def_func_inputtextarea.id = "def_func_inputtextarea";
         def_func_form.appendChild(def_func_inputtextarea);
         def_func_form.appendChild(linebreak);
@@ -107,19 +171,13 @@ function create_popup_for_define_function(no,ni,graph,cell,txt1) {
                     throw "incorrect";
                 }
             }
-            console.log(textfrom_def_func);
-            txt1 = textfrom_def_func;
+            first_wind_value = textfrom_def_func.trim().toString();
+            if(cell.blockInstance.instance.x.model.opar.length == 7 || first_wind_value != "y1=sin(u1);"){
+                cell.blockInstance.instance.x.model.opar = list(new ScilabString([first_wind_value]), new ScilabString([" "]), new ScilabString([" "]), new ScilabString([" "]), new ScilabString([" "]), new ScilabString([" "]), new ScilabString([" "]));
+            }
+            //Once other popup are fixed this function will be removed and put in particular popup code
+            update_cell_object(graph,cell,propertiesObject,in_1_arry, out_1_arry, clkin,clkout);
             wind2.destroy();
-            /* calling appropriate popup depending on the conditions */
-            /*if (!x0 == "") {
-                create_popup3(out,clkin,clkout,x0,z0,propertiesObject,defaultProperties);
-            } else if (!z0 == "") {
-                create_popup4(out,clkin,clkout,x0,z0,propertiesObject,defaultProperties);
-            } else if (!clkin == "" && !clkout == "") {
-                create_popup5(out,clkin,clkout,x0,z0,propertiesObject,defaultProperties);
-            } else {
-                create_popup6(out,clkin,clkout,x0,z0,propertiesObject,defaultProperties);
-            }*/
         }
         var def_func_reset_btn = document.createElement("button");
         def_func_reset_btn.innerHTML = 'Cancel';
@@ -141,10 +199,7 @@ function create_popup_for_define_function(no,ni,graph,cell,txt1) {
         height = 135 + 26 * defaultProperties.length + 15;
         var wind2 = showModalWindow(graph, 'Scilab Input Value Request', def_func_div, 450, height);
 
-    }
-
-
-
+}
 
 function create_scifunc_popups(graph,cell,name,diagRoot) {
 
