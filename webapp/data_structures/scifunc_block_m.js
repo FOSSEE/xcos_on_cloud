@@ -76,7 +76,6 @@ function scifunc_block_m() {
         var rpar1 = arguments[0]["rpar"];
         var auto01 = arguments[0]["auto0"];
         var deptime1 = arguments[0]["deptime"];
-
         var regex_parentheses = /[\])}[{(]/g;
         var regex_semicolon_comma = /[,;]+/;
 
@@ -237,18 +236,25 @@ function scifunc_block_m() {
         var nco = clkout.length;
         var xx_size = x0.length;
         var z_size = z0.length;
-        this.it = ones(size(in1,1),1);
-        this.ot = ones(size(out,1),1);
-        var exprs_2 = [];
-        exprs_2 = this.x.model.opar;
-        var return_value = genfunc2(exprs_2,in1,out,nci,nco,xx_size,z_size,nrp,this.typ,graph_scifunc_block_m,cell_scifunc_block_m); //have to write function
-        console.log(return_value);
-        var tt = return_value[1];
-        var dep_ut = return_value[2];
-        this.x.model.opar = list(new ScilabString(tt[0]), new ScilabString(tt[1]), new ScilabString(tt[2]), new ScilabString(tt[2]), new ScilabString(tt[4]), new ScilabString(tt[5]), new ScilabString(tt[6]));
-        this.x.graphics.exprs = list(new ScilabString([sci2exp(this.i)], [sci2exp(this.o)], [sci2exp(this.ci)], [sci2exp(this.co)], [sci2exp(this.xx)], [sci2exp(this.z)], [sci2exp(this.rpar)], [sci2exp(this.auto0)], [sci2exp(this.deptime)]), list(new ScilabString(tt[0]), new ScilabString(tt[1]), new ScilabString(tt[2]), new ScilabString(tt[2]), new ScilabString(tt[4]), new ScilabString(tt[5]), new ScilabString(tt[6])));
-        this.displayParameter = [tt[0]];
-        var io = set_io(this.x.model,this.x.graphics,list(...in1,...this.it),list(...out,...this.ot),clkin,clkout);
+        this.it = ones(1, size(in1, 1));
+        this.ot = ones(1, size(out, 1));
+        var opar = this.x.model.opar;
+        if(check_call_for_sci != 2){
+            genfunc2(opar,in1,out,nci,nco,xx_size,z_size,nrp,this.typ,graph_scifunc_block_m,cell_scifunc_block_m,clkin,clkout); //have to write function
+        }else{
+            check_call_for_sci = 1 ;
+        }
+        var update_opar = this.x.model.opar;
+        var tt = [];
+        var opar_len = update_opar.length;
+        if(opar_len != 0){
+            for(var i = 0; i < opar_len; i++){
+                var ary = getData(update_opar[i]);
+                tt[i] = ary[0];
+            }
+            this.x.graphics.exprs = list(new ScilabString([sci2exp(this.i)], [sci2exp(this.o)], [sci2exp(this.ci)], [sci2exp(this.co)], [sci2exp(this.xx)], [sci2exp(this.z)], [sci2exp(this.rpar)], [sci2exp(this.auto0)], [sci2exp(this.deptime)]), list(new ScilabString([tt[0]]), new ScilabString([tt[1]]), new ScilabString([tt[2]]), new ScilabString([tt[2]]), new ScilabString([tt[4]]), new ScilabString([tt[5]]), new ScilabString([tt[6]])));
+            this.displayParameter = [tt[0]];
+        }
         return new BasicBlock(this.x)
     }
 
