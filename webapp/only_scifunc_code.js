@@ -1,14 +1,15 @@
 var check_call_for_sci = 1;
-function genfunc2(opar,in1,out,nci,nco,xx_size,z_size,nrp,typ,graph,cell,clkin,clkout){
-     var defaultProperties = cell.blockInstance.instance.get();
-     var propertiesObject = {
-                id: cell.id
-            };
-     for (var key in defaultProperties) {
-            if (defaultProperties.hasOwnProperty(key)) {
-                propertiesObject[key]=defaultProperties[key][1];
-            }
+function genfunc2(opar,i1,o1,ci1,co1,xx1,z1,rpar1,auto01,deptime1,graph,cell){
+    var regex_parentheses = /[\])}[{(]/g;
+    var defaultProperties = cell.blockInstance.instance.get();
+    var original_propertiesObject = {
+        id: cell.id
+    };
+    for (var key in defaultProperties) {
+        if (defaultProperties.hasOwnProperty(key)) {
+        original_propertiesObject[key]=defaultProperties[key][1].toString();
         }
+    }
     var opar_len = opar.length;
     var text_main_array = [];
     if(opar_len != 7){
@@ -19,25 +20,57 @@ function genfunc2(opar,in1,out,nci,nco,xx_size,z_size,nrp,typ,graph,cell,clkin,c
             text_main_array[i] = ary[0];
         }
     }
-    var ni = size(in1,1);
-    var no = size(out,1);
-
-    var in_1_arry = [];
     var k = 0;
+    var in1 = inverse(i1);
+    var in_1_arry = [];
     for(var i = 0; i < in1.length; i++){
         for(var j = 0; j < in1[i].length; j++){
             in_1_arry[k] = in1[i][j];
             k++;
         }
     }
-    var out_1_arry = [];
     var k = 0;
+    var out = inverse(o1);
+    var out_1_arry = [];
     for(var i = 0; i < out.length; i++){
         for(var j = 0; j < out[i].length; j++){
             out_1_arry[k] = out[i][j];
             k++;
         }
     }
+    var k = 0;
+    var clkin1 = inverse(ci1);
+    var clkin = [];
+    for(var i = 0; i < clkin1.length; i++){
+        for(var j = 0; j < clkin1[i].length; j++){
+            clkin[k] = clkin1[i][j];
+            k++;
+        }
+    }
+    var k = 0;
+    var clkout1 = inverse(co1);
+    var clkout = [];
+    for(var i = 0; i < clkout1.length; i++){
+        for(var j = 0; j < clkout1[i].length; j++){
+            clkout[k] = clkout1[i][j];
+            k++;
+        }
+    }
+
+    var x0 = inverse(xx1);
+    var z0 = inverse(z1);
+    var rpar0 = inverse(rpar1);
+    var auto = inverse(auto01);
+    var ni = size(in1,1);
+    var no = size(out,1);
+    var nrp = 0;
+    if(rpar0.length != 0){
+        nrp = rpar0.length * rpar0[0].length;
+    }
+    var nci = clkin.length;
+    var nco = clkout.length;
+    var xx_size = x0.length;
+    var z_size = z0.length;
     var mac = [];
     var ok = false;
     var dep_ut = [];
@@ -47,10 +80,23 @@ function genfunc2(opar,in1,out,nci,nco,xx_size,z_size,nrp,typ,graph,cell,clkin,c
     var depp = "t";
     var deqq = "t";
     get_parameters_wind_scifunc.destroy();
+
+    var update_propertiesObject = {
+            id: cell.id
+    };
+    update_propertiesObject["i"] = i1;
+    update_propertiesObject["o"] = o1;
+    update_propertiesObject["ci"] = ci1;
+    update_propertiesObject["co"] = co1;
+    update_propertiesObject["xx"] = xx1;
+    update_propertiesObject["z"] = z1;
+    update_propertiesObject["rpar"] = rpar1;
+    update_propertiesObject["auto0"] = auto01;
+    update_propertiesObject["deptime"] = deptime1;
+
     //flag 1
-    var first_text = text_main_array[0];
     if(no > 0){
-        create_popup_for_define_function(no,ni,graph,cell,first_text,propertiesObject,in_1_arry,out_1_arry,clkin,clkout);
+        create_popup_for_define_function(no,ni,graph,cell,text_main_array,update_propertiesObject,in_1_arry,out_1_arry,clkin,clkout);
     }
     //flag2
     if(xx_size > 0){
@@ -71,14 +117,21 @@ function genfunc2(opar,in1,out,nci,nco,xx_size,z_size,nrp,typ,graph,cell,clkin,c
     check_call_for_sci = 1;
 }
 
-function update_cell_object(graph,cell,propertiesObject,in_1_arry, out_1_arry, clkin,clkout){
+function update_cell_object(graph, cell, text_array, update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout){
     check_call_for_sci = 2;
+
+    //For setting opar values
+    var opar = cell.blockInstance.instance.x.model.opar;
+    if(opar.length == 7 || text_array[0].toString() != "y1=sin(u1);"){
+                cell.blockInstance.instance.x.model.opar = list(new ScilabString([text_array[0].toString()]), new ScilabString([" "]), new ScilabString([" "]), new ScilabString([" "]), new ScilabString([" "]), new ScilabString([" "]), new ScilabString([" "]));
+    }
+
     var model = graph.getModel();
     model.beginUpdate();
     try {
         var oldPorts = getPorts(cell.blockInstance.instance);
-        var details = cell.blockInstance.instance.set(propertiesObject);
-        set_io(cell.blockInstance.instance.x.model, cell.blockInstance.instance.x.graphics,in_1_arry, out_1_arry, clkin,clkout);
+        var details = cell.blockInstance.instance.set(update_propertiesObject);
+        set_io(cell.blockInstance.instance.x.model, cell.blockInstance.instance.x.graphics,in_1_arry, out_1_arry, clkin, clkout);
         updateDetails(graph, cell, details);
         var newPorts = getPorts(cell.blockInstance.instance);
         modifyPorts(graph, cell, cell.ports.left, 'left', oldPorts.inputPorts, newPorts.inputPorts);
@@ -92,8 +145,10 @@ function update_cell_object(graph,cell,propertiesObject,in_1_arry, out_1_arry, c
 
 }
 
-function create_popup_for_define_function(no,ni,graph,cell,first_text_value,propertiesObject,in_1_arry,out_1_arry,clkin,clkout) {
-        var first_wind_value = first_text_value.trim();
+function create_popup_for_define_function(no, ni, graph, cell, text_main_array, update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout) {
+
+        var arry_text_value = text_main_array;
+        var first_wind_value = arry_text_value[0].trim();
         var def_func_div = document.createElement("div");
         def_func_div.id = "def_fun"
 
@@ -130,7 +185,7 @@ function create_popup_for_define_function(no,ni,graph,cell,first_text_value,prop
         var def_func_label_2 = document.createElement("label");
         /* for input port values ie 'u'  */
         var u_text = ""
-        for(var i = 1; i < ni; i++){
+        for(var i = 1; i <= ni; i++){
             u_text += "u"+i+",";
         }
         def_func_label_2.innerHTML =  "as a function of t,"+u_text+"n_evi";
@@ -172,11 +227,9 @@ function create_popup_for_define_function(no,ni,graph,cell,first_text_value,prop
                 }
             }
             first_wind_value = textfrom_def_func.trim().toString();
-            if(cell.blockInstance.instance.x.model.opar.length == 7 || first_wind_value != "y1=sin(u1);"){
-                cell.blockInstance.instance.x.model.opar = list(new ScilabString([first_wind_value]), new ScilabString([" "]), new ScilabString([" "]), new ScilabString([" "]), new ScilabString([" "]), new ScilabString([" "]), new ScilabString([" "]));
-            }
+            arry_text_value[0] = first_wind_value;
             //Once other popup are fixed this function will be removed and put in particular popup code
-            update_cell_object(graph,cell,propertiesObject,in_1_arry, out_1_arry, clkin,clkout);
+            update_cell_object(graph,cell,arry_text_value,update_propertiesObject,in_1_arry, out_1_arry, clkin, clkout);
             wind2.destroy();
         }
         var def_func_reset_btn = document.createElement("button");

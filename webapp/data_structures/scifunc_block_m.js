@@ -93,7 +93,6 @@ function scifunc_block_m() {
                  }
             }
         }
-        this.i = i1;
 
         var out = inverse(o1);
         for(var i = 0; i < out.length; i++){
@@ -109,91 +108,54 @@ function scifunc_block_m() {
                 }
             }
         }
-        this.o = o1;
 
         var clkin = inverse(ci1);
         if(clkin.length == 0){
             clkin = [];
         }else{
-            var clkin_1 = [];
-            var k = 0;
             for(var i = 0; i < clkin.length; i++){
-                if(clkin[0].length == clkin[i].length){
-                    for(var j = 0; j < clkin[i].length; j++){
-                        clkin_1[k] = clkin[i][j];
-                        k++;
-                    }
-                }else{
+                if(clkin[0].length != clkin[i].length){
                     alert("Answer given for input event ports sizes\nis incorrect: Inconsistent row/column dimensions.");
                     throw "incorrect";
                 }
             }
-            clkin = clkin_1;
         }
-        this.ci = ci1;
 
         var clkout = inverse(co1);
         if(clkout.length == 0){
             clkout = [];
         }else{
-            var clkout_1 = [];
-            var k = 0;
             for(var i = 0; i < clkout.length; i++){
-                if(clkout[0].length == clkout[i].length){
-                    for(var j = 0; j < clkout[i].length; j++){
-                        clkout_1[k] = clkout[i][j];
-                        k++;
-                    }
-                }else{
+                if(clkout[0].length != clkout[i].length){
                     alert("Answer given for output events ports sizes\nis incorrect: Inconsistent row/column dimensions.");
                     throw "incorrect";
                 }
             }
-            clkout = clkout_1;
         }
-        this.co = co1;
 
         var x0 = inverse(xx1);
         if(x0.length == 0){
             x0 = [];
         }else{
-            var xx_1 = [];
-            var k = 0;
             for(var i = 0; i < x0.length; i++){
                 if(x0[0].length != x0[i].length){
                     alert("Answer given for initial continuous state \nis incorrect: Inconsistent row/column dimensions.");
                     throw "incorrect";
-                }else{
-                    for(var j = 0; j < x0[i].length; j++){
-                        xx_1[k] = x0[i][j];
-                        k++;
-                    }
                 }
             }
-            x0 = xx_1;
         }
-        this.xx = xx1;
 
         var z0 = inverse(z1);
         if(z0.length == 0){
             z0 = [];
         }else{
-            var z_1 = [];
-            var k = 0;
             for(var i = 0; i < z0.length; i++){
                 if(z0[0].length != z0[i].length){
                     alert("Answer given for initial discrete state \nis incorrect: Inconsistent row/column dimensions.");
                     throw "incorrect";
-                }else{
-                    for(var j = 0; j < z0[i].length; j++){
-                        z_1[k] = z0[i][j];
-                        k++;
-                    }
                 }
             }
-            z0 = z_1;
         }
-        this.z = z1;
 
         var rpar0 = inverse(rpar1);
         if(rpar0.length == 0){
@@ -206,7 +168,6 @@ function scifunc_block_m() {
                 }
             }
         }
-        this.rpar = rpar1;
 
         var auto = inverse(auto01);
         if(auto.length == 0){
@@ -219,41 +180,37 @@ function scifunc_block_m() {
                 }
             }
         }
-        this.auto0 = auto01;
-
-        var deptime_2 = deptime1.trim().replace(regex_parentheses, '');
+        var deptime_2 = deptime1.toString().trim().replace(regex_parentheses, '');
         if(regex_semicolon_comma.test(deptime_2) || Number.isNaN(parseFloat(deptime_2))){
             alert("Answer given for is block always active (0:no, 1:yes)\nhas invalid dimension:\nwaiting for dimension 1.");
             throw "incorrect";
         }
-        this.deptime = deptime_2;
 
-        var nrp = 0;
-        if(rpar0.length != 0){
-            nrp = rpar0.length * rpar0[0].length;
-        }
-        var nci = clkin.length;
-        var nco = clkout.length;
-        var xx_size = x0.length;
-        var z_size = z0.length;
-        this.it = ones(1, size(in1, 1));
-        this.ot = ones(1, size(out, 1));
         var opar = this.x.model.opar;
         if(check_call_for_sci != 2){
-            genfunc2(opar,in1,out,nci,nco,xx_size,z_size,nrp,this.typ,graph_scifunc_block_m,cell_scifunc_block_m,clkin,clkout); //have to write function
+            genfunc2(opar,i1,o1,ci1,co1,xx1,z1,rpar1,auto01,deptime1,graph_scifunc_block_m,cell_scifunc_block_m); //have to write function
         }else{
             check_call_for_sci = 1 ;
-        }
-        var update_opar = this.x.model.opar;
-        var tt = [];
-        var opar_len = update_opar.length;
-        if(opar_len != 0){
-            for(var i = 0; i < opar_len; i++){
-                var ary = getData(update_opar[i]);
-                tt[i] = ary[0];
+            this.i = i1;
+            this.o = o1;
+            this.ci = ci1;
+            this.co = co1;
+            this.xx = xx1;
+            this.z = z1;
+            this.rpar = rpar1;
+            this.auto0 = auto01;
+            this.deptime = deptime_2;
+            var update_opar = this.x.model.opar;
+            var tt = [];
+            var opar_len = update_opar.length;
+            if(opar_len != 0){
+                for(var i = 0; i < opar_len; i++){
+                    var ary = getData(update_opar[i]);
+                    tt[i] = ary[0];
+                }
+                this.x.graphics.exprs = list(new ScilabString([sci2exp(this.i)], [sci2exp(this.o)], [sci2exp(this.ci)], [sci2exp(this.co)], [sci2exp(this.xx)], [sci2exp(this.z)], [sci2exp(this.rpar)], [sci2exp(this.auto0)], [sci2exp(this.deptime)]), list(new ScilabString([tt[0]]), new ScilabString([tt[1]]), new ScilabString([tt[2]]), new ScilabString([tt[2]]), new ScilabString([tt[4]]), new ScilabString([tt[5]]), new ScilabString([tt[6]])));
+                this.displayParameter = [tt[0]];
             }
-            this.x.graphics.exprs = list(new ScilabString([sci2exp(this.i)], [sci2exp(this.o)], [sci2exp(this.ci)], [sci2exp(this.co)], [sci2exp(this.xx)], [sci2exp(this.z)], [sci2exp(this.rpar)], [sci2exp(this.auto0)], [sci2exp(this.deptime)]), list(new ScilabString([tt[0]]), new ScilabString([tt[1]]), new ScilabString([tt[2]]), new ScilabString([tt[2]]), new ScilabString([tt[4]]), new ScilabString([tt[5]]), new ScilabString([tt[6]])));
-            this.displayParameter = [tt[0]];
         }
         return new BasicBlock(this.x)
     }
