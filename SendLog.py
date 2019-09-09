@@ -281,16 +281,39 @@ def prestart_scilab_instances():
             for i in range(start_scilab_instances()):
                 instance = ScilabInstance()
                 proc = instance.proc
-                if proc.poll() is not None:
-                    logger.error('could not start scilab: return code is %s',
-                                 proc.returncode)
+
+                try:
+                    # For processes taking less than 2 seconds
+                    (out, err) = proc.communicate(timeout=2)
+                    out = re.sub(r'^[ !\\-]*\n', r'', out, flags=re.MULTILINE)
+                    if out:
+                        logger.info('=== Output from scilab console ===\n%s',
+                                    out)
+                    if err:
+                        logger.info('=== Error from scilab console ===\n%s',
+                                    err)
+
+                    # Check for errors in Scilab
+                    if 'Cannot find scilab-bin' in out:
+                        logger.critical('scilab has not been built. '
+                                        'Follow the installation instructions')
+                        gevent.thread.interrupt_main()
+                        return
+
                     if attempt >= 4:
                         logger.critical('aborting after %s attempts', attempt)
                         gevent.thread.interrupt_main()
                         return
+
+                    logger.error('retrying after %s %s', attempt,
+                                 'attempts' if attempt != 1 else 'attempt')
                     gevent.sleep(15 * attempt)
                     attempt += 1
                     continue
+
+                except subprocess.TimeoutExpired:
+                    pass
+
                 INSTANCES_1.append(instance)
             attempt = 1
             print_scilab_instances()
