@@ -1,5 +1,5 @@
 var check_call_for_sci = 1;
-function genfunc2(opar,i1,o1,ci1,co1,xx1,z1,rpar1,auto01,deptime1,graph,cell){
+function genfunc2(opar, i1, o1, ci1, co1, xx1, z1, rpar1, auto01, deptime1, graph, cell){
     var regex_parentheses = /[\])}[{(]/g;
     var defaultProperties = cell.blockInstance.instance.get();
     var original_propertiesObject = {
@@ -7,7 +7,7 @@ function genfunc2(opar,i1,o1,ci1,co1,xx1,z1,rpar1,auto01,deptime1,graph,cell){
     };
     for (var key in defaultProperties) {
         if (defaultProperties.hasOwnProperty(key)) {
-        original_propertiesObject[key]=defaultProperties[key][1].toString();
+            original_propertiesObject[key]=defaultProperties[key][1].toString();
         }
     }
     var opar_len = opar.length;
@@ -56,21 +56,54 @@ function genfunc2(opar,i1,o1,ci1,co1,xx1,z1,rpar1,auto01,deptime1,graph,cell){
             k++;
         }
     }
-
+    var k = 0;
     var x0 = inverse(xx1);
+    var x01 = [];
+    for(var i = 0; i < x0.length; i++){
+        for(var j = 0; j < x0[i].length; j++){
+            x01[k] = x0[i][j];
+            k++;
+        }
+    }
+    var k = 0;
     var z0 = inverse(z1);
+    var z01 = [];
+    for(var i = 0; i < z0.length; i++){
+        for(var j = 0; j < z0[i].length; j++){
+            z01[k] = z0[i][j];
+            k++;
+        }
+    }
+    var k = 0;
     var rpar0 = inverse(rpar1);
+    var rpar01 = [];
+    for(var i = 0; i < rpar0.length; i++){
+        for(var j = 0; j < rpar0[i].length; j++){
+            rpar01[k] = rpar0[i][j];
+            k++;
+        }
+    }
+    var k = 0;
     var auto = inverse(auto01);
-    var ni = size(in1,1);
-    var no = size(out,1);
+    var auto1 = [];
+    for(var i = 0; i < auto.length; i++){
+        for(var j = 0; j < auto[i].length; j++){
+            auto1[k] = auto[i][j];
+            k++;
+        }
+    }
+    var ni = (in_1_arry.length/2);
+    var no = (out_1_arry.length/2);
     var nrp = 0;
-    if(rpar0.length != 0){
+    if(rpar01.length != 0){
         nrp = rpar0.length * rpar0[0].length;
     }
     var nci = clkin.length;
     var nco = clkout.length;
-    var xx_size = x0.length;
-    var z_size = z0.length;
+    var xx_size = x01.length;
+    var z_size = z01.length;
+    var rpar_size = rpar01.length;
+    var auto_size = auto1.length;
     var mac = [];
     var ok = false;
     var dep_ut = [];
@@ -94,36 +127,46 @@ function genfunc2(opar,i1,o1,ci1,co1,xx1,z1,rpar1,auto01,deptime1,graph,cell){
     update_propertiesObject["auto0"] = auto01;
     update_propertiesObject["deptime"] = deptime1;
 
+    var return_text_array  = "";
     //flag 1
     if(no > 0){
-        create_popup_for_define_function(no,ni,graph,cell,text_main_array,update_propertiesObject,in_1_arry,out_1_arry,clkin,clkout);
+        create_popup_for_define_function(no, ni, xx_size, z_size, graph, cell, text_main_array);
     }
     //flag2
-    if(xx_size > 0){
+    else if(xx_size > 0){
+       alert("flag 2 ::: continuous states evolution");
 
     }
-    if((nci > 0 && (xx_size > 0 || z_size > 0))|| z_size > 0){
+    else if((nci > 0 && (xx_size > 0 || z_size > 0))|| z_size > 0){
+        alert("Flag::::at event time, as functions of ");
 
     }
     //flag = 3
-    if(nci>0 && nco>0){
+    else if(nci>0 && nco>0){
+        alert("Flag 3::::vector of output time events t_evo");
 
     }
     //flag = 6
-    if(xx_size > 0 || z_size > 0 || no > 0){
+    else if(xx_size > 0 || z_size > 0 || no > 0){
+        alert("Flag 6::::::You may define here functions imposing contraints");
 
+    }
+    else{
+    //flag 4
+        create_popup_for_initialization(xx_size, z_size, defaultProperties, graph, text_main_array);
     }
     dep_ut = [dep_u,dep_t];
     check_call_for_sci = 1;
 }
 
+//for saving will be used later as per submission of form/popup
 function update_cell_object(graph, cell, text_array, update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout){
     check_call_for_sci = 2;
 
     //For setting opar values
     var opar = cell.blockInstance.instance.x.model.opar;
     if(opar.length == 7 || text_array[0].toString() != "y1=sin(u1);"){
-                cell.blockInstance.instance.x.model.opar = list(new ScilabString([text_array[0].toString()]), new ScilabString([" "]), new ScilabString([" "]), new ScilabString([" "]), new ScilabString([" "]), new ScilabString([" "]), new ScilabString([" "]));
+        cell.blockInstance.instance.x.model.opar = list(new ScilabString([text_array[0].toString()]), new ScilabString([" "]), new ScilabString([" "]), new ScilabString([" "]), new ScilabString([" "]), new ScilabString([" "]), new ScilabString([" "]));
     }
 
     var model = graph.getModel();
@@ -145,112 +188,255 @@ function update_cell_object(graph, cell, text_array, update_propertiesObject, in
 
 }
 
-function create_popup_for_define_function(no, ni, graph, cell, text_main_array, update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout) {
+/* flag 1 */
 
-        var arry_text_value = text_main_array;
-        var first_wind_value = arry_text_value[0].trim();
-        var def_func_div = document.createElement("div");
-        def_func_div.id = "def_fun"
+function create_popup_for_define_function(no, ni, x0, z0, graph, cell, text_main_array) {
 
-        var def_func_head = document.createElement("h2");
-        def_func_head.id = "headp2";
-        def_func_head.innerHTML = "Define the function which computes the output";
-        def_func_div.appendChild(def_func_head);
+    var defaultProperties = cell.blockInstance.instance.get();
+    var arry_text_value = text_main_array;
+    var first_wind_value = arry_text_value[1].trim();
+    var def_func_div = document.createElement("div");
 
-        var def_func_form = document.createElement("form");
-        def_func_form.id = "def_func_form";
+    var def_func_head = document.createElement("h2");
+    def_func_head.innerHTML = "Define the function which computes the output";
+    def_func_div.appendChild(def_func_head);
+
+    var def_func_form = document.createElement("form");
+    var linebreak = document.createElement('br');
+    def_func_form.appendChild(linebreak);
+
+    var def_func_label = document.createElement("label");
+    def_func_label.innerHTML = "Enter scilab instruction defining";
+    def_func_form.appendChild(def_func_label);
+    var linebreak = document.createElement('br');
+    def_func_form.appendChild(linebreak);
+    var array_for_y_value = [];
+    for (var i = 0; i < no; i++) {
+        /*
+        * creating labels dynamically in def_func popup depending on the no.
+        * of outport ports in popup1
+        */
+        var def_func_label_1 = document.createElement("label");
+        def_func_form.appendChild(def_func_label_1);
         var linebreak = document.createElement('br');
         def_func_form.appendChild(linebreak);
+        var label_with_index = "y"+(i + 1);
+        array_for_y_value[i] = label_with_index;
+        def_func_label_1.innerHTML = label_with_index+" (size: 1)";
+    }
 
-        var def_func_label = document.createElement("label");
-        def_func_label.innerHTML = "Enter scilab instruction defining";
-        def_func_form.appendChild(def_func_label);
-        var linebreak = document.createElement("br");
-        def_func_form.appendChild(linebreak);
-        var array_for_y_value = [];
-        for (var i = 0; i < no; i++) {
-            /*
-             * creating labels dynamically in def_func popup depending on the no.
-             * of outport ports in popup1
-             */
-            var def_func_label_1 = document.createElement("label");
-            def_func_form.appendChild(def_func_label_1);
-            var linebreak = document.createElement("br");
-            def_func_form.appendChild(linebreak);
-            var label_with_index = "y"+(i + 1);
-            array_for_y_value[i] = label_with_index;
-            def_func_label_1.innerHTML = label_with_index+" (size: 1)";
-        }
+    var def_func_label_2 = document.createElement("label");
+    /* for input port values ie 'u'  */
+    var u_text = ""
+    for(var i = 1; i <= ni; i++){
+        u_text += "u"+i+",";
+    }
+    def_func_label_2.innerHTML =  "as a function of t,"+u_text+"n_evi";
+    def_func_form.appendChild(def_func_label_2);
+    var linebreak = document.createElement('br');
+    def_func_form.appendChild(linebreak);
+    def_func_form.appendChild(linebreak);
+    var def_func_inputtextarea = document.createElement("TEXTAREA");
+    def_func_inputtextarea.style.cssText = "width: 340px";
+    if(first_wind_value.length > 0){
+        def_func_inputtextarea.value = first_wind_value;
+    }else{
+        def_func_inputtextarea.value = "y1=sin(u1)";
+    }
+    def_func_inputtextarea.id = "def_func_inputtextarea";
+    def_func_form.appendChild(def_func_inputtextarea);
+    var linebreak = document.createElement('br');
+    def_func_form.appendChild(linebreak);
+    def_func_form.appendChild(linebreak);
 
-        var def_func_label_2 = document.createElement("label");
-        /* for input port values ie 'u'  */
-        var u_text = ""
-        for(var i = 1; i <= ni; i++){
-            u_text += "u"+i+",";
-        }
-        def_func_label_2.innerHTML =  "as a function of t,"+u_text+"n_evi";
-        def_func_form.appendChild(def_func_label_2);
-        var linebreak = document.createElement("br");
-        def_func_form.appendChild(linebreak);
-        var linebreak = document.createElement("br");
-        def_func_form.appendChild(linebreak);
-        var def_func_inputtextarea = document.createElement("TEXTAREA");
-        def_func_inputtextarea.style.cssText = "width: 340px";
-        if(first_wind_value.length > 0){
-            def_func_inputtextarea.value = first_wind_value;
-        }else{
-            def_func_inputtextarea.value = "y1=sin(u1)";
-        }
-        def_func_inputtextarea.id = "def_func_inputtextarea";
-        def_func_form.appendChild(def_func_inputtextarea);
-        def_func_form.appendChild(linebreak);
-        def_func_form.appendChild(linebreak);
-
-        var def_func_submit_btn = document.createElement("button");
-        def_func_submit_btn.innerHTML = "OK";
-        def_func_submit_btn.type = "button";
-        def_func_submit_btn.onclick = function() {
-            var def_func_value = document.getElementById("def_func_inputtextarea").value;
-            var value_array = def_func_value.split(/[,;\n]+/);
-            var text_value = "";
-            for(var i = 0; i < value_array.length; i++){
-                if(value_array[i].length != 0){
-                    text_value += value_array[i] +";";
-                }
+    var def_func_submit_btn = document.createElement("button");
+    def_func_submit_btn.innerHTML = "OK";
+    def_func_submit_btn.type = "button";
+    def_func_submit_btn.onclick = function() {
+        var def_func_value = document.getElementById("def_func_inputtextarea").value;
+        var value_array = def_func_value.split(/[,;\n]+/);
+        var text_value = "";
+        for(var i = 0; i < value_array.length; i++){
+            if(value_array[i].length != 0){
+                text_value += value_array[i] +";";
             }
-            var textfrom_def_func = text_value.toString().replace(/\s\s+/g,"");
-            for(var i = 0; i < array_for_y_value.length; i++){
-                var check = textfrom_def_func.includes(array_for_y_value[i]);
-                if(!check){
-                    alert("You did not define "+ array_for_y_value[i] +" (size: 1) !");
-                    throw "incorrect";
-                }
+        }
+        var textfrom_def_func = text_value.toString().replace(/\s\s+/g,"");
+        for(var i = 0; i < array_for_y_value.length; i++){
+            var check = textfrom_def_func.includes(array_for_y_value[i]);
+            if(!check){
+                alert("You did not define "+ array_for_y_value[i] +" (size: 1) !");
+                throw "incorrect";
             }
-            first_wind_value = textfrom_def_func.trim().toString();
-            arry_text_value[0] = first_wind_value;
-            //Once other popup are fixed this function will be removed and put in particular popup code
-            update_cell_object(graph,cell,arry_text_value,update_propertiesObject,in_1_arry, out_1_arry, clkin, clkout);
-            wind2.destroy();
         }
-        var def_func_reset_btn = document.createElement("button");
-        def_func_reset_btn.innerHTML = 'Cancel';
-        def_func_reset_btn.type = "button";
-        def_func_reset_btn.name = "submit";
-        def_func_reset_btn.id = "resetButtonProperties2";
-        def_func_reset_btn.onclick = function() {
-            wind2.destroy();
+        first_wind_value = textfrom_def_func.trim().toString();
+        text_main_array[1] = first_wind_value;
+        //Once other popup are fixed this function will be removed and put in particular popup code
+        def_func_wind.destroy();
+        //Condition
+        create_popup_for_initialization(x0, z0, defaultProperties, graph, text_main_array);
+    }
+    var def_func_reset_btn = document.createElement("button");
+    def_func_reset_btn.innerHTML = 'Cancel';
+    def_func_reset_btn.type = "button";
+    def_func_reset_btn.onclick = function() {
+        def_func_wind.destroy();
+    }
+    def_func_form.appendChild(def_func_reset_btn);
+    def_func_head.style.cssText = "margin-left: 15px";
+    def_func_form.style.cssText = "margin-left: 15px";
+    def_func_submit_btn.style.cssText = "margin-left: 320px; margin-top: 20px; margin-bottom: 5px";
+    def_func_reset_btn.style.cssText = "float: right; margin-top: 20px; margin-right: 15px; margin-bottom: 5px";
+    def_func_div.style.cssText = "border: 1px solid black";
+    def_func_form.appendChild(def_func_submit_btn);
+    def_func_div.appendChild(def_func_form);
+    height = 135 + 26 * defaultProperties.length + 15;
+    var def_func_wind = showModalWindow(graph, 'Scilab Input Value Request', def_func_div, 450, height);
+}
+
+/* flag 4  */
+function create_popup_for_initialization(x0, z0, defaultProperties, graph, text_main_array){
+
+    var init_div = document.createElement("div");
+    var init_form = document.createElement("form");
+    var linebreak = document.createElement('br');
+    init_form.appendChild(linebreak);
+
+    var init_label1 = document.createElement("label");
+    init_label1.innerHTML = "You may do whatever needed for initialization: <br> File or graphic opening..,";
+    init_form.appendChild(init_label1);
+    var linebreak = document.createElement('br');
+    init_form.appendChild(linebreak);
+
+    var init_label2 = document.createElement("label");
+    var labeltxt = "";
+    var variable_name = "";
+    if(x0 > 0 || z0 > 0){
+        variable_name = "as function(s) of ";
+        labeltxt = "You may also reinitialize: <br>";
+        if(x0 > 0){
+            labeltxt += "- continuous state x (size:"+x0+")<br>";
+            variable_name += "x,"
         }
-        def_func_form.appendChild(def_func_reset_btn);
-        def_func_head.style.cssText = "margin-left: 15px";
-        def_func_form.style.cssText = "margin-left: 15px";
-        def_func_submit_btn.style.cssText = "margin-left: 320px; margin-top: 20px; margin-bottom: 5px";
-        def_func_reset_btn.style.cssText = "float: right; margin-top: 20px; margin-right: 15px; margin-bottom: 5px";
-        def_func_div.style.cssText = "border: 1px solid black";
-        def_func_form.appendChild(def_func_submit_btn);
-        def_func_div.appendChild(def_func_form);
-        var defaultProperties = cell.blockInstance.instance.get();
-        height = 135 + 26 * defaultProperties.length + 15;
-        var wind2 = showModalWindow(graph, 'Scilab Input Value Request', def_func_div, 450, height);
+        if(z0 > 0){
+            labeltxt += "- discrete state z (size:"+z0+")<br>";
+            variable_name += "z,"
+        }
+    }else{
+        labeltxt = "as function(s) of";
+    }
+    init_label2.innerHTML = labeltxt + variable_name;
+    init_form.appendChild(init_label2);
+    var linebreak = document.createElement('br');
+    init_form.appendChild(linebreak);
+
+    var init_inputtextarea = document.createElement("TEXTAREA");
+    init_inputtextarea.style.cssText = "width: 340px";
+    init_inputtextarea.id = "init_inputtextarea";
+    init_form.appendChild(init_inputtextarea);
+    var linebreak = document.createElement('br');
+    init_form.appendChild(linebreak);
+    init_form.appendChild(linebreak);
+
+    var init_submit_btn = document.createElement("button");
+    init_submit_btn.innerHTML = "OK";
+    init_submit_btn.type = "button";
+
+    init_submit_btn.onclick = function() {
+        var init_value = document.getElementById("init_inputtextarea").value;
+        text_main_array[4] = init_value;
+        init_wind.destroy();
+        create_popup_for_needed_finish(x0, z0, defaultProperties, graph, text_main_array);
+    }
+
+    var init_reset_btn = document.createElement("button");
+    init_reset_btn.innerHTML = 'Cancel';
+    init_reset_btn.type = "button";
+    init_reset_btn.onclick = function() {
+        init_wind.destroy();
+    }
+    init_form.appendChild(init_reset_btn);
+    init_form.style.cssText = "margin-left: 15px";
+    init_submit_btn.style.cssText = "margin-left: 320px; margin-top: 20px; margin-bottom: 5px";
+    init_reset_btn.style.cssText = "float: right; margin-top: 20px; margin-right: 15px; margin-bottom: 5px";
+    init_div.style.cssText = "border: 1px solid black";
+    init_form.appendChild(init_submit_btn);
+    init_div.appendChild(init_form);
+    height = 135 + 26 * defaultProperties.length + 15;
+    var init_wind = showModalWindow(graph, 'Properties', init_div, 450, height);
+
+}
+
+/* flag 5  */
+
+function create_popup_for_needed_finish(x0, z0, defaultProperties, graph, text_main_array){
+
+    var need_finish_div = document.createElement("div");
+    var need_finish_form = document.createElement("form");
+    var linebreak = document.createElement('br');
+    need_finish_form.appendChild(linebreak);
+
+    var need_finish_label1 = document.createElement("label");
+    need_finish_label1.innerHTML = "You may do whatever needed to finish : <br> File or graphic closing...,";
+    need_finish_form.appendChild(need_finish_label1);
+    var linebreak = document.createElement('br');
+    need_finish_form.appendChild(linebreak);
+
+    var need_finish_label2 = document.createElement("label");
+    var labeltxt = "";
+    var variable_name = "";
+    if(x0 > 0 || z0 > 0){
+        variable_name = "as function(s) of ";
+        labeltxt = "You may also change final value of: <br>";
+        if(x0 > 0){
+            labeltxt += "- continuous state x (size:"+x0+")<br>";
+            variable_name += "x,"
+        }
+        if(z0 > 0){
+            labeltxt += "- discrete state z (size:"+z0+")<br>";
+            variable_name += "z,"
+        }
+    }else{
+        labeltxt = "as function(s) of";
+    }
+    need_finish_label2.innerHTML = labeltxt + variable_name;
+    need_finish_form.appendChild(need_finish_label2);
+    var linebreak = document.createElement('br');
+    need_finish_form.appendChild(linebreak);
+
+    var need_finish_inputtextarea = document.createElement("TEXTAREA");
+    need_finish_inputtextarea.style.cssText = "width: 340px";
+    need_finish_inputtextarea.id = "need_finish_inputtextarea";
+    need_finish_form.appendChild(need_finish_inputtextarea);
+    var linebreak = document.createElement('br');
+    need_finish_form.appendChild(linebreak);
+    need_finish_form.appendChild(linebreak);
+
+    var need_finish_submit_btn = document.createElement("button");
+    need_finish_submit_btn.innerHTML = "OK";
+    need_finish_submit_btn.type = "button";
+
+    need_finish_submit_btn.onclick = function() {
+        var need_finish_value = document.getElementById("need_finish_inputtextarea").value;
+        text_main_array[5] = need_finish_value;
+        need_finish_wind.destroy();
+    }
+
+    var need_finish_reset_btn = document.createElement("button");
+    need_finish_reset_btn.innerHTML = "Cancel";
+    need_finish_reset_btn.type = "button";
+    need_finish_reset_btn.onclick = function() {
+        need_finish_wind.destroy();
+    }
+    need_finish_form.appendChild(need_finish_reset_btn);
+    need_finish_form.style.cssText = "margin-left: 15px";
+    need_finish_submit_btn.style.cssText = "margin-left: 320px; margin-top: 20px; margin-bottom: 5px";
+    need_finish_reset_btn.style.cssText = "float: right; margin-top: 20px; margin-right: 15px; margin-bottom: 5px";
+    need_finish_div.style.cssText = "border: 1px solid black";
+    need_finish_form.appendChild(need_finish_submit_btn);
+    need_finish_div.appendChild(need_finish_form);
+    height = 135 + 26 * defaultProperties.length + 15;
+    var need_finish_wind = showModalWindow(graph, 'Properties', need_finish_div, 450, height);
 
 }
 
