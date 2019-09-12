@@ -15,7 +15,7 @@ function genfunc2(opar, i1, o1, ci1, co1, xx1, z1, rpar1, auto01, deptime1, grap
     if(opar_len != 7){
         text_main_array = [" "," "," "," "," "," "," "];
     }else{
-        for(var i = 0; i < opar_len; i++){
+        for (var i = 0; i < opar_len; i++) {
             var ary = getData(opar[i]);
             text_main_array[i] = ary[0];
         }
@@ -23,8 +23,8 @@ function genfunc2(opar, i1, o1, ci1, co1, xx1, z1, rpar1, auto01, deptime1, grap
     var k = 0;
     var in1 = inverse(i1);
     var in_1_arry = [];
-    for(var i = 0; i < in1.length; i++){
-        for(var j = 0; j < in1[i].length; j++){
+    for (var i = 0; i < in1.length; i++) {
+        for (var j = 0; j < in1[i].length; j++) {
             in_1_arry[k] = in1[i][j];
             k++;
         }
@@ -32,8 +32,8 @@ function genfunc2(opar, i1, o1, ci1, co1, xx1, z1, rpar1, auto01, deptime1, grap
     var k = 0;
     var out = inverse(o1);
     var out_1_arry = [];
-    for(var i = 0; i < out.length; i++){
-        for(var j = 0; j < out[i].length; j++){
+    for (var i = 0; i < out.length; i++) {
+        for (var j = 0; j < out[i].length; j++) {
             out_1_arry[k] = out[i][j];
             k++;
         }
@@ -41,8 +41,8 @@ function genfunc2(opar, i1, o1, ci1, co1, xx1, z1, rpar1, auto01, deptime1, grap
     var k = 0;
     var clkin1 = inverse(ci1);
     var clkin = [];
-    for(var i = 0; i < clkin1.length; i++){
-        for(var j = 0; j < clkin1[i].length; j++){
+    for (var i = 0; i < clkin1.length; i++) {
+        for (var j = 0; j < clkin1[i].length; j++) {
             clkin[k] = clkin1[i][j];
             k++;
         }
@@ -50,8 +50,8 @@ function genfunc2(opar, i1, o1, ci1, co1, xx1, z1, rpar1, auto01, deptime1, grap
     var k = 0;
     var clkout1 = inverse(co1);
     var clkout = [];
-    for(var i = 0; i < clkout1.length; i++){
-        for(var j = 0; j < clkout1[i].length; j++){
+    for (var i = 0; i < clkout1.length; i++) {
+        for (var j = 0; j < clkout1[i].length; j++) {
             clkout[k] = clkout1[i][j];
             k++;
         }
@@ -59,8 +59,8 @@ function genfunc2(opar, i1, o1, ci1, co1, xx1, z1, rpar1, auto01, deptime1, grap
     var k = 0;
     var x0 = inverse(xx1);
     var x01 = [];
-    for(var i = 0; i < x0.length; i++){
-        for(var j = 0; j < x0[i].length; j++){
+    for (var i = 0; i < x0.length; i++) {
+        for (var j = 0; j < x0[i].length; j++) {
             x01[k] = x0[i][j];
             k++;
         }
@@ -68,8 +68,8 @@ function genfunc2(opar, i1, o1, ci1, co1, xx1, z1, rpar1, auto01, deptime1, grap
     var k = 0;
     var z0 = inverse(z1);
     var z01 = [];
-    for(var i = 0; i < z0.length; i++){
-        for(var j = 0; j < z0[i].length; j++){
+    for (var i = 0; i < z0.length; i++) {
+        for (var j = 0; j < z0[i].length; j++) {
             z01[k] = z0[i][j];
             k++;
         }
@@ -77,8 +77,8 @@ function genfunc2(opar, i1, o1, ci1, co1, xx1, z1, rpar1, auto01, deptime1, grap
     var k = 0;
     var rpar0 = inverse(rpar1);
     var rpar01 = [];
-    for(var i = 0; i < rpar0.length; i++){
-        for(var j = 0; j < rpar0[i].length; j++){
+    for (var i = 0; i < rpar0.length; i++) {
+        for (var j = 0; j < rpar0[i].length; j++) {
             rpar01[k] = rpar0[i][j];
             k++;
         }
@@ -86,8 +86,8 @@ function genfunc2(opar, i1, o1, ci1, co1, xx1, z1, rpar1, auto01, deptime1, grap
     var k = 0;
     var auto = inverse(auto01);
     var auto1 = [];
-    for(var i = 0; i < auto.length; i++){
-        for(var j = 0; j < auto[i].length; j++){
+    for (var i = 0; i < auto.length; i++) {
+        for (var j = 0; j < auto[i].length; j++) {
             auto1[k] = auto[i][j];
             k++;
         }
@@ -228,7 +228,7 @@ function create_popup_for_define_function(no, ni, x0, z0, graph, cell, text_main
     var def_func_label_2 = document.createElement("label");
     /* for input port values ie 'u'  */
     var u_text = ""
-    for(var i = 1; i <= ni; i++){
+    for (var i = 1; i <= ni; i++) {
         u_text += "u"+i+",";
     }
     def_func_label_2.innerHTML =  "as a function of t,"+u_text+"n_evi";
@@ -256,13 +256,13 @@ function create_popup_for_define_function(no, ni, x0, z0, graph, cell, text_main
         var def_func_value = document.getElementById("def_func_inputtextarea").value;
         var value_array = def_func_value.split(/[,;\n]+/);
         var text_value = "";
-        for(var i = 0; i < value_array.length; i++){
+        for (var i = 0; i < value_array.length; i++) {
             if(value_array[i].length != 0){
                 text_value += value_array[i] +";";
             }
         }
         var textfrom_def_func = text_value.toString().replace(/\s\s+/g,"");
-        for(var i = 0; i < array_for_y_value.length; i++){
+        for (var i = 0; i < array_for_y_value.length; i++) {
             var check = textfrom_def_func.includes(array_for_y_value[i]);
             if(!check){
                 alert("You did not define "+ array_for_y_value[i] +" (size: 1) !");

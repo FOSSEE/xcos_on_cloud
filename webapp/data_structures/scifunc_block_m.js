@@ -80,29 +80,25 @@ function scifunc_block_m() {
         var regex_semicolon_comma = /[,;]+/;
 
         var in1 = inverse(i1);
-        for(var i = 0; i < in1.length; i++){
-            if(i == 0){
-                if(in1[i].length == 1 || in1[i].length > 2){
+        for (var i = 0; i < in1.length; i++) {
+            if(in1[i].length == 1 || in1[i].length > 2){
+                if(i == 0){
                     alert("Answer given for input ports sizes \nhas invalid dimension:\nwaiting for dimension -1 x 2.");
                     throw "incorrect";
-                }
-            }else{
-                if(in1[i].length == 1 || in1[i].length > 2){
+                }else{
                     alert("Answer given for input ports sizes \nis incorrect: Inconsistent row/column dimensions");
                     throw "incorrect";
-                 }
+                }
             }
         }
 
         var out = inverse(o1);
-        for(var i = 0; i < out.length; i++){
-            if(i == 0){
-                if(out[i].length == 1 || out[i].length > 2){
+        for (var i = 0; i < out.length; i++) {
+            if(out[i].length == 1 || out[i].length > 2){
+                if(i == 0){
                     alert("Answer given for output ports sizes \nhas invalid dimension:\nwaiting for dimension -2 x 2");
                     throw "incorrect";
-                }
-            }else{
-                if(out[i].length == 1 || out[i].length > 2){
+                }else{
                     alert("Answer given for output ports sizes \nis incorrect: Inconsistent row/column dimensions");
                     throw "incorrect";
                 }
@@ -113,7 +109,7 @@ function scifunc_block_m() {
         if(clkin.length == 0){
             clkin = [];
         }else{
-            for(var i = 0; i < clkin.length; i++){
+            for (var i = 1; i < clkin.length; i++) {
                 if(clkin[0].length != clkin[i].length){
                     alert("Answer given for input event ports sizes\nis incorrect: Inconsistent row/column dimensions.");
                     throw "incorrect";
@@ -125,7 +121,7 @@ function scifunc_block_m() {
         if(clkout.length == 0){
             clkout = [];
         }else{
-            for(var i = 0; i < clkout.length; i++){
+            for (var i = 1; i < clkout.length; i++) {
                 if(clkout[0].length != clkout[i].length){
                     alert("Answer given for output events ports sizes\nis incorrect: Inconsistent row/column dimensions.");
                     throw "incorrect";
@@ -137,7 +133,7 @@ function scifunc_block_m() {
         if(x0.length == 0){
             x0 = [];
         }else{
-            for(var i = 0; i < x0.length; i++){
+            for (var i = 1; i < x0.length; i++) {
                 if(x0[0].length != x0[i].length){
                     alert("Answer given for initial continuous state \nis incorrect: Inconsistent row/column dimensions.");
                     throw "incorrect";
@@ -149,7 +145,7 @@ function scifunc_block_m() {
         if(z0.length == 0){
             z0 = [];
         }else{
-            for(var i = 0; i < z0.length; i++){
+            for (var i = 1; i < z0.length; i++) {
                 if(z0[0].length != z0[i].length){
                     alert("Answer given for initial discrete state \nis incorrect: Inconsistent row/column dimensions.");
                     throw "incorrect";
@@ -161,7 +157,7 @@ function scifunc_block_m() {
         if(rpar0.length == 0){
             rpar0 = [];
         }else{
-            for(var i = 0; i < rpar0.length; i++){
+            for (var i = 1; i < rpar0.length; i++) {
                 if(rpar0[0].length != rpar0[i].length){
                     alert("Answer given for System parameters vector \nis incorrect: Inconsistent row/column dimensions.");
                     throw "incorrect";
@@ -173,7 +169,7 @@ function scifunc_block_m() {
         if(auto.length == 0){
             auto = [];
         }else{
-            for(var i = 0; i < auto.length; i++){
+            for (var i = 1; i < auto.length; i++) {
                 if(auto[0].length != auto[i].length){
                     alert("Answer given for initial firing vector (0 for no firing) \nis incorrect: Inconsistent row/column dimensions.");
                     throw "incorrect";
@@ -186,7 +182,8 @@ function scifunc_block_m() {
             throw "incorrect";
         }
 
-        var opar = this.x.model.opar;
+        var opar = [];
+        opar = this.x.model.opar;
         if(check_call_for_sci != 2){
             genfunc2(opar,i1,o1,ci1,co1,xx1,z1,rpar1,auto01,deptime1,graph_scifunc_block_m,cell_scifunc_block_m); //have to write function
         }else{
@@ -200,7 +197,8 @@ function scifunc_block_m() {
             this.rpar = rpar1;
             this.auto0 = auto01;
             this.deptime = deptime_2;
-            var update_opar = this.x.model.opar;
+            var update_opar = [];
+            update_opar = this.x.model.opar;
             var tt = [];
             var opar_len = update_opar.length;
             if(opar_len != 0){
