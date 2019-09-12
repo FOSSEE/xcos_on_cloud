@@ -130,15 +130,15 @@ function genfunc2(opar, i1, o1, ci1, co1, xx1, z1, rpar1, auto01, deptime1, grap
     var return_text_array  = "";
     //flag 1
     if(no > 0){
-        create_popup_for_define_function(no, ni, xx_size, z_size, graph, cell, text_main_array);
+        create_popup_for_define_function(no, ni, xx_size, z_size, rpar_size, graph, cell, text_main_array);
     }
     //flag2
     else if(xx_size > 0){
-       alert("flag 2 ::: continuous states evolution");
+       create_popup_for_continuous_states_evolution(xx_size, z_size, ni, rpar_size, graph, cell, text_main_array );
 
     }
     else if((nci > 0 && (xx_size > 0 || z_size > 0))|| z_size > 0){
-        alert("Flag::::at event time, as functions of ");
+        create_popup_for_event_time(xx_size, z_size, ni, rpar_size, defaultProperties, graph, text_main_array);
 
     }
     //flag = 3
@@ -146,14 +146,14 @@ function genfunc2(opar, i1, o1, ci1, co1, xx1, z1, rpar1, auto01, deptime1, grap
         alert("Flag 3::::vector of output time events t_evo");
 
     }
-    //flag = 6
+    //flag = 6  x,z,u1,rpar
     else if(xx_size > 0 || z_size > 0 || no > 0){
         alert("Flag 6::::::You may define here functions imposing contraints");
 
     }
     else{
     //flag 4
-        create_popup_for_initialization(xx_size, z_size, defaultProperties, graph, text_main_array);
+        create_popup_for_initialization(xx_size, z_size,rpar_size, defaultProperties, graph, text_main_array);
     }
     dep_ut = [dep_u,dep_t];
     check_call_for_sci = 1;
@@ -190,7 +190,7 @@ function update_cell_object(graph, cell, text_array, update_propertiesObject, in
 
 /* flag 1 */
 
-function create_popup_for_define_function(no, ni, x0, z0, graph, cell, text_main_array) {
+function create_popup_for_define_function(no, ni, x0, z0, rpar_size, graph, cell, text_main_array) {
 
     var defaultProperties = cell.blockInstance.instance.get();
     var arry_text_value = text_main_array;
@@ -227,11 +227,21 @@ function create_popup_for_define_function(no, ni, x0, z0, graph, cell, text_main
 
     var def_func_label_2 = document.createElement("label");
     /* for input port values ie 'u'  */
-    var u_text = ""
+    var u_text = "as a function of t,";
+    if(x0 != 0){
+        u_text += "x,";
+    }
+    if(z0 != 0){
+        u_text += "z," ;
+    }
     for (var i = 1; i <= ni; i++) {
         u_text += "u"+i+",";
     }
-    def_func_label_2.innerHTML =  "as a function of t,"+u_text+"n_evi";
+    u_text += "n_evi," ;
+    if(rpar_size != 0){
+        u_text += "rpar";
+    }
+    def_func_label_2.innerHTML =  u_text;
     def_func_form.appendChild(def_func_label_2);
     var linebreak = document.createElement('br');
     def_func_form.appendChild(linebreak);
@@ -274,7 +284,7 @@ function create_popup_for_define_function(no, ni, x0, z0, graph, cell, text_main
         //Once other popup are fixed this function will be removed and put in particular popup code
         def_func_wind.destroy();
         //Condition
-        create_popup_for_initialization(x0, z0, defaultProperties, graph, text_main_array);
+        create_popup_for_initialization(x0, z0, rpar_size, defaultProperties, graph, text_main_array);
     }
     var def_func_reset_btn = document.createElement("button");
     def_func_reset_btn.innerHTML = 'Cancel';
@@ -294,8 +304,172 @@ function create_popup_for_define_function(no, ni, x0, z0, graph, cell, text_main
     var def_func_wind = showModalWindow(graph, 'Scilab Input Value Request', def_func_div, 450, height);
 }
 
-/* flag 4  */
-function create_popup_for_initialization(x0, z0, defaultProperties, graph, text_main_array){
+/* flag 2 */
+
+function create_popup_for_continuous_states_evolution(x0, z0, ni, rpar_size, graph, cell, text_main_array){
+
+    var defaultProperties = cell.blockInstance.instance.get();
+    var arry_text_value = text_main_array;
+    var zero_wind_value = arry_text_value[0].trim();
+    var cont_stat_div = document.createElement("div");
+    var cont_stat_form = document.createElement("form");
+    var linebreak = document.createElement('br');
+    cont_stat_form.appendChild(linebreak);
+
+    var cont_stat_label1 = document.createElement("label");
+    var label_txt = "Define continuous states evolution<br><br>Enter Scilab instructions defining:<br>"+
+    "derivative of continuous state xd (size:" +x0+ ") <br> as  function(s) of t,";
+    if(x0 > 0){
+        label_txt += "x,";
+    }
+    if(z0 > 0){
+        label_txt += "z," ;
+    }
+    if(ni > 0){
+        var u_text = "";
+        for(var i = 1; i <= ni; i++){
+            u_text += "u"+i+",";
+        }
+        label_txt += u_text;
+    }
+    if(rpar_size > 0){
+        label_txt += "rpar";
+    }
+    cont_stat_label1.innerHTML = label_txt;
+    cont_stat_form.appendChild(cont_stat_label1);
+    var linebreak = document.createElement('br');
+    cont_stat_form.appendChild(linebreak);
+
+    var cont_stat_inputtextarea = document.createElement("TEXTAREA");
+    cont_stat_inputtextarea.style.cssText = "width: 340px";
+    cont_stat_inputtextarea.id = "cont_stat_inputtextarea";
+    if(zero_wind_value.length > 0){
+        cont_stat_inputtextarea.value = zero_wind_value;
+    }else{
+        cont_stat_inputtextarea.value = "xd=[]";
+    }
+    cont_stat_form.appendChild(cont_stat_inputtextarea);
+    var linebreak = document.createElement('br');
+    cont_stat_form.appendChild(linebreak);
+    cont_stat_form.appendChild(linebreak);
+
+    var cont_stat_submit_btn = document.createElement("button");
+    cont_stat_submit_btn.innerHTML = "OK";
+    cont_stat_submit_btn.type = "button";
+
+    cont_stat_submit_btn.onclick = function() {
+        var cont_stat_value = document.getElementById("cont_stat_inputtextarea").value;
+        var check = cont_stat_value.includes("xd=");
+        if(!check){
+            alert("You did not define xd !");
+            throw "incorrect";
+        }
+        text_main_array[0] = cont_stat_value;
+        cont_stat_wind.destroy();
+        //create_popup_for_needed_finish(x0, z0, rpar_size, defaultProperties, graph, text_main_array);
+    }
+
+    var cont_stat_reset_btn = document.createElement("button");
+    cont_stat_reset_btn.innerHTML = "Cancel";
+    cont_stat_reset_btn.type = "button";
+    cont_stat_reset_btn.onclick = function() {
+        cont_stat_wind.destroy();
+    }
+    cont_stat_form.appendChild(cont_stat_reset_btn);
+    cont_stat_form.style.cssText = "margin-left: 15px";
+    cont_stat_submit_btn.style.cssText = "margin-left: 320px; margin-top: 20px; margin-bottom: 5px";
+    cont_stat_reset_btn.style.cssText = "float: right; margin-top: 20px; margin-right: 15px; margin-bottom: 5px";
+    cont_stat_div.style.cssText = "border: 1px solid black";
+    cont_stat_form.appendChild(cont_stat_submit_btn);
+    cont_stat_div.appendChild(cont_stat_form);
+    height = 135 + 26 * defaultProperties.length + 15;
+    var cont_stat_wind = showModalWindow(graph, 'Properties', cont_stat_div, 450, height);
+}
+
+/* No flag */
+
+function create_popup_for_event_time(x0, z0, ni, rpar_size, defaultProperties, graph, text_main_array){
+    var event_time_div = document.createElement("div");
+    var event_time_form = document.createElement("form");
+    var linebreak = document.createElement('br');
+    event_time_form.appendChild(linebreak);
+
+    var event_time_label1 = document.createElement("label");
+    event_time_label1.innerHTML = "You may define:";
+    init_form.appendChild(event_time_label1);
+    var linebreak = document.createElement('br');
+    event_time_form.appendChild(linebreak);
+
+    var event_time_label2 = document.createElement("label");
+    var labeltxt = "";
+    var variable_name = "";
+    if(x0 > 0 || z0 > 0 || ni > 0 || rpar_size > 0){
+        variable_name = "at event time, as functions of ";
+        if(x0 > 0){
+            labeltxt += "-new continuous state x (size:"+x0+")<br>";
+            variable_name += "x,"
+        }
+        if(z0 > 0){
+            labeltxt += "-new discrete state z (size:"+z0+")<br>";
+            variable_name += "z,"
+        }
+        if(ni > 0){
+            var u_text = "";
+            for(var i = 1; i <= ni; i++){
+                u_text += "u"+i+",";
+            }
+            variable_name += u_text;
+        }
+        if(rpar_size > 0){
+            variable_name += "rpar,"
+        }
+    }else{
+        labeltxt = "at event time, as functions of";
+    }
+    event_time_label2.innerHTML = labeltxt + variable_name;
+    event_time_form.appendChild(event_time_label2);
+    var linebreak = document.createElement('br');
+    event_time_form.appendChild(linebreak);
+
+    var event_time_inputtextarea = document.createElement("TEXTAREA");
+    event_time_inputtextarea.style.cssText = "width: 340px";
+    event_time_inputtextarea.id = "event_time_inputtextarea";
+    event_time_form.appendChild(event_time_inputtextarea);
+    var linebreak = document.createElement('br');
+    event_time_form.appendChild(linebreak);
+    event_time_form.appendChild(linebreak);
+
+    var event_time_submit_btn = document.createElement("button");
+    event_time_submit_btn.innerHTML = "OK";
+    event_time_submit_btn.type = "button";
+
+    event_time_submit_btn.onclick = function() {
+        var event_time_value = document.getElementById("event_time_inputtextarea").value;
+        text_main_array[2] = event_time_value;
+        event_time_wind.destroy();
+        create_popup_for_needed_finish(x0, z0, rpar_size, defaultProperties, graph, text_main_array);
+    }
+
+    var event_time_reset_btn = document.createElement("button");
+    event_time_reset_btn.innerHTML = 'Cancel';
+    event_time_reset_btn.type = "button";
+    event_time_reset_btn.onclick = function() {
+        event_time_wind.destroy();
+    }
+    event_time_form.appendChild(event_time_reset_btn);
+    event_time_form.style.cssText = "margin-left: 15px";
+    event_time_submit_btn.style.cssText = "margin-left: 320px; margin-top: 20px; margin-bottom: 5px";
+    event_time_reset_btn.style.cssText = "float: right; margin-top: 20px; margin-right: 15px; margin-bottom: 5px";
+    event_time_div.style.cssText = "border: 1px solid black";
+    event_time_form.appendChild(event_time_submit_btn);
+    event_time_div.appendChild(init_form);
+    height = 135 + 26 * defaultProperties.length + 15;
+    var event_time_wind = showModalWindow(graph, 'Properties', event_time_div, 450, height);
+}
+
+
+/* flag 4 */
+function create_popup_for_initialization(x0, z0, rpar_size, defaultProperties, graph, text_main_array){
 
     var init_div = document.createElement("div");
     var init_form = document.createElement("form");
@@ -311,7 +485,7 @@ function create_popup_for_initialization(x0, z0, defaultProperties, graph, text_
     var init_label2 = document.createElement("label");
     var labeltxt = "";
     var variable_name = "";
-    if(x0 > 0 || z0 > 0){
+    if(x0 > 0 || z0 > 0 || rpar_size > 0){
         variable_name = "as function(s) of ";
         labeltxt = "You may also reinitialize: <br>";
         if(x0 > 0){
@@ -321,6 +495,9 @@ function create_popup_for_initialization(x0, z0, defaultProperties, graph, text_
         if(z0 > 0){
             labeltxt += "- discrete state z (size:"+z0+")<br>";
             variable_name += "z,"
+        }
+        if(rpar_size > 0){
+            variable_name += "rpar,"
         }
     }else{
         labeltxt = "as function(s) of";
@@ -346,7 +523,7 @@ function create_popup_for_initialization(x0, z0, defaultProperties, graph, text_
         var init_value = document.getElementById("init_inputtextarea").value;
         text_main_array[4] = init_value;
         init_wind.destroy();
-        create_popup_for_needed_finish(x0, z0, defaultProperties, graph, text_main_array);
+        create_popup_for_needed_finish(x0, z0, rpar_size, defaultProperties, graph, text_main_array);
     }
 
     var init_reset_btn = document.createElement("button");
@@ -367,9 +544,9 @@ function create_popup_for_initialization(x0, z0, defaultProperties, graph, text_
 
 }
 
-/* flag 5  */
+/* flag 5 */
 
-function create_popup_for_needed_finish(x0, z0, defaultProperties, graph, text_main_array){
+function create_popup_for_needed_finish(x0, z0, rpar_size, defaultProperties, graph, text_main_array){
 
     var need_finish_div = document.createElement("div");
     var need_finish_form = document.createElement("form");
@@ -385,7 +562,7 @@ function create_popup_for_needed_finish(x0, z0, defaultProperties, graph, text_m
     var need_finish_label2 = document.createElement("label");
     var labeltxt = "";
     var variable_name = "";
-    if(x0 > 0 || z0 > 0){
+    if(x0 > 0 || z0 > 0 || rpar_size > 0 ){
         variable_name = "as function(s) of ";
         labeltxt = "You may also change final value of: <br>";
         if(x0 > 0){
@@ -395,6 +572,9 @@ function create_popup_for_needed_finish(x0, z0, defaultProperties, graph, text_m
         if(z0 > 0){
             labeltxt += "- discrete state z (size:"+z0+")<br>";
             variable_name += "z,"
+        }
+        if(rpar_size > 0){
+            variable_name += "rpar,"
         }
     }else{
         labeltxt = "as function(s) of";
