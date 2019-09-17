@@ -6,10 +6,10 @@ The main aim of this project will be to port core functionalities of Xcos to a b
 ## Installation
 
 	 git clone https://github.com/FOSSEE/xcos_on_cloud
-	
-	 Follow the steps given in the pdf- "Steps-to-setup-and-run-Xcos_on_cloud-locally"
-	
-	 
+
+	 Follow the steps given in the INSTALL.pdf file.
+
+
 ## License information
 This project has a Creative Commons Public License.
 
@@ -19,7 +19,7 @@ An online demo can be found over here:
 
     http://xcos.fossee.in
 
-## Developers and Testers 
+## Developers and Testers
 
 * Dipti Ghosalkar, FOSSEE IIT Bombay
 * Rinki Ranjan Nag, FOSSEE IIT Bombay
@@ -30,7 +30,7 @@ Interns (Year 2017):
 * Jayaprakash A, Indian Institute of Technology, Palakkad
 * Shashank Bhalotia, Shri Ramdeobaba College of Engineering and Management, Nagpur
 * Ritveeka Vashistha, IIT Guwahati, Guwahati
-* Dattatreya Sarma GVS, Lendi Institute of Engineering and Technology,JNTUK, Vizianagaram 
+* Dattatreya Sarma GVS, Lendi Institute of Engineering and Technology,JNTUK, Vizianagaram
 * Shivendra Pratap Singh, Indian institute of Information Tecnology, Kalyani
 * SK Mainul Islam, St. Thomas' College of Engineering & Technology, Kolkata
 * RuhiTaj Reddypalli, National Institute of Technology Karnataka, Surathkal
@@ -40,7 +40,7 @@ Interns (Year 2018):
 * Avinash Agarwal, National Institute of Technology, Durgapur
 * Swanand Pande, Sardar Patel Institute Of Technology, Mumbai
 
-## Initial and Older version of Xcos on Cloud can accessed on following link 
+## Initial and Older version of Xcos on Cloud can accessed on following link
 
     https://github.com/FOSSEE/xcos-on-web
 
