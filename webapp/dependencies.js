@@ -1426,7 +1426,7 @@ function inverse() {
     } else if (arg != "[]") {
         arg = arg.replace(/int8\(([^)]*)\)/, "$1");
         arg = arg.replace(/[\[\]; ]+/g, " ").trim();
-        arg = arg.replace(/ /g, "],[");
+        arg = arg.replace(/[ ,]+/g, "],[");
         str += arg + "]]";
     } else {
         str = "[]"
