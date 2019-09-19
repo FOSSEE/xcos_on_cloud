@@ -79,7 +79,7 @@ function scifunc_block_m() {
         var regex_parentheses = /[\])}[{(]/g;
         var regex_semicolon_comma = /[,;]+/;
 
-        var in1 = inverse(i1);
+        var in1 = MatrixInverse(i1);
         for (var i = 0; i < in1.length; i++) {
             if(in1[i].length == 1 || in1[i].length > 2){
                 if(i == 0){
@@ -92,7 +92,7 @@ function scifunc_block_m() {
             }
         }
 
-        var out = inverse(o1);
+        var out = MatrixInverse(o1);
         for (var i = 0; i < out.length; i++) {
             if(out[i].length == 1 || out[i].length > 2){
                 if(i == 0){
@@ -105,7 +105,7 @@ function scifunc_block_m() {
             }
         }
 
-        var clkin = inverse(ci1);
+        var clkin = MatrixInverse(ci1);
         if(clkin.length == 0){
             clkin = [];
         }else{
@@ -117,7 +117,7 @@ function scifunc_block_m() {
             }
         }
 
-        var clkout = inverse(co1);
+        var clkout = MatrixInverse(co1);
         if(clkout.length == 0){
             clkout = [];
         }else{
@@ -129,7 +129,7 @@ function scifunc_block_m() {
             }
         }
 
-        var x0 = inverse(xx1);
+        var x0 = MatrixInverse(xx1);
         if(x0.length == 0){
             x0 = [];
         }else{
@@ -141,7 +141,7 @@ function scifunc_block_m() {
             }
         }
 
-        var z0 = inverse(z1);
+        var z0 = MatrixInverse(z1);
         if(z0.length == 0){
             z0 = [];
         }else{
@@ -153,7 +153,7 @@ function scifunc_block_m() {
             }
         }
 
-        var rpar0 = inverse(rpar1);
+        var rpar0 = MatrixInverse(rpar1);
         if(rpar0.length == 0){
             rpar0 = [];
         }else{
@@ -165,7 +165,7 @@ function scifunc_block_m() {
             }
         }
 
-        var auto = inverse(auto01);
+        var auto = MatrixInverse(auto01);
         if(auto.length == 0){
             auto = [];
         }else{
