@@ -292,6 +292,8 @@ def prestart_scilab_instances():
                     if err:
                         logger.info('=== Error from scilab console ===\n%s',
                                     err)
+                    returncode = proc.returncode
+                    msg = 'attempts' if attempt != 1 else 'attempt'
 
                     # Check for errors in Scilab
                     if 'Cannot find scilab-bin' in out:
@@ -301,12 +303,13 @@ def prestart_scilab_instances():
                         return
 
                     if attempt >= 4:
-                        logger.critical('aborting after %s attempts', attempt)
+                        logger.critical('aborting after %s %s: rc = %s',
+                                        attempt, msg, returncode)
                         gevent.thread.interrupt_main()
                         return
 
-                    logger.error('retrying after %s %s', attempt,
-                                 'attempts' if attempt != 1 else 'attempt')
+                    logger.error('retrying after %s %s: rc = %s',
+                                 attempt, msg, returncode)
                     gevent.sleep(15 * attempt)
                     attempt += 1
                     continue
