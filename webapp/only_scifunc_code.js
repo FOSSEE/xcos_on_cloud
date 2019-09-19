@@ -134,22 +134,18 @@ function genfunc2(opar, i1, o1, ci1, co1, xx1, z1, rpar1, auto01, deptime1, grap
     }
     //flag2
     else if(xx_size > 0){
-       create_popup_for_continuous_states_evolution(xx_size, z_size, ni, rpar_size, graph, cell, text_main_array );
-
+       create_popup_for_continuous_states_evolution(xx_size, z_size, ni, rpar_size, graph, cell, text_main_array);
     }
     else if((nci > 0 && (xx_size > 0 || z_size > 0))|| z_size > 0){
         create_popup_for_event_time(xx_size, z_size, ni, rpar_size, defaultProperties, graph, text_main_array);
-
     }
     //flag = 3
     else if(nci>0 && nco>0){
-        alert("Flag 3::::vector of output time events t_evo");
-
+        create_popup_for_time_events_t_evo (nco, ni, xx_size, z_size, rpar_size, graph, cell, text_main_array)
     }
     //flag = 6  x,z,u1,rpar
     else if(xx_size > 0 || z_size > 0 || no > 0){
-        alert("Flag 6::::::You may define here functions imposing contraints");
-
+        create_popup_for_func_imposing_contraints(ni, no, xx_size, z_size, rpar_size, defaultProperties, graph, text_main_array)
     }
     else{
     //flag 4
@@ -160,13 +156,13 @@ function genfunc2(opar, i1, o1, ci1, co1, xx1, z1, rpar1, auto01, deptime1, grap
 }
 
 //for saving will be used later as per submission of form/popup
-function update_cell_object(graph, cell, text_array, update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout){
+function update_cell_object(graph, cell, text_main_array, update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout){
     check_call_for_sci = 2;
 
     //For setting opar values
     var opar = cell.blockInstance.instance.x.model.opar;
-    if(opar.length == 7 || text_array[0].toString() != "y1=sin(u1);"){
-        cell.blockInstance.instance.x.model.opar = list(new ScilabString([text_array[0].toString()]), new ScilabString([" "]), new ScilabString([" "]), new ScilabString([" "]), new ScilabString([" "]), new ScilabString([" "]), new ScilabString([" "]));
+    if(opar.length == 7 || text_main_array[0].toString() != "y1=sin(u1);"){
+        cell.blockInstance.instance.x.model.opar = list(new ScilabString([text_main_array[0].toString()]), new ScilabString([text_main_array[1].toString()]), new ScilabString([text_main_array[2].toString()]), new ScilabString([text_main_array[3].toString()]), new ScilabString([text_main_array[4].toString()]), new ScilabString([text_main_array[5].toString()]), new ScilabString([text_main_array[6].toString()]));
     }
 
     var model = graph.getModel();
@@ -193,8 +189,7 @@ function update_cell_object(graph, cell, text_array, update_propertiesObject, in
 function create_popup_for_define_function(no, ni, x0, z0, rpar_size, graph, cell, text_main_array) {
 
     var defaultProperties = cell.blockInstance.instance.get();
-    var arry_text_value = text_main_array;
-    var first_wind_value = arry_text_value[1].trim();
+    var first_wind_value = text_main_array[0].trim();
     var def_func_div = document.createElement("div");
 
     var def_func_head = document.createElement("h2");
@@ -280,7 +275,7 @@ function create_popup_for_define_function(no, ni, x0, z0, rpar_size, graph, cell
             }
         }
         first_wind_value = textfrom_def_func.trim().toString();
-        text_main_array[1] = first_wind_value;
+        text_main_array[0] = first_wind_value;
         //Once other popup are fixed this function will be removed and put in particular popup code
         def_func_wind.destroy();
         //Condition
@@ -309,8 +304,7 @@ function create_popup_for_define_function(no, ni, x0, z0, rpar_size, graph, cell
 function create_popup_for_continuous_states_evolution(x0, z0, ni, rpar_size, graph, cell, text_main_array){
 
     var defaultProperties = cell.blockInstance.instance.get();
-    var arry_text_value = text_main_array;
-    var zero_wind_value = arry_text_value[0].trim();
+    var zero_wind_value = text_main_array[1].trim();
     var cont_stat_div = document.createElement("div");
     var cont_stat_form = document.createElement("form");
     var linebreak = document.createElement('br');
@@ -364,7 +358,7 @@ function create_popup_for_continuous_states_evolution(x0, z0, ni, rpar_size, gra
             alert("You did not define xd !");
             throw "incorrect";
         }
-        text_main_array[0] = cont_stat_value;
+        text_main_array[1] = cont_stat_value;
         cont_stat_wind.destroy();
         //create_popup_for_needed_finish(x0, z0, rpar_size, defaultProperties, graph, text_main_array);
     }
@@ -389,6 +383,7 @@ function create_popup_for_continuous_states_evolution(x0, z0, ni, rpar_size, gra
 /* No flag */
 
 function create_popup_for_event_time(x0, z0, ni, rpar_size, defaultProperties, graph, text_main_array){
+    var second_wind_value = text_main_array[2].trim();
     var event_time_div = document.createElement("div");
     var event_time_form = document.createElement("form");
     var linebreak = document.createElement('br');
@@ -435,6 +430,11 @@ function create_popup_for_event_time(x0, z0, ni, rpar_size, defaultProperties, g
     event_time_inputtextarea.style.cssText = "width: 340px";
     event_time_inputtextarea.id = "event_time_inputtextarea";
     event_time_form.appendChild(event_time_inputtextarea);
+    if(second_wind_value.length > 0){
+        event_time_inputtextarea.value = second_wind_value;
+    }else{
+        event_time_inputtextarea.value = "";
+    }
     var linebreak = document.createElement('br');
     event_time_form.appendChild(linebreak);
     event_time_form.appendChild(linebreak);
@@ -467,10 +467,92 @@ function create_popup_for_event_time(x0, z0, ni, rpar_size, defaultProperties, g
     var event_time_wind = showModalWindow(graph, 'Properties', event_time_div, 450, height);
 }
 
+/* flag 3 */
+
+function create_popup_for_time_events_t_evo (nco, ni, x0, z0, rpar_size, graph, cell, text_main_array) {
+    var third_wind_value = text_main_array[3].trim();
+    var defaultProperties = cell.blockInstance.instance.get();
+    var events_t_evo_div = document.createElement("div");
+    var events_t_evo_form = document.createElement("form");
+    var linebreak = document.createElement('br');
+    events_t_evo_form.appendChild(linebreak);
+
+    var events_t_evo_label2 = document.createElement("label");
+    var labeltxt = "Using t,";
+    if(ni > 0 || x0 > 0 || z0 > 0 || rpar_size > 0){
+        if(x0 > 0){
+            labeltxt += "x,"
+        }
+        if(z0 > 0){
+            labeltxt += "z,"
+        }
+        if(ni > 0){
+            var u_text = "";
+            for(var i = 1; i <= ni; i++){
+                u_text += "u"+i+",";
+            }
+            labeltxt += u_text;
+        }
+        labeltxt += "n_evi,";
+        if(rpar_size > 0){
+            labeltxt += "rpar,"
+        }
+        labeltxt += "you may set <br>vector of output time events t_evo (size:" +nco+")<br>at event time.";
+    }else{
+        labeltxt += "n_evi,";
+        labeltxt += "you may set <br>vector of output time events t_evo (size:" +nco+")<br>at event time.";
+    }
+    events_t_evo_label2.innerHTML = labeltxt;
+    events_t_evo_form.appendChild(events_t_evo_label2);
+    var linebreak = document.createElement('br');
+    events_t_evo_form.appendChild(linebreak);
+
+    var events_t_evo_inputtextarea = document.createElement("TEXTAREA");
+    events_t_evo_inputtextarea.style.cssText = "width: 340px";
+    events_t_evo_inputtextarea.id = "events_t_evo_inputtextarea";
+    if(third_wind_value.length > 0){
+        events_t_evo_inputtextarea.value = third_wind_value;
+    }else{
+        events_t_evo_inputtextarea.value = "";
+    }
+    events_t_evo_form.appendChild(events_t_evo_inputtextarea);
+    var linebreak = document.createElement('br');
+    events_t_evo_form.appendChild(linebreak);
+    events_t_evo_form.appendChild(linebreak);
+
+    var events_t_evo_submit_btn = document.createElement("button");
+    events_t_evo_submit_btn.innerHTML = "OK";
+    events_t_evo_submit_btn.type = "button";
+
+    events_t_evo_submit_btn.onclick = function() {
+        var events_t_evo_value = document.getElementById("events_t_evo_inputtextarea").value;
+        text_main_array[3] = events_t_evo_value;
+        events_t_evo_wind.destroy();
+    }
+
+    var events_t_evo_reset_btn = document.createElement("button");
+    events_t_evo_reset_btn.innerHTML = 'Cancel';
+    events_t_evo_reset_btn.type = "button";
+    events_t_evo_reset_btn.onclick = function() {
+        events_t_evo_wind.destroy();
+    }
+    events_t_evo_form.appendChild(events_t_evo_reset_btn);
+    events_t_evo_form.style.cssText = "margin-left: 15px";
+    events_t_evo_submit_btn.style.cssText = "margin-left: 320px; margin-top: 20px; margin-bottom: 5px";
+    events_t_evo_reset_btn.style.cssText = "float: right; margin-top: 20px; margin-right: 15px; margin-bottom: 5px";
+    events_t_evo_div.style.cssText = "border: 1px solid black";
+    events_t_evo_form.appendChild(events_t_evo_submit_btn);
+    events_t_evo_div.appendChild(events_t_evo_form);
+    height = 135 + 26 * defaultProperties.length + 15;
+    var events_t_evo_wind = showModalWindow(graph, 'Properties', events_t_evo_div, 450, height);
+
+}
 
 /* flag 4 */
+
 function create_popup_for_initialization(x0, z0, rpar_size, defaultProperties, graph, text_main_array){
 
+    var fourth_wind_value = text_main_array[4].trim();
     var init_div = document.createElement("div");
     var init_form = document.createElement("form");
     var linebreak = document.createElement('br');
@@ -510,6 +592,11 @@ function create_popup_for_initialization(x0, z0, rpar_size, defaultProperties, g
     var init_inputtextarea = document.createElement("TEXTAREA");
     init_inputtextarea.style.cssText = "width: 340px";
     init_inputtextarea.id = "init_inputtextarea";
+    if(fourth_wind_value.length > 0){
+        init_inputtextarea.value = fourth_wind_value;
+    }else{
+        init_inputtextarea.value = "";
+    }
     init_form.appendChild(init_inputtextarea);
     var linebreak = document.createElement('br');
     init_form.appendChild(linebreak);
@@ -548,6 +635,7 @@ function create_popup_for_initialization(x0, z0, rpar_size, defaultProperties, g
 
 function create_popup_for_needed_finish(x0, z0, rpar_size, defaultProperties, graph, text_main_array){
 
+    var fifth_wind_value = text_main_array[5].trim();
     var need_finish_div = document.createElement("div");
     var need_finish_form = document.createElement("form");
     var linebreak = document.createElement('br');
@@ -587,6 +675,11 @@ function create_popup_for_needed_finish(x0, z0, rpar_size, defaultProperties, gr
     var need_finish_inputtextarea = document.createElement("TEXTAREA");
     need_finish_inputtextarea.style.cssText = "width: 340px";
     need_finish_inputtextarea.id = "need_finish_inputtextarea";
+    if(fifth_wind_value.length > 0){
+        need_finish_inputtextarea.value = fifth_wind_value;
+    }else{
+        need_finish_inputtextarea.value = "";
+    }
     need_finish_form.appendChild(need_finish_inputtextarea);
     var linebreak = document.createElement('br');
     need_finish_form.appendChild(linebreak);
@@ -617,6 +710,102 @@ function create_popup_for_needed_finish(x0, z0, rpar_size, defaultProperties, gr
     need_finish_div.appendChild(need_finish_form);
     height = 135 + 26 * defaultProperties.length + 15;
     var need_finish_wind = showModalWindow(graph, 'Properties', need_finish_div, 450, height);
+
+}
+
+/* Flag 6 */
+
+function create_popup_for_func_imposing_contraints(ni, no, x0, z0, rpar_size, defaultProperties, graph, text_main_array) {
+
+    var sixth_wind_value = text_main_array[6].trim();
+    var func_imposing_div = document.createElement("div");
+    var func_imposing_form = document.createElement("form");
+    var linebreak = document.createElement('br');
+    func_imposing_form.appendChild(linebreak);
+
+    var func_imposing_label1 = document.createElement("label");
+    func_imposing_label1.innerHTML = "You may define here functions imposing contraints <br> on initial inputs, states and outputs" +
+    "Note: these functions may be called more than once <br>";
+    func_imposing_form.appendChild(func_imposing_label1);
+    var linebreak = document.createElement('br');
+    func_imposing_form.appendChild(linebreak);
+
+    var func_imposing_label2 = document.createElement("label");
+    var labeltxt = "Enter Scilab instructions defining: <br>";
+    var variable_name = "";
+    var value_for_textarea = "";
+    if(no > 0 || x0 > 0 || z0 > 0 || rpar_size > 0){
+        variable_name = "as function(s) of ";
+        if(x0 > 0){
+            labeltxt += "- state x (size:"+x0+")<br>";
+            variable_name += "x,"
+        }
+        if(z0 > 0){
+            labeltxt += "- state z (size:"+z0+")<br>";
+            variable_name += "z,"
+        }
+        if(no > 0){
+            var y_text = "";
+            for(var i = 1; i <= no; i++){
+                y_text += "- output y"+i+" (size : 1) <br>";
+                value_for_textarea += "y"+i+"=[] \n";
+            }
+            label_txt += y_text;
+        }
+        if(ni > 0){
+            for(var i = 1; i <= ni; i++){
+                variable_name += "u"+i+",";
+            }
+        }
+        if(rpar_size > 0){
+            variable_name += "rpar,"
+        }
+    }else{
+        labeltxt = "as function(s) of";
+    }
+    func_imposing_label2.innerHTML = labeltxt + variable_name;
+    func_imposing_form.appendChild(func_imposing_label2);
+    var linebreak = document.createElement('br');
+    func_imposing_form.appendChild(linebreak);
+
+    var func_imposing_inputtextarea = document.createElement("TEXTAREA");
+    func_imposing_inputtextarea.style.cssText = "width: 340px";
+    func_imposing_inputtextarea.id = "func_imposing_inputtextarea";
+    if(sixth_wind_value.length > 0){
+        func_imposing_inputtextarea.value = sixth_wind_value;
+    }else{
+        func_imposing_inputtextarea.value = value_for_textarea;
+    }
+    func_imposing_form.appendChild(func_imposing_inputtextarea);
+    var linebreak = document.createElement('br');
+    func_imposing_form.appendChild(linebreak);
+    func_imposing_form.appendChild(linebreak);
+
+    var func_imposing_submit_btn = document.createElement("button");
+    func_imposing_submit_btn.innerHTML = "OK";
+    func_imposing_submit_btn.type = "button";
+
+    func_imposing_submit_btn.onclick = function() {
+        var func_imposing_value = document.getElementById("func_imposing_inputtextarea").value;
+        text_main_array[6] = func_imposing_value;
+        func_imposing_wind.destroy();
+    }
+
+    var func_imposing_reset_btn = document.createElement("button");
+    func_imposing_reset_btn.innerHTML = "Cancel";
+    func_imposing_reset_btn.type = "button";
+    func_imposing_reset_btn.onclick = function() {
+        func_imposing_wind.destroy();
+    }
+    func_imposing_form.appendChild(func_imposing_reset_btn);
+    func_imposing_form.style.cssText = "margin-left: 15px";
+    func_imposing_submit_btn.style.cssText = "margin-left: 320px; margin-top: 20px; margin-bottom: 5px";
+    func_imposing_reset_btn.style.cssText = "float: right; margin-top: 20px; margin-right: 15px; margin-bottom: 5px";
+    func_imposing_div.style.cssText = "border: 1px solid black";
+    func_imposing_form.appendChild(func_imposing_submit_btn);
+    func_imposing_div.appendChild(func_imposing_form);
+    height = 135 + 26 * defaultProperties.length + 15;
+    var func_imposing_wind = showModalWindow(graph, 'Properties', func_imposing_div, 450, height);
 
 }
 
