@@ -2091,7 +2091,12 @@ scifunc_block_m.prototype.importset = function scifunc_block_m() {
     this.rpar = ary[6];
     this.auto0 = ary[7];
     this.deptime = ary[8];
-    this.displayParameter = getData(model.opar[0]);
+    var display_arry = getData(model.opar[0]);
+    if(display_arry.length != 0){
+        this.displayParameter = display_arry;
+    }else{
+        this.displayParameter = ["y1=sin(u1)"];
+    }
     var in1 = inverse(this.i);
     var out = inverse(this.o);
     var it = ones(1, size(in1, 1));
