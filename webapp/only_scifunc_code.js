@@ -162,7 +162,7 @@ function update_cell_object(graph, cell, text_main_array, update_propertiesObjec
     //For setting opar values
     var opar = cell.blockInstance.instance.x.model.opar;
     if(opar.length == 7 || text_main_array[0].toString() != "y1=sin(u1)"){
-        cell.blockInstance.instance.x.model.opar = list(new ScilabString([text_main_array[0].toString()]), new ScilabString([text_main_array[1].toString()]), new ScilabString([text_main_array[2].toString()]), new ScilabString([text_main_array[3].toString()]), new ScilabString([text_main_array[4].toString()]), new ScilabString([text_main_array[5].toString()]), new ScilabString([text_main_array[6].toString()]));
+        cell.blockInstance.instance.x.model.opar = list(new ScilabString(...[text_main_array[0]]), new ScilabString(...[text_main_array[1]]), new ScilabString(...[text_main_array[2]]), new ScilabString(...[text_main_array[3]]), new ScilabString(...[text_main_array[4]]), new ScilabString(...[text_main_array[5]]), new ScilabString(...[text_main_array[6]]));
     }
 
     var model = graph.getModel();

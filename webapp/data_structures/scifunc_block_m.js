@@ -221,9 +221,10 @@ function scifunc_block_m() {
             if(opar_len != 0){
                 for(var i = 0; i < opar_len; i++){
                     var ary = getData(update_opar[i]);
-                    tt[i] = ary[0];
+                    tt[i] = ary;
                 }
-                this.x.graphics.exprs = list(new ScilabString([sci2exp(this.i)], [sci2exp(this.o)], [sci2exp(this.ci)], [sci2exp(this.co)], [sci2exp(this.xx)], [sci2exp(this.z)], [sci2exp(this.rpar)], [sci2exp(this.auto0)], [sci2exp(this.deptime)]), list(new ScilabString([tt[0]]), new ScilabString([tt[1]]), new ScilabString([tt[2]]), new ScilabString([tt[2]]), new ScilabString([tt[4]]), new ScilabString([tt[5]]), new ScilabString([tt[6]])));
+                this.x.graphics.exprs = list(new ScilabString([sci2exp(this.i)], [sci2exp(this.o)], [sci2exp(this.ci)], [sci2exp(this.co)], [sci2exp(this.xx)], [sci2exp(this.z)], [sci2exp(this.rpar)], [sci2exp(this.auto0)], [sci2exp(this.deptime)]), list(new ScilabString(...[tt[0]]), new ScilabString(...[tt[1]]), new ScilabString(...[tt[2]]), new ScilabString(...[tt[3]]),
+                new ScilabString(...[tt[4]]), new ScilabString(...[tt[5]]), new ScilabString(...[tt[6]])));
                 this.displayParameter = [tt[0]];
             }
         }
