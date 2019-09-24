@@ -2093,7 +2093,7 @@ scifunc_block_m.prototype.importset = function scifunc_block_m() {
     this.deptime = ary[8];
     var display_arry = getData(model.opar[0]);
     if(display_arry.length != 0){
-        this.displayParameter = display_arry;
+        this.displayParameter = [display_arry];
     }else{
         this.displayParameter = ["y1=sin(u1)"];
     }
