@@ -149,16 +149,22 @@ function genfunc2(opar, i1, o1, ci1, co1, xx1, z1, rpar1, auto01, deptime1, grap
     }
     else{
     //flag 4
-        create_popup_for_initialization(no, ni, nci, nco, xx_size, z_size, rpar_size, defaultProperties, graph, text_main_array ,update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout);
+        create_popup_for_initialization(no, ni, nci, nco, xx_size, z_size, rpar_size, defaultProperties, cell, graph, text_main_array, update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout);
     }
     dep_ut = [dep_u,dep_t];
     check_call_for_sci = 1;
 }
 
 //for saving will be used later as per submission of form/popup
-function update_cell_object(graph, cell, text_main_array, update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout){
+function update_cell_object(no, ni, nci, nco, xx_size, z_size, rpar_size, graph, cell, text_main_array, update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout){
     check_call_for_sci = 2;
 
+    if(no == 0){
+        text_main_array[0] = " ";
+    }
+    if(xx_size > 0){
+        text_main_array[1] = " ";
+    }
     //For setting opar values
     var opar = cell.blockInstance.instance.x.model.opar;
     if(opar.length == 7 || text_main_array[0].toString() != "y1=sin(u1)"){
@@ -621,7 +627,7 @@ function create_popup_for_time_events_t_evo (no, ni, nci, nco, xx_size, z_size, 
 
 /* flag 4 */
 
-function create_popup_for_initialization(no, ni, nci, nco, xx_size, z_size, rpar_size, defaultProperties,cell, graph, text_main_array, update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout){
+function create_popup_for_initialization(no, ni, nci, nco, xx_size, z_size, rpar_size, defaultProperties, cell, graph, text_main_array,  update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout){
 
     var fourth_wind_value_arry = text_main_array[4];
     var init_div = document.createElement("div");
@@ -793,7 +799,11 @@ function create_popup_for_needed_finish(no, ni, nci, nco, xx_size, z_size, rpar_
             }
         }
         text_main_array[5] = fifth_value_array;
-        create_popup_for_func_imposing_contraints(no, ni, nci, nco, xx_size, z_size, rpar_size, defaultProperties,cell, graph, text_main_array,update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout);
+        if(xx_size > 0 || z_size > 0 || no > 0){
+            create_popup_for_func_imposing_contraints(no, ni, nci, nco, xx_size, z_size, rpar_size, defaultProperties,cell, graph, text_main_array,update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout);
+        }else{
+            update_cell_object(no, ni, nci, nco, xx_size, z_size, rpar_size, graph, cell, text_main_array, update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout);
+        }
         need_finish_wind.destroy();
     }
 
@@ -905,7 +915,7 @@ function create_popup_for_func_imposing_contraints(no, ni, nci, nco, xx_size, z_
             }
         }
         text_main_array[6] = sixth_value_array;
-        update_cell_object(graph, cell, text_main_array, update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout);
+        update_cell_object(no, ni, nci, nco, xx_size, z_size, rpar_size, graph, cell, text_main_array, update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout);
         func_imposing_wind.destroy();
     }
 
