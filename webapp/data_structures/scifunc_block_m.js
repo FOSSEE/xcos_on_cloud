@@ -216,17 +216,18 @@ function scifunc_block_m() {
             this.deptime = deptime_2;
             var update_opar = [];
             update_opar = this.x.model.opar;
-            var tt = [];
+            var tt = [["y1=sin(u1)"],[" "],[" "],["y1=sin(u1)"],[" "],[" "],[" "]];
             var opar_len = update_opar.length;
             if(opar_len != 0){
+                tt = [];
                 for(var i = 0; i < opar_len; i++){
                     var ary = getData(update_opar[i]);
                     tt[i] = ary;
                 }
-                this.x.graphics.exprs = list(new ScilabString([sci2exp(this.i)], [sci2exp(this.o)], [sci2exp(this.ci)], [sci2exp(this.co)], [sci2exp(this.xx)], [sci2exp(this.z)], [sci2exp(this.rpar)], [sci2exp(this.auto0)], [sci2exp(this.deptime)]), list(new ScilabString(...[tt[0]]), new ScilabString(...[tt[1]]), new ScilabString(...[tt[2]]), new ScilabString(...[tt[3]]),
+            }
+            this.x.graphics.exprs = list(new ScilabString([sci2exp(this.i)], [sci2exp(this.o)], [sci2exp(this.ci)], [sci2exp(this.co)], [sci2exp(this.xx)], [sci2exp(this.z)], [sci2exp(this.rpar)], [sci2exp(this.auto0)], [sci2exp(this.deptime)]), list(new ScilabString(...[tt[0]]), new ScilabString(...[tt[1]]), new ScilabString(...[tt[2]]), new ScilabString(...[tt[3]]),
                 new ScilabString(...[tt[4]]), new ScilabString(...[tt[5]]), new ScilabString(...[tt[6]])));
                 this.displayParameter = [tt[0]];
-            }
         }
         return new BasicBlock(this.x)
     }
