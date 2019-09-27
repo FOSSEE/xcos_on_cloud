@@ -134,18 +134,18 @@ function genfunc2(opar, i1, o1, ci1, co1, xx1, z1, rpar1, auto01, deptime1, grap
     }
     //flag2
     else if(xx_size > 0){
-       create_popup_for_continuous_states_evolution(no, ni, nci, nco, xx_size, z_size, rpar_size, graph, cell, text_main_array);
+       create_popup_for_continuous_states_evolution(no, ni, nci, nco, xx_size, z_size, rpar_size, graph, cell, text_main_array, defaultProperties, update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout);
     }
     else if((nci > 0 && (xx_size > 0 || z_size > 0))|| z_size > 0){
-        create_popup_for_event_time(no, ni, nci, nco, xx_size, z_size, rpar_size, defaultProperties, graph, text_main_array);
+        create_popup_for_event_time(no, ni, nci, nco, xx_size, z_size, rpar_size, defaultProperties, cell, graph, text_main_array, defaultProperties, update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout);
     }
     //flag = 3
     else if(nci>0 && nco>0){
-        create_popup_for_time_events_t_evo (no, ni, nci, nco, xx_size, z_size, rpar_size, graph, cell, text_main_array)
+        create_popup_for_time_events_t_evo(no, ni, nci, nco, xx_size, z_size, rpar_size, graph, cell, text_main_array, defaultProperties, update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout);
     }
     //flag = 6  x,z,u1,rpar
     else if(xx_size > 0 || z_size > 0 || no > 0){
-        create_popup_for_func_imposing_contraints(no, ni, nci, nco, xx_size, z_size, rpar_size, defaultProperties, graph, text_main_array)
+        create_popup_for_func_imposing_contraints(no, ni, nci, nco, xx_size, z_size, rpar_size, defaultProperties, graph, text_main_array);
     }
     else{
     //flag 4
@@ -162,15 +162,30 @@ function update_cell_object(no, ni, nci, nco, xx_size, z_size, rpar_size, graph,
     if(no == 0){
         text_main_array[0] = " ";
     }
-    if(xx_size > 0){
+    if(xx_size == 0){
         text_main_array[1] = " ";
     }
+    if((nci == 0 && (xx_size == 0 || z_size == 0))|| z_size == 0){
+        text_main_array[2] = " ";
+    }
+    if(nci == 0 && nco == 0){
+        text_main_array[3] = " ";
+    }
+    if(xx_size == 0 || z_size == 0 || no == 0){
+        text_main_array[6] = " ";
+    }
+    if(text_main_array[4].toString().length == 0){
+        text_main_array[4] = " ";
+    }
+    if(text_main_array[5].toString().length == 0){
+        text_main_array[5] = " ";
+    }
     //For setting opar values
-    var opar = cell.blockInstance.instance.x.model.opar;
-    if(opar.length == 7 || text_main_array[0].toString() != "y1=sin(u1)"){
+    /* Check for default condition in which opar doesn't come in xml */
+    var check = (no == 1 && ni == 1 && nci == 0 && nco == 0 && xx_size == 0 && z_size == 0 && rpar_size == 0);
+    if(!check){
         cell.blockInstance.instance.x.model.opar = list(new ScilabString(...[text_main_array[0]]), new ScilabString(...[text_main_array[1]]), new ScilabString(...[text_main_array[2]]), new ScilabString(...[text_main_array[3]]), new ScilabString(...[text_main_array[4]]), new ScilabString(...[text_main_array[5]]), new ScilabString(...[text_main_array[6]]));
     }
-
     var model = graph.getModel();
     model.beginUpdate();
     try {
@@ -301,7 +316,15 @@ function create_popup_for_define_function(no, ni, nci, nco, xx_size, z_size, rpa
         //Once other popup are fixed this function will be removed and put in particular popup code
         def_func_wind.destroy();
         //Condition
-        create_popup_for_initialization(no, ni, nci, nco, xx_size, z_size, rpar_size, defaultProperties,cell, graph, text_main_array, update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout);
+        if(xx_size > 0){
+            create_popup_for_continuous_states_evolution(no, ni, nci, nco, xx_size, z_size, rpar_size, graph, cell, text_main_array, defaultProperties, update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout);
+        }else if((nci > 0 && (xx_size > 0 || z_size > 0))|| z_size > 0){
+            create_popup_for_event_time(no, ni, nci, nco, xx_size, z_size, rpar_size, defaultProperties, cell, graph, text_main_array,defaultProperties, update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout);
+        }else if(nci>0 && nco>0){
+            create_popup_for_time_events_t_evo(no, ni, nci, nco, xx_size, z_size, rpar_size, graph, cell, text_main_array, defaultProperties, update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout);
+        }else{
+            create_popup_for_initialization(no, ni, nci, nco, xx_size, z_size, rpar_size, defaultProperties,cell, graph, text_main_array, update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout);
+        }
     }
     var def_func_reset_btn = document.createElement("button");
     def_func_reset_btn.innerHTML = 'Cancel';
@@ -323,7 +346,7 @@ function create_popup_for_define_function(no, ni, nci, nco, xx_size, z_size, rpa
 
 /* flag 2 */
 
-function create_popup_for_continuous_states_evolution(no, ni, nci, nco, xx_size, z_size, rpar_size, graph, cell, text_main_array){
+function create_popup_for_continuous_states_evolution(no, ni, nci, nco, xx_size, z_size, rpar_size, graph, cell, text_main_array, defaultProperties, update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout){
 
     var defaultProperties = cell.blockInstance.instance.get();
     var zero_wind_value_arry = text_main_array[1];
@@ -359,9 +382,10 @@ function create_popup_for_continuous_states_evolution(no, ni, nci, nco, xx_size,
     var cont_stat_inputtextarea = document.createElement("TEXTAREA");
     cont_stat_inputtextarea.style.cssText = "width: 340px";
     cont_stat_inputtextarea.id = "cont_stat_inputtextarea";
-    var txt = "";
+    var txt = "xd=[]";
     if(zero_wind_value_arry.length > 0 && zero_wind_value_arry.toString().trim().length > 0){
         var len = zero_wind_value_arry.length;
+        txt = "";
         for (var i = 0; i < len; i++) {
             var value = zero_wind_value_arry[i].toString().trim();
             if(value != ""){
@@ -370,7 +394,7 @@ function create_popup_for_continuous_states_evolution(no, ni, nci, nco, xx_size,
         }
         cont_stat_inputtextarea.value = txt;
     }else{
-        cont_stat_inputtextarea.value = "xd=[]";
+        cont_stat_inputtextarea.value = txt;
     }
     cont_stat_form.appendChild(cont_stat_inputtextarea);
     var linebreak = document.createElement('br');
@@ -407,6 +431,11 @@ function create_popup_for_continuous_states_evolution(no, ni, nci, nco, xx_size,
         }
         text_main_array[1] = zero_value_array;
         cont_stat_wind.destroy();
+        if((nci > 0 && (xx_size > 0 || z_size > 0))|| z_size > 0){
+            create_popup_for_event_time(no, ni, nci, nco, xx_size, z_size, rpar_size, defaultProperties, cell ,graph, text_main_array, defaultProperties, update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout);
+        }else{
+            create_popup_for_initialization(no, ni, nci, nco, xx_size, z_size, rpar_size, defaultProperties,cell, graph, text_main_array, update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout);
+        }
         //create_popup_for_needed_finish(x0, z0, rpar_size, defaultProperties, graph, text_main_array);
     }
 
@@ -429,7 +458,7 @@ function create_popup_for_continuous_states_evolution(no, ni, nci, nco, xx_size,
 
 /* No flag */
 
-function create_popup_for_event_time(no, ni, nci, nco, xx_size, z_size, rpar_size, defaultProperties, graph, text_main_array){
+function create_popup_for_event_time(no, ni, nci, nco, xx_size, z_size, rpar_size, defaultProperties, cell, graph, text_main_array, defaultProperties, update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout){
     var second_wind_value_arry = text_main_array[2];
     var event_time_div = document.createElement("div");
     var event_time_form = document.createElement("form");
@@ -438,7 +467,7 @@ function create_popup_for_event_time(no, ni, nci, nco, xx_size, z_size, rpar_siz
 
     var event_time_label1 = document.createElement("label");
     event_time_label1.innerHTML = "You may define:";
-    init_form.appendChild(event_time_label1);
+    event_time_form.appendChild(event_time_label1);
     var linebreak = document.createElement('br');
     event_time_form.appendChild(linebreak);
 
@@ -509,7 +538,11 @@ function create_popup_for_event_time(no, ni, nci, nco, xx_size, z_size, rpar_siz
         }
         text_main_array[2] = second_value_array;
         event_time_wind.destroy();
-        create_popup_for_needed_finish(no, ni, nci, nco, xx_size, z_size, rpar_size, defaultProperties, graph, text_main_array);
+        if(nci>0 && nco>0){
+            create_popup_for_time_events_t_evo(no, ni, nci, nco, xx_size, z_size, rpar_size, graph, cell, text_main_array, defaultProperties, update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout);
+        }else{
+            create_popup_for_initialization(no, ni, nci, nco, xx_size, z_size, rpar_size, defaultProperties,cell, graph, text_main_array, update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout);
+        }
     }
 
     var event_time_reset_btn = document.createElement("button");
@@ -524,14 +557,14 @@ function create_popup_for_event_time(no, ni, nci, nco, xx_size, z_size, rpar_siz
     event_time_reset_btn.style.cssText = "float: right; margin-top: 20px; margin-right: 15px; margin-bottom: 5px";
     event_time_div.style.cssText = "border: 1px solid black";
     event_time_form.appendChild(event_time_submit_btn);
-    event_time_div.appendChild(init_form);
+    event_time_div.appendChild(event_time_form);
     height = 135 + 26 * defaultProperties.length + 15;
     var event_time_wind = showModalWindow(graph, 'Properties', event_time_div, 450, height);
 }
 
 /* flag 3 */
 
-function create_popup_for_time_events_t_evo (no, ni, nci, nco, xx_size, z_size, rpar_size, graph, cell, text_main_array) {
+function create_popup_for_time_events_t_evo (no, ni, nci, nco, xx_size, z_size, rpar_size, graph, cell, text_main_array, defaultProperties, update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout) {
     var third_wind_value_arry = text_main_array[3];
     var defaultProperties = cell.blockInstance.instance.get();
     var events_t_evo_div = document.createElement("div");
@@ -605,6 +638,7 @@ function create_popup_for_time_events_t_evo (no, ni, nci, nco, xx_size, z_size, 
         }
         text_main_array[3] = third_value_array;
         events_t_evo_wind.destroy();
+        create_popup_for_initialization(no, ni, nci, nco, xx_size, z_size, rpar_size, defaultProperties,cell, graph, text_main_array, update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout);
     }
 
     var events_t_evo_reset_btn = document.createElement("button");
