@@ -104,14 +104,6 @@ function genfunc2(opar, i1, o1, ci1, co1, xx1, z1, rpar1, auto01, deptime1, grap
     var z_size = z01.length;
     var rpar_size = rpar01.length;
     var auto_size = auto1.length;
-    var mac = [];
-    var ok = false;
-    var dep_ut = [];
-
-    var dep_u = false;
-    var dep_t = false;
-    var depp = "t";
-    var deqq = "t";
     get_parameters_wind_scifunc.destroy();
 
     var update_propertiesObject = {
@@ -151,7 +143,6 @@ function genfunc2(opar, i1, o1, ci1, co1, xx1, z1, rpar1, auto01, deptime1, grap
     //flag 4
         create_popup_for_initialization(no, ni, nci, nco, xx_size, z_size, rpar_size, defaultProperties, cell, graph, text_main_array, update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout);
     }
-    dep_ut = [dep_u,dep_t];
     check_call_for_sci = 1;
 }
 
