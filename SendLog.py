@@ -282,37 +282,34 @@ def prestart_scilab_instances():
         while too_many_scilab_instances():
             evt.wait()
 
-        try:
-            for i in range(start_scilab_instances()):
-                instance = ScilabInstance()
-                proc = instance.proc
+        for i in range(start_scilab_instances()):
+            instance = ScilabInstance()
+            proc = instance.proc
 
-                if FIRST_INSTANCE:
-                    gevent.sleep(2)
-                if proc.poll() is not None:
-                    returncode = proc.returncode
-                    msg = 'attempts' if attempt != 1 else 'attempt'
+            if FIRST_INSTANCE:
+                gevent.sleep(2)
+            if proc.poll() is not None:
+                returncode = proc.returncode
+                msg = 'attempts' if attempt != 1 else 'attempt'
 
-                    if attempt >= 4:
-                        logger.critical('aborting after %s %s: rc = %s',
-                                        attempt, msg, returncode)
-                        gevent.thread.interrupt_main()
-                        return
+                if attempt >= 4:
+                    logger.critical('aborting after %s %s: rc = %s',
+                                    attempt, msg, returncode)
+                    gevent.thread.interrupt_main()
+                    return
 
-                    logger.error('retrying after %s %s: rc = %s',
-                                 attempt, msg, returncode)
-                    gevent.sleep(15 * attempt)
-                    attempt += 1
-                    FIRST_INSTANCE = True
-                    continue
+                logger.error('retrying after %s %s: rc = %s',
+                             attempt, msg, returncode)
+                gevent.sleep(config.SCILAB_INSTANCE_RETRY_INTERVAL * attempt)
+                attempt += 1
+                FIRST_INSTANCE = True
+                continue
 
-                INSTANCES_1.append(instance)
-                attempt = 1
-                FIRST_INSTANCE = False
+            INSTANCES_1.append(instance)
+            attempt = 1
+            FIRST_INSTANCE = False
 
-            print_scilab_instances()
-        except KeyboardInterrupt:
-            return
+        print_scilab_instances()
 
         if too_many_scilab_instances():
             evt.clear()
