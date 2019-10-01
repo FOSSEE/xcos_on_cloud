@@ -230,8 +230,17 @@ function scifunc_block_m() {
             var dep_t = false;
             dep_ut = [dep_u,dep_t];
             dep_ut[1] = (1 == parseFloat(deptime_2));
+            this.x.model.dep_ut = new ScilabBoolean([dep_ut[0],dep_ut[1]]);
+            auto = inverse(auto01);
+            this.x.model.firing = new ScilabDouble(...auto);
+            x0 = inverse(xx1);
+            this.x.model.state =  new ScilabDouble(...x0);
+            z0 = inverse(z1);
+            this.x.model.dstate = new ScilabDouble(...z0);
+            rpar0 = inverse(rpar1);
+            this.x.model.rpar = new ScilabDouble(...rpar0);
 
-            this.x.graphics.exprs = list(new ScilabString([sci2exp(this.i)], [sci2exp(this.o)], [sci2exp(this.ci)], [sci2exp(this.co)], [sci2exp(this.xx)], [sci2exp(this.z)], [sci2exp(this.rpar)], [sci2exp(this.auto0)], [sci2exp(this.deptime)]), list(new ScilabString(...[tt[0]]), new ScilabString(...[tt[1]]), new ScilabString(...[tt[2]]), new ScilabString(...[tt[3]]),new ScilabString(...[tt[4]]),
+            this.x.graphics.exprs = list(new ScilabString([sci2exp(this.i)], [sci2exp(this.o)], [sci2exp(this.ci)], [sci2exp(this.co)], [sci2exp(this.xx)], [sci2exp(this.z)], [sci2exp(this.rpar)], [sci2exp(this.auto0)], [sci2exp(this.deptime)]), list(new ScilabString(...[tt[0]]), new ScilabString(...[tt[1]]), new ScilabString(...[tt[2]]), new ScilabString(...[tt[3]]), new ScilabString(...[tt[4]]),
 new ScilabString(...[tt[5]]), new ScilabString(...[tt[6]])));
             this.displayParameter = [tt[0]];
         }
