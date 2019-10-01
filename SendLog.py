@@ -268,7 +268,12 @@ def print_scilab_instances():
     logger.info('instance count: %s', msg[2:])
 
 
+FIRST_INSTANCE = True
+
+
 def prestart_scilab_instances():
+    global FIRST_INSTANCE
+
     current_thread().name = 'PreStart'
 
     attempt = 1
@@ -277,57 +282,34 @@ def prestart_scilab_instances():
         while too_many_scilab_instances():
             evt.wait()
 
-        try:
-            for i in range(start_scilab_instances()):
-                instance = ScilabInstance()
-                proc = instance.proc
+        for i in range(start_scilab_instances()):
+            instance = ScilabInstance()
+            proc = instance.proc
 
-                try:
-                    # For processes taking less than 2 seconds
-                    (out, err) = proc.communicate(timeout=2)
-                    out = re.sub(r'^[ !\\-]*\n', r'', out, flags=re.MULTILINE)
-                    if out:
-                        logger.info('=== Output from scilab console ===\n%s',
-                                    out)
-                    if err:
-                        logger.info('=== Error from scilab console ===\n%s',
-                                    err)
-                    returncode = proc.returncode
-                    msg = 'attempts' if attempt != 1 else 'attempt'
+            if FIRST_INSTANCE:
+                gevent.sleep(2)
+            if proc.poll() is not None:
+                returncode = proc.returncode
+                msg = 'attempts' if attempt != 1 else 'attempt'
 
-                    # Check for errors in Scilab
-                    if 'Cannot find scilab-bin' in out:
-                        logger.critical('scilab has not been built. '
-                                        'Follow the installation instructions')
-                        gevent.thread.interrupt_main()
-                        return
+                if attempt >= 4:
+                    logger.critical('aborting after %s %s: rc = %s',
+                                    attempt, msg, returncode)
+                    gevent.thread.interrupt_main()
+                    return
 
-                    if attempt >= 4:
-                        logger.critical('aborting after %s %s: rc = %s',
-                                        attempt, msg, returncode)
-                        gevent.thread.interrupt_main()
-                        return
+                logger.error('retrying after %s %s: rc = %s',
+                             attempt, msg, returncode)
+                gevent.sleep(config.SCILAB_INSTANCE_RETRY_INTERVAL * attempt)
+                attempt += 1
+                FIRST_INSTANCE = True
+                continue
 
-                    logger.error('retrying after %s %s: rc = %s',
-                                 attempt, msg, returncode)
-                    gevent.sleep(15 * attempt)
-                    attempt += 1
-                    continue
-
-                except subprocess.TimeoutExpired:
-                    pass
-
-                INSTANCES_1.append(instance)
+            INSTANCES_1.append(instance)
             attempt = 1
-            print_scilab_instances()
-        except Exception as e:
-            logger.error('could not start scilab: %s', str(e))
-            if attempt >= 4:
-                logger.critical('aborting after %s attempts', attempt)
-                gevent.thread.interrupt_main()
-                return
-            gevent.sleep(15 * attempt)
-            attempt += 1
+            FIRST_INSTANCE = False
+
+        print_scilab_instances()
 
         if too_many_scilab_instances():
             evt.clear()
