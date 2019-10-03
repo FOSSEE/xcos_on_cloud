@@ -285,10 +285,29 @@ def prestart_scilab_instances():
         for i in range(start_scilab_instances()):
             instance = ScilabInstance()
             proc = instance.proc
+            if proc is None:
+                gevent.thread.interrupt_main()
+                return
 
             if FIRST_INSTANCE:
                 gevent.sleep(2)
             if proc.poll() is not None:
+                (out, err) = proc.communicate()
+                out = re.sub(r'^[ !\\-]*\n', r'', out, flags=re.MULTILINE)
+                if out:
+                    logger.info('=== Output from scilab console ===\n%s',
+                                out)
+                if err:
+                    logger.info('=== Error from scilab console ===\n%s',
+                                err)
+
+                # Check for errors in Scilab
+                if 'Cannot find scilab-bin' in out:
+                    logger.critical('scilab has not been built. '
+                                    'Follow the installation instructions')
+                    gevent.thread.interrupt_main()
+                    return
+
                 returncode = proc.returncode
                 msg = 'attempts' if attempt != 1 else 'attempt'
 
@@ -316,6 +335,8 @@ def prestart_scilab_instances():
 
 
 def get_scilab_instance():
+    global FIRST_INSTANCE
+
     try:
         while True:
             instance = INSTANCES_1.pop(0)
@@ -323,10 +344,12 @@ def get_scilab_instance():
             if proc.poll() is not None:
                 logger.warn('could not get scilab instance: return code is %s',
                             proc.returncode)
+                FIRST_INSTANCE = True
                 if not too_many_scilab_instances():
                     evt.set()
                     gevent.sleep(1)
                 continue
+
             INSTANCES_2.append(instance)
             print_scilab_instances()
             if not too_many_scilab_instances():
@@ -789,11 +812,20 @@ def prestart_scilab():
         if logfilefd != LOGFILEFD:
             os.dup2(logfilefd, LOGFILEFD)
             os.close(logfilefd)
-        proc = subprocess.Popen(
-            cmdarray,
-            stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE, start_new_session=True,
-            universal_newlines=True, pass_fds=(LOGFILEFD, ))
+
+        try:
+            proc = subprocess.Popen(
+                cmdarray,
+                stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE, start_new_session=True,
+                universal_newlines=True, pass_fds=(LOGFILEFD, ))
+        except FileNotFoundError:
+            logger.critical('scilab has not been built. '
+                            'Follow the installation instructions')
+            proc = None
+            remove(log_name)
+            log_name = None
+
         os.close(LOGFILEFD)
 
     return (proc, log_name)
