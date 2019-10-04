@@ -88,15 +88,16 @@ function scifunc_block_m() {
                 alert("Answer given for input ports sizes \nhas invalid dimension:\nwaiting for dimension -1 x 2.");
                 throw "incorrect";
             }
-        }
-        if(in1[0].length == 1 || in1[0].length > 2 ){
-            alert("Answer given for input ports sizes \nhas invalid dimension:\nwaiting for dimension -1 x 2.");
-            throw "incorrect";
-        }
-        for (var i = 1; i < in1.length; i++) {
-            if (in1[0].length != in1[i].length) {
-                alert("Answer given for input ports sizes \nis incorrect: Inconsistent row/column dimensions");
+        }else{
+            if(in1[0].length == 1 || in1[0].length > 2 ){
+                alert("Answer given for input ports sizes \nhas invalid dimension:\nwaiting for dimension -1 x 2.");
                 throw "incorrect";
+            }
+            for (var i = 1; i < in1.length; i++) {
+                if (in1[0].length != in1[i].length) {
+                    alert("Answer given for input ports sizes \nis incorrect: Inconsistent row/column dimensions");
+                    throw "incorrect";
+                }
             }
         }
         if(!(o1.includes("[")) && !(o1.includes("]"))){
@@ -108,15 +109,16 @@ function scifunc_block_m() {
                 alert("Answer given for output ports sizes \nhas invalid dimension:\nwaiting for dimension -1 x 2.");
                 throw "incorrect";
             }
-        }
-        if(out[0].length == 1 || out[0].length > 2 ){
-            alert("Answer given for output ports sizes \nhas invalid dimension:\nwaiting for dimension -1 x 2.");
-            throw "incorrect";
-        }
-        for (var i = 1; i < out.length; i++) {
-            if (out[0].length != out[i].length) {
-                alert("Answer given for output ports sizes \nis incorrect: Inconsistent row/column dimensions");
+        }else{
+            if(out[0].length == 1 || out[0].length > 2 ){
+                alert("Answer given for output ports sizes \nhas invalid dimension:\nwaiting for dimension -1 x 2.");
                 throw "incorrect";
+            }
+            for (var i = 1; i < out.length; i++) {
+                if (out[0].length != out[i].length) {
+                    alert("Answer given for output ports sizes \nis incorrect: Inconsistent row/column dimensions");
+                    throw "incorrect";
+                }
             }
         }
         if(!(ci1.includes("[")) && !(ci1.includes("]"))){

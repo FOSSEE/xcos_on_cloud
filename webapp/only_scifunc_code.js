@@ -31,10 +31,6 @@ function genfunc2(opar, i1, o1, ci1, co1, xx1, z1, rpar1, auto01, deptime1, grap
 
     var ni = (in_1_arry.length/2);
     var no = (out_1_arry.length/2);
-    var nrp = 0;
-    if(rpar01.length != 0){
-        nrp = rpar0.length * rpar0[0].length;
-    }
     var nci = clkin.length;
     var nco = clkout.length;
     var xx_size = x01.length;
@@ -56,7 +52,6 @@ function genfunc2(opar, i1, o1, ci1, co1, xx1, z1, rpar1, auto01, deptime1, grap
     update_propertiesObject["auto0"] = auto01;
     update_propertiesObject["deptime"] = deptime1;
 
-    var return_text_array  = "";
     //flag 1
     if(no > 0){
         create_popup_for_define_function(no, ni, nci, nco, xx_size, z_size, rpar_size, graph, cell, text_main_array, update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout);
