@@ -150,32 +150,27 @@ function genfunc2(opar, i1, o1, ci1, co1, xx1, z1, rpar1, auto01, deptime1, grap
 function update_cell_object(no, ni, nci, nco, xx_size, z_size, rpar_size, graph, cell, text_main_array, update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout){
     check_call_for_sci = 2;
 
-    if(no == 0){
+    /* For all value null condition */
+    var no_value_check = (no == 0 && ni == 0 && nci == 0 && nco == 0 && xx_size == 0 && z_size == 0 && rpar_size == 0 && auto_size == 0);
+    if(no_value_check){
         text_main_array[0] = " ";
-    }
-    if(xx_size == 0){
         text_main_array[1] = " ";
-    }
-    if((nci == 0 && (xx_size == 0 || z_size == 0))|| z_size == 0){
         text_main_array[2] = " ";
-    }
-    if(nci == 0 && nco == 0){
         text_main_array[3] = " ";
-    }
-    if(xx_size == 0 || z_size == 0 || no == 0){
-        text_main_array[6] = " ";
-    }
-    if(text_main_array[4].toString().length == 0){
         text_main_array[4] = " ";
-    }
-    if(text_main_array[5].toString().length == 0){
         text_main_array[5] = " ";
+        text_main_array[6] = " ";
     }
     //For setting opar values
     /* Check for default condition in which opar doesn't come in xml */
     var check = (no == 1 && ni == 1 && nci == 0 && nco == 0 && xx_size == 0 && z_size == 0 && rpar_size == 0);
+    cell.blockInstance.instance.x.model.opar = list();
     if(!check){
-        cell.blockInstance.instance.x.model.opar = list(new ScilabString(...[text_main_array[0]]), new ScilabString(...[text_main_array[1]]), new ScilabString(...[text_main_array[2]]), new ScilabString(...[text_main_array[3]]), new ScilabString(...[text_main_array[4]]), new ScilabString(...[text_main_array[5]]), new ScilabString(...[text_main_array[6]]));
+        cell.blockInstance.instance.x.model.opar = list(new ScilabString(...text_main_array[0]), new ScilabString(...text_main_array[1]), new ScilabString(...text_main_array[2]), new ScilabString(...text_main_array[3]), new ScilabString(...text_main_array[4]), new ScilabString(...text_main_array[5]), new ScilabString(...text_main_array[6]));
+    }else{
+        if(text_main_array[0] != "y1=sin(u1)"){
+            cell.blockInstance.instance.x.model.opar = list(new ScilabString(...text_main_array[0]), new ScilabString(...text_main_array[1]), new ScilabString(...text_main_array[2]), new ScilabString(...text_main_array[3]), new ScilabString(...text_main_array[4]), new ScilabString(...text_main_array[5]), new ScilabString(...text_main_array[6]));
+        }
     }
     var model = graph.getModel();
     model.beginUpdate();
@@ -260,9 +255,7 @@ function create_popup_for_define_function(no, ni, nci, nco, xx_size, z_size, rpa
         var len = first_wind_value_arry.length;
         for (var i = 0; i < len; i++) {
             var value = first_wind_value_arry[i].toString().trim();
-            if(value != ""){
-                txt += value + "\n";
-            }
+            txt += value + "\n";
         }
         def_func_inputtextarea.value = txt;
     }else{
@@ -279,7 +272,7 @@ function create_popup_for_define_function(no, ni, nci, nco, xx_size, z_size, rpa
     def_func_submit_btn.type = "button";
     def_func_submit_btn.onclick = function() {
         var def_func_value = document.getElementById("def_func_inputtextarea").value;
-        var value_array = def_func_value.split(/[\n]+/);
+        var value_array = clean_text_2(def_func_value).split(/[\n]/);
         var text_value = "";
         for (var i = 0; i < value_array.length; i++) {
             if(value_array[i].length != 0 || value_array[i].trim() != "" ){
@@ -297,11 +290,7 @@ function create_popup_for_define_function(no, ni, nci, nco, xx_size, z_size, rpa
         var temp_first_value_array = value_array;
         var first_value_array = [];
         for (var i = 0; i < temp_first_value_array.length; i++) {
-            if(temp_first_value_array[i].length != 0){
-                if(temp_first_value_array[i].trim().length != 0){
-                    first_value_array.push(temp_first_value_array[i].trim());
-                }
-            }
+            first_value_array.push([temp_first_value_array[i]]);
         }
         text_main_array[0] = first_value_array;
         //Once other popup are fixed this function will be removed and put in particular popup code
@@ -379,9 +368,7 @@ function create_popup_for_continuous_states_evolution(no, ni, nci, nco, xx_size,
         txt = "";
         for (var i = 0; i < len; i++) {
             var value = zero_wind_value_arry[i].toString().trim();
-            if(value != ""){
-                txt += value + "\n";
-            }
+            txt += value + "\n";
         }
         cont_stat_inputtextarea.value = txt;
     }else{
@@ -398,7 +385,7 @@ function create_popup_for_continuous_states_evolution(no, ni, nci, nco, xx_size,
 
     cont_stat_submit_btn.onclick = function() {
         var cont_stat_value = document.getElementById("cont_stat_inputtextarea").value;
-        var value_array = cont_stat_value.split(/[\n]+/);
+        var value_array = clean_text_2(cont_stat_value).split(/[\n]/);
         var text_value = "";
         for (var i = 0; i < value_array.length; i++) {
             if(value_array[i].length != 0){
@@ -414,11 +401,7 @@ function create_popup_for_continuous_states_evolution(no, ni, nci, nco, xx_size,
         var temp_zero_value_array = value_array;
         var zero_value_array = [];
         for (var i = 0; i < temp_zero_value_array.length; i++) {
-            if(temp_zero_value_array[i].length != 0){
-                if(temp_zero_value_array[i].trim().length != 0){
-                    zero_value_array.push(temp_zero_value_array[i]);
-                }
-            }
+            zero_value_array.push([temp_zero_value_array[i]]);
         }
         text_main_array[1] = zero_value_array;
         cont_stat_wind.destroy();
@@ -518,14 +501,10 @@ function create_popup_for_event_time(no, ni, nci, nco, xx_size, z_size, rpar_siz
 
     event_time_submit_btn.onclick = function() {
         var event_time_value = document.getElementById("event_time_inputtextarea").value;
-        var temp_second_value_array = event_time_value.split(/[\n]+/);
+        var temp_second_value_array = clean_text_2(event_time_value).split(/[\n]/);
         var second_value_array = [];
         for (var i = 0; i < temp_second_value_array.length; i++) {
-            if(temp_second_value_array[i].length != 0){
-                if(temp_second_value_array[i].trim().length != 0){
-                    second_value_array.push(temp_second_value_array[i]);
-                }
-            }
+            second_value_array.push([temp_second_value_array[i]]);
         }
         text_main_array[2] = second_value_array;
         event_time_wind.destroy();
@@ -618,14 +597,10 @@ function create_popup_for_time_events_t_evo (no, ni, nci, nco, xx_size, z_size, 
 
     events_t_evo_submit_btn.onclick = function() {
         var events_t_evo_value = document.getElementById("events_t_evo_inputtextarea").value;
-        var temp_third_value_array = events_t_evo_value.split(/[\n]+/);
+        var temp_third_value_array = clean_text_2(events_t_evo_value).split(/[\n]/);
         var third_value_array = [];
         for (var i = 0; i < temp_third_value_array.length; i++) {
-            if(temp_third_value_array[i].length != 0){
-                if(temp_third_value_array[i].trim().length != 0){
-                    third_value_array.push(temp_third_value_array[i]);
-                }
-            }
+            third_value_array.push([temp_third_value_array[i]]);
         }
         text_main_array[3] = third_value_array;
         events_t_evo_wind.destroy();
@@ -716,14 +691,10 @@ function create_popup_for_initialization(no, ni, nci, nco, xx_size, z_size, rpar
 
     init_submit_btn.onclick = function() {
         var init_value = document.getElementById("init_inputtextarea").value;
-        var temp_fourth_value_array = init_value.split(/[\n]+/);
+        var temp_fourth_value_array = clean_text_2(init_value).split(/[\n]/);
         var fourth_value_array = [];
         for (var i = 0; i < temp_fourth_value_array.length; i++) {
-            if(temp_fourth_value_array[i].length != 0){
-                if(temp_fourth_value_array[i].trim().length != 0){
-                    fourth_value_array.push(temp_fourth_value_array[i]);
-                }
-            }
+            fourth_value_array.push([temp_fourth_value_array[i]]);
         }
         text_main_array[4] = fourth_value_array;
         init_wind.destroy();
@@ -814,14 +785,10 @@ function create_popup_for_needed_finish(no, ni, nci, nco, xx_size, z_size, rpar_
 
     need_finish_submit_btn.onclick = function() {
         var need_finish_value = document.getElementById("need_finish_inputtextarea").value;
-        var temp_fifth_value_array = need_finish_value.split(/[\n]+/);
+        var temp_fifth_value_array = clean_text_2(need_finish_value).split(/[\n]/);
         var fifth_value_array = [];
         for (var i = 0; i < temp_fifth_value_array.length; i++) {
-            if(temp_fifth_value_array[i].length != 0){
-                if(temp_fifth_value_array[i].trim().length != 0){
-                    fifth_value_array.push(temp_fifth_value_array[i]);
-                }
-            }
+            fifth_value_array.push([temp_fifth_value_array[i]]);
         }
         text_main_array[5] = fifth_value_array;
         if(xx_size > 0 || z_size > 0 || no > 0){
@@ -930,14 +897,10 @@ function create_popup_for_func_imposing_contraints(no, ni, nci, nco, xx_size, z_
 
     func_imposing_submit_btn.onclick = function() {
         var func_imposing_value = document.getElementById("func_imposing_inputtextarea").value;
-        var temp_sixth_value_array = func_imposing_value.split(/[\n]+/);
+        var temp_sixth_value_array = clean_text_2(func_imposing_value).split(/[\n]/);
         var sixth_value_array = [];
         for (var i = 0; i < temp_sixth_value_array.length; i++) {
-            if(temp_sixth_value_array[i].length != 0){
-                if(temp_sixth_value_array[i].trim().length != 0){
-                    sixth_value_array.push(temp_sixth_value_array[i]);
-                }
-            }
+            sixth_value_array.push([temp_sixth_value_array[i]]);
         }
         text_main_array[6] = sixth_value_array;
         update_cell_object(no, ni, nci, nco, xx_size, z_size, rpar_size, graph, cell, text_main_array, update_propertiesObject, in_1_arry, out_1_arry, clkin, clkout);
