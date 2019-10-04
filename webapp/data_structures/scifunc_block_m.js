@@ -83,30 +83,40 @@ function scifunc_block_m() {
             i1 = "["+i1+"]";
         }
         var in1 = MatrixInverse(i1);
-        for (var i = 0; i < in1.length; i++) {
-            if(in1[i].length == 1 || in1[i].length > 2){
-                if(i == 0){
-                    alert("Answer given for input ports sizes \nhas invalid dimension:\nwaiting for dimension -1 x 2.");
-                    throw "incorrect";
-                }else{
-                    alert("Answer given for input ports sizes \nis incorrect: Inconsistent row/column dimensions");
-                    throw "incorrect";
-                }
+        if(isNaN(in1[0].length)){
+            if(in1.length == 1 || in1.length > 2 ){
+                alert("Answer given for input ports sizes \nhas invalid dimension:\nwaiting for dimension -1 x 2.");
+                throw "incorrect";
+            }
+        }
+        if(in1[0].length == 1 || in1[0].length > 2 ){
+            alert("Answer given for input ports sizes \nhas invalid dimension:\nwaiting for dimension -1 x 2.");
+            throw "incorrect";
+        }
+        for (var i = 1; i < in1.length; i++) {
+            if (in1[0].length != in1[i].length) {
+                alert("Answer given for input ports sizes \nis incorrect: Inconsistent row/column dimensions");
+                throw "incorrect";
             }
         }
         if(!(o1.includes("[")) && !(o1.includes("]"))){
             o1 = "["+o1+"]";
         }
         var out = MatrixInverse(o1);
-        for (var i = 0; i < out.length; i++) {
-            if(out[i].length == 1 || out[i].length > 2){
-                if(i == 0){
-                    alert("Answer given for output ports sizes \nhas invalid dimension:\nwaiting for dimension -2 x 2");
-                    throw "incorrect";
-                }else{
-                    alert("Answer given for output ports sizes \nis incorrect: Inconsistent row/column dimensions");
-                    throw "incorrect";
-                }
+        if(isNaN(out[0].length)){
+            if(out.length == 1 || out.length > 2 ){
+                alert("Answer given for output ports sizes \nhas invalid dimension:\nwaiting for dimension -1 x 2.");
+                throw "incorrect";
+            }
+        }
+        if(out[0].length == 1 || out[0].length > 2 ){
+            alert("Answer given for output ports sizes \nhas invalid dimension:\nwaiting for dimension -1 x 2.");
+            throw "incorrect";
+        }
+        for (var i = 1; i < out.length; i++) {
+            if (out[0].length != out[i].length) {
+                alert("Answer given for output ports sizes \nis incorrect: Inconsistent row/column dimensions");
+                throw "incorrect";
             }
         }
         if(!(ci1.includes("[")) && !(ci1.includes("]"))){
@@ -201,6 +211,14 @@ function scifunc_block_m() {
 
         var opar = [];
         opar = this.x.model.opar;
+        /*
+            check_call_for_sci - is initialized and used in file only_scifunc_code.js
+            value of "check_call_for_sci" variable determines whether function genfunc2 is already called or not
+            as set method is called more time.
+
+            Value is changed to 2 - when function is called
+            then value is again reinitialized to 1
+         */
         if(check_call_for_sci != 2){
             genfunc2(opar,i1,o1,ci1,co1,xx1,z1,rpar1,auto01,deptime1,graph_scifunc_block_m,cell_scifunc_block_m);
         }else{

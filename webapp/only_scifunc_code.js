@@ -20,78 +20,15 @@ function genfunc2(opar, i1, o1, ci1, co1, xx1, z1, rpar1, auto01, deptime1, grap
             text_main_array[i] = ary;
         }
     }
-    var k = 0;
-    var in1 = inverse(i1);
-    var in_1_arry = [];
-    for (var i = 0; i < in1.length; i++) {
-        for (var j = 0; j < in1[i].length; j++) {
-            in_1_arry[k] = in1[i][j];
-            k++;
-        }
-    }
-    var k = 0;
-    var out = inverse(o1);
-    var out_1_arry = [];
-    for (var i = 0; i < out.length; i++) {
-        for (var j = 0; j < out[i].length; j++) {
-            out_1_arry[k] = out[i][j];
-            k++;
-        }
-    }
-    var k = 0;
-    var clkin1 = inverse(ci1);
-    var clkin = [];
-    for (var i = 0; i < clkin1.length; i++) {
-        for (var j = 0; j < clkin1[i].length; j++) {
-            clkin[k] = clkin1[i][j];
-            k++;
-        }
-    }
-    var k = 0;
-    var clkout1 = inverse(co1);
-    var clkout = [];
-    for (var i = 0; i < clkout1.length; i++) {
-        for (var j = 0; j < clkout1[i].length; j++) {
-            clkout[k] = clkout1[i][j];
-            k++;
-        }
-    }
-    var k = 0;
-    var x0 = inverse(xx1);
-    var x01 = [];
-    for (var i = 0; i < x0.length; i++) {
-        for (var j = 0; j < x0[i].length; j++) {
-            x01[k] = x0[i][j];
-            k++;
-        }
-    }
-    var k = 0;
-    var z0 = inverse(z1);
-    var z01 = [];
-    for (var i = 0; i < z0.length; i++) {
-        for (var j = 0; j < z0[i].length; j++) {
-            z01[k] = z0[i][j];
-            k++;
-        }
-    }
-    var k = 0;
-    var rpar0 = inverse(rpar1);
-    var rpar01 = [];
-    for (var i = 0; i < rpar0.length; i++) {
-        for (var j = 0; j < rpar0[i].length; j++) {
-            rpar01[k] = rpar0[i][j];
-            k++;
-        }
-    }
-    var k = 0;
-    var auto = inverse(auto01);
-    var auto1 = [];
-    for (var i = 0; i < auto.length; i++) {
-        for (var j = 0; j < auto[i].length; j++) {
-            auto1[k] = auto[i][j];
-            k++;
-        }
-    }
+    var in_1_arry = make_linear(i1);
+    var out_1_arry = make_linear(o1);
+    var clkin = make_linear(ci1);
+    var clkout = make_linear(co1);
+    var x01 = make_linear(xx1);
+    var z01 = make_linear(z1);
+    var rpar01 = make_linear(rpar1);
+    var auto1 = make_linear(auto01);
+
     var ni = (in_1_arry.length/2);
     var no = (out_1_arry.length/2);
     var nrp = 0;
@@ -925,3 +862,15 @@ function create_popup_for_func_imposing_contraints(no, ni, nci, nco, xx_size, z_
 
 }
 
+function make_linear(input_value){
+    var k = 0;
+    var ip_value = inverse(input_value);
+    var ip_arry = [];
+    for (var i = 0; i < ip_value.length; i++) {
+        for (var j = 0; j < ip_value[i].length; j++) {
+            ip_arry[k] = ip_value[i][j];
+            k++;
+        }
+    }
+    return ip_arry;
+}
