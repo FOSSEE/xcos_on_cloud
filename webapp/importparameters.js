@@ -2082,20 +2082,28 @@ scifunc_block_m.prototype.importset = function scifunc_block_m() {
     var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs[0]);
-    this.i = inverse(ary[0]);
-    this.o = inverse(ary[1]);
-    this.ci = inverse(ary[2]);
-    this.co = inverse(ary[3]);
+    this.i = ary[0];
+    this.o = ary[1];
+    this.ci = ary[2];
+    this.co = ary[3];
     this.xx = ary[4];
     this.z = ary[5];
     this.rpar = ary[6];
     this.auto0 = ary[7];
     this.deptime = ary[8];
-    this.displayParameter = [this.o]; // TODO: should come from popup 2
-
-    var it = ones(1, size(this.i, 1));
-    var ot = ones(1, size(this.o, 1));
-    set_io(model, graphics, list(this.i, it), list(this.o, ot), this.ci, this.co);
+    var display_arry = getData(model.opar[0]);
+    if(display_arry.length != 0){
+        this.displayParameter = [display_arry];
+    }else{
+        this.displayParameter = ["y1=sin(u1)"];
+    }
+    var in1 = inverse(this.i);
+    var out = inverse(this.o);
+    var it = ones(1, size(in1, 1));
+    var ot = ones(1, size(out, 1));
+    var clkin = inverse(this.ci);
+    var clkout = inverse(this.co);
+    set_io(model, graphics, list(in1, it), list(out, ot), clkin,clkout);
 }
 SELECT_m.prototype.importset = function SELECT_m() {
     var graphics = this.x.graphics;

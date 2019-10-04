@@ -1,14 +1,14 @@
 function scifunc_block_m() {
 
     scifunc_block_m.prototype.define = function scifunc_block_m() {
-        this.i = 1;
-        this.o = 1;
+        this.i = [[1],[1]];
+        this.o = [[1],[1]];
         this.ci = [];
         this.co = [];
         this.xx = [];
         this.z = [];
         this.auto0 = [];
-        this.deptime = 1;
+        this.deptime = 0;
         var in1 = 1;
         var out = 1;
         var clkin = [];
@@ -39,7 +39,7 @@ function scifunc_block_m() {
         model.blocktype = new ScilabString([this.typ]);
         model.firing = new ScilabDouble();
         model.dep_ut = new ScilabBoolean([true, false]);
-        var n = "scifunc";
+        var n = "y1=sin(u1)";
         this.displayParameter = [n];
         var exprs = list(new ScilabString([sci2exp([in1, in1])], [sci2exp([out, out])], [sci2exp(clkin)], [sci2exp(clkout)], [sci2exp(x0)], [sci2exp(z0)], [sci2exp(this.rpar)], [sci2exp(auto)], [sci2exp(0)]), list(new ScilabString(["y1=sin(u1)"]), new ScilabString([" "]), new ScilabString([" "]), new ScilabString(["y1=sin(u1)"]), new ScilabString([" "]), new ScilabString([" "]), new ScilabString([" "])));
 
@@ -52,286 +52,226 @@ function scifunc_block_m() {
     }
 
     scifunc_block_m.prototype.get = function scifunc_block_m() {
-        //calling get and passing the labels
-        if(this.popup2value == undefined || this.popup2value == ""){
-            this.popup2value = "y1=sin(u1)"
-        }
-        if(this.popup3value == undefined || this.popup3value == ""){
-            this.popup3value = "xd = []"
-        }
-        if(this.popup4value == undefined || this.popup4value == ""){
-            this.popup4value = ""
-        }
-        if(this.popup5value == undefined || this.popup5value == ""){
-            this.popup5value = "y1=sin(u1)";
-        }
-        if(this.popup6value == undefined || this.popup6value == ""){
-            this.popup6value = ""
-        }
-        if(this.popup7value == undefined || this.popup7value == ""){
-            this.popup7value = ""
-        }
-        if(this.popup7value == undefined || this.popup7value == ""){
-            this.popup7value = ""
-        }
-        if(this.popup8value == undefined || this.popup8value == ""){
-            this.popup8value = ""
-        }
-
-        var options ={
+        var options = {
             i : ["input port sizes", this.i],
             o : ["output port sizes", this.o],
             ci : ["input event port sizes", this.ci],
             co : ["output event port sizes", this.co],
             xx : ["initial continuous state", this.xx],
             z : ["initial discrete state", this.z],
-            rpar : ["system parameters vector", this.rpar],
+            rpar : ["System parameters vector", this.rpar],
             auto0 : ["initial firing vector(<0 for no firing)", this.auto0],
-            deptime : ["is block always active(0:no, 1:yes)", this.deptime],
-        }
-        return options
+            deptime : ["is block always active(0:no, 1:yes)", this.deptime]
+        };
+        return options;
     }
 
     scifunc_block_m.prototype.set = function scifunc_block_m() {
-        this.i = MatrixInverse((arguments[0]["i"]))
-        this.o = MatrixInverse((arguments[0]["o"]))
-        this.ci = MatrixInverse((arguments[0]["ci"]))
-        this.co = MatrixInverse((arguments[0]["co"]))
-        this.xx = MatrixInverse((arguments[0]["xx"]))
-        this.z = MatrixInverse((arguments[0]["z"]))
-        this.rpar = MatrixInverse((arguments[0]["rpar"]))
-        this.auto0 = MatrixInverse((arguments[0]["auto0"]))
-        this.deptime = MatrixInverse((arguments[0]["deptime"]))
-        if(arguments[0]["o"] != ""){
-            this.popup2value = ((arguments[0]["popup2value"]))
-            var to_display = this.popup2value[0];
+        var i1 = arguments[0]["i"];
+        var o1 = arguments[0]["o"];
+        var ci1 = arguments[0]["ci"];
+        var co1 = arguments[0]["co"];
+        var xx1 = arguments[0]["xx"];
+        var z1 = arguments[0]["z"];
+        var rpar1 = arguments[0]["rpar"];
+        var auto01 = arguments[0]["auto0"];
+        var deptime1 = arguments[0]["deptime"];
+        var regex_parentheses = /[\])}[{(]/g;
+        var regex_semicolon_comma = /[,;]+/;
 
-            if(this.o.length == 2 && this.popup2value.length == 1){
-                this.popup2value_disp = new ScilabString([this.popup2value[0].toString()])
-            }
-            if(this.o.length == 2 && this.popup2value.length == 2){
-                this.popup2value_disp = new ScilabString([this.popup2value[0].toString()],[this.popup2value[1].toString()])
-            }
-            if(this.o.length == 3){
-                this.popup2value_disp = new ScilabString([this.popup2value[0].toString()],[this.popup2value[1].toString()],[this.popup2value[2].toString()])
-            }
-            if(this.o.length == 4){
-                this.popup2value_disp = new ScilabString([this.popup2value[0].toString()],[this.popup2value[1].toString()],[this.popup2value[2].toString()],[this.popup2value[3].toString()])
-            }
-            if(this.o.length == 5){
-                this.popup2value_disp = new ScilabString([this.popup2value[0].toString()],[this.popup2value[1].toString()],[this.popup2value[2].toString()],[this.popup2value[3].toString()],[this.popup2value[4].toString()])
-            }
-            if(this.o.length == 6){
-                this.popup2value_disp = new ScilabString([this.popup2value[0].toString()],[this.popup2value[1].toString()],[this.popup2value[2].toString()],[this.popup2value[3].toString()],[this.popup2value[4].toString()],[this.popup2value[5].toString()])
-            }
-            if(this.o.length == 7){
-                this.popup2value_disp = new ScilabString([this.popup2value[0].toString()],[this.popup2value[1].toString()],[this.popup2value[2].toString()],[this.popup2value[3].toString()],[this.popup2value[4].toString()],[this.popup2value[5].toString()],[this.popup2value[6].toString()])
-            }
+        if(!(i1.includes("[")) && !(i1.includes("]"))){
+            i1 = "["+i1+"]";
         }
-        this.null = "";
-        if(arguments[0]["o"] == ""){
-            this.popup2value_disp = new ScilabString([this.null.toString()])
-        }
-
-        if(!arguments[0]["xx"] == ""){
-            this.popup3value = ((arguments[0]["popup3value"]))
-        }
-
-        if(arguments[0]["z"] != ""){
-            this.popup4value = ((arguments[0]["popup4value"]))
-
-            if(this.popup4value[0] == "" && this.popup4value[1] == ""){
-                this.popup4value_disp = new ScilabString([this.popup4value[0].toString()])
+        var in1 = MatrixInverse(i1);
+        if(isNaN(in1[0].length)){
+            if(in1.length == 1 || in1.length > 2 ){
+                alert("Answer given for input ports sizes \nhas invalid dimension:\nwaiting for dimension -1 x 2.");
+                throw "incorrect";
             }
-            if(this.popup4value[0] != "" && this.popup4value[1] ==""){
-                this.popup4value_disp = new ScilabString([this.popup4value[0].toString()])
+        }else{
+            if(in1[0].length == 1 || in1[0].length > 2 ){
+                alert("Answer given for input ports sizes \nhas invalid dimension:\nwaiting for dimension -1 x 2.");
+                throw "incorrect";
             }
-            if(this.popup4value[1] != "" && this.popup4value[0] == ""){
-                this.popup4value_disp = new ScilabString([this.popup4value[1].toString()])
-            }
-            if(this.popup4value[0] != "" && this.popup4value[1] != ""){
-                this.popup4value_disp = new ScilabString([this.popup4value[0].toString()],[this.popup4value[1].toString()])
-            }
-        }
-        if(arguments[0]["z"] == ""){
-            this.popup4value_disp = new ScilabString([this.null.toString()])
-        }
-
-        if(arguments[0]["ci"] != "" && arguments[0]["co"] != ""){
-            this.popup5value = ((arguments[0]["popup5value"]))
-
-            if(this.popup5value[1] == "" && this.popup5value[2] == ""){
-                this.popup5value_disp = new ScilabString([this.popup5value[0].toString()],[this.popup5value[3].toString()])
-            }
-            if(this.popup5value[1] != "" && this.popup5value[2] == ""){
-                this.popup5value_disp = new ScilabString([this.popup5value[0].toString()],[this.popup5value[1].toString()],[this.popup5value[3].toString()])
-            }
-            if(this.popup5value[1] == "" && this.popup5value[2] != ""){
-                this.popup5value_disp = new ScilabString([this.popup5value[0].toString()],[this.popup5value[2].toString()],[this.popup5value[3].toString()])
-            }
-            if(this.popup5value[1] != "" && this.popup5value[2] != ""){
-                this.popup5value_disp = new ScilabString([this.popup5value[0].toString()],[this.popup5value[1].toString()],[this.popup5value[2].toString()],[this.popup5value[3].toString()])
-            }
-        }
-
-        if(arguments[0]["ci"] == "" && arguments[0]["co"] == ""){
-            this.popup5value_disp = new ScilabString([this.null.toString()])
-        }
-
-
-        this.popup6value = ((arguments[0]["popup6value"]))
-        if(this.popup6value[0] == "" && this.popup6value[1] == ""){
-            this.popup6value_disp = new ScilabString([this.popup6value[0].toString()])
-        }
-        if(this.popup6value[0] != "" && this.popup6value[1] == ""){
-            this.popup6value_disp = new ScilabString([this.popup6value[0].toString()])
-        }
-        if(this.popup6value[1] != "" && this.popup6value[0] == ""){
-            this.popup6value_disp = new ScilabString([this.popup6value[1].toString()])
-        }
-        if(this.popup6value[0] != "" && this.popup6value[1] != ""){
-            this.popup6value_disp = new ScilabString([this.popup6value[0].toString()],[this.popup6value[1].toString()])
-        }
-
-        this.popup7value = ((arguments[0]["popup7value"]))
-        if(this.popup7value[0] == "" && this.popup7value[1] == ""){
-            this.popup7value_disp = new ScilabString([this.popup7value[0].toString()])
-        }
-        if(this.popup7value[0] != "" && this.popup7value[1] ==""){
-            this.popup7value_disp = new ScilabString([this.popup7value[0].toString()])
-        }
-        if(this.popup7value[1] != "" && this.popup7value[0] == ""){
-            this.popup7value_disp = new ScilabString([this.popup7value[1].toString()])
-        }
-        if(this.popup7value[0] != "" && this.popup7value[1] != ""){
-            this.popup7value_disp = new ScilabString([this.popup7value[0].toString()],[this.popup7value[1].toString()])
-        }
-
-        var len = this.o.length;
-        this.popup8value = ((arguments[0]["popup8value"]))
-
-        if(this.popup8value[0] == "" && this.popup8value[1] == ""){
-            if(len == 2){
-                if(this.popup8value.length == 3){
-                    this.popup8value_disp = new ScilabString([this.popup8value[0].toString()],[this.popup8value[2].toString()])
-                }
-                else{
-                    this.popup8value_disp = new ScilabString([this.popup8value[0].toString()],[this.popup8value[2].toString()],[this.popup8value[3].toString()])
+            for (var i = 1; i < in1.length; i++) {
+                if (in1[0].length != in1[i].length) {
+                    alert("Answer given for input ports sizes \nis incorrect: Inconsistent row/column dimensions");
+                    throw "incorrect";
                 }
             }
-            if(len == 3){
-                this.popup8value_disp = new ScilabString([this.popup8value[0].toString()],[this.popup8value[2].toString()],[this.popup8value[3].toString()],[this.popup8value[4].toString()])
+        }
+        if(!(o1.includes("[")) && !(o1.includes("]"))){
+            o1 = "["+o1+"]";
+        }
+        var out = MatrixInverse(o1);
+        if(isNaN(out[0].length)){
+            if(out.length == 1 || out.length > 2 ){
+                alert("Answer given for output ports sizes \nhas invalid dimension:\nwaiting for dimension -1 x 2.");
+                throw "incorrect";
             }
-            if(len == 4){
-                this.popup8value_disp = new ScilabString([this.popup8value[0].toString()],[this.popup8value[2].toString()],[this.popup8value[3].toString()],[this.popup8value[4].toString()],[this.popup8value[5].toString()])
+        }else{
+            if(out[0].length == 1 || out[0].length > 2 ){
+                alert("Answer given for output ports sizes \nhas invalid dimension:\nwaiting for dimension -1 x 2.");
+                throw "incorrect";
             }
-            if(len == 5){
-                this.popup8value_disp = new ScilabString([this.popup8value[0].toString()],[this.popup8value[2].toString()],[this.popup8value[3].toString()],[this.popup8value[4].toString()],[this.popup8value[5].toString()],[this.popup8value[6].toString()])
-            }
-            if(len == 6){
-                this.popup8value_disp = new ScilabString([this.popup8value[0].toString()],[this.popup8value[2].toString()],[this.popup8value[3].toString()],[this.popup8value[4].toString()],[this.popup8value[5].toString()],[this.popup8value[6].toString()],[this.popup8value[7].toString()])
-            }
-            if(len == 7){
-                this.popup8value_disp = new ScilabString([this.popup8value[0].toString()],[this.popup8value[2].toString()],[this.popup8value[3].toString()],[this.popup8value[4].toString()],[this.popup8value[5].toString()],[this.popup8value[6].toString()],[this.popup8value[7].toString()],[this.popup8value[8].toString()])
+            for (var i = 1; i < out.length; i++) {
+                if (out[0].length != out[i].length) {
+                    alert("Answer given for output ports sizes \nis incorrect: Inconsistent row/column dimensions");
+                    throw "incorrect";
+                }
             }
         }
-        if(this.popup8value[0] == "" && this.popup8value[1] != 0){
-            if(len == 1){
-                this.popup8value_disp = new ScilabString([this.popup8value[1].toString()],[this.popup8value[2].toString()])
+        if(!(ci1.includes("[")) && !(ci1.includes("]"))){
+            ci1 = "["+ci1+"]";
+        }
+        var clkin = MatrixInverse(ci1);
+        if(clkin.length == 0){
+            clkin = [];
+        }else{
+            for (var i = 1; i < clkin.length; i++) {
+                if(clkin[0].length != clkin[i].length){
+                    alert("Answer given for input event ports sizes\nis incorrect: Inconsistent row/column dimensions.");
+                    throw "incorrect";
+                }
             }
-            if(len == 2){
-                this.popup8value_disp = new ScilabString([this.popup8value[1].toString()],[this.popup8value[2].toString()],[this.popup8value[3].toString()])
+        }
+        if(!(co1.includes("[")) && !(co1.includes("]"))){
+            co1 = "["+co1+"]";
+        }
+        var clkout = MatrixInverse(co1);
+        if(clkout.length == 0){
+            clkout = [];
+        }else{
+            for (var i = 1; i < clkout.length; i++) {
+                if(clkout[0].length != clkout[i].length){
+                    alert("Answer given for output events ports sizes\nis incorrect: Inconsistent row/column dimensions.");
+                    throw "incorrect";
+                }
             }
-            if(len == 3){
-                this.popup8value_disp = new ScilabString([this.popup8value[1].toString()],[this.popup8value[2].toString()],[this.popup8value[3].toString()],[this.popup8value[4].toString()])
+        }
+        if(!(xx1.includes("[")) && !(xx1.includes("]"))){
+            xx1 = "["+xx1+"]";
+        }
+        var x0 = MatrixInverse(xx1);
+        if(x0.length == 0){
+            x0 = [];
+        }else{
+            for (var i = 1; i < x0.length; i++) {
+                if(x0[0].length != x0[i].length){
+                    alert("Answer given for initial continuous state \nis incorrect: Inconsistent row/column dimensions.");
+                    throw "incorrect";
+                }
             }
-            if(len == 4){
-                this.popup8value_disp = new ScilabString([this.popup8value[1].toString()],[this.popup8value[2].toString()],[this.popup8value[3].toString()],[this.popup8value[4].toString()],[this.popup8value[5].toString()])
+        }
+        if(!(z1.includes("[")) && !(z1.includes("]"))){
+            z1 = "["+z1+"]";
+        }
+        var z0 = MatrixInverse(z1);
+        if(z0.length == 0){
+            z0 = [];
+        }else{
+            for (var i = 1; i < z0.length; i++) {
+                if(z0[0].length != z0[i].length){
+                    alert("Answer given for initial discrete state \nis incorrect: Inconsistent row/column dimensions.");
+                    throw "incorrect";
+                }
             }
-            if(len == 5){
-                this.popup8value_disp = new ScilabString([this.popup8value[2].toString()],[this.popup8value[3].toString()],[this.popup8value[4].toString()],[this.popup8value[5].toString()],[this.popup8value[6].toString()])
+        }
+        if(!(rpar1.includes("[")) && !(rpar1.includes("]"))){
+            rpar1 = "["+rpar1+"]";
+        }
+        var rpar0 = MatrixInverse(rpar1);
+        if(rpar0.length == 0){
+            rpar0 = [];
+        }else{
+            for (var i = 1; i < rpar0.length; i++) {
+                if(rpar0[0].length != rpar0[i].length){
+                    alert("Answer given for System parameters vector \nis incorrect: Inconsistent row/column dimensions.");
+                    throw "incorrect";
+                }
             }
-            if(len == 6){
-                this.popup8value_disp = new ScilabString([this.popup8value[2].toString()],[this.popup8value[3].toString()],[this.popup8value[4].toString()],[this.popup8value[5].toString()],[this.popup8value[6].toString()],[this.popup8value[7].toString()])
+        }
+        if(!(auto01.includes("[")) && !(auto01.includes("]"))){
+            auto01 = "["+auto01+"]";
+        }
+        var auto = MatrixInverse(auto01);
+        if(auto.length == 0){
+            auto = [];
+        }else{
+            for (var i = 1; i < auto.length; i++) {
+                if(auto[0].length != auto[i].length){
+                    alert("Answer given for initial firing vector (0 for no firing) \nis incorrect: Inconsistent row/column dimensions.");
+                    throw "incorrect";
+                }
             }
-            if(len == 7){
-                this.popup8value_disp = new ScilabString([this.popup8value[2].toString()],[this.popup8value[3].toString()],[this.popup8value[4].toString()],[this.popup8value[5].toString()],[this.popup8value[6].toString()],[this.popup8value[7].toString()],[this.popup8value[8].toString()])
-            }
+        }
+        var deptime_2 = deptime1.toString().trim().replace(regex_parentheses, '');
+        if(regex_semicolon_comma.test(deptime_2) || Number.isNaN(parseFloat(deptime_2))){
+            alert("Answer given for is block always active (0:no, 1:yes)\nhas invalid dimension:\nwaiting for dimension 1.");
+            throw "incorrect";
+        }
 
-        }
-        if(this.popup8value[0] != "" && this.popup8value[1] == ""){
-            if(len == 1){
-                this.popup8value_disp = new ScilabString([this.popup8value[0].toString()],[this.popup8value[2].toString()])
-            }
-            if(len == 2){
-                this.popup8value_disp = new ScilabString([this.popup8value[0].toString()],[this.popup8value[2].toString()],[this.popup8value[3].toString()])
-            }
-            if(len == 3){
-                this.popup8value_disp = new ScilabString([this.popup8value[0].toString()],[this.popup8value[2].toString()],[this.popup8value[3].toString()],[this.popup8value[4].toString()])
-            }
-            if(len == 4){
-                this.popup8value_disp = new ScilabString([this.popup8value[0].toString()],[this.popup8value[2].toString()],[this.popup8value[3].toString()],[this.popup8value[4].toString()],[this.popup8value[5].toString()])
-            }
-            if(len == 5){
-                this.popup8value_disp = new ScilabString([this.popup8value[2].toString()],[this.popup8value[3].toString()],[this.popup8value[4].toString()],[this.popup8value[5].toString()],[this.popup8value[6].toString()])
-            }
-            if(len == 6){
-                this.popup8value_disp = new ScilabString([this.popup8value[2].toString()],[this.popup8value[3].toString()],[this.popup8value[4].toString()],[this.popup8value[5].toString()],[this.popup8value[6].toString()],[this.popup8value[7].toString()])
-            }
-            if(len == 7){
-                this.popup8value_disp = new ScilabString([this.popup8value[2].toString()],[this.popup8value[3].toString()],[this.popup8value[4].toString()],[this.popup8value[5].toString()],[this.popup8value[6].toString()],[this.popup8value[7].toString()],[this.popup8value[8].toString()])
-            }
-        }
-        if(this.popup8value[0] != "" && this.popup8value[1] != ""){
-            if(len == 1){
-                this.popup8value_disp = new ScilabString([this.popup8value[0].toString()],[this.popup8value[1].toString()],[this.popup8value[2].toString()])
-            }
-            if(len == 2){
-                this.popup8value_disp = new ScilabString([this.popup8value[0].toString()],[this.popup8value[1].toString()],[this.popup8value[2].toString()],[this.popup8value[3].toString()])
-            }
-            if(len == 3){
-                this.popup8value_disp = new ScilabString([this.popup8value[0].toString()],[this.popup8value[1].toString()],[this.popup8value[2].toString()],[this.popup8value[3].toString()],[this.popup8value[4].toString()])
-            }
-            if(len == 4){
-                this.popup8value_disp = new ScilabString([this.popup8value[0].toString()],[this.popup8value[1].toString()],[this.popup8value[2].toString()],[this.popup8value[3].toString()],[this.popup8value[4].toString()],[this.popup8value[5].toString()])
-            }
-            if(len == 5){
-                this.popup8value_disp = new ScilabString([this.popup8value[2].toString()],[this.popup8value[3].toString()],[this.popup8value[4].toString()],[this.popup8value[5].toString()],[this.popup8value[6].toString()])
-            }
-            if(len == 6){
-                this.popup8value_disp = new ScilabString([this.popup8value[2].toString()],[this.popup8value[3].toString()],[this.popup8value[4].toString()],[this.popup8value[5].toString()],[this.popup8value[6].toString()],[this.popup8value[7].toString()])
-            }
-            if(len == 7){
-                this.popup8value_disp = new ScilabString([this.popup8value[2].toString()],[this.popup8value[3].toString()],[this.popup8value[4].toString()],[this.popup8value[5].toString()],[this.popup8value[6].toString()],[this.popup8value[7].toString()],[this.popup8value[8].toString()])
-            }
-        }
+        var opar = [];
+        opar = this.x.model.opar;
+        /*
+            check_call_for_sci - is initialized and used in file only_scifunc_code.js
+            value of "check_call_for_sci" variable determines whether function genfunc2 is already called or not
+            as set method is called more time.
 
-        if(this.rpar != ""){
-            this.x.model.rpar = new ScilabDouble([this.rpar])
+            Value is changed to 2 - when function is called
+            then value is again reinitialized to 1
+         */
+        if(check_call_for_sci != 2){
+            genfunc2(opar,i1,o1,ci1,co1,xx1,z1,rpar1,auto01,deptime1,graph_scifunc_block_m,cell_scifunc_block_m);
+        }else{
+            check_call_for_sci = 1 ;
+            this.i = i1;
+            this.o = o1;
+            this.ci = ci1;
+            this.co = co1;
+            this.xx = xx1;
+            this.z = z1;
+            this.rpar = rpar1;
+            this.auto0 = auto01;
+            this.deptime = deptime_2;
+            var update_opar = [];
+            update_opar = this.x.model.opar;
+            var tt = [[["y1=sin(u1)"]],[[" "]],[[" "]],[["y1=sin(u1)"]],[[" "]],[[" "]],[[" "]]];
+            var opar_len = update_opar.length;
+            if(opar_len != 0){
+                tt = [];
+                for(var i = 0; i < opar_len; i++){
+                    var ary = getData(update_opar[i]);
+                    var arry_1 = [];
+                    for(var j = 0; j < ary.length; j++){
+                        arry_1.push([ary[j]]);
+                    }
+                    tt[i] = arry_1;
+                }
+            }
+            var dep_ut = [];
+            var dep_u = false;
+            var dep_t = false;
+            dep_ut = [dep_u,dep_t];
+            dep_ut[1] = (1 == parseFloat(deptime_2));
+            this.x.model.dep_ut = new ScilabBoolean([dep_ut[0],dep_ut[1]]);
+            auto = inverse(auto01);
+            this.x.model.firing = new ScilabDouble(...auto);
+            x0 = inverse(xx1);
+            this.x.model.state =  new ScilabDouble(...x0);
+            z0 = inverse(z1);
+            this.x.model.dstate = new ScilabDouble(...z0);
+            rpar0 = inverse(rpar1);
+            this.x.model.rpar = new ScilabDouble(...rpar0);
+            this.x.graphics.exprs = list(new ScilabString([sci2exp(this.i)], [sci2exp(this.o)], [sci2exp(this.ci)], [sci2exp(this.co)], [sci2exp(this.xx)], [sci2exp(this.z)], [sci2exp(this.rpar)], [sci2exp(this.auto0)], [sci2exp(this.deptime)]), list(new ScilabString(...tt[0]), new ScilabString(...tt[1]), new ScilabString(...tt[2]), new ScilabString(...tt[3]), new ScilabString(...tt[4]),
+new ScilabString(...tt[5]), new ScilabString(...tt[6])));
+            this.displayParameter = [tt[0]];
         }
-        if(this.rpar == ""){
-            this.x.model.rpar = new ScilabDouble()
-        }
-        if(this.xx != ""){
-            this.x.model.state = new ScilabDouble([this.xx])
-        }
-        if(this.z != ""){
-            this.x.model.dstate = new ScilabDouble([this.z])
-        }
-        this.it_set = ones(size(this.i,1),1);
-        this.ot = ones(size(this.o,1),1);
-
-        var n = to_display;
-        this.displayParameter = [n];
-        var io = set_io(this.x.model,this.x.graphics,list(this.i,...this.it_set),list(this.o,...this.ot),this.ci,this.co);
-        this.x.model.opar = list(this.popup2value_disp, new ScilabString([this.popup3value.toString()]), this.popup4value_disp, this.popup5value_disp, this.popup6value_disp, this.popup7value_disp, this.popup8value_disp)
-        var exprs = list(new ScilabString([sci2exp(this.i)], [sci2exp(this.o)], [sci2exp(this.ci)], [sci2exp(this.co)], [sci2exp(this.xx)], [sci2exp(this.z)], [sci2exp(this.rpar)], [sci2exp(this.auto0)], [sci2exp(this.deptime)]), list(this.popup2value_disp, new ScilabString([this.popup3value.toString()]), this.popup4value_disp, this.popup5value_disp, this.popup6value_disp, this.popup7value_disp, this.popup8value_disp))
-        this.x.graphics.exprs = exprs
         return new BasicBlock(this.x)
     }
 
     scifunc_block_m.prototype.get_popup_title = function scifunc_block_m() {
-        var set_param_popup_title="Set parameters";
+        var set_param_popup_title = "Set scifunc_block parameters <br>only regular blocks supported";
         return set_param_popup_title
     }
     scifunc_block_m.prototype.getDimensionForDisplay = function scifunc_block_m(){
