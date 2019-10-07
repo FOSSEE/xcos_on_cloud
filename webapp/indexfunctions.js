@@ -2408,7 +2408,11 @@ function main(container, outline, toolbar, sidebar, status) {
                 var url = '/slider.html?'+params;
                 winArr[i] = window.open(url,winid,'height=350,width=500');
                 // creating a new window using 'slider.html' and some css
+                if (winArr[i] == null) {
+                    return false;
+                }
             }
+            return true;
         }
 
         simulateButton.disabled = true;
@@ -2441,7 +2445,12 @@ function main(container, outline, toolbar, sidebar, status) {
                     setSimulationFlags(true);
                     if (row<=10 && row >= 1) {
                         // if tkblocks are <= 10 then create slider else not
-                        CreateSlider();
+                        if (!CreateSlider()) {
+                            stopSimulation();
+                            stopSimulationWindows();
+                            alert('Please allow browser to open pop-up windows and simulate this example again.');
+                            return;
+                        }
                     }
                     chart_init(graph, wnd, affichwnd, with_interval, with_interval2, flag1 && !flag2);
 
