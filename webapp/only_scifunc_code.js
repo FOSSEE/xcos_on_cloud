@@ -107,11 +107,12 @@ function update_cell_object(no, ni, nci, nco, xx_size, z_size, rpar_size, graph,
     var model = graph.getModel();
     model.beginUpdate();
     try {
-        var oldPorts = getPorts(cell.blockInstance.instance);
-        var details = cell.blockInstance.instance.set(update_propertiesObject);
-        set_io(cell.blockInstance.instance.x.model, cell.blockInstance.instance.x.graphics,in_1_arry, out_1_arry, clkin, clkout);
-        updateDetails(graph, cell, details);
-        var newPorts = getPorts(cell.blockInstance.instance);
+        var details_instance = cell.blockInstance.instance;
+        var oldPorts = getPorts(details_instance);
+        var details = details_instance.set(update_propertiesObject);
+        set_io(details_instance.x.model, details_instance.x.graphics,in_1_arry, out_1_arry, clkin, clkout);
+        updateDetails(graph, cell, details, details_instance);
+        var newPorts = getPorts(details_instance);
         modifyPorts(graph, cell, cell.ports.left, 'left', oldPorts.inputPorts, newPorts.inputPorts);
         modifyPorts(graph, cell, cell.ports.top, 'top', oldPorts.controlPorts, newPorts.controlPorts);
         modifyPorts(graph, cell, cell.ports.right, 'right', oldPorts.outputPorts, newPorts.outputPorts);

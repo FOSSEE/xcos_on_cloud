@@ -771,7 +771,7 @@ function createInstanceTag() {
     return new instance(arguments[0]);
 }
 
-function updateDetails(graph, cell, details, create=false) {
+function updateDetails(graph, cell, details, details_instance, create=false) {
     var enc = new mxCodec(mxUtils.createXmlDocument());
     var node = enc.encode(details);
 
@@ -780,7 +780,7 @@ function updateDetails(graph, cell, details, create=false) {
     if (styleName != null) {
         var idx = styleName.indexOf(';');
         if (styleName.startsWith("SELF_SWITCH")) {
-            var stateOpen = cell.blockInstance.instance.stateOpen;
+            var stateOpen = details_instance.stateOpen;
             styleName = stateOpen ? "SELF_SWITCH_OFF" : "SELF_SWITCH_ON";
         }else{
             if (idx != -1) {
@@ -792,7 +792,7 @@ function updateDetails(graph, cell, details, create=false) {
     var stylesheet = graph.getStylesheet();
     var style = stylesheet.styles[styleName];
 
-    var dimensionForBlock = cell.blockInstance.instance.getDimensionForDisplay();
+    var dimensionForBlock = details_instance.getDimensionForDisplay();
     var geometryCell = cell.geometry;
     var height = dimensionForBlock["height"];
     var width = dimensionForBlock["width"];

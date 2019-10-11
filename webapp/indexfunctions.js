@@ -1517,7 +1517,7 @@ function main(container, outline, toolbar, sidebar, status) {
                     if (details_instance != null) {
                         var details = importBlock(currentNode, cell, details_instance);
 
-                        var v1 = updateDetails(graph, cell, details, true);
+                        var v1 = updateDetails(graph, cell, details, details_instance, true);
                         // @Chhavi: Additional attribute to store the
                         // block's instance
                         v1.blockInstance = createInstanceTag(details_instance);
@@ -2916,10 +2916,11 @@ function showPropertiesWindow(graph, cell, diagRoot) {
                     cell_scifunc_block_m = cell;
                 }
 
-                var oldPorts = getPorts(cell.blockInstance.instance);
-                var details = cell.blockInstance.instance.set(propertiesObject);
-                updateDetails(graph, cell, details);
-                var newPorts = getPorts(cell.blockInstance.instance);
+                var details_instance = cell.blockInstance.instance;
+                var oldPorts = getPorts(details_instance);
+                var details = details_instance.set(propertiesObject);
+                updateDetails(graph, cell, details, details_instance);
+                var newPorts = getPorts(details_instance);
                 modifyPorts(graph, cell, cell.ports.left, 'left', oldPorts.inputPorts, newPorts.inputPorts);
                 modifyPorts(graph, cell, cell.ports.top, 'top', oldPorts.controlPorts, newPorts.controlPorts);
                 modifyPorts(graph, cell, cell.ports.right, 'right', oldPorts.outputPorts, newPorts.outputPorts);
@@ -3690,7 +3691,7 @@ function addSidebarIcon(graph, sidebar, name, image, dimensions) {
                     commandPorts.push("COMMAND");
                 }
             }
-            var v1 = updateDetails(graph, cell, details, true);
+            var v1 = updateDetails(graph, cell, details, details_instance, true);
 
             // @Chhavi: Additional attribute to store the block's instance
             v1.blockInstance = createInstanceTag(details_instance);

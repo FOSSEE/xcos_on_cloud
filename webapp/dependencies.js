@@ -2234,10 +2234,11 @@ function update_self_switch_values(graph, cell){
     var model = graph.getModel();
     model.beginUpdate();
     try {
-        var oldPorts = getPorts(cell.blockInstance.instance);
-        var details = cell.blockInstance.instance.set();
-        updateDetails(graph, cell, details);
-        var newPorts = getPorts(cell.blockInstance.instance);
+        var details_instance = cell.blockInstance.instance;
+        var oldPorts = getPorts(details_instance);
+        var details = details_instance.set();
+        updateDetails(graph, cell, details, details_instance);
+        var newPorts = getPorts(details_instance);
         modifyPorts(graph, cell, cell.ports.left, 'left', oldPorts.inputPorts, newPorts.inputPorts);
         modifyPorts(graph, cell, cell.ports.top, 'top', oldPorts.controlPorts, newPorts.controlPorts);
         modifyPorts(graph, cell, cell.ports.right, 'right', oldPorts.outputPorts, newPorts.outputPorts);
