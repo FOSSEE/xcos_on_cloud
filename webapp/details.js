@@ -771,11 +771,10 @@ function createInstanceTag() {
     return new instance(arguments[0]);
 }
 
-function updateDetails(graph, cell, details, details_instance, create=false) {
+function updateDetails(graph, cell, details, details_instance, styleName, create=false) {
     var enc = new mxCodec(mxUtils.createXmlDocument());
     var node = enc.encode(details);
 
-    var styleName = cell.style;
     var fullStyleName = styleName;
     if (styleName != null) {
         var idx = styleName.indexOf(';');

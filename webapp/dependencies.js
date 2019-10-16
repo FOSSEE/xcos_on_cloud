@@ -2237,7 +2237,7 @@ function update_self_switch_values(graph, cell){
         var details_instance = cell.blockInstance.instance;
         var oldPorts = getPorts(details_instance);
         var details = details_instance.set();
-        updateDetails(graph, cell, details, details_instance);
+        updateDetails(graph, cell, details, details_instance, cell.style);
         var newPorts = getPorts(details_instance);
         modifyPorts(graph, cell, cell.ports.left, 'left', oldPorts.inputPorts, newPorts.inputPorts);
         modifyPorts(graph, cell, cell.ports.top, 'top', oldPorts.controlPorts, newPorts.controlPorts);
