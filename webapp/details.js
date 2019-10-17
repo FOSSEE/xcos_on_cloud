@@ -771,7 +771,7 @@ function createInstanceTag() {
     return new instance(arguments[0]);
 }
 
-function updateDetails(graph, cell, details, details_instance, styleName, create=false) {
+function updateDetails(graph, cell, details, details_instance, styleName, geometryCell, create=false) {
     var enc = new mxCodec(mxUtils.createXmlDocument());
     var node = enc.encode(details);
 
@@ -792,7 +792,6 @@ function updateDetails(graph, cell, details, details_instance, styleName, create
     var style = stylesheet.styles[styleName];
 
     var dimensionForBlock = details_instance.getDimensionForDisplay();
-    var geometryCell = cell.geometry;
     var height = dimensionForBlock["height"];
     var width = dimensionForBlock["width"];
     if (geometryCell.height != null)
