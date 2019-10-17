@@ -3642,8 +3642,6 @@ var previousCell = null;
 function addSidebarIcon(graph, sidebar, name, image, dimensions) {
     // Function that is executed when the image is dropped on the graph. The
     // cell argument points to the cell under the mousepointer if there is one.
-    var height = 80;
-    var width = 80;
     var funct = function(graph, evt, cell, x, y) {
         var parent = graph.getDefaultParent();
         var model = graph.getModel();
@@ -3691,7 +3689,7 @@ function addSidebarIcon(graph, sidebar, name, image, dimensions) {
                     commandPorts.push("COMMAND");
                 }
             }
-            var geometryCell = new mxGeometry(x, y, width, height);
+            var geometryCell = new mxGeometry(x, y, 0, 0);
             var v1 = updateDetails(graph, null, details, details_instance, name, geometryCell, true);
 
             // @Chhavi: Additional attribute to store the block's instance
@@ -4249,7 +4247,7 @@ mxEdgeStyle.WireConnector = function(state, source, target, hints, result) {
      * @jiteshjha
      * splitBlock
      */
-    if (state.cell.getGeometry().getTerminalPoint(true) != null) {
+    if (source != null && state.cell.getGeometry().getTerminalPoint(true) != null) {
         source.cell['sourcePoint'] = state.cell.getGeometry().getTerminalPoint(true);
     }
 
@@ -4260,7 +4258,7 @@ mxEdgeStyle.WireConnector = function(state, source, target, hints, result) {
     }
 
     var first = pt;
-    if (state.cell.getGeometry().getTerminalPoint(false) != null) {
+    if (target != null && state.cell.getGeometry().getTerminalPoint(false) != null) {
         target.cell['sourcePoint'] = state.cell.getGeometry().getTerminalPoint(false);
     }
 

@@ -794,9 +794,9 @@ function updateDetails(graph, cell, details, details_instance, styleName, geomet
     var dimensionForBlock = details_instance.getDimensionForDisplay();
     var height = dimensionForBlock["height"];
     var width = dimensionForBlock["width"];
-    if (geometryCell.height != null)
+    if (geometryCell.height != null && geometryCell.height > 1)
         height = geometryCell.height;
-    if (geometryCell.width != null)
+    if (geometryCell.width != null && geometryCell.width > 1)
         width = geometryCell.width;
 
     /*
