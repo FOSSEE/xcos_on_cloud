@@ -1517,81 +1517,7 @@ function main(container, outline, toolbar, sidebar, status) {
                     if (details_instance != null) {
                         var details = importBlock(currentNode, cell, details_instance);
 
-                        var enc = new mxCodec(mxUtils.createXmlDocument());
-                        var node = enc.encode(details);
-                        var temp = enc.encode(parent);
-                        var stylesheet = graph.getStylesheet();
-                        var styleName = currentNode.getAttribute('style');
-                        var fullStyleName = styleName;
-                        if (styleName != null) {
-                            var idx = styleName.indexOf(';');
-                            if (styleName.startsWith("SELF_SWITCH")) {
-                                var ary = getData(details.objectsParameters[0]);
-                                var stateOpen = ( ary[0] == "true");
-                                styleName = stateOpen ? "SELF_SWITCH_OFF" : "SELF_SWITCH_ON";
-                            }else{
-                                if (idx != -1) {
-                                    styleName = styleName.substring(0, idx);
-                                }
-                            }
-                        }
-                        var style = stylesheet.styles[styleName];
-                        var angle = currentNode.getAttribute('angle');
-                        var imageStyle = "";
-                        if (angle != null) {
-                            imageStyle = ' style="transform:rotate(' + angle + 'deg)"';
-                        }
-                        // To get dimension(height,width) of a block
-                        var dimensionForBlock = details_instance.getDimensionForDisplay();
-                        var height = dimensionForBlock["height"];//return height of the block
-                        var width = dimensionForBlock["width"]; //return width of the block
-                        if (geometryCell.height != null)
-                            height = geometryCell.height;
-                        if (geometryCell.width != null)
-                            width = geometryCell.width;
-
-                        /*
-                         * When a particular block is loaded for the first
-                         * time, the image in the style of the block will be a
-                         * path to the image. Set the label in the style
-                         * property of the block has a html image, and set the
-                         * image in the style property as null
-                         *
-                         * NOTE: Since the image of any block need not be
-                         * changed for every movement of that block, the image
-                         * must be set only once.
-                         */
-                        if (style != null && style['image'] != null) {
-                            // Make label as a image html element
-                            var label = '<img src="' + style['image'] + '" height="' + (height*0.9) + '" width="' + (width*0.9) + '">';
-
-                            // Set label
-                            style['label'] = label;
-                            style['imagePath'] = style['image'];
-                            // Set image as null
-                            style['image'] = null;
-
-                            // Add the label as a part of node
-                            node.setAttribute('label', label);
-                        }
-
-                        /*
-                         * If a particular block with image tag in its
-                         * style property has been invoked already, the
-                         * image tag would be null for any successive
-                         * instances of the same block. Hence, set the
-                         * label from the label tag in style which was
-                         * set when that blockModel was invoked on the
-                         * first time.
-                         */
-                        if (style != null && style['label'] != null) {
-                            // Set label from the label field in the style
-                            // property
-                            node.setAttribute('label', style['label']);
-                        }
-                        node.setAttribute('parent', temp.getAttribute('id'));
-
-                        var v1 = graph.insertVertex(graph.getDefaultParent(), null, node, geometryCell.x, geometryCell.y, width, height, fullStyleName);
+                        var v1 = updateDetails(graph, cell, details, details_instance, cell.style, cell.geometry, true);
                         // @Chhavi: Additional attribute to store the
                         // block's instance
                         v1.blockInstance = createInstanceTag(details_instance);
@@ -2990,10 +2916,11 @@ function showPropertiesWindow(graph, cell, diagRoot) {
                     cell_scifunc_block_m = cell;
                 }
 
-                var oldPorts = getPorts(cell.blockInstance.instance);
-                var details = cell.blockInstance.instance.set(propertiesObject);
-                updateDetails(graph, cell, details);
-                var newPorts = getPorts(cell.blockInstance.instance);
+                var details_instance = cell.blockInstance.instance;
+                var oldPorts = getPorts(details_instance);
+                var details = details_instance.set(propertiesObject);
+                updateDetails(graph, cell, details, details_instance, cell.style, cell.geometry);
+                var newPorts = getPorts(details_instance);
                 modifyPorts(graph, cell, cell.ports.left, 'left', oldPorts.inputPorts, newPorts.inputPorts);
                 modifyPorts(graph, cell, cell.ports.top, 'top', oldPorts.controlPorts, newPorts.controlPorts);
                 modifyPorts(graph, cell, cell.ports.right, 'right', oldPorts.outputPorts, newPorts.outputPorts);
@@ -3715,69 +3642,15 @@ var previousCell = null;
 function addSidebarIcon(graph, sidebar, name, image, dimensions) {
     // Function that is executed when the image is dropped on the graph. The
     // cell argument points to the cell under the mousepointer if there is one.
-    var height = 80;
-    var width = 80;
     var funct = function(graph, evt, cell, x, y) {
         var parent = graph.getDefaultParent();
         var model = graph.getModel();
-        var v1 = null;
         var doc = mxUtils.createXmlDocument();
         model.beginUpdate();
         try {
             var details_instance = new window[name]();
             var details = details_instance.define();
-            var enc = new mxCodec(mxUtils.createXmlDocument());
-            var node = enc.encode(details);
-            var temp = enc.encode(parent);
 
-            // Get the stylesheet for the graph
-            var stylesheet = graph.getStylesheet();
-            // From the stylesheet, get the style of the particular block
-            var style = stylesheet.styles[name];
-            // To get dimension(height,width) of a block
-            var dimensionForBlock = details_instance.getDimensionForDisplay();
-            height = dimensionForBlock["height"]; //returns height of block
-            width = dimensionForBlock["width"]; //returns width of block
-
-            /*
-             * When a particular block is loaded for the first time, the image
-             * in the style of the block will be a path to the image. Set the
-             * label in the style property of the block has a html image, and
-             * set the image in the style property as null
-             *
-             * NOTE: Since the image of any block need not be changed for every
-             * movement of that block, the image must be set only once.
-             */
-            if (style != null && style['image'] != null) {
-                // Make label as a image html element
-                var label = '<img src="' + style['image'] + '" height="' + (height*0.9) + '" width="' + (width*0.9) + '">';
-
-                // Set label
-                style['label'] = label;
-
-                style['imagePath'] = style['image'];
-
-                // Set image as null
-                style['image'] = null;
-
-                // Add the label as a part of node
-                node.setAttribute('label', label);
-            }
-
-            /*
-             * If a particular block with image tag in its style property has
-             * been invoked already, the image tag would be null for any
-             * successive instances of the same block. Hence, set the label
-             * from the label tag in style which was set when that blockModel
-             * was invoked on the first time.
-             */
-            if (style != null && style['label'] != null) {
-                // Set label from the label field in the style property
-                node.setAttribute('label', style['label']);
-            }
-
-            node.setAttribute('parent', temp.getAttribute('id'));
-            var i, arr = [];
             var blockModel = details_instance.x.model;
             var graphics = details_instance.x.graphics;
 
@@ -3787,36 +3660,37 @@ function addSidebarIcon(graph, sidebar, name, image, dimensions) {
             var controlPorts = [];
             var commandPorts = [];
             if (blockModel.in.height != null) {
-                arr = getData(graphics.in_implicit);
+                var arr = getData(graphics.in_implicit);
                 if (arr.length != 0) {
                     inputPorts = arr;
                 } else {
-                    for (i = 0; i < blockModel.in.height; i++) {
+                    for (var i = 0; i < blockModel.in.height; i++) {
                         inputPorts.push("E");
                     }
                 }
             }
             if (blockModel.out.height != null) {
-                arr = getData(graphics.out_implicit);
+                var arr = getData(graphics.out_implicit);
                 if (arr.length != 0) {
                     outputPorts = arr;
                 } else {
-                    for (i = 0; i < blockModel.out.height; i++) {
+                    for (var i = 0; i < blockModel.out.height; i++) {
                         outputPorts.push("E");
                     }
                 }
             }
             if (blockModel.evtin.height != null) {
-                for (i = 0; i < blockModel.evtin.height; i++) {
+                for (var i = 0; i < blockModel.evtin.height; i++) {
                     controlPorts.push("CONTROL");
                 }
             }
             if (blockModel.evtout.height != null) {
-                for (i = 0; i < blockModel.evtout.height; i++) {
+                for (var i = 0; i < blockModel.evtout.height; i++) {
                     commandPorts.push("COMMAND");
                 }
             }
-            v1 = graph.insertVertex(parent, null, node, x, y, width, height, name);
+            var geometryCell = new mxGeometry(x, y, 0, 0);
+            var v1 = updateDetails(graph, null, details, details_instance, name, geometryCell, true);
 
             // @Chhavi: Additional attribute to store the block's instance
             v1.blockInstance = createInstanceTag(details_instance);
@@ -3825,10 +3699,10 @@ function addSidebarIcon(graph, sidebar, name, image, dimensions) {
             v1.flipY = 1;
             createPorts(graph, v1, inputPorts, controlPorts, outputPorts, commandPorts, null, null, details_instance.x.model);
             v1.setConnectable(false);
+            graph.setSelectionCell(v1);
         } finally {
             model.endUpdate();
         }
-        graph.setSelectionCell(v1);
     }
 
     var blockFigure = document.createElement('td');
@@ -4373,7 +4247,7 @@ mxEdgeStyle.WireConnector = function(state, source, target, hints, result) {
      * @jiteshjha
      * splitBlock
      */
-    if (state.cell.getGeometry().getTerminalPoint(true) != null) {
+    if (source != null && state.cell.getGeometry().getTerminalPoint(true) != null) {
         source.cell['sourcePoint'] = state.cell.getGeometry().getTerminalPoint(true);
     }
 
@@ -4384,7 +4258,7 @@ mxEdgeStyle.WireConnector = function(state, source, target, hints, result) {
     }
 
     var first = pt;
-    if (state.cell.getGeometry().getTerminalPoint(false) != null) {
+    if (target != null && state.cell.getGeometry().getTerminalPoint(false) != null) {
         target.cell['sourcePoint'] = state.cell.getGeometry().getTerminalPoint(false);
     }
 
