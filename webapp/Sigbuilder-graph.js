@@ -665,8 +665,9 @@ function showGraphWindowSigBlk(graph,graphParameters,cell) {
         check_call = 2;
 
         if (result || mtd_check) {
-            var details = cell.blockInstance.instance.set(propertiesObject);
-            updateDetails(graph, cell, details);
+            var details_instance = cell.blockInstance.instance;
+            var details = details_instance.set(propertiesObject);
+            updateDetails(graph, cell, details, details_instance, cell.style, cell.geometry);
         }
     };
     check_call = 1;

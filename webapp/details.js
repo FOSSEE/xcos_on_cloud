@@ -771,15 +771,15 @@ function createInstanceTag() {
     return new instance(arguments[0]);
 }
 
-function updateDetails(graph, cell, details) {
+function updateDetails(graph, cell, details, details_instance, styleName, geometryCell, create=false) {
     var enc = new mxCodec(mxUtils.createXmlDocument());
     var node = enc.encode(details);
 
-    var styleName = cell.style;
+    var fullStyleName = styleName;
     if (styleName != null) {
         var idx = styleName.indexOf(';');
         if (styleName.startsWith("SELF_SWITCH")) {
-            var stateOpen = cell.blockInstance.instance.stateOpen;
+            var stateOpen = details_instance.stateOpen;
             styleName = stateOpen ? "SELF_SWITCH_OFF" : "SELF_SWITCH_ON";
         }else{
             if (idx != -1) {
@@ -791,25 +791,22 @@ function updateDetails(graph, cell, details) {
     var stylesheet = graph.getStylesheet();
     var style = stylesheet.styles[styleName];
 
-    var dimensionForBlock = cell.blockInstance.instance.getDimensionForDisplay();
-    var geometryCell = cell.geometry;
+    var dimensionForBlock = details_instance.getDimensionForDisplay();
     var height = dimensionForBlock["height"];
     var width = dimensionForBlock["width"];
-    if (geometryCell.height != null)
+    if (geometryCell.height != null && geometryCell.height > 1)
         height = geometryCell.height;
-    if (geometryCell.width != null)
+    if (geometryCell.width != null && geometryCell.width > 1)
         width = geometryCell.width;
 
     /*
-     * When a particular block is loaded for the first
-     * time, the image in the style of the block will be a
-     * path to the image. Set the label in the style
-     * property of the block has a html image, and set the
-     * image in the style property as null
+     * When a particular block is loaded for the first time, the image in the
+     * style of the block will be a path to the image. Set the label in the
+     * style property of the block has a html image, and set the image in the
+     * style property as null
      *
-     * NOTE: Since the image of any block need not be
-     * changed for every movement of that block, the image
-     * must be set only once.
+     * NOTE: Since the image of any block need not be changed for every
+     * movement of that block, the image must be set only once.
      */
     if (style != null && style['image'] != null) {
         // Make label as a image html element
@@ -826,22 +823,22 @@ function updateDetails(graph, cell, details) {
     }
 
     /*
-     * If a particular block with image tag in its
-     * style property has been invoked already, the
-     * image tag would be null for any successive
-     * instances of the same block. Hence, set the
-     * label from the label tag in style which was
-     * set when that blockModel was invoked on the
-     * first time.
+     * If a particular block with image tag in its style property has been
+     * invoked already, the image tag would be null for any successive
+     * instances of the same block. Hence, set the label from the label tag in
+     * style which was set when that blockModel was invoked on the first time.
      */
     if (style != null && style['label'] != null) {
-        // Set label from the label field in the style
-        // property
+        // Set label from the label field in the style property
         node.setAttribute('label', style['label']);
     }
 
     var parent = graph.getDefaultParent();
     node.setAttribute('parent', parent.id);
+
+    if (create) {
+        return graph.insertVertex(parent, null, node, geometryCell.x, geometryCell.y, width, height, fullStyleName);
+    }
 
     cell.setValue(node);
 }

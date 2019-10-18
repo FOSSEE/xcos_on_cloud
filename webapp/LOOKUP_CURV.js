@@ -184,10 +184,11 @@ function showGraphWindow(graph, cell, diagRoot) {
                 }
             }
 
-            var oldPorts = getPorts(cell.blockInstance.instance);
-            var details = cell.blockInstance.instance.set(graphParameters);
-            updateDetails(graph, cell, details);
-            var newPorts = getPorts(cell.blockInstance.instance);
+            var details_instance = cell.blockInstance.instance;
+            var oldPorts = getPorts(details_instance);
+            var details = details_instance.set(graphParameters);
+            updateDetails(graph, cell, details, details_instance, cell.style, cell.geometry);
+            var newPorts = getPorts(details_instance);
             modifyPorts(graph, cell, cell.ports.left, 'left', oldPorts.inputPorts, newPorts.inputPorts);
             modifyPorts(graph, cell, cell.ports.top, 'top', oldPorts.controlPorts, newPorts.controlPorts);
             modifyPorts(graph, cell, cell.ports.right, 'right', oldPorts.outputPorts, newPorts.outputPorts);
