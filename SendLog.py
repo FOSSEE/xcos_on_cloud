@@ -240,6 +240,11 @@ INSTANCES_2 = []
 evt = Event()
 
 
+def no_free_scilab_instance():
+    l1 = len(INSTANCES_1)
+    return l1 == 0
+
+
 def too_many_scilab_instances():
     l1 = len(INSTANCES_1)
     l2 = len(INSTANCES_2)
@@ -347,7 +352,8 @@ def get_scilab_instance():
                 FIRST_INSTANCE = True
                 if not too_many_scilab_instances():
                     evt.set()
-                    gevent.sleep(1)
+                    if no_free_scilab_instance():
+                        gevent.sleep(4)
                 continue
 
             INSTANCES_2.append(instance)
