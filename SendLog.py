@@ -580,25 +580,6 @@ class UserData:
         rmdir(sessiondir, 'session')
 
 
-class line_and_state:
-    '''
-    Class to store the line and its state (Used in reading data from log file)
-    '''
-    line = None  # initial line to none(Nothing is present)
-    state = NOLINE  # initial state to NOLINE ie
-
-    def set(self, line_state):
-        self.line = line_state[0]  # to set line
-        self.state = line_state[1]  # to set state
-        return False
-
-    def get_line(self):
-        return self.line
-
-    def get_state(self):
-        return self.state
-
-
 def set_session():
     if 'uid' not in session:
         session['uid'] = str(uuid.uuid4())
@@ -765,14 +746,18 @@ def parse_line(line, lineno):
         return (None, NOLINE)
 
 
-def get_line_and_state(file, figure_list, lineno):
+def get_line_and_state(file, figure_list, lineno, incomplete_line):
     '''
     Function to get a new line from file
     This also parses the line and appends new figures to figure List
     '''
     line = file.readline()  # read line by line from log
     if not line:            # if line is empty then return noline
-        return (None, NOLINE)
+        return (incomplete_line, NOLINE)
+    if incomplete_line is not None:
+        line = incomplete_line + line
+    if '\n' not in line:
+        return (line, NOLINE)
     # every line is passed to function parse_line for getting values
     parse_result = parse_line(line, lineno)
     figure_id = parse_result[0]
@@ -1336,22 +1321,26 @@ def event_stream():
 
     with open(diagram.instance.log_name, "r") as log_file:
         # Start sending log
-        lineno = 0
-        line = line_and_state()
+        lineno = 1
+        line = None
         endtime = time() + config.SCILAB_INSTANCE_TIMEOUT_INTERVAL
         while time() <= endtime:
-            lineno += 1
-            line.set(get_line_and_state(log_file, diagram.figure_list, lineno))
+            (line, state) = get_line_and_state(log_file, diagram.figure_list,
+                                               lineno, line)
+            # if incomplete line, wait for the complete line
+            if state == NOLINE:
+                gevent.sleep(LOOK_DELAY)
+                continue
             if not diagram.figure_list:
                 break
             # Get the line and loop until the state is ENDING and figure_list
             # empty. Determine if we get block id and give it to chart.js
-            if line.get_state() == BLOCK_IDENTIFICATION:
-                yield "event: block\ndata: " + line.get_line() + "\n\n"
-            elif line.get_state() != DATA:
-                gevent.sleep(LOOK_DELAY)
-            else:
-                yield "event: log\ndata: " + line.get_line() + "\n\n"
+            if state == BLOCK_IDENTIFICATION:
+                yield "event: block\ndata: " + line + "\n\n"
+            elif state == DATA:
+                yield "event: log\ndata: " + line + "\n\n"
+            lineno += 1
+            line = None
 
     # Finished Sending Log
     kill_scilab(diagram)
