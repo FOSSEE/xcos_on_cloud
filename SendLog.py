@@ -2055,6 +2055,7 @@ def run_scilab_func_getcolormapvalues_request():
     remove(file_name)
     return jsonify(valuesfrom_colormap)
 
+
 # example page start ###################
 
 @cache.memoize()
