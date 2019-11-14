@@ -2198,6 +2198,28 @@ function Do_Spline(N,order,x,y){
     return response;
 }
 
+// calling post method using ajax for getting colormap values for cmatview block
+function get_colormap(colormap){
+    var response = null;
+
+    $.ajax({
+        type: "POST",
+        url: "/get_colormap_values",
+        async: false,
+        data: { colormapString: colormap},
+        dataType: "json",
+        success: function(rm) {
+            response = rm;
+        },
+        error: function(xhr, textStatus) {
+            var msg = "An error occurred!! \n\nPlease try again"
+            alert(msg);
+            throw "error";
+        }
+    });
+    return response;
+}
+
 //For Sigbuilder block
 function getmethod(mtd){
     var METHOD = "";
