@@ -94,6 +94,7 @@ COPIED_EXPRESSION_SCI_FRM_SCILAB = abspath("copied_expression_from_scilab.sci")
 COPIED_CURVE_c_SCI_FRM_SCILAB = abspath("copied_curve_c_from_scilab.sci")
 CLEANDATA_SCI_FUNC_WRITE = abspath("scifunc-cleandata-do_spline.sci")
 EXP_SCI_FUNC_WRITE = abspath("expression-sci-function.sci")
+GET_COLORMAP_VALUES_SCI_FUNC_WRITE = abspath("get_colormap_values.sci")
 BASEDIR = abspath('webapp')
 IMAGEDIR = join(BASEDIR, config.IMAGEDIR)
 IMAGEURLDIR = '/' + config.IMAGEDIR + '/'
@@ -2012,6 +2013,52 @@ def run_scilab_func_do_Spline_request():
 
     remove(file_name)
     return jsonify(valuesfordo_spline)
+
+
+# App route for getting output for colormap values for CMATVIEW Block
+
+@app.route('/get_colormap_values', methods=['POST'])
+def run_scilab_func_getcolormapvalues_request():
+    (__, __, __, scifile, sessiondir, __) = init_session()
+
+    if scifile.instance is not None:
+        msg = 'Cannot execute more than one script at the same time.'
+        return msg
+
+    file_name = join(sessiondir, "colormap_values.txt")
+    colormap_string = request.form['colormapString']
+    valuesfrom_colormap = []
+
+    if not re.search(SYSTEM_COMMANDS, colormap_string):
+
+        '''
+        sample input to scilab:
+        'jetcolormap(32)' or 'jetcolormap(32);graycolormap(32)'
+        '''
+        command = "exec('%s');" % GET_COLORMAP_VALUES_SCI_FUNC_WRITE
+        command += "getvaluesfromcolormap('%s','%s');" % (
+            file_name, colormap_string)
+
+        scifile.instance = run_scilab(command, scifile)
+
+        if scifile.instance is None:
+            msg = "Resource not available"
+            return msg
+
+        proc = scifile.instance.proc
+        proc.communicate()
+        remove_scilab_instance(scifile.instance)
+        scifile.instance = None
+
+        with open(file_name) as f:
+            data = f.read()  # Read the data into a variable
+            valuesfrom_colormap = data
+
+        remove(file_name)
+    else:
+        valuesfrom_colormap = "Please check, System command not allowed."
+
+    return jsonify(valuesfrom_colormap)
 
 
 # example page start ###################

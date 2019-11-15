@@ -2198,6 +2198,40 @@ function Do_Spline(N,order,x,y){
     return response;
 }
 
+// calling post method using ajax for getting colormap values for cmatview block
+function get_colormap(colormap){
+    var response = null;
+    if(colormap != "jetcolormap(25)"){
+        $.ajax({
+            type: "POST",
+            url: "/get_colormap_values",
+            async: false,
+            data: { colormapString: colormap},
+            dataType: "json",
+            success: function(rm) {
+                response = rm;
+                if(response.charAt(0) != "[" && response.charAt(response.length-1) != "]"){
+                    alert(response);
+                    throw "error";
+                }else{
+                    response = JSON.parse(response);
+                }
+            },
+            error: function(xhr, textStatus) {
+                var msg = "An error occurred!! \n\nPlease try again"
+                alert(msg);
+                throw "error";
+            }
+        });
+    }else{
+        response = JSON.parse("[0,0,0,0,0,0,0,0,0,0.02,0.18,0.34,0.5,0.66,0.82,0.98,"+
+            "1,1,1,1,1,1,0.9,0.74,0.58,0,0,0,0.06,0.22,0.38,0.54,0.7,0.86,1,1,1,1,1,"+
+            "1,1,0.86,0.7,0.54,0.38,0.22,0.06,0,0,0,0.58,0.74,0.9,1,1,1,1,1,1,0.98,"+
+            "0.82,0.66,0.5,0.34,0.18,0.02,0,0,0,0,0,0,0,0,0]");
+    }
+    return response;
+}
+
 //For Sigbuilder block
 function getmethod(mtd){
     var METHOD = "";
