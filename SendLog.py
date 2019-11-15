@@ -2027,32 +2027,37 @@ def run_scilab_func_getcolormapvalues_request():
 
     file_name = join(sessiondir, "colormap_values.txt")
     colormap_string = request.form['colormapString']
-    '''
-    sample input to scilab:
-    'jetcolormap(32)' or 'jetcolormap(32);graycolormap(32)'
-    '''
-    command = "exec('%s');" % GET_COLORMAP_VALUES_SCI_FUNC_WRITE
-    command += "getvaluesfromcolormap('%s','%s');" % (
-        file_name, colormap_string)
-
-    scifile.instance = run_scilab(command, scifile)
-
-    if scifile.instance is None:
-        msg = "Resource not available"
-        return msg
-
-    proc = scifile.instance.proc
-    proc.communicate()
-    remove_scilab_instance(scifile.instance)
-    scifile.instance = None
-
     valuesfrom_colormap = []
 
-    with open(file_name) as f:
-        data = f.read()  # Read the data into a variable
-        valuesfrom_colormap = data
+    if not re.search(SYSTEM_COMMANDS, colormap_string):
 
-    remove(file_name)
+        '''
+        sample input to scilab:
+        'jetcolormap(32)' or 'jetcolormap(32);graycolormap(32)'
+        '''
+        command = "exec('%s');" % GET_COLORMAP_VALUES_SCI_FUNC_WRITE
+        command += "getvaluesfromcolormap('%s','%s');" % (
+            file_name, colormap_string)
+
+        scifile.instance = run_scilab(command, scifile)
+
+        if scifile.instance is None:
+            msg = "Resource not available"
+            return msg
+
+        proc = scifile.instance.proc
+        proc.communicate()
+        remove_scilab_instance(scifile.instance)
+        scifile.instance = None
+
+        with open(file_name) as f:
+            data = f.read()  # Read the data into a variable
+            valuesfrom_colormap = data
+
+        remove(file_name)
+    else:
+        valuesfrom_colormap = "Please check, System command not allowed."
+
     return jsonify(valuesfrom_colormap)
 
 
