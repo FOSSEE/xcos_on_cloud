@@ -2217,6 +2217,10 @@ function get_colormap(colormap){
             throw "error";
         }
     });
+    if(response.charAt(0) != "[" && response.charAt(response.length-1) != "]"){
+        alert(response);
+        throw "error";
+    }
     return response;
 }
 
