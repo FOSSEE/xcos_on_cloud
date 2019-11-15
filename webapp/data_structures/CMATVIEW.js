@@ -4,8 +4,8 @@ function CMATVIEW () {
 	    this.cmin = 0;
         this.cmax = 100;
         this.size_c = 25;
-        this.colormap = jetcolormap(this.size_c); //values are not same as desktop so might be changed to different method
         this.colormap_string = "jetcolormap(25)";
+        this.colormap = JSON.parse(get_colormap(this.colormap_string));
         this.alpha_c = 0.24;
         this.beta_c = 1;
         var model = scicos_model();
@@ -27,7 +27,7 @@ function CMATVIEW () {
 
     CMATVIEW.prototype.get = function CMATVIEW() {
         var options = {
-            size_c:["ColorMap",this.colormap_string],
+            colormap:["ColorMap",this.colormap_string],
             cmin:["Minimum level range",this.cmin],
             cmax:["Maximum level range",this.cmax]
         }
@@ -36,8 +36,11 @@ function CMATVIEW () {
 
     CMATVIEW.prototype.set = function CMATVIEW() {
 
-	    var colormap_string_1 = arguments[0]["size_c"];
-	    var regex_comma = /[,]+/;
+	    var colormap_string_1 = arguments[0]["colormap"];
+	    var regex_comma = /[,]+/; // check for commas
+	    var regex_char = /[a-zA-Z]/g; //check character
+	    var regex_parentheses = /[\])}[{(]/g; // check for brackets
+	    var regex_num = /^\d+$/; //check number only
 	    if(regex_comma.test(colormap_string_1)){
             alert("Answer given for ColorMap \nis incorrect: Inconsistent column/row dimensions.");
             throw "incorrect";
@@ -50,18 +53,30 @@ function CMATVIEW () {
         }
         this.cmin = cmin_1;
         this.cmax = cmax_1;
-	    this.totalcolors = size(colon_operator(this.colormap),1);
+        var colormap_values = [];
+        var chararray = colormap_string_1.match(regex_char);
+        if( chararray != null ){
+            colormap_values = JSON.parse(get_colormap(colormap_string_1));
+            this.size_c = size(colon_operator(colormap_values),1);
+        }else{
+            var number = colormap_string_1.trim().replace(regex_parentheses, '');
+            if(regex_num.test(number)){
+                colormap_values = [parseFloat(number)];
+                this.size_c = 1;
+            }
+        }
+        this.colormap_string = colormap_string_1;
 	    var sol_cal_1 = [[this.cmin,1],[this.cmax,1]];
-	    var sol_cal_2 = [[1],[(this.totalcolors/3)]];
+	    var sol_cal_2 = [[1],[(this.size_c/3)]];
 	    var sol = multiply(math.inv(sol_cal_1),sol_cal_2);
         this.alpha_c = sol[0];
         this.beta_c = sol[1];
-        var ipar = new ScilabDouble([this.cmin],[this.cmax],[this.totalcolors]);
-        var rpar = new ScilabDouble(this.alpha_c,this.beta_c,...colon_operator(this.colormap));
+        var ipar = new ScilabDouble([this.cmin],[this.cmax],[this.size_c]);
+        var rpar = new ScilabDouble(this.alpha_c,this.beta_c,...colon_operator(colormap_values));
 
 	    this.x.model.ipar = ipar;
         this.x.model.rpar = rpar;
-	    var exprs = new ScilabString(["jetcolormap("+this.size_c+")"],[this.cmin],[this.cmax]);
+	    var exprs = new ScilabString([this.colormap_string],[this.cmin],[this.cmax]);
         this.x.graphics.exprs = exprs;
         return new BasicBlock(this.x)
     }
