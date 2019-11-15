@@ -563,10 +563,9 @@ CMAT3D.prototype.importset = function CMAT3D() {
 CMATVIEW.prototype.importset = function CMATVIEW() {
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.colormap = ary[0];
+    this.colormap_string = ary[0];
     this.cmin = ary[1];
     this.cmax = ary[2];
-    this.size_c = this.colormap.replace(/.*\((.*)\).*/, "$1");
 }
 CMSCOPE.prototype.importset = function CMSCOPE() {
     var model = this.x.model;
