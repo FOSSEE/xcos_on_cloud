@@ -5,9 +5,9 @@ function CMATVIEW () {
         this.cmax = 100;
         var size_c = 25;
         this.colormap_string = "jetcolormap(25)";
-        this.colormap = get_colormap(this.colormap_string);
-        this.alpha_c = 0.24;
-        this.beta_c = 1;
+        var colormap = get_colormap(this.colormap_string);
+        var alpha_c = 0.24;
+        var beta_c = 1;
         var model = scicos_model();
         model.sim = list(new ScilabString(["cmatview"]), new ScilabDouble([4]));
         model.in = new ScilabDouble([-1]);
@@ -15,7 +15,7 @@ function CMATVIEW () {
         model.intyp = new ScilabDouble([1]);
         model.evtin = new ScilabDouble([1]);
         model.ipar = new ScilabDouble([this.cmin], [this.cmax], [size_c]);
-        model.rpar = new ScilabDouble([this.alpha_c], [this.beta_c], ...colon_operator(this.colormap));
+        model.rpar = new ScilabDouble([alpha_c], [beta_c], ...colon_operator(colormap));
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean(true, false);
 	    var exprs = new ScilabString([this.colormap_string],[this.cmin],[this.cmax]);
@@ -70,10 +70,10 @@ function CMATVIEW () {
 	    var sol_cal_1 = [[this.cmin,1],[this.cmax,1]];
 	    var sol_cal_2 = [[1],[(size_c/3)]];
 	    var sol = multiply(math.inv(sol_cal_1),sol_cal_2);
-        this.alpha_c = sol[0];
-        this.beta_c = sol[1];
+        var alpha_c = sol[0];
+        var beta_c = sol[1];
         var ipar = new ScilabDouble([this.cmin],[this.cmax],[size_c]);
-        var rpar = new ScilabDouble(this.alpha_c,this.beta_c,...colon_operator(colormap_values));
+        var rpar = new ScilabDouble(alpha_c,beta_c,...colon_operator(colormap_values));
 
 	    this.x.model.ipar = ipar;
         this.x.model.rpar = rpar;
