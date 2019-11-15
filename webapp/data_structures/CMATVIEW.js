@@ -3,9 +3,9 @@ function CMATVIEW () {
     CMATVIEW.prototype.define = function CMATVIEW() {
 	    this.cmin = 0;
         this.cmax = 100;
-        this.size_c = 25;
+        var size_c = 25;
         this.colormap_string = "jetcolormap(25)";
-        this.colormap = JSON.parse(get_colormap(this.colormap_string));
+        this.colormap = get_colormap(this.colormap_string);
         this.alpha_c = 0.24;
         this.beta_c = 1;
         var model = scicos_model();
@@ -14,7 +14,7 @@ function CMATVIEW () {
         model.in2 = new ScilabDouble([-2]);
         model.intyp = new ScilabDouble([1]);
         model.evtin = new ScilabDouble([1]);
-        model.ipar = new ScilabDouble([this.cmin], [this.cmax], [this.size_c]);
+        model.ipar = new ScilabDouble([this.cmin], [this.cmax], [size_c]);
         model.rpar = new ScilabDouble([this.alpha_c], [this.beta_c], ...colon_operator(this.colormap));
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean(true, false);
@@ -53,25 +53,26 @@ function CMATVIEW () {
         }
         this.cmin = cmin_1;
         this.cmax = cmax_1;
+        var size_c = 0;
         var colormap_values = [];
         var chararray = colormap_string_1.match(regex_char);
         if( chararray != null ){
-            colormap_values = JSON.parse(get_colormap(colormap_string_1));
-            this.size_c = size(colon_operator(colormap_values),1);
+            colormap_values = get_colormap(colormap_string_1);
+            size_c = size(colon_operator(colormap_values),1);
         }else{
             var number = colormap_string_1.trim().replace(regex_parentheses, '');
             if(regex_num.test(number)){
                 colormap_values = [parseFloat(number)];
-                this.size_c = 1;
+                size_c = 1;
             }
         }
         this.colormap_string = colormap_string_1;
 	    var sol_cal_1 = [[this.cmin,1],[this.cmax,1]];
-	    var sol_cal_2 = [[1],[(this.size_c/3)]];
+	    var sol_cal_2 = [[1],[(size_c/3)]];
 	    var sol = multiply(math.inv(sol_cal_1),sol_cal_2);
         this.alpha_c = sol[0];
         this.beta_c = sol[1];
-        var ipar = new ScilabDouble([this.cmin],[this.cmax],[this.size_c]);
+        var ipar = new ScilabDouble([this.cmin],[this.cmax],[size_c]);
         var rpar = new ScilabDouble(this.alpha_c,this.beta_c,...colon_operator(colormap_values));
 
 	    this.x.model.ipar = ipar;
