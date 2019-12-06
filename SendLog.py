@@ -83,6 +83,7 @@ def remove(filename):
 
 
 # change directory before using relative paths
+BASEDIR = dirname(abspath(__file__))
 os.chdir(dirname(abspath(__file__)))
 
 # Scilab dir
@@ -1853,7 +1854,6 @@ def run_scilab_func_request():
 
 
 # App route for getting scilab expression output for Expression Block
-
 @app.route('/getExpressionOutput', methods=['POST'])
 def run_scilab_func_expr_request():
     (__, __, __, scifile, sessiondir, __) = init_session()
@@ -1915,7 +1915,6 @@ def run_scilab_func_expr_request():
 
 
 # App route for getting output for cleandata func for Sigbuilder Block
-
 @app.route('/cleandata', methods=['POST'])
 def run_scilab_func_cleandata_request():
     (__, __, __, scifile, sessiondir, __) = init_session()
@@ -1959,7 +1958,6 @@ def run_scilab_func_cleandata_request():
 
 
 # App route for getting output for Do_Spline func for Sigbuilder Block
-
 @app.route('/do_Spline', methods=['POST'])
 def run_scilab_func_do_Spline_request():
     (__, __, __, scifile, sessiondir, __) = init_session()
@@ -2016,49 +2014,52 @@ def run_scilab_func_do_Spline_request():
 
 
 # App route for getting output for colormap values for CMATVIEW Block
-
 @app.route('/get_colormap_values', methods=['POST'])
 def run_scilab_func_getcolormapvalues_request():
+    return internal_fun('get_colormap_values')
+
+
+@app.route('/internal/<internal_key>', methods=['POST'])
+def internal_fun(internal_key):
     (__, __, __, scifile, sessiondir, __) = init_session()
+    if internal_key not in config.INTERNAL:
+        logger.warn(internal_key + " Not Found ")
+        msg = 'Not Found'
+        return msg
+    internal_data = config.INTERNAL[internal_key]
+    file_name = join(sessiondir, internal_key + ".txt")
+    scriptfile = join(BASEDIR, internal_data['scriptfile'])
+    cmd = ""
+    cmd += "exec('" + scriptfile + "');"
+    cmd += internal_data['function'] + "('" + file_name + "'"
+    for parameter in internal_data['parameters']:
+        value = request.form[parameter]
+        print(parameter)
+
+        cmd += ",'" + value + "'"
+    cmd += ");"
+    logger.warn(cmd)
 
     if scifile.instance is not None:
         msg = 'Cannot execute more than one script at the same time.'
         return msg
 
-    file_name = join(sessiondir, "colormap_values.txt")
-    colormap_string = request.form['colormapString']
-    valuesfrom_colormap = []
+    scifile.instance = run_scilab(cmd, scifile)
+    if scifile.instance is None:
+        msg = "Resource not available"
+        return msg
 
-    if not re.search(SYSTEM_COMMANDS, colormap_string):
+    proc = scifile.instance.proc
+    proc.communicate()
+    remove_scilab_instance(scifile.instance)
+    scifile.instance = None
 
-        '''
-        sample input to scilab:
-        'jetcolormap(32)' or 'jetcolormap(32);graycolormap(32)'
-        '''
-        command = "exec('%s');" % GET_COLORMAP_VALUES_SCI_FUNC_WRITE
-        command += "getvaluesfromcolormap('%s','%s');" % (
-            file_name, colormap_string)
+    with open(file_name) as f:
+        data = f.read()  # Read the data into a variable
 
-        scifile.instance = run_scilab(command, scifile)
+    remove(file_name)
 
-        if scifile.instance is None:
-            msg = "Resource not available"
-            return msg
-
-        proc = scifile.instance.proc
-        proc.communicate()
-        remove_scilab_instance(scifile.instance)
-        scifile.instance = None
-
-        with open(file_name) as f:
-            data = f.read()  # Read the data into a variable
-            valuesfrom_colormap = data
-
-        remove(file_name)
-    else:
-        valuesfrom_colormap = "Please check, System command not allowed."
-
-    return jsonify(valuesfrom_colormap)
+    return jsonify(data)
 
 
 # example page start ###################

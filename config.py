@@ -180,3 +180,38 @@ IMAGEDIR = 'res_imgs'
 CREATEIMAGE = False
 
 REMOVEFILE = True
+
+
+CONT_FRM_WRITE = "cont_frm_write.sci"
+COPIED_EXPRESSION_SCI_FRM_SCILAB = "copied_expression_from_scilab.sci"
+COPIED_CURVE_c_SCI_FRM_SCILAB = "copied_curve_c_from_scilab.sci"
+GET_COLORMAP_VALUES_SCI_FUNC_WRITE = "get_colormap_values.sci"
+
+
+INTERNAL = {
+    'getOutput': {
+        'parameters': ['num', 'den'],
+        'scriptfile': CONT_FRM_WRITE,
+        'function': 'run_scilab_func_request',
+    },
+    'getExpressionOutput': {
+        'parameters': ['head', 'exx'],
+        'scriptfile': COPIED_EXPRESSION_SCI_FRM_SCILAB,
+        'function': 'run_scilab_func_expr_request',
+    },
+    'cleandata': {
+        'parameters': ['msg'],
+        'scriptfile': COPIED_CURVE_c_SCI_FRM_SCILAB,
+        'function': 'run_scilab_func_cleandata_request',
+    },
+    'do_Spline': {
+        'parameters': ['N', 'order', 'x', 'y'],
+        'scriptfile': COPIED_CURVE_c_SCI_FRM_SCILAB,
+        'function': 'run_scilab_func_do_Spline_request',
+    },
+    'get_colormap_values': {
+        'parameters': ['colormapString'],
+        'scriptfile': GET_COLORMAP_VALUES_SCI_FUNC_WRITE,
+        'function': 'run_scilab_func_getcolormapvalues_request',
+    }
+}
