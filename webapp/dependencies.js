@@ -2083,31 +2083,7 @@ function conmat(v, v1) {
 // end of mfreq code
 // for calling post method using ajax for calling poly() of scilab
 function cont_frm(num, den) {
-    var return_value;
-
-    $.ajax({
-        type: "POST",
-        url: "/getOutput",
-        async: false,
-        data: { num: num, den: den },
-        dataType: "json",
-        success: function(rv) {
-            if (rv != "Error") {
-                return_value = rv;
-            }else{
-                var msg = "Error while setting block parameters\n\nPlease check entered polynomial";
-                alert(msg);
-                throw "error";
-            }
-        },
-        error: function(xhr, textStatus) {
-            var msg = "An error occurred!! \n\nPlease try again"
-            alert(msg);
-            throw "error";
-        }
-    });
-
-    return return_value;
+    return call_internal_fun("getOutput", { num, den });
 }
 
 /*
@@ -2133,61 +2109,43 @@ function convertInputVectorFormat(inputValue) {
 
 // for calling post method using ajax for calling scilab function for Expression block
 function get_expr_output_for_DefineandSet(head,exx) {
-    var response_map = null;
-
-    $.ajax({
-        type: "POST",
-        url: "/getExpressionOutput",
-        async: false,
-        data: { head: head, exx: exx },
-        dataType: "json",
-        success: function(rm) {
-            response_map = rm;
-        },
-        error: function(xhr, textStatus) {
-            var msg = "An error occurred!! \n\nPlease try again"
-            alert(msg);
-            throw "error";
-        }
-    });
-
-    return response_map;
+    return call_internal_fun("getExpressionOutput", { head, exx });
 }
 
 // calling post method using ajax for calling scilab function cleandata for sigbuilder block
 function cleandata(xye) {
-    var response = null;
-
-    $.ajax({
-        type: "POST",
-        url: "/cleandata",
-        async: false,
-        data: { xye: xye },
-        dataType: "json",
-        success: function(rm) {
-            response = rm;
-        },
-        error: function(xhr, textStatus) {
-            var msg = "An error occurred!! \n\nPlease try again"
-            alert(msg);
-            throw "error";
-        }
-    });
-    return response;
+    return call_internal_fun("cleandata", { xye });
 }
 
 // calling post method using ajax for calling scilab function Do_Spline for sigbuilder block
 function Do_Spline(N,order,x,y){
-    var response = null;
+    return call_internal_fun("do_Spline", { N, order, x, y });
+}
+
+// calling post method using ajax for getting colormap values for cmatview block
+function get_colormap(colormapString) {
+    if (colormapString == "jetcolormap(25)") {
+        return [
+            0,0,0,0,0,0,0,0,0,0.02,0.18,0.34,0.5,0.66,0.82,0.98,1,1,1,1,1,1,0.9,0.74,0.58,
+            0,0,0,0.06,0.22,0.38,0.54,0.7,0.86,1,1,1,1,1,1,1,0.86,0.7,0.54,0.38,0.22,0.06,0,0,0,
+            0.58,0.74,0.9,1,1,1,1,1,1,0.98,0.82,0.66,0.5,0.34,0.18,0.02,0,0,0,0,0,0,0,0,0
+        ];
+    }
+
+    return call_internal_fun("get_colormap_values", { colormapString });
+}
+
+function call_internal_fun(internal_key, data) {
+    var response;
 
     $.ajax({
         type: "POST",
-        url: "/do_Spline",
+        url: "/internal/" + internal_key,
         async: false,
-        data: { N: N, order: order, x: x, y: y },
+        data: data,
         dataType: "json",
-        success: function(rm) {
-            response = rm;
+        success: function(rv) {
+            response = rv;
         },
         error: function(xhr, textStatus) {
             var msg = "An error occurred!! \n\nPlease try again"
@@ -2195,39 +2153,10 @@ function Do_Spline(N,order,x,y){
             throw "error";
         }
     });
-    return response;
-}
 
-// calling post method using ajax for getting colormap values for cmatview block
-function get_colormap(colormap){
-    var response = null;
-    if(colormap != "jetcolormap(25)"){
-        $.ajax({
-            type: "POST",
-            url: "/get_colormap_values",
-            async: false,
-            data: { colormapString: colormap},
-            dataType: "json",
-            success: function(rm) {
-                response = rm;
-                if(response.charAt(0) != "[" && response.charAt(response.length-1) != "]"){
-                    alert(response);
-                    throw "error";
-                }else{
-                    response = JSON.parse(response);
-                }
-            },
-            error: function(xhr, textStatus) {
-                var msg = "An error occurred!! \n\nPlease try again"
-                alert(msg);
-                throw "error";
-            }
-        });
-    }else{
-        response = JSON.parse("[0,0,0,0,0,0,0,0,0,0.02,0.18,0.34,0.5,0.66,0.82,0.98,"+
-            "1,1,1,1,1,1,0.9,0.74,0.58,0,0,0,0.06,0.22,0.38,0.54,0.7,0.86,1,1,1,1,1,"+
-            "1,1,0.86,0.7,0.54,0.38,0.22,0.06,0,0,0,0.58,0.74,0.9,1,1,1,1,1,1,0.98,"+
-            "0.82,0.66,0.5,0.34,0.18,0.02,0,0,0,0,0,0,0,0,0]");
+    if (response.msg != undefined) {
+        alert(response.msg);
+        throw "error";
     }
     return response;
 }
