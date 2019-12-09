@@ -63,9 +63,9 @@ function EXPRESSION () {
             var io = check_io(this.x.model,this.x.graphics,[-1],[1],[],[])
         }
         if(ok1 == "true"){
-            this.ipar = JSON.parse(get_values.ipar); //getting values for JSON Object for ipar
-            this.rpar = JSON.parse(get_values.rpar); //getting values for JSON Object for rpar
-            this.nz = JSON.parse(get_values.nz); //getting values for JSON Object for nz
+            this.ipar = get_values.ipar;
+            this.rpar = get_values.rpar;
+            this.nz = get_values.nz;
             this.x.model.rpar = new ScilabDouble(...this.rpar);
             this.x.model.ipar = new ScilabDouble(...this.ipar);
             if(this.usenz != 0){

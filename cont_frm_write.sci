@@ -1,4 +1,4 @@
-function calculate_cont_frm(num,den,filename)
+function calculate_cont_frm(filename,num,den)
     f_temp = mopen(filename, 'wt');// Creating a text file
     H=cont_frm(num,den);
     [A,B,C,D]=abcd(H);
@@ -16,7 +16,11 @@ function cont_frm_write(varargin)
             [m,n] = size(variable) // reading the size of variable
     for y = 1:n // no. of rows in variables
         for z = 1:m //no. of columns in variabes
+            if (k == loop-1) & (y == n) & (z == m) then
             mfprintf(f_temp, '[%d]', variable(z,y)) //Print the variable values
+            else
+            mfprintf(f_temp, '[%d],', variable(z,y)) //Print the variable values
+            end
         end
     end
     end
