@@ -172,6 +172,7 @@ SYSTEM_COMMANDS = (
     r'unix\(.*\)|unix_g\(.*\)|unix_w\(.*\)|unix_x\(.*\)|unix_s\(.*\)|host'
     r'|newfun|execstr|ascii|mputl|dir\(\)'
 )
+SPECIAL_CHARACTERS = r'["\'\\]'
 
 # The directory where images are created
 IMAGEDIR = 'res_imgs'
@@ -180,3 +181,43 @@ IMAGEDIR = 'res_imgs'
 CREATEIMAGE = False
 
 REMOVEFILE = True
+
+
+CONT_FRM_WRITE = "cont_frm_write.sci"
+COPIED_EXPRESSION_SCI_FRM_SCILAB = "copied_expression_from_scilab.sci"
+COPIED_CURVE_c_SCI_FRM_SCILAB = "copied_curve_c_from_scilab.sci"
+CLEANDATA_SCI_FUNC_WRITE = "scifunc-cleandata-do_spline.sci"
+EXP_SCI_FUNC_WRITE = "expression-sci-function.sci"
+GET_COLORMAP_VALUES_SCI_FUNC_WRITE = "get_colormap_values.sci"
+
+
+INTERNAL = {
+    'getOutput': {
+        'scriptfiles': [CONT_FRM_WRITE],
+        'function': 'calculate_cont_frm',
+        'parameters': ['num', 'den'],
+    },
+    'getExpressionOutput': {
+        'scriptfiles': [COPIED_EXPRESSION_SCI_FRM_SCILAB,
+                        EXP_SCI_FUNC_WRITE],
+        'function': 'callFunctionAcctoMethod',
+        'parameters': ['head', 'exx'],
+    },
+    'cleandata': {
+        'scriptfiles': [COPIED_CURVE_c_SCI_FRM_SCILAB,
+                        CLEANDATA_SCI_FUNC_WRITE],
+        'function': 'callFunctioncleandata',
+        'parameters': ['xye'],
+    },
+    'do_Spline': {
+        'scriptfiles': [COPIED_CURVE_c_SCI_FRM_SCILAB,
+                        CLEANDATA_SCI_FUNC_WRITE],
+        'function': 'callFunction_do_Spline',
+        'parameters': ['N', 'order', 'x', 'y'],
+    },
+    'get_colormap_values': {
+        'scriptfiles': [GET_COLORMAP_VALUES_SCI_FUNC_WRITE],
+        'function': 'getvaluesfromcolormap',
+        'parameters': ['colormapString'],
+    }
+}

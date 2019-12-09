@@ -14,7 +14,7 @@ function callFunctioncleandata(filename,xye)
     end
     [xy] = cleandata([arry_xye]);  //pass new array to cleandata and save return value in xy
     [m,n] = size(xy) // reading the size of variable
-    mfprintf(f_temp, '[');
+    mfprintf(f_temp, '[[');
     for y = 1:m // no. of rows in variables
         for z = 1:n //no. of columns in variabes
             if z == n then
@@ -27,7 +27,7 @@ function callFunctioncleandata(filename,xye)
             mfprintf(f_temp, '],[')
         end
     end
-    mfprintf(f_temp, ']');
+    mfprintf(f_temp, ']]');
     mclose(f_temp)
 endfunction
 
@@ -60,23 +60,35 @@ function callFunction_do_Spline(filename,N,order,x,y)
     mclose(f_temp)
 endfunction
 
-function Do_Spline_write(varargin)
-    loop = argn(2);
-    f_temp = varargin(loop);
-    for k = 1:(loop-1)
-        mfprintf(f_temp, '[');
-        variable = varargin(k) // Storing variable one at a time
-        [m,n] = size(variable) // reading the size of variable
-        for y = 1:n // no. of rows in variables
-            for z = 1:m //no. of columns in variabes
-                if z == m then
-                mfprintf(f_temp, '%g', variable(z,y)) //Print the variable values
-                else
-                mfprintf(f_temp, '%g,', variable(z,y)) //Print the variable values
-                end
-            end
+function Do_Spline_write(Xdummy,Ydummy,orpar,f_temp)
+    mfprintf(f_temp, '{');
+    mfprintf(f_temp, '""Xdummy"":[');
+    for i = 1:length(Xdummy)
+        if (i == length(Xdummy)) then
+            mfprintf(f_temp, '%f',  Xdummy(i));
+        else
+            mfprintf(f_temp, '%f,',  Xdummy(i));
         end
-        mfprintf(f_temp, ']\n');
     end
+    mfprintf(f_temp, ']');
+    mfprintf(f_temp, ',""Ydummy"":[');
+    for i = 1:length(Ydummy)
+        if (i == length(Ydummy)) then
+            mfprintf(f_temp, '%f',  Ydummy(i));
+        else
+            mfprintf(f_temp, '%f,',  Ydummy(i));
+        end
+    end
+    mfprintf(f_temp, ']');
+    mfprintf(f_temp, ',""orpar"":[');
+    for i = 1:length(orpar)
+        if (i == length(orpar)) then
+            mfprintf(f_temp, '%d',  orpar(i));
+        else
+            mfprintf(f_temp, '%d,',  orpar(i));
+        end
+    end
+    mfprintf(f_temp, ']');
+    mfprintf(f_temp, '}');
 endfunction
 
