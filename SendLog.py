@@ -65,7 +65,7 @@ def rmdir(dirname, dirtype):
         if exists(dirname):
             os.rmdir(dirname)
     except Exception as e:
-        logger.warn('could not remove %s: %s', dirname, str(e))
+        logger.warning('could not remove %s: %s', dirname, str(e))
 
 
 def remove(filename):
@@ -83,19 +83,13 @@ def remove(filename):
 
 
 # change directory before using relative paths
-BASEDIR = dirname(abspath(__file__))
-os.chdir(dirname(abspath(__file__)))
+ROOTDIR = dirname(abspath(__file__))
+os.chdir(ROOTDIR)
 
 # Scilab dir
 SCIDIR = abspath(config.SCILAB_DIR)
 SCI = join(SCIDIR, "bin", "scilab-adv-cli")
 READCONTENTFILE = abspath("Read_Content.txt")
-CONT_FRM_WRITE = abspath("cont_frm_write.sci")
-COPIED_EXPRESSION_SCI_FRM_SCILAB = abspath("copied_expression_from_scilab.sci")
-COPIED_CURVE_c_SCI_FRM_SCILAB = abspath("copied_curve_c_from_scilab.sci")
-CLEANDATA_SCI_FUNC_WRITE = abspath("scifunc-cleandata-do_spline.sci")
-EXP_SCI_FUNC_WRITE = abspath("expression-sci-function.sci")
-GET_COLORMAP_VALUES_SCI_FUNC_WRITE = abspath("get_colormap_values.sci")
 BASEDIR = abspath('webapp')
 IMAGEDIR = join(BASEDIR, config.IMAGEDIR)
 IMAGEURLDIR = '/' + config.IMAGEDIR + '/'
@@ -106,6 +100,7 @@ FLASKCACHINGDIR = abspath(config.FLASKCACHINGDIR)
 LOGDIR = abspath(config.LOGDIR)
 LOGFILE = join(LOGDIR, config.LOGFILE)
 SYSTEM_COMMANDS = re.compile(config.SYSTEM_COMMANDS)
+SPECIAL_CHARACTERS = re.compile(config.SPECIAL_CHARACTERS)
 
 
 makedirs(FLASKSESSIONDIR, 'top flask session')
@@ -349,8 +344,8 @@ def get_scilab_instance():
             instance = INSTANCES_1.pop(0)
             proc = instance.proc
             if proc.poll() is not None:
-                logger.warn('could not get scilab instance: return code is %s',
-                            proc.returncode)
+                logger.warning('scilab instance exited: return code is %s',
+                               proc.returncode)
                 FIRST_INSTANCE = True
                 if not too_many_scilab_instances():
                     evt.set()
@@ -387,7 +382,7 @@ def stop_scilab_instance(base, createlogfile=False):
 
 def stop_instance(instance, createlogfile=False, removeinstance=True):
     if instance is None:
-        logger.warn('no instance')
+        logger.warning('no instance')
         return
 
     if not kill_scilab_with(instance.proc, signal.SIGTERM):
@@ -398,7 +393,7 @@ def stop_instance(instance, createlogfile=False, removeinstance=True):
 
     if instance.log_name is None:
         if createlogfile:
-            logger.warn('empty diagram')
+            logger.warning('empty diagram')
     else:
         remove(instance.log_name)
         instance.log_name = None
@@ -439,7 +434,7 @@ def reap_scilab_instances():
         for instance in remove_instances:
             base = instance.base
             if base is None:
-                logger.warn('cannot stop instance %s', instance)
+                logger.warning('cannot stop instance %s', instance)
                 stop_instance(instance)
             elif isinstance(base, Diagram):
                 kill_scilab(base)
@@ -448,7 +443,7 @@ def reap_scilab_instances():
             elif isinstance(base, SciFile):
                 kill_scifile(base)
             else:
-                logger.warn('cannot stop instance %s', instance)
+                logger.warning('cannot stop instance %s', instance)
                 stop_instance(instance)
 
 
@@ -631,7 +626,7 @@ def clean_sessions(final=False):
             ud = USER_DATA.pop(uid)
             ud.clean()
         except Exception as e:
-            logger.warn('could not clean: %s', str(e))
+            logger.warning('could not clean: %s', str(e))
 
 
 def clean_sessions_thread():
@@ -641,19 +636,19 @@ def clean_sessions_thread():
         try:
             clean_sessions()
         except Exception as e:
-            logger.warn('Exception in clean_sessions: %s', str(e))
+            logger.warning('Exception in clean_sessions: %s', str(e))
 
 
 def get_diagram(xcos_file_id, remove=False):
     if not xcos_file_id:
-        logger.warn('no id')
+        logger.warning('no id')
         return None
     xcos_file_id = int(xcos_file_id)
 
     (diagrams, __, __, __, __, __) = init_session()
 
     if xcos_file_id < 0 or xcos_file_id >= len(diagrams):
-        logger.warn('id %s not in diagrams', xcos_file_id)
+        logger.warning('id %s not in diagrams', xcos_file_id)
         return None
 
     diagram = diagrams[xcos_file_id]
@@ -680,14 +675,14 @@ def get_script(script_id, scripts=None, remove=False):
     if script_id is None:
         return None
     if not script_id:
-        logger.warn('no id')
+        logger.warning('no id')
         return None
 
     if scripts is None:
         (__, scripts, __, __, __, __) = init_session()
 
     if script_id not in scripts:
-        logger.warn('id %s not in scripts', script_id)
+        logger.warning('id %s not in scripts', script_id)
         return None
 
     script = scripts[script_id]
@@ -922,14 +917,14 @@ def getscriptoutput():
     script = get_script(get_script_id())
     if script is None:
         # when called with same script_id again or with incorrect script_id
-        logger.warn('no script')
+        logger.warning('no script')
         msg = "no script"
         rv = {'msg': msg}
         return Response(json.dumps(rv), mimetype='application/json')
 
     instance = script.instance
     if instance is None:
-        logger.warn('no instance')
+        logger.warning('no instance')
         msg = "no instance"
         rv = {'msg': msg}
         return Response(json.dumps(rv), mimetype='application/json')
@@ -945,7 +940,7 @@ def getscriptoutput():
 
         returncode = proc.returncode
         if returncode < 0:
-            logger.warn('return code is %s', returncode)
+            logger.warning('return code is %s', returncode)
             msg = 'Script stopped'
             script.status = -5
             rv = {'status': script.status, 'msg': msg, 'output': output}
@@ -986,7 +981,7 @@ def kill_script(script=None):
         script = get_script(get_script_id(), remove=True)
         if script is None:
             # when called with same script_id again or with incorrect script_id
-            logger.warn('no script')
+            logger.warning('no script')
             return "error"
 
     logger.info('kill_script: script=%s', script)
@@ -994,13 +989,13 @@ def kill_script(script=None):
     stop_scilab_instance(script)
 
     if script.filename is None:
-        logger.warn('empty script')
+        logger.warning('empty script')
     else:
         remove(script.filename)
         script.filename = None
 
     if script.workspace_filename is None:
-        logger.warn('empty workspace')
+        logger.warning('empty workspace')
     else:
         remove(script.workspace_filename)
         script.workspace_filename = None
@@ -1028,10 +1023,10 @@ def sendfile():
     '''
     diagram = get_diagram(get_request_id())
     if diagram is None:
-        logger.warn('no diagram')
+        logger.warning('no diagram')
         return ''
     if diagram.file_image == '':
-        logger.warn('no diagram image')
+        logger.warning('no diagram image')
         return ''
 
     return IMAGEURLDIR + diagram.file_image
@@ -1049,10 +1044,10 @@ def kill_scilab_with(proc, sgnl):
     try:
         os.killpg(proc.pid, sgnl)
     except OSError:
-        logger.warn('could not kill %s with signal %s', proc.pid, sgnl)
+        logger.warning('could not kill %s with signal %s', proc.pid, sgnl)
         return False
     except TypeError:
-        logger.warn('could not kill invalid process with signal %s', sgnl)
+        logger.warning('could not kill invalid process with signal %s', sgnl)
         return True
 
     for i in range(0, 20):
@@ -1065,34 +1060,36 @@ def kill_scilab_with(proc, sgnl):
 def get_request_id(key='id'):
     args = request.args
     if args is None:
-        logger.warn('No args in request')
+        logger.warning('No args in request')
         return ''
     if key not in args:
-        logger.warn('No %s in request.args', key)
+        logger.warning('No %s in request.args', key)
         return ''
     value = args[key]
     if re.fullmatch(r'[0-9]+', value):
         return value
     displayvalue = value if len(
         value) <= DISPLAY_LIMIT + 3 else value[:DISPLAY_LIMIT] + '...'
-    logger.warn('Invalid value %s for %s in request.args', displayvalue, key)
+    logger.warning('Invalid value %s for %s in request.args',
+                   displayvalue, key)
     return ''
 
 
 def get_script_id(key='script_id', default=''):
     form = request.form
     if form is None:
-        logger.warn('No form in request')
+        logger.warning('No form in request')
         return default
     if key not in form:
-        logger.warn('No %s in request.form', key)
+        logger.warning('No %s in request.form', key)
         return default
     value = form[key]
     if re.fullmatch(r'[0-9]+', value):
         return value
     displayvalue = value if len(
         value) <= DISPLAY_LIMIT + 3 else value[:DISPLAY_LIMIT] + '...'
-    logger.warn('Invalid value %s for %s in request.form', displayvalue, key)
+    logger.warning('Invalid value %s for %s in request.form',
+                   displayvalue, key)
     return default
 
 
@@ -1102,21 +1099,21 @@ def kill_scilab(diagram=None):
         diagram = get_diagram(get_request_id(), True)
 
     if diagram is None:
-        logger.warn('no diagram')
+        logger.warning('no diagram')
         return
     logger.info('kill_scilab: diagram=%s', diagram)
 
     stop_scilab_instance(diagram, True)
 
     if diagram.xcos_file_name is None:
-        logger.warn('empty diagram')
+        logger.warning('empty diagram')
     else:
         # Remove xcos file
         remove(diagram.xcos_file_name)
         diagram.xcos_file_name = None
 
     if diagram.file_image != '':
-        logger.warn('not removing %s', diagram.file_image)
+        logger.warning('not removing %s', diagram.file_image)
 
     stopDetailsThread(diagram)
 
@@ -1151,7 +1148,7 @@ def start_scilab():
     '''
     diagram = get_diagram(get_request_id())
     if diagram is None:
-        logger.warn('no diagram')
+        logger.warning('no diagram')
         return "error"
 
     # name of primary workspace file
@@ -1291,13 +1288,13 @@ def event_stream():
     '''
     diagram = get_diagram(get_request_id())
     if diagram is None:
-        logger.warn('no diagram')
+        logger.warning('no diagram')
         yield "event: ERROR\ndata: no diagram\n\n"
         return
 
     # Open the log file
     if not isfile(diagram.instance.log_name):
-        logger.warn('log file does not exist')
+        logger.warning('log file does not exist')
         yield "event: ERROR\ndata: no log file found\n\n"
         remove_scilab_instance(diagram.instance)
         diagram.instance = None
@@ -1315,7 +1312,7 @@ def event_stream():
             logger.info('image created')
             yield "event: DONE\ndata: None\n\n"
         else:
-            logger.warn('log file is empty')
+            logger.warning('log file is empty')
             yield "event: ERROR\ndata: log file is empty\n\n"
         remove_scilab_instance(diagram.instance)
         diagram.instance = None
@@ -1676,7 +1673,7 @@ def filenames():
 def UpdateTKfile():
     diagram = get_diagram(get_request_id())
     if diagram is None:
-        logger.warn('no diagram')
+        logger.warning('no diagram')
         return "error"
 
     # function which makes the initialazation and updation of the files with
@@ -1730,7 +1727,7 @@ def DownloadFile():
     '''route for download of binary and audio'''
     fn = request.form['path']
     if fn == '' or fn[0] == '.' or '/' in fn:
-        logger.warn('downloadfile=%s', fn)
+        logger.warning('downloadfile=%s', fn)
         return "error"
     # check if audio file or binary file
     if "audio" in fn:
@@ -1746,7 +1743,7 @@ def DeleteFile():
     '''route for deletion of binary and audio file'''
     fn = request.form['path']
     if fn == '' or fn[0] == '.' or '/' in fn:
-        logger.warn('deletefile=%s', fn)
+        logger.warning('deletefile=%s', fn)
         return "error"
     remove(fn)  # deleting the file
     return "0"
@@ -1782,7 +1779,7 @@ def endBlock(fig_id):
     '''route to end blocks with no Ending parameter'''
     diagram = get_diagram(get_request_id())
     if diagram is None:
-        logger.warn('no diagram')
+        logger.warning('no diagram')
         return
 
     diagram.figure_list.remove(fig_id)
@@ -1800,266 +1797,74 @@ def page():
                            prerequisite_filename='')
 
 
-@app.route('/getOutput', methods=['POST'])
-def run_scilab_func_request():
-    (__, __, __, scifile, sessiondir, __) = init_session()
-
-    if scifile.instance is not None:
-        msg = 'Cannot execute more than one script at the same time.'
-        return msg
-
-    file_name = join(sessiondir, "cont_frm_value.txt")
-    num = request.form['num']
-    den = request.form['den']
-    '''
-    sample input to scilab:
-    num: 1+s
-    den: s^2-5*s+1
-    '''
-
-    if 'z' in num or 'z' in den:
-        p = 'z'
-    else:
-        p = 's'
-    command = "%s=poly(0, '%s');" % (p, p)
-    command += "exec('%s');" % CONT_FRM_WRITE
-    command += "calculate_cont_frm(%s,%s,'%s');" % (num, den, file_name)
-
-    scifile.instance = run_scilab(command, scifile)
-
-    if scifile.instance is None:
-        msg = "Resource not available"
-        return msg
-
-    proc = scifile.instance.proc
-    proc.communicate()
-    remove_scilab_instance(scifile.instance)
-    scifile.instance = None
-
-    list_value = ""
-    '''
-    sample output from scilab:
-    [[0], [1], [0], [0]]
-    '''
-    if isfile(file_name):
-        with open(file_name) as f:
-            data = f.read()  # Read the data into a variable
-            list_value = data.replace('][', '],[')
-        remove(file_name)
-
-    else:
-        list_value = "Error"
-
-    return jsonify(list_value)
-
-
-# App route for getting scilab expression output for Expression Block
-@app.route('/getExpressionOutput', methods=['POST'])
-def run_scilab_func_expr_request():
-    (__, __, __, scifile, sessiondir, __) = init_session()
-
-    if scifile.instance is not None:
-        msg = 'Cannot execute more than one script at the same time.'
-        return msg
-
-    file_name = join(sessiondir, "expr_set_value.txt")
-    head = request.form['head']
-    exx = request.form['exx']
-    '''
-    sample input to scilab:
-    head: %foo(u1,u2)
-    exx: (u1>0)*sin(u2)^2
-    '''
-    command = "exec('%s');" % COPIED_EXPRESSION_SCI_FRM_SCILAB
-    command += "exec('%s');" % EXP_SCI_FUNC_WRITE
-    command += "callFunctionAcctoMethod('%s','%s','%s');" % (
-        file_name, head, exx)
-
-    scifile.instance = run_scilab(command, scifile)
-
-    if scifile.instance is None:
-        msg = "Resource not available"
-        return msg
-
-    proc = scifile.instance.proc
-    proc.communicate()
-    remove_scilab_instance(scifile.instance)
-    scifile.instance = None
-
-    # create a dictionary
-    exprs_value = {}
-    '''
-    Array containing value which will be used as key
-    for dictionary 'exprs_value'
-
-    sample output from scilab:
-    ok: true or scilab error message
-    ok1: true
-    ipar: [[2], [1], [6], [1], [5], [18], [2], [2], [5]
-        , [101], [6], [2], [5], [15], [5], [3]]
-    rpar: [[0], [2]]
-    nz: [[1]]
-    '''
-    var_array = ["ok", "ok1", "ipar", "rpar", "nz"]
-    with open(file_name) as f:
-        data = f.read()  # Read the data into a variable
-        valuesfromfile = data.splitlines()
-    for i in range(len(valuesfromfile)):
-        exprs_value[var_array[i]] = valuesfromfile[i]
-
-    if not exprs_value:
-        exprs_value["ok"] = "Enter a valid scilab expression : " + \
-            "custom made message"
-    remove(file_name)
-    return jsonify(exprs_value)
-
-
-# App route for getting output for cleandata func for Sigbuilder Block
-@app.route('/cleandata', methods=['POST'])
-def run_scilab_func_cleandata_request():
-    (__, __, __, scifile, sessiondir, __) = init_session()
-
-    if scifile.instance is not None:
-        msg = 'Cannot execute more than one script at the same time.'
-        return msg
-
-    file_name = join(sessiondir, "cleandata.txt")
-    xye = request.form['xye']
-    '''
-    sample input to scilab:
-    xye: '0,10;1,20;2,-30'
-    '''
-    command = "exec('%s');" % COPIED_CURVE_c_SCI_FRM_SCILAB
-    command += "exec('%s');" % CLEANDATA_SCI_FUNC_WRITE
-    command += "callFunctioncleandata('%s','%s');" % (
-        file_name, xye)
-
-    scifile.instance = run_scilab(command, scifile)
-
-    if scifile.instance is None:
-        msg = "Resource not available"
-        return msg
-
-    proc = scifile.instance.proc
-    proc.communicate()
-    remove_scilab_instance(scifile.instance)
-    scifile.instance = None
-
-    valuesforcleandata = []
-    '''
-    sample output from scilab:
-    [[0,10],[1,20],[2,-30]]
-    '''
-    with open(file_name) as f:
-        data = f.read()  # Read the data into a variable
-        valuesforcleandata = "[" + data + "]"
-    remove(file_name)
-    return jsonify(valuesforcleandata)
-
-
-# App route for getting output for Do_Spline func for Sigbuilder Block
-@app.route('/do_Spline', methods=['POST'])
-def run_scilab_func_do_Spline_request():
-    (__, __, __, scifile, sessiondir, __) = init_session()
-
-    if scifile.instance is not None:
-        msg = 'Cannot execute more than one script at the same time.'
-        return msg
-
-    file_name = join(sessiondir, "do_spline.txt")
-    N = request.form['N']
-    order = request.form['order']
-    x = request.form['x']
-    y = request.form['y']
-    '''
-    sample input to scilab:
-    N: 3
-    order: 3
-    x: '0,1,2'
-    y: '10,20,-30'
-    '''
-    command = "exec('%s');" % COPIED_CURVE_c_SCI_FRM_SCILAB
-    command += "exec('%s');" % CLEANDATA_SCI_FUNC_WRITE
-    command += "callFunction_do_Spline('%s','%s','%s','%s','%s');" % (
-        file_name, N, order, x, y)
-
-    scifile.instance = run_scilab(command, scifile)
-
-    if scifile.instance is None:
-        msg = "Resource not available"
-        return msg
-
-    proc = scifile.instance.proc
-    proc.communicate()
-    remove_scilab_instance(scifile.instance)
-    scifile.instance = None
-
-    valuesfordo_spline = {}
-    '''
-    sample output from scilab:
-    orpar: [40,-20,-80]
-    Ydummy: [10,13,16,18,20,21,22,23,23,22,21,20,20,17,15,12,8,4,0,-4,-10,
-    -16,-22,-30]
-    Xdummy: [0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,2]
-    '''
-    var_array = ["Xdummy", "Ydummy", "orpar"]
-    with open(file_name) as f:
-        data = f.read()  # Read the data into a variable
-        valuesfromfile = data.splitlines()
-    for i in range(len(valuesfromfile)):
-        valuesfordo_spline[var_array[i]] = valuesfromfile[i]
-
-    remove(file_name)
-    return jsonify(valuesfordo_spline)
-
-
-# App route for getting output for colormap values for CMATVIEW Block
-@app.route('/get_colormap_values', methods=['POST'])
-def run_scilab_func_getcolormapvalues_request():
-    return internal_fun('get_colormap_values')
-
-
 @app.route('/internal/<internal_key>', methods=['POST'])
 def internal_fun(internal_key):
     (__, __, __, scifile, sessiondir, __) = init_session()
-    if internal_key not in config.INTERNAL:
-        logger.warn(internal_key + " Not Found ")
-        msg = 'Not Found'
-        return msg
-    internal_data = config.INTERNAL[internal_key]
-    file_name = join(sessiondir, internal_key + ".txt")
-    scriptfile = join(BASEDIR, internal_data['scriptfile'])
-    cmd = ""
-    cmd += "exec('" + scriptfile + "');"
-    cmd += internal_data['function'] + "('" + file_name + "'"
-    for parameter in internal_data['parameters']:
-        value = request.form[parameter]
-        print(parameter)
 
-        cmd += ",'" + value + "'"
+    if internal_key not in config.INTERNAL:
+        msg = internal_key + ' not found'
+        logger.warning(msg)
+        return jsonify({'msg': msg})
+    internal_data = config.INTERNAL[internal_key]
+
+    cmd = ""
+    for f in internal_data['scriptfiles']:
+        scriptfile = join(ROOTDIR, f)
+        cmd += "exec('%s');" % scriptfile
+    file_name = join(sessiondir, internal_key + ".txt")
+    function = internal_data['function']
+    parameters = internal_data['parameters']
+    if 'num' in parameters:
+        p = 's'
+        cmd += "%s=poly(0,'%s');" % (p, p)
+        p = 'z'
+        cmd += "%s=poly(0,'%s');" % (p, p)
+    cmd += "%s('%s'" % (function, file_name)
+    for parameter in parameters:
+        if parameter not in request.form:
+            msg = parameter + ' parameter is missing'
+            logger.warning(msg)
+            return jsonify({'msg': msg})
+        value = request.form[parameter]
+        if re.search(SYSTEM_COMMANDS, value):
+            msg = parameter + ' parameter has unsafe value'
+            logger.warning(msg)
+            return jsonify({'msg': msg})
+        if re.search(SPECIAL_CHARACTERS, value):
+            msg = parameter + ' parameter has value with special characters'
+            logger.warning(msg)
+            return jsonify({'msg': msg})
+        if 'num' in parameters:
+            cmd += ",%s" % value
+        else:
+            cmd += ",'%s'" % value
     cmd += ");"
-    logger.warn(cmd)
 
     if scifile.instance is not None:
         msg = 'Cannot execute more than one script at the same time.'
-        return msg
+        return jsonify({'msg': msg})
 
     scifile.instance = run_scilab(cmd, scifile)
     if scifile.instance is None:
         msg = "Resource not available"
-        return msg
+        return jsonify({'msg': msg})
 
     proc = scifile.instance.proc
     proc.communicate()
     remove_scilab_instance(scifile.instance)
     scifile.instance = None
 
+    if not isfile(file_name):
+        msg = "Output file not available"
+        logger.warning(msg)
+        return jsonify({'msg': msg})
+
     with open(file_name) as f:
         data = f.read()  # Read the data into a variable
 
     remove(file_name)
 
-    return jsonify(data)
+    return data
 
 
 # example page start ###################
@@ -2169,7 +1974,7 @@ def get_example_file(example_file_id):
                 text = clean_text(f.read())
                 return (text, filename, example_id)
         except Exception as e:
-            logger.warn('Exception: %s', str(e))
+            logger.warning('Exception: %s', str(e))
 
     scilab_url = "https://scilab.in/download/file/" + example_file_id
     logger.info('downloading %s', scilab_url)
@@ -2226,7 +2031,7 @@ def return_prerequisite_file(filename, filepath, file_id, forindex):
                 text = clean_text_2(f.read(), forindex)
                 return (text, filename)
         except Exception as e:
-            logger.warn('Exception: %s', str(e))
+            logger.warning('Exception: %s', str(e))
 
     scilab_url = "https://scilab.in/download/file/" + str(file_id)
     logger.info('downloading %s', scilab_url)
