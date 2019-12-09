@@ -127,7 +127,7 @@ function DLR() {
             alert("Transfer function must be proper");
             DLR.get();
         }
-        this.value = JSON.parse(cont_frm(this.num,this.den));
+        this.value = cont_frm(this.num,this.den);
         var exprs = new ScilabString([this.num.toString()],[this.den.toString()])
         this.x.graphics.exprs = exprs
         var ns = size(this.A,1);

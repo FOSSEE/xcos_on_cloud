@@ -400,7 +400,7 @@ function Sigbuilder() {
             if(xy.includes("0,0")){
                 flag_for_zeros = true;
             }
-            xy = JSON.parse(cleandata(xy.toString()));
+            xy = cleandata(xy.toString());
             var N = xy.length;
             var result = checkDuplicate_X_values(xx_arry);
             var mtd_check = [0, 1, 2].includes(mtd);
@@ -506,9 +506,9 @@ function Sigbuilder() {
                     xy_2[i] = xy[i][1];
                 }
                 var do_spline_values = Do_Spline(N,mtd,xy_1.toString(),xy_2.toString());
-                Xdummy = JSON.parse(do_spline_values.Xdummy.replace(" ",","));
-                Ydummy = JSON.parse(do_spline_values.Ydummy.replace(" ",","));
-                orpar = JSON.parse(do_spline_values.orpar.replace(" ",","));
+                Xdummy = do_spline_values.Xdummy;
+                Ydummy = do_spline_values.Ydummy;
+                orpar = do_spline_values.orpar;
 
                 var NOrder = ipar[1];
                 var PeridicOption = ipar[2];
@@ -553,9 +553,9 @@ function Sigbuilder() {
                     xy_2[i] = xy[i][1];
                 }
                 var do_spline_values = Do_Spline(N,mtd,xy_1.toString(),xy_2.toString());
-                Xdummy = JSON.parse(do_spline_values.Xdummy.replace(" ",","));
-                Ydummy = JSON.parse(do_spline_values.Ydummy.replace(" ",","));
-                orpar = JSON.parse(do_spline_values.orpar.replace(" ",","));
+                Xdummy = do_spline_values.Xdummy;
+                Ydummy = do_spline_values.Ydummy;
+                orpar = do_spline_values.orpar;
                 if (METHOD == "periodic") {
                     xy[N-1][1] = xy[0][1];
                 }
