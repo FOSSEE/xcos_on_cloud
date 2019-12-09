@@ -4,6 +4,7 @@ var get_parameters_wind_sigbuilder = ""; //for getting parameter window for clos
 var get_parameters_wind_scifunc = ""; // for getting particular block parameter window for closing
 var graph_scifunc_block_m = ""; //For storing graph for scifunc_block_m block
 var cell_scifunc_block_m = ""; //For storing cell for scifunc_block_m block
+var name_values_colormap = new Map(); //for storing colormap values of cmatview block
 // function which makes the Ajax 'post' request with data sent in arguments
 function myAjaxreq(k,functionName) {
     var mbl = new Blob([k], { type: 'text/plain' });  // store the data in blob
@@ -1528,6 +1529,13 @@ function main(container, outline, toolbar, sidebar, status) {
                         if (ifaceFuncName == "AFFICH_m") {
                             details_instance.setLabel(ifaceFuncName+"-"+temporaryMapObject.newId);
                             var affich_details = importBlock(currentNode, cell, details_instance);
+                        }
+                        if(ifaceFuncName == "CMATVIEW"){
+                            details_instance.setID(temporaryMapObject.newId);
+                            var colormap_string = details_instance.colormap_string;
+                            var colormap = get_colormap(colormap_string);
+                            get_hex_color_code(details_instance.block_id, colormap);
+                            var cmatview_details = importBlock(currentNode, cell, details_instance);
                         }
 
                         v1.setConnectable(false);
@@ -3691,12 +3699,17 @@ function addSidebarIcon(graph, sidebar, name, image, dimensions) {
             }
             var geometryCell = new mxGeometry(x, y, 0, 0);
             var v1 = updateDetails(graph, null, details, details_instance, name, geometryCell, true);
-
+            details_instance.x.graphics.id.value = v1.id;
             // @Chhavi: Additional attribute to store the block's instance
             v1.blockInstance = createInstanceTag(details_instance);
             v1.currentAngle = 0;
             v1.flipX = 1;
             v1.flipY = 1;
+            if(name == "CMATVIEW"){
+                var colormap_string = v1.blockInstance.instance.colormap_string;
+                var colormap = get_colormap(colormap_string);
+                get_hex_color_code(v1.id, colormap);
+            }
             createPorts(graph, v1, inputPorts, controlPorts, outputPorts, commandPorts, null, null, details_instance.x.model);
             v1.setConnectable(false);
             graph.setSelectionCell(v1);

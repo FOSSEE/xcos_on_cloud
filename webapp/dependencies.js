@@ -2,7 +2,6 @@
 
 window.inBitMap='0';
 window.outBitMap='0';
-var name_values_colormap = new Map();
 
 String.prototype.replaceAt=function(index, character) {
     return this.substr(0, index) + character + this.substr(index+character.length);
@@ -2191,8 +2190,6 @@ function call_internal_fun(internal_key, data) {
         alert(response.msg);
         throw "error";
     }
-    //To get hex color for response
-    get_hex_color_code(colormap, response);
     return response;
 }
 
@@ -2248,7 +2245,7 @@ function update_self_switch_values(graph, cell){
 }
 
 //to get hex_color from colormap values
-function get_hex_color_code(colormapname, colormap_array){
+function get_hex_color_code(block_uid, colormap_array){
     var hex_color_arry = [];
     var arr_len = colormap_array.length;
     var counter_len = 0 ;
@@ -2261,7 +2258,10 @@ function get_hex_color_code(colormapname, colormap_array){
         var b = Math.round(colormap_array[(counter_len*2) + i]*255);
         hex_color_arry.push(rgbToHex(r,g,b));
     }
-    name_values_colormap.set(colormapname,hex_color_arry);
+    if( block_uid != undefined ){
+        name_values_colormap.set(block_uid, hex_color_arry);
+    }
+    console.log(name_values_colormap);
 }
 // to convert RGB into hex color code
 const rgbToHex = (r, g, b) => '#' + [r, g, b].map(x => {

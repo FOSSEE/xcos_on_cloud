@@ -694,9 +694,7 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
             // to send data to display result
             create_affich_displaytext(p, block_id);
         } else if (block == 12){
-            console.log(data);
             var block_id = data[3];
-            console.log(block_id);
         }
     }, false);
 
