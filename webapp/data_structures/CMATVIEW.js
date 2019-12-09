@@ -21,6 +21,9 @@ function CMATVIEW () {
 	    var exprs = new ScilabString([this.colormap_string],[this.cmin],[this.cmax]);
         var gr_i = list(new ScilabString(["xstringb(orig(1),orig(2),\"CMATVIEW\",sz(1),sz(2));"]), new ScilabDouble([8]));
         this.x = new standard_define(new ScilabDouble([80, 80]),model,exprs,gr_i);
+        if ( this.block_id != undefined){
+            this.x.graphics.id.value = this.block_id;
+        }
         this.x.graphics.style = new ScilabString(["CMATVIEW"]);
         return new BasicBlock(this.x);
     }
@@ -58,6 +61,10 @@ function CMATVIEW () {
         var chararray = colormap_string_1.match(regex_char);
         if( chararray != null ){
             colormap_values = get_colormap(colormap_string_1);
+            this.block_id = this.x.graphics.id.value;
+            if (this.block_id != undefined){
+                get_hex_color_code(this.block_id, colormap_values);
+            }
             size_c = size(colon_operator(colormap_values),1);
         }else{
             var number = colormap_string_1.trim().replace(regex_parentheses, '');
@@ -83,6 +90,9 @@ function CMATVIEW () {
     }
     CMATVIEW.prototype.details = function CMATVIEW() {
         return this.x;
+    }
+    CMATVIEW.prototype.setID = function CMATVIEW(SetIDForBlock) {
+        this.block_id = SetIDForBlock;
     }
 
     CMATVIEW.prototype.get_popup_title = function CMATVIEW() {
