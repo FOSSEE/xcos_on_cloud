@@ -1850,7 +1850,12 @@ def internal_fun(internal_key):
         return jsonify({'msg': msg})
 
     proc = scifile.instance.proc
-    proc.communicate()
+    (out, err) = proc.communicate()
+    out = re.sub(r'^[ !\\-]*\n', r'', out, flags=re.MULTILINE)
+    if out:
+        logger.info('=== Output from scilab console ===\n%s', out)
+    if err:
+        logger.info('=== Error from scilab console ===\n%s', err)
     remove_scilab_instance(scifile.instance)
     scifile.instance = None
 
