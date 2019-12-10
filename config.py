@@ -183,9 +183,10 @@ CREATEIMAGE = False
 REMOVEFILE = True
 
 
+SCILAB_CURVE_C_SCI = "macros/Sources/CURVE_c.sci"
+SCILAB_EXPRESSION_SCI = "macros/Misc/EXPRESSION.sci"
+
 CONT_FRM_WRITE = "cont_frm_write.sci"
-COPIED_EXPRESSION_SCI_FRM_SCILAB = "copied_expression_from_scilab.sci"
-COPIED_CURVE_c_SCI_FRM_SCILAB = "copied_curve_c_from_scilab.sci"
 CLEANDATA_SCI_FUNC_WRITE = "scifunc-cleandata-do_spline.sci"
 EXP_SCI_FUNC_WRITE = "expression-sci-function.sci"
 GET_COLORMAP_VALUES_SCI_FUNC_WRITE = "get_colormap_values.sci"
@@ -198,20 +199,17 @@ INTERNAL = {
         'parameters': ['num', 'den'],
     },
     'getExpressionOutput': {
-        'scriptfiles': [COPIED_EXPRESSION_SCI_FRM_SCILAB,
-                        EXP_SCI_FUNC_WRITE],
+        'scriptfiles': [SCILAB_EXPRESSION_SCI, EXP_SCI_FUNC_WRITE],
         'function': 'callFunctionAcctoMethod',
         'parameters': ['head', 'exx'],
     },
     'cleandata': {
-        'scriptfiles': [COPIED_CURVE_c_SCI_FRM_SCILAB,
-                        CLEANDATA_SCI_FUNC_WRITE],
+        'scriptfiles': [SCILAB_CURVE_C_SCI, CLEANDATA_SCI_FUNC_WRITE],
         'function': 'callFunctioncleandata',
         'parameters': ['xye'],
     },
     'do_Spline': {
-        'scriptfiles': [COPIED_CURVE_c_SCI_FRM_SCILAB,
-                        CLEANDATA_SCI_FUNC_WRITE],
+        'scriptfiles': [SCILAB_CURVE_C_SCI, CLEANDATA_SCI_FUNC_WRITE],
         'function': 'callFunction_do_Spline',
         'parameters': ['N', 'order', 'x', 'y'],
     },
