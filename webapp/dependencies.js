@@ -2156,15 +2156,17 @@ function Do_Spline(N,order,x,y){
 
 // calling post method using ajax for getting colormap values for cmatview block
 function get_colormap(colormapString) {
-    if (colormapString == "jetcolormap(25)") {
+    if (colormapString == "jetcolormap(25)" || colormapString == "jetcolormap(25);" || colormapString == "jetcolormap(25)," ) {
         return [
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0.02, 0.18, 0.34, 0.5, 0.66, 0.82, 0.98, 1, 1, 1, 1, 1, 1, 0.9, 0.74, 0.58,
             0, 0, 0, 0.06, 0.22, 0.38, 0.54, 0.7, 0.86, 1, 1, 1, 1, 1, 1, 1, 0.86, 0.7, 0.54, 0.38, 0.22, 0.06, 0, 0, 0,
             0.58, 0.74, 0.9, 1, 1, 1, 1, 1, 1, 0.98, 0.82, 0.66, 0.5, 0.34, 0.18, 0.02, 0, 0, 0, 0, 0, 0, 0, 0, 0
         ];
-    }
+    }else{
 
-    return call_internal_fun("get_colormap_values", { colormapString });
+        return call_internal_fun("get_colormap_values", { colormapString });
+
+    }
 }
 
 function call_internal_fun(internal_key, data) {
@@ -2261,7 +2263,6 @@ function get_hex_color_code(block_uid, colormap_array){
     if( block_uid != undefined ){
         name_values_colormap.set(block_uid, hex_color_arry);
     }
-    console.log(name_values_colormap);
 }
 // to convert RGB into hex color code
 const rgbToHex = (r, g, b) => '#' + [r, g, b].map(x => {

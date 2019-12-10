@@ -514,6 +514,12 @@ function updateSubtitleForSigbuilderGraph(points, method, xmaxtitle, periodicFla
     return subTitle;
 }
 
+// Function to create a chart for cmatview
+var create_chart_for_cmatview = function() {
+
+};
+
+
 function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_image) {
     var block;
     // define buffer for CANIMXY3D
@@ -695,6 +701,8 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
             create_affich_displaytext(p, block_id);
         } else if (block == 12){
             var block_id = data[3];
+            console.log(data);
+            console.log(name_values_colormap);
         }
     }, false);
 
