@@ -89,7 +89,7 @@ os.chdir(ROOTDIR)
 # Scilab dir
 SCIDIR = abspath(config.SCILAB_DIR)
 SCI = join(SCIDIR, "bin", "scilab-adv-cli")
-READCONTENTFILE = abspath("Read_Content.txt")
+READCONTENTFILE = abspath("resources/Read_Content.txt")
 BASEDIR = abspath('webapp')
 IMAGEDIR = join(BASEDIR, config.IMAGEDIR)
 IMAGEURLDIR = '/' + config.IMAGEDIR + '/'
