@@ -20,6 +20,7 @@ from importlib import reload
 import json
 import logging
 from logging.handlers import TimedRotatingFileHandler
+import MySQLdb
 import os
 from os.path import abspath, dirname, exists, isfile, join, splitext
 import re
@@ -32,7 +33,6 @@ from time import time
 import uuid
 from xml.dom import minidom
 
-from db_connection import connection
 import config
 
 
@@ -1873,6 +1873,15 @@ def internal_fun(internal_key):
 
 
 # example page start ###################
+
+def connection():
+    conn = MySQLdb.connect(host=config.DB_HOST,
+                           user=config.DB_USER,
+                           passwd=config.DB_PASS,
+                           db=config.DB_NAME,
+                           port=config.DB_PORT)
+    return conn.cursor()
+
 
 @cache.memoize()
 def db_query(query, parameters=None):
