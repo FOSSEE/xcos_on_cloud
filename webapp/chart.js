@@ -701,8 +701,22 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
             create_affich_displaytext(p, block_id);
         } else if (block == 12){
             var block_id = data[3];
-            console.log(data);
-            console.log(name_values_colormap);
+            var block_uid = data[5];
+            var m = data[11];
+            var n = data[13];
+            var data_length = data.length;
+            var values_array = [];
+            var j = 0 ;
+            for (var i = 15; i < data_length; i++){
+                values_array[j] = parseInt(data[i]) - 1;
+                j++;
+            }
+            var get_hex_color_array = name_values_colormap.get(block_uid);
+            var values_hex_color = [];
+            for (var i = 0 ; i < values_array.length; i++){
+                values_hex_color.push(get_hex_color_array[values_array[i]]);
+            }
+
         }
     }, false);
 
