@@ -186,10 +186,10 @@ REMOVEFILE = True
 SCILAB_CURVE_C_SCI = "macros/Sources/CURVE_c.sci"
 SCILAB_EXPRESSION_SCI = "macros/Misc/EXPRESSION.sci"
 
-CONT_FRM_WRITE = "cont_frm_write.sci"
-CLEANDATA_SCI_FUNC_WRITE = "scifunc-cleandata-do_spline.sci"
-EXP_SCI_FUNC_WRITE = "expression-sci-function.sci"
-GET_COLORMAP_VALUES_SCI_FUNC_WRITE = "get_colormap_values.sci"
+CONT_FRM_WRITE = "ajax-scilab/cont_frm_write.sci"
+CLEANDATA_SCI_FUNC_WRITE = "ajax-scilab/scifunc-cleandata-do_spline.sci"
+EXP_SCI_FUNC_WRITE = "ajax-scilab/expression-sci-function.sci"
+GET_COLORMAP_VALUES_SCI_FUNC_WRITE = "ajax-scilab/get_colormap_values.sci"
 
 
 INTERNAL = {
