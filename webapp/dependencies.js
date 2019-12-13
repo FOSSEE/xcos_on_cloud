@@ -2083,6 +2083,10 @@ function conmat(v, v1) {
 // end of mfreq code
 // for calling post method using ajax for calling poly() of scilab
 function cont_frm(num, den) {
+    if (num == "1" && (den == "1+s" || den == "1+z")) {
+        return [[-1], [1], [1], [0]];
+    }
+
     return call_internal_fun("getOutput", { num, den });
 }
 
@@ -2109,16 +2113,44 @@ function convertInputVectorFormat(inputValue) {
 
 // for calling post method using ajax for calling scilab function for Expression block
 function get_expr_output_for_DefineandSet(head,exx) {
+    if (head == "%foo(u1,u2)" && exx == "(u1>0)*sin(u2)^2") {
+        return {
+            ok: "true",
+            ok1: "true",
+            ipar: [[2], [1], [6], [1], [5], [18], [2], [2], [5], [101], [6], [2], [5], [15], [5], [3]],
+            rpar: [[0], [2]],
+            nz: [[1]],
+        };
+    }
+
     return call_internal_fun("getExpressionOutput", { head, exx });
 }
 
 // calling post method using ajax for calling scilab function cleandata for sigbuilder block
 function cleandata(xye) {
+    if (xye == "0,10;1,20;2,-30") {
+        return [[0, 10], [1, 20], [2, -30]];
+    }
+
     return call_internal_fun("cleandata", { xye });
 }
 
 // calling post method using ajax for calling scilab function Do_Spline for sigbuilder block
 function Do_Spline(N,order,x,y){
+    if (N == 3 && order == 3 && x == "0,1,2" && y == "10,20,-30") {
+        return {
+            "Xdummy": [
+                0, 0.090909, 0.181818, 0.272727, 0.363636, 0.454545, 0.545455, 0.636364, 0.727273, 0.818182, 0.909091, 1,
+                1, 1.090909, 1.181818, 1.272727, 1.363636, 1.454545, 1.545455, 1.636364, 1.727273, 1.818182, 1.909091, 2
+            ],
+            "Ydummy": [
+                10, 13.38843, 16.280992, 18.677686, 20.578512, 21.983471, 22.892562, 23.305785, 23.22314, 22.644628, 21.570248, 20,
+                20, 17.933884, 15.371901, 12.314050, 8.760331, 4.710744, 0.165289, -4.876033, -10.413223, -16.446281, -22.975207, -30
+            ],
+            "orpar": [40, -20, -80],
+        };
+    }
+
     return call_internal_fun("do_Spline", { N, order, x, y });
 }
 
