@@ -515,8 +515,7 @@ function updateSubtitleForSigbuilderGraph(points, method, xmaxtitle, periodicFla
 }
 
 // Function to create a chart for cmatview
-var create_chart_for_cmatview = function(id, m, n, title_text) {
-
+var create_chart_for_cmatview = function(id, m, n, title_text ) {
     // convert String values to desired datatype
     xmin = 0;
     xmax = parseFloat(m);
@@ -542,11 +541,7 @@ var create_chart_for_cmatview = function(id, m, n, title_text) {
             enabled: false
         },
         series: []
-     });
-
-    //chart_id_list.push(id);
-    //points_list.push(new Queue());
-    //series_list.push([]);
+        });
 
 };
 
@@ -733,32 +728,36 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
         } else if (block == 12){
             var figure_id = parseInt(data[7]);
             var line_id = parseInt(data[9]);
-            if (chart_id_list.indexOf(figure_id)<0) {
-                var block_uid = data[5];
-                var m = data[11];
-                var n = data[13];
-                var title_text = "CMATVIEW-"+block_uid;
-                var data_length = data.length;
-                var values_array = [];
-                var j = 0 ;
-                for (var i = 15; i < data_length; i++){
-                    values_array[j] = parseInt(data[i]) - 1;
-                    j++;
-                }
-                var get_hex_color_array = name_values_colormap.get(block_uid);
-                var values_hex_color = [];
-                for (var i = 0 ; i < values_array.length; i++){
-                    values_hex_color.push(get_hex_color_array[values_array[i]]);
-                }
-                create_chart_for_cmatview(figure_id, m ,n , title_text);
-                var index = 0;
-                for (var x = (m-2) ; x >= 0; x--){
-                    for (var y = 0 ; y < (n-1) ; y++){
-                        console.log("x :" +x+ " y: " +y+ " hexcolor: "+values_hex_color[index]);
-                        index++
-                    }
+            var block_uid = data[5];
+            var m = data[11];
+            var n = data[13];
+            var title_text = "CMATVIEW-"+block_uid;
+            var data_length = data.length;
+            var values_array = [];
+            var j = 0 ;
+            for (var i = 15; i < data_length; i++){
+                values_array[j] = parseInt(data[i]) - 1;
+                j++;
+            }
+            var get_hex_color_array = name_values_colormap.get(block_uid);
+            var values_hex_color = [];
+            for (var i = 0 ; i < values_array.length; i++){
+                values_hex_color.push(get_hex_color_array[values_array[i]]);
+            }
+            var index = 0;
+            var array_data = [];
+            for (var x = (m-2) ; x >= 0; x--){
+                for (var y = 0 ; y < (n-1) ; y++){
+                    var data_values = {};
+                    data_values["x"] = x;
+                    data_values["y"] = y;
+                    data_values["color"] = values_hex_color[index];
+                    array_data.push(data_values);
+                    index++
                 }
             }
+            create_chart_for_cmatview(figure_id, m ,n , title_text);
+
          }
 
     }, false);
@@ -980,29 +979,7 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
 
                         chart.redraw();
                     }
-                }/*else if (block==12){
-                    // Get chart container
-                    var chart = $('#chart-'+figure_id.toString()).highcharts();
-                    while (!points.isEmpty() && pointsAdded++ < 100) {
-                        var point = points.dequeue();
-                        var line_id = point[0];
-                        x = point[1];
-                        y = point[2];
-                        var hexcolor = point[3];
-                        if (series_list[i].indexOf(line_id)<0) {
-                            series_list[i].push(line_id);
-                            chart.addSeries({
-                                id: line_id.toString(),
-                                data: []
-                            });
-                        }
-                        // Get chart data
-                        var series = chart.get(line_id.toString());
-                        series.addPoint([x, y, hexcolor], false);
-
-                        chart.redraw();
-                    }
-                }*/
+                }
                 if (points.isEmpty() && isDone) {
                     chart_id_list[i] = -1;
                     chart_count--;
