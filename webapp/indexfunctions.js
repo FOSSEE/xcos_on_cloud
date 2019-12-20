@@ -1992,6 +1992,7 @@ function main(container, outline, toolbar, sidebar, status) {
             switch (blockname) {
                 case "CANIMXY":     /* block id= 9 */
                 case "CANIMXY3D":   /* block id=10 */
+                case "CMATVIEW":    /* block id=12 */
                 case "CEVENTSCOPE": /* block id=23 */
                 case "CFSCOPE":     /* block id= 3 */
                 case "CMSCOPE":     /* block id= 2 */

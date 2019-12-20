@@ -153,6 +153,50 @@ var create_new_chart = function(id, no_of_graph, ymin, ymax, xmin, xmax, type_ch
     }
 };
 
+var create_chart_for_cmatview = function(id, m, n, title_text) {
+    xmin = 0;
+    xmax = parseFloat(m);
+    ymin = 0;
+    ymax = parseFloat(n);
+    $('#charts').append("<div id='chart-"+id.toString()+"' style = 'height:300px;width:100%'></div>");
+    $('#chart-'+id.toString()).highcharts({
+        tooltip: {
+            enabled: true
+        },
+        chart: {
+            type: 'heatmap'
+        },
+        title: {
+            text: title_text
+        },
+        xAxis: {
+            min: xmin,
+            max: xmax
+        },
+        yAxis: {
+            min: ymin,
+            max: ymax,
+        },
+        plotOptions: {
+            marker: {
+                enabled: false
+            },
+            series: {
+                animation: {
+                    duration: 200
+                }
+            }
+        },
+        legend: {
+            enabled: false
+        },
+        series: []
+        });
+
+    chart_id_list.push(id);
+    points_list.push(new Queue());
+    series_list.push([]);
+};
 // Function to create a new 3d-chart
 var create_new_chart_3d = function(id, no_of_graph, xmin, xmax, ymin, ymax, zmin, zmax, type_chart, title_text, alpha, theta) {
     /*
@@ -514,38 +558,6 @@ function updateSubtitleForSigbuilderGraph(points, method, xmaxtitle, periodicFla
     return subTitle;
 }
 
-// Function to create a chart for cmatview
-var create_chart_for_cmatview = function(id, m, n, title_text ) {
-    // convert String values to desired datatype
-    xmin = 0;
-    xmax = parseFloat(m);
-    ymin = 0;
-    ymax = parseFloat(n);
-    $('#charts').append("<div id='chart-"+id.toString()+"' style = 'height:300px;width:100%'></div>");
-    $('#chart-'+id.toString()).highcharts({
-        chart: {
-            type: 'heatmap'
-        },
-        title: {
-            text: title_text
-        },
-        xAxis: {
-            min: xmin,
-            max: xmax
-        },
-        yAxis: {
-            min: ymin,
-            max: ymax,
-        },
-        legend: {
-            enabled: false
-        },
-        series: []
-        });
-
-};
-
-
 function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_image) {
     var block;
     // define buffer for CANIMXY3D
@@ -639,7 +651,7 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
                 }
             };
             xhr2.send(form);
-        } else if (block < 5 ||block ==9 ||block ==23) {
+        } else if (block < 5 ||block ==9 ||block ==23 ||block == 12) {
             // added new condition for ceventscope
             // process data for 2D-SCOPE blocks
 
@@ -666,6 +678,15 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
                         chart_type = 'column';
                         create_new_chart(figure_id, data[12], 0, 1, 0, data[13], chart_type, data[14]+'-'+data[3]);
                         RANGE[chart_id_list.indexOf(figure_id)]=parseFloat(data[13]);
+                    } else if (block == 12) {
+                        var m = data[11];
+                        var n = data[13];
+                        var block_uid = data[9];
+                        var chart_type = 'heatmap';
+                        var title_text = "CMATVIEW-"+block_uid;
+                        create_chart_for_cmatview(figure_id, m, n, data[data.length-1]+'-'+block_uid);
+                        //create_new_chart(figure_id, 1, 0, n, 0, m, chart_type, data[data.length-1]+'-'+block_uid);
+                        RANGE[chart_id_list.indexOf(figure_id)]=parseFloat(30);
                     } else {
                         // sink block is not CSCOPXY
                         create_new_chart(figure_id, data[12], data[13], data[14], 0, data[15], chart_type, data[16]+'-'+data[3]);
@@ -675,7 +696,12 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
             }
             var index = chart_id_list.indexOf(figure_id);
             // store 2d-data
-            points_list[index].enqueue([line_id, x, y]);
+            if(block != 12){
+                points_list[index].enqueue([line_id, x, y]);
+            }else{
+                var values = get_color_for_index(data, data[9], data[11], data[13]);
+                points_list[index].enqueue([line_id, values]);
+            }
             // store block number for chart creation
             block_list[index] = block;
         } else if (block == 5 || block == 10) {
@@ -725,41 +751,7 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
             p+="</table>";
             // to send data to display result
             create_affich_displaytext(p, block_id);
-        } else if (block == 12){
-            var figure_id = parseInt(data[7]);
-            var line_id = parseInt(data[9]);
-            var block_uid = data[5];
-            var m = data[11];
-            var n = data[13];
-            var title_text = "CMATVIEW-"+block_uid;
-            var data_length = data.length;
-            var values_array = [];
-            var j = 0 ;
-            for (var i = 15; i < data_length; i++){
-                values_array[j] = parseInt(data[i]) - 1;
-                j++;
-            }
-            var get_hex_color_array = name_values_colormap.get(block_uid);
-            var values_hex_color = [];
-            for (var i = 0 ; i < values_array.length; i++){
-                values_hex_color.push(get_hex_color_array[values_array[i]]);
-            }
-            var index = 0;
-            var array_data = [];
-            for (var x = (m-2) ; x >= 0; x--){
-                for (var y = 0 ; y < (n-1) ; y++){
-                    var data_values = {};
-                    data_values["x"] = x;
-                    data_values["y"] = y;
-                    data_values["color"] = values_hex_color[index];
-                    array_data.push(data_values);
-                    index++
-                }
-            }
-            create_chart_for_cmatview(figure_id, m ,n , title_text);
-
-         }
-
+        }
     }, false);
 
     // increase chart size on maximizing of mxWindow
@@ -857,7 +849,7 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
                 var pointAdded = false;
                 var pointsAdded = 0;
 
-                if (block != 10 && block!=9) {
+                if (block != 10 && block!=9 && block != 12) {
                     // Get chart container
                     var chart = $('#chart-'+figure_id.toString()).highcharts();
                     // Add points
@@ -979,6 +971,32 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
 
                         chart.redraw();
                     }
+                }else if (block==12){
+                    // Get chart container
+                    var chart = $('#chart-'+figure_id.toString()).highcharts();
+                    // Add points
+                    while (!points.isEmpty() && pointsAdded++ < 100) {
+                        var point = points.dequeue();
+                        var line_id = point[0];
+                        var points_array = point[1];
+                        // If there is no line with line_id
+                        // add new line with line_id
+                        if (series_list[i].indexOf(line_id)<0) {
+                            series_list[i].push(line_id);
+
+                            chart.addSeries({
+                                id: line_id.toString(),
+                                data: []
+                            });
+                        }
+                        // Get chart data
+                        var series = chart.get(line_id.toString());
+                        series.update({
+                            data: points_array,
+                            });
+                        chart.redraw();
+
+                    }
                 }
                 if (points.isEmpty() && isDone) {
                     chart_id_list[i] = -1;
@@ -1050,4 +1068,33 @@ function chart_reset() {
     pnts = [];
     block_list = [];
     isDone = false;
+}
+
+function get_color_for_index(data, block_uid, m, n){
+    var data_length = data.length;
+    var values_array = [];
+    var array_data = [];
+    var j = 0 ;
+    for (var i = 15; i < data_length; i++){
+        values_array[j] = parseInt(data[i]) - 1;
+        j++;
+    }
+    var get_hex_color_array = name_values_colormap.get(block_uid);
+    var values_hex_color = [];
+    for (var i = 0 ; i < values_array.length; i++){
+        values_hex_color.push(get_hex_color_array[values_array[i]]);
+    }
+    var index_1 = 0;
+    for (var x = (m-2) ; x >= 0; x--){
+        for (var y = 0 ; y < (n-1) ; y++){
+            var data_values = {};
+            data_values["x"] = x;
+            data_values["y"] = y;
+            data_values["color"] = values_hex_color[index_1];
+            array_data.push(data_values);
+            index_1++;
+        }
+    }
+    return array_data;
+
 }
