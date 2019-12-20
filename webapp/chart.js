@@ -161,7 +161,7 @@ var create_chart_for_cmatview = function(id, m, n, title_text) {
     $('#charts').append("<div id='chart-"+id.toString()+"' style = 'height:300px;width:100%'></div>");
     $('#chart-'+id.toString()).highcharts({
         tooltip: {
-            enabled: true
+            enabled: false
         },
         chart: {
             type: 'heatmap'
@@ -180,11 +180,6 @@ var create_chart_for_cmatview = function(id, m, n, title_text) {
         plotOptions: {
             marker: {
                 enabled: false
-            },
-            series: {
-                animation: {
-                    duration: 200
-                }
             }
         },
         legend: {
@@ -992,7 +987,7 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
                         // Get chart data
                         var series = chart.get(line_id.toString());
                         series.update({
-                            data: points_array,
+                            data: points_array
                             });
                         chart.redraw();
 
