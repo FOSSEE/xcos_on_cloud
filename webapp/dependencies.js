@@ -2163,8 +2163,8 @@ function get_colormap(colormapString) {
             0.58, 0.74, 0.9, 1, 1, 1, 1, 1, 1, 0.98, 0.82, 0.66, 0.5, 0.34, 0.18, 0.02, 0, 0, 0, 0, 0, 0, 0, 0, 0
         ];
     }
-        return call_internal_fun("get_colormap_values", { colormapString });
 
+    return call_internal_fun("get_colormap_values", { colormapString });
 }
 
 function call_internal_fun(internal_key, data) {
