@@ -1065,22 +1065,17 @@ function chart_reset() {
 }
 
 function get_color_for_index(data, block_uid, m, n){
-    var data_length = data.length;
     var array_data = [];
-    var values_hex_color = [];
     var get_hex_color_array = name_values_colormap.get(block_uid);
-    for (var i = 15; i < data_length; i++){
-        values_hex_color.push(get_hex_color_array[parseInt(data[i]) - 1]);
-    }
-    var index_1 = 0;
+    var i = 15;
     for (var x = (m-2) ; x >= 0; x--){
         for (var y = 0 ; y < (n-1) ; y++){
             var data_values = {};
             data_values["x"] = x;
             data_values["y"] = y;
-            data_values["color"] = values_hex_color[index_1];
+            data_values["color"] = get_hex_color_array[parseInt(data[i]) - 1];
             array_data.push(data_values);
-            index_1++;
+            i++;
         }
     }
     return array_data;
