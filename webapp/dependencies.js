@@ -2162,11 +2162,9 @@ function get_colormap(colormapString) {
             0, 0, 0, 0.06, 0.22, 0.38, 0.54, 0.7, 0.86, 1, 1, 1, 1, 1, 1, 1, 0.86, 0.7, 0.54, 0.38, 0.22, 0.06, 0, 0, 0,
             0.58, 0.74, 0.9, 1, 1, 1, 1, 1, 1, 0.98, 0.82, 0.66, 0.5, 0.34, 0.18, 0.02, 0, 0, 0, 0, 0, 0, 0, 0, 0
         ];
-    }else{
-
+    }
         return call_internal_fun("get_colormap_values", { colormapString });
 
-    }
 }
 
 function call_internal_fun(internal_key, data) {
@@ -2257,7 +2255,7 @@ function get_hex_color_code(block_uid, colormap_array){
     for(var i = 0; i < counter_len; i++){
         var r = Math.round(colormap_array[i]*255);
         var g = Math.round(colormap_array[counter_len + i]*255);
-        var b = Math.round(colormap_array[(counter_len*2) + i]*255);
+        var b = Math.round(colormap_array[counter_len*2 + i]*255);
         hex_color_arry.push(rgbToHex(r,g,b));
     }
     if( block_uid != undefined ){

@@ -680,7 +680,6 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
                         var chart_type = 'heatmap';
                         var title_text = "CMATVIEW-"+block_uid;
                         create_chart_for_cmatview(figure_id, m, n, data[data.length-1]+'-'+block_uid);
-                        //create_new_chart(figure_id, 1, 0, n, 0, m, chart_type, data[data.length-1]+'-'+block_uid);
                         RANGE[chart_id_list.indexOf(figure_id)]=parseFloat(30);
                     } else {
                         // sink block is not CSCOPXY
@@ -1067,17 +1066,11 @@ function chart_reset() {
 
 function get_color_for_index(data, block_uid, m, n){
     var data_length = data.length;
-    var values_array = [];
     var array_data = [];
-    var j = 0 ;
-    for (var i = 15; i < data_length; i++){
-        values_array[j] = parseInt(data[i]) - 1;
-        j++;
-    }
-    var get_hex_color_array = name_values_colormap.get(block_uid);
     var values_hex_color = [];
-    for (var i = 0 ; i < values_array.length; i++){
-        values_hex_color.push(get_hex_color_array[values_array[i]]);
+    var get_hex_color_array = name_values_colormap.get(block_uid);
+    for (var i = 15; i < data_length; i++){
+        values_hex_color.push(get_hex_color_array[parseInt(data[i]) - 1]);
     }
     var index_1 = 0;
     for (var x = (m-2) ; x >= 0; x--){
