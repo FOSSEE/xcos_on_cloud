@@ -1,7 +1,6 @@
 function CONST() {
 
-
-	CONST.prototype.define = function CONST() {
+    CONST.prototype.define = function CONST() {
 
 		this.C = 1;
 
@@ -34,52 +33,47 @@ function CONST() {
 		this.C = (arguments[0]["C"]);
 		var exprs;
 
-		if (this.C.match(/[a-z()+\-*/.^{}]/i)) {
-			var value = getValueOfImaginaryInput(this.C);
-			if (value == "undefined") {
-				CONST.get();
-			} else {
-				exprs = new ScilabString([this.C]);
-				this.x.model.rpar = new ScilabDouble([value]);
-				this.C = this.C;
-				this.displayParameter = [this.C];
-				//this.sz = size(new ScilabDouble([value]));
-				//this.nout = size(new ScilabDouble([value]), "*");
-			}
+		    if (this.C.match(/[a-z()+\-*/.^{}]/i)) {
+			    var value = getValueOfImaginaryInput(this.C, "CONST");
+			    if (value == "undefined") {
+			    	throw "incorrect";
+			    } else {
+			    	exprs = new ScilabString([this.C]);
+			    	this.x.model.rpar = new ScilabDouble([value]);
+			    	this.C = this.C;
+			    	this.displayParameter = [this.C];
+			    }
 
+		    } else {
+			    this.C = MatrixInverse(this.C);
+			    this.sz = size(this.C);
+			    this.nout = size(this.C, "*");
 
-		} else {
-			this.C = MatrixInverse(this.C);
-			this.sz = size(this.C);
-			this.nout = size(this.C, "*");
+			    if (this.nout == 0) {
+			    	alert("C must have at least one element");
+			    	throw "incorrect";
+			    }
+			    if (this.sz > 1) {
+			    	alert("C matrix is not supported, use CONST_m instead");
+			    	throw "incorrect";
+			    }
+			    exprs = new ScilabString([sci2exp(this.C)]);
+			    this.x.model.rpar = new ScilabDouble([this.C]);
+			    this.displayParameter = [this.C];
 
-			if (this.nout == 0) {
-				alert("C must have at least one element");
-				CONST.get();
-			}
-			if (this.sz > 1) {
-				alert("C matrix is not supported, use CONST_m instead");
-				CONST.get();
-			}
-			exprs = new ScilabString([sci2exp(this.C)]);
-			this.x.model.rpar = new ScilabDouble([this.C]);
-			this.displayParameter = [this.C];
+		    }
 
-		}
-
-
-		this.x.model.out = new ScilabDouble([this.nout]);
-
-		this.x.graphics.exprs = exprs;
-		return new BasicBlock(this.x)
-	}
+		    this.x.model.out = new ScilabDouble([this.nout]);
+		    this.x.graphics.exprs = exprs;
+		    return new BasicBlock(this.x)
+	    }
         CONST.prototype.get_popup_title = function CONST() {
-        var set_param_popup_title="Set Contant Block";
-        return set_param_popup_title
+            var set_param_popup_title="Set Contant Block";
+            return set_param_popup_title
         }
         CONST.prototype.getDimensionForDisplay = function CONST(){
-        var dimension = { width: 40, height: 40 };
-        return dimension
-    }
+            var dimension = { width: 40, height: 40 };
+            return dimension
+        }
 
 }
