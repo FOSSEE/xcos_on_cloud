@@ -36,13 +36,20 @@ function CONST_m() {
 				throw "incorrect";
 			} else {
 
-				exprs = new ScilabString([str]);
-				this.x.model.opar = list(new ScilabDouble([value]));
 				this.displayParameter = [arguments[0]["vec"]];
-				this.nout = size(value, "*")
+				if(str.includes("rand(")){
+				    exprs = new ScilabString([arguments[0]["vec"]]);
+				    this.x.model.opar = new ScilabDouble(...value);
+				    this.nout = value.length;
+
+				}else{
+				    exprs = new ScilabString([str]);
+				    this.x.model.opar = list(new ScilabDouble([value]));
+				    this.nout = size(value, "*");
+				}
 				if (this.nout == 0) {
-					alert("Wrong size for 'Constant Value' parameter" + "\nConstant value must have at least one element.");
-					throw "incorrect";
+					    alert("Wrong size for 'Constant Value' parameter" + "\nConstant value must have at least one element.");
+					    throw "incorrect";
 				}
 				this.x.model.rpar = new ScilabDouble();
 				this.x.model.out = new ScilabDouble([this.nout]);

@@ -30,22 +30,27 @@ function CONST() {
 		return options
 	}
 	CONST.prototype.set = function CONST() {
-		this.C = (arguments[0]["C"]);
+		var C_value = (arguments[0]["C"]);
 		var exprs;
 
-		    if (this.C.match(/[a-z()+\-*/.^{}]/i)) {
-			    var value = getValueOfImaginaryInput(this.C, "CONST");
-			    if (value == "undefined") {
+		    if (C_value.match(/[a-z()+\-*/.^{}]/i)) {
+		        if(C_value.includes("rand(")){
+			        alert("C matrix is not supported, use CONST_m instead");
 			    	throw "incorrect";
-			    } else {
-			    	exprs = new ScilabString([this.C]);
-			    	this.x.model.rpar = new ScilabDouble([value]);
-			    	this.C = this.C;
-			    	this.displayParameter = [this.C];
+			    }else{
+			        var value = getValueOfImaginaryInput(C_value, "CONST");
+			        if (value == "undefined") {
+                        throw "incorrect";
+			        } else {
+			            exprs = new ScilabString([C_value]);
+			            this.x.model.rpar = new ScilabDouble([value]);
+			            this.C = C_value;
+			            this.displayParameter = [this.C];
+			        }
 			    }
 
 		    } else {
-			    this.C = MatrixInverse(this.C);
+			    this.C = MatrixInverse(C_value);
 			    this.sz = size(this.C);
 			    this.nout = size(this.C, "*");
 

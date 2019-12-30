@@ -750,15 +750,17 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
             var p="<b>Value of Block : AFFICH_m-"+block_id+"</b> (Refer to label on block)<br><br><table style='width:100%'><tr>";
             var count=1;
             for (var k=12; k<(length_of_data-1); k++) {
-                p+="<td>";
-                p+=data[k];
-                if ((count % columns)==0) {
-                    // to break into new column of table
-                    p+="</td></tr><tr>";
-                } else {
-                    p+="</td>";
+                if(data[k].length != 0){
+                    p+="<td>";
+                    p+=data[k];
+                    if ((count % columns)==0) {
+                        // to break into new column of table
+                        p+="</td></tr><tr>";
+                    } else {
+                        p+="</td>";
+                    }
+                    count++;
                 }
-                count++;
             }
             p+="</table>";
             // to send data to display result

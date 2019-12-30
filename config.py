@@ -218,8 +218,7 @@ INTERNAL = {
         'scriptfiles': [GET_COLORMAP_VALUES_SCI_FUNC_WRITE],
         'function': 'getvaluesfromcolormap',
         'parameters': ['colormapString'],
-    }
-    ,
+    },
     'randfunc': {
         'scriptfiles': [RANDFUNC],
         'function': 'randfunc',
