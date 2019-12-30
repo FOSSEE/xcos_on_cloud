@@ -190,6 +190,7 @@ CONT_FRM_WRITE = "ajax-scilab/cont_frm_write.sci"
 CLEANDATA_SCI_FUNC_WRITE = "ajax-scilab/scifunc-cleandata-do_spline.sci"
 EXP_SCI_FUNC_WRITE = "ajax-scilab/expression-sci-function.sci"
 GET_COLORMAP_VALUES_SCI_FUNC_WRITE = "ajax-scilab/get_colormap_values.sci"
+RANDFUNC = "ajax-scilab/randfunc.sci"
 
 
 INTERNAL = {
@@ -217,5 +218,11 @@ INTERNAL = {
         'scriptfiles': [GET_COLORMAP_VALUES_SCI_FUNC_WRITE],
         'function': 'getvaluesfromcolormap',
         'parameters': ['colormapString'],
+    }
+    ,
+    'randfunc': {
+        'scriptfiles': [RANDFUNC],
+        'function': 'randfunc',
+        'parameters': ['inputvalue'],
     }
 }
