@@ -91,7 +91,7 @@ function TOWS_c() {
             alert("Answer given for Size of buffer\nis incorrect: Invalid factor..");
             throw "incorrect";
         }
-        var nz2 = getValueOfImaginaryInput(nz1);
+        var nz2 = getValueOfImaginaryInput(nz1, "TOWS_c");
         if(nz2<=0){
             alert("Size of buffer must be positive");
             throw "incorrect";
@@ -147,7 +147,7 @@ function TOWS_c() {
                 throw "incorrect";
             }
         }
-        var herit2 = parseFloat(getValueOfImaginaryInput(herit1));
+        var herit2 = parseFloat(getValueOfImaginaryInput(herit1, "TOWS_c"));
         if (herit2 != 0){
             herit2 = 1;
         }
