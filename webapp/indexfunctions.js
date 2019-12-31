@@ -3700,7 +3700,7 @@ function addSidebarIcon(graph, sidebar, name, image, dimensions) {
             }
             var geometryCell = new mxGeometry(x, y, 0, 0);
             var v1 = updateDetails(graph, null, details, details_instance, name, geometryCell, true);
-            details_instance.x.graphics.id.value = v1.id;
+            details_instance.setID(v1.id);
             // @Chhavi: Additional attribute to store the block's instance
             v1.blockInstance = createInstanceTag(details_instance);
             v1.currentAngle = 0;
