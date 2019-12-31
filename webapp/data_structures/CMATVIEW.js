@@ -61,7 +61,6 @@ function CMATVIEW () {
         var chararray = colormap_string_1.match(regex_char);
         if( chararray != null ){
             colormap_values = get_colormap(colormap_string_1);
-            this.block_id = this.x.graphics.id.value;
             if (this.block_id != undefined){
                 get_hex_color_code(this.block_id, colormap_values);
             }
