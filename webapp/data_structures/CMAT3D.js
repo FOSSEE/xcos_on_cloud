@@ -29,33 +29,58 @@ function CMAT3D () {
         var options = {
             vec_x:["Bounds Vector X (-1 for standard)",this.vec_x],
             vec_y:["Bounds Vector Y (-1 for standard)",this.vec_y],
-            size_c:["ColorMap",this.size_c],
+            colormap:["ColorMap",this.colormap_string],
             cmin:["Zmin",this.cmin],
             cmax:["Zmax",this.cmax]
         }
         return options
     }
     CMAT3D.prototype.set = function CMAT3D() {
-        this.vec_x = inverse(arguments[0]["vec_x"]);
-        this.vec_y = inverse(arguments[0]["vec_y"]);
-        this.size_c = parseFloat(arguments[0]["size_c"]);
-        this.colormap = jetcolormap(this.size_c);
-        this.cmin = parseFloat((arguments[0]["cmin"]));
-        this.cmax = parseFloat((arguments[0]["cmax"]));
+        var colormap_string_1 = arguments[0]["colormap"];
+        var regex_comma = /[,]+/; // check for commas
+        var regex_char = /[a-zA-Z]/g; //check character
+	    var regex_parentheses = /[\])}[{(]/g; // check for brackets
+	    var regex_num = /^\d+$/; //check number only
+        if(regex_comma.test(colormap_string_1)){
+            alert("Answer given for ColorMap \nis incorrect: Inconsistent column/row dimensions.");
+            throw "incorrect";
+        }
+        var size_c = 0;
+        var colormap_values = [];
+        var chararray = colormap_string_1.match(regex_char);
+        if( chararray != null ){
+            colormap_values = get_colormap(colormap_string_1);
+            size_c = size(colon_operator(colormap_values),1);
+        }else{
+            var number = colormap_string_1.trim().replace(regex_parentheses, '');
+            if(regex_num.test(number)){
+                colormap_values = [parseFloat(number)];
+                size_c = 1;
+            }
+        }
+        this.colormap_string = colormap_string_1;
+        var vec_x_1 = arguments[0]["vec_x"];
+        var vec_y_1 = arguments[0]["vec_y"];
+        this.vec_x = inverse(vec_x_1);
+        this.vec_y = inverse(vec_y_1);
         if(size(this.vec_x,"*") != size(this.vec_y,"*")){
             alert("Vector X and Vector Y must have the same size");
             throw "incorrect";
         }
-        if(this.cmax <= this.cmin){
+        var cmin_1 = parseFloat(arguments[0]["cmin"]);
+	    var cmax_1 = parseFloat(arguments[0]["cmax"]);
+	    if(cmax_1 <= cmin_1){
             alert("Error with minimum and maximum value");
             throw "incorrect";
         }
+        this.cmin = cmin_1;
+        this.cmax = cmax_1;
         this.size_x = size(this.vec_x,"*");
-        var ipar = new ScilabDouble([this.cmin],[this.cmax],[this.size_c],[this.size_x]);
-        var rpar = new ScilabDouble(...this.colormap,...this.vec_x,...this.vec_y);
+        var ipar = new ScilabDouble([this.cmin],[this.cmax],[size_c],[this.size_x]);
+        var rpar = new ScilabDouble(...colon_operator(colormap_values),...this.vec_x,...this.vec_y);
         this.x.model.ipar = ipar;
         this.x.model.rpar = rpar;
-        var exprs = new ScilabString([this.vec_x.toString().replace(/,/g, " ")],[this.vec_y.toString().replace(/,/g, " ")],["jetcolormap("+this.size_c+")"],[this.cmin],[this.cmax]);
+        var exprs = new ScilabString([this.vec_x.toString().replace(/,/g, " ")],[this.vec_y.toString().replace(/,/g, " ")],[this.colormap_string],[this.cmin],[this.cmax]);
         this.x.graphics.exprs = exprs;
         return new BasicBlock(this.x)
     }
