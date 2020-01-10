@@ -2156,7 +2156,7 @@ function Do_Spline(N,order,x,y){
 
 // calling post method using ajax for getting colormap values for cmatview block
 function get_colormap(colormapString) {
-    if (colormapString == "jetcolormap(25)") {
+    if (colormapString == "jetcolormap(25)" || colormapString == "jetcolormap(25);" || colormapString == "jetcolormap(25)," ) {
         return [
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0.02, 0.18, 0.34, 0.5, 0.66, 0.82, 0.98, 1, 1, 1, 1, 1, 1, 0.9, 0.74, 0.58,
             0, 0, 0, 0.06, 0.22, 0.38, 0.54, 0.7, 0.86, 1, 1, 1, 1, 1, 1, 1, 0.86, 0.7, 0.54, 0.38, 0.22, 0.06, 0, 0, 0,
@@ -2243,4 +2243,28 @@ function update_self_switch_values(graph, cell){
     }
     graph.refresh();
 }
+
+//to get hex_color from colormap values
+function get_hex_color_code(block_uid, colormap_array){
+    var hex_color_arry = [];
+    var arr_len = colormap_array.length;
+    var counter_len = 0 ;
+    if(arr_len != 0 || arr_len != null){
+        counter_len = arr_len/3;
+    }
+    for(var i = 0; i < counter_len; i++){
+        var r = Math.round(colormap_array[i]*255);
+        var g = Math.round(colormap_array[counter_len + i]*255);
+        var b = Math.round(colormap_array[counter_len*2 + i]*255);
+        hex_color_arry.push(rgbToHex(r,g,b));
+    }
+    if( block_uid != undefined ){
+        name_values_colormap.set(block_uid, hex_color_arry);
+    }
+}
+// to convert RGB into hex color code
+const rgbToHex = (r, g, b) => '#' + [r, g, b].map(x => {
+  const hex = x.toString(16)
+  return hex.length === 1 ? '0' + hex : hex
+}).join('')
 
