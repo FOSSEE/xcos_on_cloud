@@ -28,22 +28,28 @@ function CONST_m() {
 	}
 	CONST_m.prototype.set = function CONST_m() {
 		var exprs = "";
-
 		var str = arguments[0]["vec"];
-		str=convertInputVectorFormat(str);
+		str = convertInputVectorFormat(str);
 		if (str.match(/[a-z()+\-*/.^{}]/i)) {
-			var value = getValueOfImaginaryInput(str);
+			var value = getValueOfImaginaryInput(str, "CONST_m");
 			if (value == "null") {
-				m.get();
+				throw "incorrect";
 			} else {
 
-				exprs = new ScilabString([str]);
-				this.x.model.opar = list(new ScilabDouble([value]));
 				this.displayParameter = [arguments[0]["vec"]];
-				this.nout = size(value, "*")
+				if(str.includes("rand(")){
+				    exprs = new ScilabString([arguments[0]["vec"]]);
+				    this.x.model.opar = new ScilabDouble(...value);
+				    this.nout = value.length;
+
+				}else{
+				    exprs = new ScilabString([str]);
+				    this.x.model.opar = list(new ScilabDouble([value]));
+				    this.nout = size(value, "*");
+				}
 				if (this.nout == 0) {
-					alert("Wrong size for 'Constant Value' parameter" + "\nConstant value must have at least one element.");
-					CONST_m.get();
+					    alert("Wrong size for 'Constant Value' parameter" + "\nConstant value must have at least one element.");
+					    throw "incorrect";
 				}
 				this.x.model.rpar = new ScilabDouble();
 				this.x.model.out = new ScilabDouble([this.nout]);
@@ -54,12 +60,12 @@ function CONST_m() {
 
 		} else {
 			var str = arguments[0]["vec"];
-		        str=convertInputVectorFormat(str);
+		    str = convertInputVectorFormat(str);
 			this.C = MatrixInverse(str);
 			this.nout = size(this.C, "*")
 			if (this.nout == 0) {
 				alert("Wrong size for 'Constant Value' parameter" + "\nConstant value must have at least one element.");
-				CONST_m.get();
+				throw "incorrect";
 			}
 			this.x.model.rpar = new ScilabDouble();
 			this.x.model.out = new ScilabDouble([this.nout]);
@@ -126,13 +132,13 @@ function CONST_m() {
 
 	}
 
-        CONST_m.prototype.get_popup_title = function CONST_m() {
+   CONST_m.prototype.get_popup_title = function CONST_m() {
         var set_param_popup_title="Set CONST_m block parameters <br> Constant value generator<br>";
         return set_param_popup_title
-        }
-        CONST_m.prototype.getDimensionForDisplay = function CONST_m(){
+   }
+   CONST_m.prototype.getDimensionForDisplay = function CONST_m(){
         var dimension = { width: 40, height: 40 };
         return dimension
-    }
+   }
 
 }

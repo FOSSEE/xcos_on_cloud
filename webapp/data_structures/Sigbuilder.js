@@ -317,7 +317,7 @@ function Sigbuilder() {
             throw "incorrect";
         }
         Method1 = Method1.replace(regex_parentheses, '');
-        var mtd = getValueOfImaginaryInput(Method1);
+        var mtd = getValueOfImaginaryInput(Method1, "Sigbuilder");
         if(mtd != null){
             mtd = Math.floor(parseInt(mtd));
         }

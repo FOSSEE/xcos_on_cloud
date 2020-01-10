@@ -1169,7 +1169,7 @@ function sign() {
  * value like parameters and return actual
  * compute value
  */
-function getValueOfImaginaryInput(inputvalue) {
+function getValueOfImaginaryInput(inputvalue, blockname) {
     var actualDoubleValue=null;
 
     if (inputvalue.includes("pi")) {
@@ -1204,6 +1204,10 @@ function getValueOfImaginaryInput(inputvalue) {
         // passing it to rpar/opar
         const b = math.complex(complexnumber);
         actualDoubleValue=b.re;
+    } else if (inputvalue.includes("rand(")){
+        if(blockname == "CONST_m"){
+            actualDoubleValue = call_internal_fun("randfunc", { inputvalue });
+        }
     } else {
         actualDoubleValue=math.eval(inputvalue);
     }
