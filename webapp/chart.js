@@ -153,6 +153,24 @@ var create_new_chart = function(id, no_of_graph, ymin, ymax, xmin, xmax, type_ch
     }
 };
 
+function get_color_for_index(data, block_uid, m, n){
+    var array_data = [];
+    var get_hex_color_array = name_values_colormap.get(block_uid);
+    var i = 15;
+    for (var x = (m-2) ; x >= 0; x--){
+        for (var y = 0 ; y < (n-1) ; y++){
+            var data_values = {};
+            data_values["x"] = x;
+            data_values["y"] = y;
+            data_values["color"] = get_hex_color_array[parseInt(data[i]) - 1];
+            array_data.push(data_values);
+            i++;
+        }
+    }
+    return array_data;
+
+}
+
 var create_chart_for_cmatview = function(id, m, n, title_text) {
     xmin = 0;
     xmax = parseFloat(m);
@@ -1064,20 +1082,4 @@ function chart_reset() {
     isDone = false;
 }
 
-function get_color_for_index(data, block_uid, m, n){
-    var array_data = [];
-    var get_hex_color_array = name_values_colormap.get(block_uid);
-    var i = 15;
-    for (var x = (m-2) ; x >= 0; x--){
-        for (var y = 0 ; y < (n-1) ; y++){
-            var data_values = {};
-            data_values["x"] = x;
-            data_values["y"] = y;
-            data_values["color"] = get_hex_color_array[parseInt(data[i]) - 1];
-            array_data.push(data_values);
-            i++;
-        }
-    }
-    return array_data;
 
-}
