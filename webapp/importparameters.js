@@ -1073,7 +1073,7 @@ GAINBLK.prototype.importset = function GAINBLK() {
 
     var value = this.gain;
     if (value.match(/[a-z()+\-*/.^{}]/i)) {
-        value = getValueOfImaginaryInput(value);
+        value = getValueOfImaginaryInput(value,"GAINBLK");
     } else {
         value = convertInputVectorFormat(value);
         this.gain = inverse(value);
