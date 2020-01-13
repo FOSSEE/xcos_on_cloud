@@ -2117,7 +2117,11 @@ if __name__ == '__main__':
     logger.info('listening: %s', http_server)
     try:
         http_server.serve_forever()
-    except KeyboardInterrupt:
+    except BaseException as e:
+        msg = str(e)
+        if msg:
+            logger.error(msg)
+            print(msg)
         gevent.kill(worker)
         gevent.kill(reaper)
         gevent.kill(cleaner)
