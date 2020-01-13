@@ -167,6 +167,7 @@ function get_color_for_index(data, block_uid, m, n){
             data_values["x"] = x;
             data_values["y"] = y;
             data_values["color"] = get_hex_color_array[parseInt(data[i]) - 1];
+            console.log("{x:"+x+", y:"+y+", color:'"+ get_hex_color_array[parseInt(data[i]) - 1]+"'},");
             array_data.push(data_values);
             i++;
         }
@@ -187,6 +188,9 @@ var create_chart_for_cmatview = function(id, m, n, title_text) {
         },
         chart: {
             type: 'heatmap'
+        },
+        boost: {
+            useGPUTranslations: true
         },
         title: {
             text: title_text
@@ -210,8 +214,12 @@ var create_chart_for_cmatview = function(id, m, n, title_text) {
         legend: {
             enabled: false
         },
-        series: []
-        });
+        series: [{
+            boostThreshold: 100,
+            colsize: 24 * 36e5,
+            turboThreshold: Number.MAX_VALUE
+        }]
+    });
 
     chart_id_list.push(id);
     points_list.push(new Queue());
