@@ -4,7 +4,7 @@ var get_parameters_wind_sigbuilder = ""; //for getting parameter window for clos
 var get_parameters_wind_scifunc = ""; // for getting particular block parameter window for closing
 var graph_scifunc_block_m = ""; //For storing graph for scifunc_block_m block
 var cell_scifunc_block_m = ""; //For storing cell for scifunc_block_m block
-var name_values_colormap = new Map(); //for storing colormap values of cmatview block
+var name_values_colormap = new Map(); //for storing colormap values of cmatview and cmat3d block
 // function which makes the Ajax 'post' request with data sent in arguments
 function myAjaxreq(k,functionName) {
     var mbl = new Blob([k], { type: 'text/plain' });  // store the data in blob
@@ -1530,7 +1530,7 @@ function main(container, outline, toolbar, sidebar, status) {
                             details_instance.setLabel(ifaceFuncName+"-"+temporaryMapObject.newId);
                             var affich_details = importBlock(currentNode, cell, details_instance);
                         }
-                        if(ifaceFuncName == "CMATVIEW"){
+                        if(ifaceFuncName == "CMATVIEW" || ifaceFuncName == "CMAT3D"){
                             details_instance.setID(temporaryMapObject.newId);
                             var colormap_string = details_instance.colormap_string;
                             var colormap = get_colormap(colormap_string);
@@ -1993,6 +1993,7 @@ function main(container, outline, toolbar, sidebar, status) {
                 case "CANIMXY":     /* block id= 9 */
                 case "CANIMXY3D":   /* block id=10 */
                 case "CMATVIEW":    /* block id=12 */
+                case "CMAT3D":      /* block id=13 */
                 case "CEVENTSCOPE": /* block id=23 */
                 case "CFSCOPE":     /* block id= 3 */
                 case "CMSCOPE":     /* block id= 2 */
@@ -3700,7 +3701,7 @@ function addSidebarIcon(graph, sidebar, name, image, dimensions) {
             }
             var geometryCell = new mxGeometry(x, y, 0, 0);
             var v1 = updateDetails(graph, null, details, details_instance, name, geometryCell, true);
-            if(name == "CMATVIEW"){
+            if(name == "CMATVIEW" || name == "CMAT3D"){
                 details_instance.setID(v1.id);
             }
             // @Chhavi: Additional attribute to store the block's instance
@@ -3708,7 +3709,7 @@ function addSidebarIcon(graph, sidebar, name, image, dimensions) {
             v1.currentAngle = 0;
             v1.flipX = 1;
             v1.flipY = 1;
-            if(name == "CMATVIEW"){
+            if(name == "CMATVIEW" || name == "CMAT3D"){
                 var colormap_string = v1.blockInstance.instance.colormap_string;
                 var colormap = get_colormap(colormap_string);
                 get_hex_color_code(v1.id, colormap);
