@@ -50,6 +50,9 @@ function CMAT3D () {
         var chararray = colormap_string_1.match(regex_char);
         if( chararray != null ){
             colormap_values = get_colormap(colormap_string_1);
+            if (this.block_id != undefined){
+                get_hex_color_code(this.block_id, colormap_values);
+            }
             size_c = size(colon_operator(colormap_values),1);
         }else{
             var number = colormap_string_1.trim().replace(regex_parentheses, '');
@@ -87,7 +90,9 @@ function CMAT3D () {
     CMAT3D.prototype.details = function CMAT3D() {
         return this.x
     }
-
+    CMAT3D.prototype.setID = function CMAT3D(SetIDForBlock) {
+        this.block_id = SetIDForBlock;
+    }
     CMAT3D.prototype.get_popup_title = function CMAT3D() {
         var set_param_popup_title="Set Scope parameters";
         return set_param_popup_title
