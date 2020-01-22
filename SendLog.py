@@ -444,6 +444,7 @@ class Diagram:
     xcos_file_name = None
     # type of uploaded file
     workspace_counter = 0
+    save_variables = set()
     # workspace from script
     workspace_filename = None
     # tk count
@@ -1202,7 +1203,11 @@ def start_scilab():
         command += "deletefile('%s');" % workspace
 
     if diagram.workspace_counter in (1, 3):
-        command += "save('%s');" % workspace
+        if diagram.save_variables:
+            command += "save('%s','%s');" % (
+                workspace, "','".join(diagram.save_variables))
+        else:
+            command += "save('%s');" % workspace
 
     diagram.instance = run_scilab(command, diagram, True,
                                   config.SCILAB_INSTANCE_TIMEOUT_INTERVAL + 60)
@@ -1578,11 +1583,32 @@ def upload():
         elif interfaceFunctionName == "scifunc_block_m":
             diagram.workspace_counter = 5
         elif interfaceFunctionName == "TOWS_c":
+            if block.childNodes:
+                for node in block.childNodes:
+                    if not isinstance(node, minidom.Element):
+                        continue
+                    if node.getAttribute("as") != "exprs":
+                        continue
+                    if node.childNodes is None:
+                        continue
+                    childCount = 0
+                    for childChildNode in node.childNodes:
+                        if not isinstance(childChildNode, minidom.Element):
+                            continue
+                        childCount += 1
+                        if childCount != 2:
+                            continue
+                        value = childChildNode.getAttribute("value")
+                        if value is not None:
+                            diagram.save_variables.add(value)
+                        break
             diagram.workspace_counter = 1
             flag1 = 1
         elif interfaceFunctionName == "FROMWSB":
             diagram.workspace_counter = 2
             flag2 = 1
+    if diagram.save_variables:
+        logger.info("save variables = %s", diagram.save_variables)
     if flag1 and flag2:
         # Both TOWS_c and FROMWSB are present
         diagram.workspace_counter = 3
