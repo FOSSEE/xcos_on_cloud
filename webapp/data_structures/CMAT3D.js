@@ -8,15 +8,15 @@ function CMAT3D () {
         var size_c = 25;
         this.vec_x = -1;
         this.vec_y = -1;
-        this.size_x = 1;
-        this.size_y = 1;
+        var size_x = 1;
+        var size_y = 1;
         var model = scicos_model();
         model.sim = list(new ScilabString(["cmat3d"]), new ScilabDouble([4]));
         model.in = new ScilabDouble([-1]);
         model.in2 = new ScilabDouble([-2]);
         model.intyp = new ScilabDouble([1]);
         model.evtin = new ScilabDouble([1]);
-        model.ipar = new ScilabDouble([this.cmin], [this.cmax], [size_c], [this.size_x], [this.size_y]);
+        model.ipar = new ScilabDouble([this.cmin], [this.cmax], [size_c], [size_x], [size_y]);
         model.rpar = new ScilabDouble(...colon_operator(colormap), [this.x], [this.y]);
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean(true, false);
@@ -78,8 +78,8 @@ function CMAT3D () {
         }
         this.cmin = cmin_1;
         this.cmax = cmax_1;
-        this.size_x = size(this.vec_x,"*");
-        var ipar = new ScilabDouble([this.cmin],[this.cmax],[size_c],[this.size_x]);
+        var size_x = size(this.vec_x,"*");
+        var ipar = new ScilabDouble([this.cmin],[this.cmax],[size_c],[size_x]);
         var rpar = new ScilabDouble(...colon_operator(colormap_values),...this.vec_x,...this.vec_y);
         this.x.model.ipar = ipar;
         this.x.model.rpar = rpar;
