@@ -692,6 +692,7 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
                         create_new_chart(figure_id, data[12], 0, 1, 0, data[13], chart_type, data[14]+'-'+data[3]);
                         RANGE[chart_id_list.indexOf(figure_id)]=parseFloat(data[13]);
                     } else if (block == 12) {
+                        // process data for CMATVIEW blocks
                         var m = data[11];
                         var n = data[13];
                         var block_uid = data[9];
@@ -736,6 +737,21 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
             points_list[index].enqueue([line_id, x, y, z]);
             // store block number for chart creation
             block_list[index] = block;
+        } else if(block == 13){
+            // process data for CMAT3D blocks
+            var block_uid = data[9];
+            var m = data[11];
+            var n = data[13];
+            var xmin = data[15];
+            var xmax = data[17];
+            var ymin = data[19];
+            var ymax = data[21];
+            var zmin = data[23];
+            var zmax = data[25];
+            var alpha = data[27];
+            var theta = data[29];
+            //Chart function need to be written
+
         } else if (block == 20) {
             // Process data for Affich_m block
 
