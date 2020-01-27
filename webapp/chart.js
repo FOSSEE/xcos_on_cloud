@@ -122,6 +122,7 @@ var create_new_chart = function(id, no_of_graph, ymin, ymax, xmin, xmax, type_ch
             series: {
                 lineWidth: thickness,
                 pointWidth: pointWidthvalue,
+                enableMouseTracking: false,
                 states: {
                     hover: {
                         lineWidth: thickness
@@ -141,6 +142,9 @@ var create_new_chart = function(id, no_of_graph, ymin, ymax, xmin, xmax, type_ch
             }
         },
         legend: {
+            enabled: false
+        },
+        tooltip: {
             enabled: false
         },
         series: []
@@ -198,6 +202,9 @@ var create_chart_for_cmatview = function(id, m, n, title_text) {
         plotOptions: {
             marker: {
                 enabled: false
+            },
+            series: {
+                enableMouseTracking: false
             }
         },
         legend: {
@@ -278,13 +285,8 @@ var create_new_chart_3d = function(id, no_of_graph, xmin, xmax, ymin, ymax, zmin
         title: {
             text: title_text
         },
-        // Manipulation for showing tooltip according to axis change for 3D
-        // chart
         tooltip: {
-            pointFormatter: function() {
-                var point = this;
-                return 'X : <b>' + point.x + '</b><br/>'+'Y : <b>' + point.z + '</b><br/>'+'Z : <b>' + point.y + '</b><br/>';
-            }
+            enabled: false
         },
         yAxis: {
             // Manipulation for showing z axis vertically instead of Y axis
@@ -441,7 +443,7 @@ var create_draggable_points_chart = function(graphPoints, pointsHistory, xmin, x
         },
 
         tooltip: {
-            enabled: true
+            enabled: false
         },
 
         series: [{
