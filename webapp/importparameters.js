@@ -2215,9 +2215,19 @@ SUMMATION.prototype.importset = function SUMMATION() {
     var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.Datatype = parseInt(ary[0]);
-    this.sgn = inverse(ary[1]);
-    this.satur = ary[2];
+    if (ary.length == 1) {
+        this.Datatype = 1;
+        this.sgn = inverse(ary[0]);
+        this.satur = 0;
+    } else if (ary.length == 2) {
+        this.Datatype = parseInt(ary[0]);
+        this.sgn = inverse(ary[1]);
+        this.satur = 0;
+    } else {
+        this.Datatype = parseInt(ary[0]);
+        this.sgn = inverse(ary[1]);
+        this.satur = ary[2];
+    }
 
     var in1;
     var in2;
