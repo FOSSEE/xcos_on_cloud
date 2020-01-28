@@ -167,20 +167,18 @@ function get_color_for_index(data, block_uid, m, n){
             data_values["x"] = x;
             data_values["y"] = y;
             data_values["color"] = get_hex_color_array[parseInt(data[i]) - 1];
-            console.log("{x:"+x+", y:"+y+", color:'"+ get_hex_color_array[parseInt(data[i]) - 1]+"'},");
             array_data.push(data_values);
             i++;
         }
     }
     return array_data;
-
 }
 
 var create_chart_for_cmatview = function(id, m, n, title_text) {
     xmin = 0;
-    xmax = parseFloat(m);
+    xmax = m;
     ymin = 0;
-    ymax = parseFloat(n);
+    ymax = n;
     $('#charts').append("<div id='chart-"+id.toString()+"' style = 'height:300px;width:100%'></div>");
     $('#chart-'+id.toString()).highcharts({
         tooltip: {
@@ -188,9 +186,6 @@ var create_chart_for_cmatview = function(id, m, n, title_text) {
         },
         chart: {
             type: 'heatmap'
-        },
-        boost: {
-            useGPUTranslations: true
         },
         title: {
             text: title_text
@@ -214,9 +209,56 @@ var create_chart_for_cmatview = function(id, m, n, title_text) {
         legend: {
             enabled: false
         },
+        series: []
+    });
+
+    chart_id_list.push(id);
+    points_list.push(new Queue());
+    series_list.push([]);
+};
+
+var create_chart_for_large_data_cmatview = function(id, m, n, title_text) {
+    xmin = 0;
+    xmax = m;
+    ymin = 0;
+    ymax = n;
+    $('#charts').append("<div id='chart-"+id.toString()+"' style = 'height:300px;width:100%'></div>");
+    $('#chart-'+id.toString()).highcharts({
+        tooltip: {
+            enabled: false
+        },
+        chart: {
+            type: 'heatmap'
+        },
+        boost: {
+            useGPUTranslations: true
+        },
+        title: {
+            text: title_text
+        },
+        xAxis: {
+            min: xmin,
+            max: xmax
+        },
+        yAxis: {
+            min: ymin,
+            max: ymax,
+            reversed: true
+        },
+        plotOptions: {
+            marker: {
+                enabled: false
+            },
+            series: {
+                enableMouseTracking: false
+            }
+        },
+        legend: {
+            enabled: false
+        },
         series: [{
-            boostThreshold: 100,
-            colsize: 24 * 36e5,
+            boostThreshold: m,
+            colsize: m * n,
             turboThreshold: Number.MAX_VALUE
         }]
     });
@@ -225,6 +267,8 @@ var create_chart_for_cmatview = function(id, m, n, title_text) {
     points_list.push(new Queue());
     series_list.push([]);
 };
+
+
 // Function to create a new 3d-chart
 var create_new_chart_3d = function(id, no_of_graph, xmin, xmax, ymin, ymax, zmin, zmax, type_chart, title_text, alpha, theta) {
     /*
@@ -707,7 +751,11 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
                         var block_uid = data[2];
                         var chart_type = 'heatmap';
                         var title_text = "CMATVIEW-" + block_uid;
-                        create_chart_for_cmatview(figure_id, m, n, data[data.length-1]+'-'+block_uid);
+                        if(m <=10 && n <=10 ){
+                            create_chart_for_cmatview(figure_id, m, n, data[data.length-1]+'-'+block_uid);
+                        }else{
+                            create_chart_for_large_data_cmatview(figure_id, m, n, data[data.length-1]+'-'+block_uid);
+                        }
                         RANGE[chart_id_list.indexOf(figure_id)] = parseFloat(30);
                     } else {
                         // sink block is not CSCOPXY
