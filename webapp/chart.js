@@ -222,7 +222,7 @@ var create_chart_for_large_data_cmatview = function(id, m, n, title_text) {
     xmax = m;
     ymin = 0;
     ymax = n;
-    $('#charts').append("<div id='chart-"+id.toString()+"' style = 'height:300px;width:100%'></div>");
+    $('#charts').append("<div id='chart-"+id.toString()+"' style = 'height:100%;width:100%'></div>");
     $('#chart-'+id.toString()).highcharts({
         tooltip: {
             enabled: false
@@ -237,29 +237,28 @@ var create_chart_for_large_data_cmatview = function(id, m, n, title_text) {
             text: title_text
         },
         xAxis: {
-            min: xmin,
+            min: 0,
             max: xmax
         },
         yAxis: {
-            min: ymin,
-            max: ymax,
-            reversed: true
+            min: 0,
+            max: ymax
         },
         plotOptions: {
             marker: {
                 enabled: false
             },
             series: {
-                enableMouseTracking: false
+                pointInterval: 1
             }
         },
         legend: {
             enabled: false
         },
         series: [{
-            boostThreshold: m,
-            colsize: m * n,
-            turboThreshold: Number.MAX_VALUE
+            boostThreshold: 1000,
+            //colsize: m * n,
+            turboThreshold: 0
         }]
     });
 
