@@ -885,7 +885,7 @@ def uploadscript():
     wfname = join(sessiondir, SCRIPT_FILES_FOLDER,
                   script.script_id + '_script_workspace.dat')
     script.workspace_filename = wfname
-    command = "exec('" + fname + "');save('" + wfname + "');"
+    command = "exec('%s');save('%s');" % (fname, wfname)
 
     script.instance = run_scilab(command, script)
 
@@ -1201,7 +1201,7 @@ def start_scilab():
     #    0/No-condition : For all other blocks
 
     command += "loadXcosLibs();"
-    command += "importXcosDiagram('" + diagram.xcos_file_name + "');"
+    command += "importXcosDiagram('%s');" % diagram.xcos_file_name
     command += "xcos_simulate(scs_m,4);"
 
     if diagram.workspace_counter == 4:
@@ -1217,10 +1217,10 @@ def start_scilab():
         command += "xs2jpg(gcf(),'%s/%s');" % (IMAGEDIR, 'img_test.jpg')
 
     if diagram.workspace_counter in (1, 2, 3) and exists(workspace):
-        command += "deletefile('" + workspace + "');"
+        command += "deletefile('%s');" % workspace
 
     if diagram.workspace_counter in (1, 3):
-        command += "save('" + workspace + "');"
+        command += "save('%s');" % workspace
 
     diagram.instance = run_scilab(command, diagram, True,
                                   config.SCILAB_INSTANCE_TIMEOUT_INTERVAL + 60)
