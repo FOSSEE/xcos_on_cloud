@@ -943,7 +943,7 @@ def getscriptoutput():
         script.instance = None
 
         returncode = proc.returncode
-        if returncode < 0:
+        if returncode < 0 or returncode == 2:
             logger.warning('return code is %s', returncode)
             msg = 'Script stopped'
             script.status = -5
