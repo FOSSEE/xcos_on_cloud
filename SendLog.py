@@ -976,6 +976,12 @@ def getscriptoutput():
         script.status = -4
         rv = {'status': script.status, 'msg': msg}
         return Response(json.dumps(rv), mimetype='application/json')
+    except UnicodeDecodeError:
+        kill_script(script)
+        msg = 'Unicode Decode Error'
+        script.status = -6
+        rv = {'status': script.status, 'msg': msg}
+        return Response(json.dumps(rv), mimetype='application/json')
 
 
 @app.route('/stopscript', methods=['POST'])
