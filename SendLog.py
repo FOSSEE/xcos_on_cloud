@@ -173,8 +173,11 @@ SCILAB_VARS = [
     "extractDatatip",
     "extractLight",
     "l2r",
+    "left_prm",
     "messagebox",
+    "pp_im2",
     "syslin",
+    "t1calc",
     "tf2ss",
     "xinfo",
 ]
