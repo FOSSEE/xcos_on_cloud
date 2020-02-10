@@ -166,21 +166,6 @@ SCILAB_START = (
     "function xinfo(msg),disp(msg),endfunction;"
     "funcprot(1);")
 SCILAB_END = "mode(2);quit();"
-SCILAB_VARS = [
-    "canon",
-    "close",
-    "cont_frm",
-    "extractDatatip",
-    "extractLight",
-    "l2r",
-    "left_prm",
-    "messagebox",
-    "pp_im2",
-    "syslin",
-    "t1calc",
-    "tf2ss",
-    "xinfo",
-]
 
 USER_DATA = {}
 VERSIONED_CHECK_TIME = 0
@@ -1131,14 +1116,11 @@ def kill_scilab(diagram=None):
 def load_variables(filename):
     '''
     add scilab commands to load only user defined variables
-
-    SCILAB_VARS contains the known list of inbuilt variables
     '''
 
     command = "[__V1,__V2]=listvarinfile('%s');" % filename
-    command += "__V3=['%s'];" % ("';'".join(SCILAB_VARS))
-    command += "__V4=setdiff(__V1,__V3);"
-    command += "__V4=__V4(grep(__V4, '/^[^%]+$/', 'r'));"
+    command += "__V3=__V1(grep(string(__V2),'/^[124568]$/','r'));"
+    command += "__V4=__V3(grep(__V3,'/^[^%]+$/','r'));"
     command += "if ~isempty(__V4) then;"
     command += "__V5=''''+strcat(__V4,''',''')+'''';"
     command += "__V6='load(''%s'','+__V5+');';" % filename
