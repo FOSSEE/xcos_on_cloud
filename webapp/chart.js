@@ -179,7 +179,7 @@ var create_chart_for_cmatview = function(id, m, n, title_text) {
     xmax = m;
     ymin = 0;
     ymax = n;
-    $('#charts').append("<div id='chart-"+id.toString()+"' style = 'height:300px;width:100%'></div>");
+    $('#charts').append("<div id='chart-"+id.toString()+"' style = 'height:100%;width:100%'></div>");
     $('#chart-'+id.toString()).highcharts({
         tooltip: {
             enabled: false
@@ -245,20 +245,18 @@ var create_chart_for_large_data_cmatview = function(id, m, n, title_text) {
             max: ymax
         },
         plotOptions: {
+            series: {
+                boostThreshold: 9000
+            },
             marker: {
                 enabled: false
-            },
-            series: {
-                pointInterval: 1
             }
         },
         legend: {
             enabled: false
         },
         series: [{
-            boostThreshold: 1000,
-            //colsize: m * n,
-            turboThreshold: 0
+            turboThreshold: 1000000
         }]
     });
 
