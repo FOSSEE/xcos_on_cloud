@@ -1119,7 +1119,7 @@ def load_variables(filename):
     '''
 
     command = "[__V1,__V2]=listvarinfile('%s');" % filename
-    command += "__V3=__V1(grep(string(__V2),'/^[124568]$/','r'));"
+    command += "__V3=__V1(grep(string(__V2),'/^([124568]|1[7])$/','r'));"
     command += "__V4=__V3(grep(__V3,'/^[^%]+$/','r'));"
     command += "if ~isempty(__V4) then;"
     command += "__V5=''''+strcat(__V4,''',''')+'''';"
