@@ -557,6 +557,11 @@ class UserData:
         self.scifile.clean()
         self.scifile = None
         self.diagramlock = None
+        # name of workspace file
+        workspace = join(self.sessiondir, WORKSPACE_FILES_FOLDER,
+                         "workspace.dat")
+        if exists(workspace):
+            remove(workspace)
 
         sessiondir = self.sessiondir
 
@@ -1199,7 +1204,12 @@ def start_scilab():
         # For all other block
         command += "xs2jpg(gcf(),'%s/%s');" % (IMAGEDIR, 'img_test.jpg')
 
-    if diagram.workspace_counter in (1, 2, 3) and exists(workspace):
+    if diagram.workspace_counter in (2, 3) and not exists(workspace):
+        return ("Workspace does not exist. "
+                "Please simulate a diagram with TOWS_c block first. "
+                "Do not use any FROMWSB block in that diagram.")
+
+    if diagram.workspace_counter == 3:
         command += "deletefile('%s');" % workspace
 
     if diagram.workspace_counter in (1, 3):
@@ -1405,7 +1415,7 @@ def upload():
     new_xml = minidom.parse(temp_file_xml_name)
 
     # to identify if we have to load or save to workspace or neither #0 if
-    # neither TOWS_c or FROWSB found
+    # neither TOWS_c or FROMWSB found
     blocks = new_xml.getElementsByTagName("BasicBlock")
     tk_is_present = False
     pattern = re.compile(r"<SplitBlock")
