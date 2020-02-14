@@ -1155,9 +1155,14 @@ def start_scilab():
     workspace = join(diagram.sessiondir, WORKSPACE_FILES_FOLDER,
                      "workspace.dat")
 
+    if diagram.workspace_counter in (2, 3) and not exists(workspace):
+        logger.warning('no workspace')
+        return ("Workspace does not exist. "
+                "Please simulate a diagram with TOWS_c block first. "
+                "Do not use any FROMWSB block in that diagram.")
+
     loadfile = workspace_filename is not None or \
-        (diagram.workspace_counter in (2, 3) and exists(workspace)) or \
-        diagram.workspace_counter == 5
+        diagram.workspace_counter in (2, 3)
 
     command = ""
 
@@ -1168,7 +1173,7 @@ def start_scilab():
         if workspace_filename is not None:
             command += load_variables(workspace_filename)
 
-        if diagram.workspace_counter in (2, 3) and exists(workspace):
+        if diagram.workspace_counter in (2, 3):
             # 3 - for both TOWS_c and FROMWSB and also workspace dat file exist
             # In this case workspace is saved in format of dat file (Scilab way
             # of saying workpsace)
@@ -1203,14 +1208,6 @@ def start_scilab():
     elif config.CREATEIMAGE:
         # For all other block
         command += "xs2jpg(gcf(),'%s/%s');" % (IMAGEDIR, 'img_test.jpg')
-
-    if diagram.workspace_counter in (2, 3) and not exists(workspace):
-        return ("Workspace does not exist. "
-                "Please simulate a diagram with TOWS_c block first. "
-                "Do not use any FROMWSB block in that diagram.")
-
-    if diagram.workspace_counter == 3:
-        command += "deletefile('%s');" % workspace
 
     if diagram.workspace_counter in (1, 3):
         if diagram.save_variables:
