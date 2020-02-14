@@ -157,16 +157,15 @@ var create_new_chart = function(id, no_of_graph, ymin, ymax, xmin, xmax, type_ch
     }
 };
 
-function get_color_for_index(data, block_uid, m, n){
+function get_points_for_data(data, m, n){
     var array_data = [];
-    var get_hex_color_array = name_values_colormap.get(block_uid);
     var i = 12;
     for (var x = (m-2) ; x >= 0; x--){
         for (var y = 0 ; y < (n-1) ; y++){
-            var data_values = {};
-            data_values["x"] = x;
-            data_values["y"] = y;
-            data_values["color"] = get_hex_color_array[parseInt(data[i]) - 1];
+            var data_values = [];
+            data_values[0] = x;
+            data_values[1] = y;
+            data_values[2] = parseInt(data[i]);
             array_data.push(data_values);
             i++;
         }
@@ -174,7 +173,21 @@ function get_color_for_index(data, block_uid, m, n){
     return array_data;
 }
 
-var create_chart_for_cmatview = function(id, m, n, title_text) {
+function get_color_axis_for_points(block_uid){
+    var color_axis_array = [];
+    var get_hex_color_array = name_values_colormap.get(block_uid);
+    for(var i = 0; i < get_hex_color_array.length; i++){
+        var color_values = {};
+        var temp = i;
+        color_values["from"] = temp + 1;
+        color_values["to"] = temp + 2;
+        color_values["color"] = get_hex_color_array[i];
+        color_axis_array.push(color_values);
+    }
+    return color_axis_array;
+}
+
+var create_chart_for_cmatview = function(id, m, n, title_text, color_axis) {
     xmin = 0;
     xmax = m;
     ymin = 0;
@@ -206,6 +219,9 @@ var create_chart_for_cmatview = function(id, m, n, title_text) {
                 enableMouseTracking: false
             }
         },
+        colorAxis: {
+            dataClasses: color_axis
+        },
         legend: {
             enabled: false
         },
@@ -217,7 +233,7 @@ var create_chart_for_cmatview = function(id, m, n, title_text) {
     series_list.push([]);
 };
 
-var create_chart_for_large_data_cmatview = function(id, m, n, title_text) {
+var create_chart_for_large_data_cmatview = function(id, m, n, title_text, color_axis) {
     xmin = 0;
     xmax = m;
     ymin = 0;
@@ -231,7 +247,8 @@ var create_chart_for_large_data_cmatview = function(id, m, n, title_text) {
             type: 'heatmap'
         },
         boost: {
-            useGPUTranslations: true
+            useGPUTranslations: true,
+            usePreallocated: true
         },
         title: {
             text: title_text
@@ -246,7 +263,7 @@ var create_chart_for_large_data_cmatview = function(id, m, n, title_text) {
         },
         plotOptions: {
             series: {
-                boostThreshold: 9000
+                boostThreshold: 10000
             },
             marker: {
                 enabled: false
@@ -255,8 +272,12 @@ var create_chart_for_large_data_cmatview = function(id, m, n, title_text) {
         legend: {
             enabled: false
         },
+        colorAxis: {
+            dataClasses: color_axis
+        },
         series: [{
-            turboThreshold: 1000000
+            seriesThreshold: 1,
+            turboThreshold: 0
         }]
     });
 
@@ -748,10 +769,11 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
                         var block_uid = data[2];
                         var chart_type = 'heatmap';
                         var title_text = "CMATVIEW-" + block_uid;
+                        var color_axis = get_color_axis_for_points(block_uid);
                         if(m <=10 && n <=10 ){
-                            create_chart_for_cmatview(figure_id, m, n, data[data.length-1]+'-'+block_uid);
+                            create_chart_for_cmatview(figure_id, m, n, data[data.length-1]+'-'+block_uid, color_axis);
                         }else{
-                            create_chart_for_large_data_cmatview(figure_id, m, n, data[data.length-1]+'-'+block_uid);
+                            create_chart_for_large_data_cmatview(figure_id, m, n, data[data.length-1]+'-'+block_uid, color_axis);
                         }
                         RANGE[chart_id_list.indexOf(figure_id)] = parseFloat(30);
                     } else {
@@ -766,7 +788,7 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
             if(block != 12){
                 points_list[index].enqueue([line_id, x, y]);
             }else{
-                var values = get_color_for_index(data, data[2], data[8], data[10]);
+                var values = get_points_for_data(data, data[8], data[10]);
                 points_list[index].enqueue([line_id, values]);
             }
             // store block number for chart creation
@@ -1077,12 +1099,7 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
                             });
                         }
                         // Get chart data
-                        var series = chart.get(line_id.toString());
-                        series.update({
-                            data: points_array
-                            });
-                        chart.redraw();
-
+                        chart.series[0].setData(points_array); // set data itself call chart.redraw() so need to call explicitly
                     }
                 }
                 if (points.isEmpty() && isDone) {
