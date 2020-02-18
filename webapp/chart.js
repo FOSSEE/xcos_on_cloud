@@ -262,11 +262,19 @@ var create_chart_for_large_data_cmatview = function(id, m, n, title_text, color_
             max: ymax
         },
         plotOptions: {
-            series: {
-                boostThreshold: 10000
+           series: {
+                animation:false,
+                boostThreshold : 400000,
+                turboThreshold : 0,
+                stickyTracking: false,
+                shadow: false
             },
             marker: {
                 enabled: false
+            },
+             heatmap: {
+                shadow: false,
+                animation: false
             }
         },
         legend: {
@@ -276,8 +284,7 @@ var create_chart_for_large_data_cmatview = function(id, m, n, title_text, color_
             dataClasses: color_axis
         },
         series: [{
-            seriesThreshold: 1,
-            turboThreshold: 0
+            seriesThreshold: 2
         }]
     });
 
