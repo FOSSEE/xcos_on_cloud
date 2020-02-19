@@ -1324,6 +1324,8 @@ def event_stream():
 
     with open(diagram.instance.log_name, "r") as log_file:
         # Start sending log
+        duplicatelineno = 0
+        lastline = None
         lineno = 1
         line = None
         endtime = time() + config.SCILAB_INSTANCE_TIMEOUT_INTERVAL
@@ -1338,10 +1340,17 @@ def event_stream():
                 break
             # Get the line and loop until the state is ENDING and figure_list
             # empty. Determine if we get block id and give it to chart.js
-            if state == BLOCK_IDENTIFICATION:
-                yield "event: block\ndata: " + line + "\n\n"
-            elif state == DATA:
-                yield "event: log\ndata: " + line + "\n\n"
+            if lastline != line:
+                if duplicatelineno > 0:
+                    yield "event: duplicate\ndata: %d\n\n" % duplicatelineno
+                duplicatelineno = 0
+                lastline = line
+                if state == BLOCK_IDENTIFICATION:
+                    yield "event: block\ndata: %s\n\n" % line
+                elif state == DATA:
+                    yield "event: log\ndata: %s\n\n" % line
+            else:
+                duplicatelineno += 1
             lineno += 1
             line = None
 
