@@ -751,6 +751,7 @@ def get_line_and_state(file, figure_list, lineno, incomplete_line):
     if '\n' not in line:
         return (line, NOLINE)
     # every line is passed to function parse_line for getting values
+    line = line.rstrip()
     parse_result = parse_line(line, lineno)
     figure_id = parse_result[0]
     state = parse_result[1]
@@ -1325,8 +1326,9 @@ def event_stream():
     with open(diagram.instance.log_name, "r") as log_file:
         # Start sending log
         duplicatelineno = 0
+        duplicatelines = 0
         lastline = ''
-        lineno = 1
+        lineno = 0
         line = None
         endtime = time() + config.SCILAB_INSTANCE_TIMEOUT_INTERVAL
         log_size = 0
@@ -1345,6 +1347,7 @@ def event_stream():
                 continue
             if lastline != line:
                 if duplicatelineno != 0:
+                    duplicatelines += duplicatelineno
                     yield "event: duplicate\ndata: %d\n\n" % duplicatelineno
                     duplicatelineno = 0
                 lastline = line
@@ -1357,6 +1360,17 @@ def event_stream():
                 duplicatelineno += 1
             lineno += 1
             line = None
+
+        if duplicatelineno != 0:
+            duplicatelines += duplicatelineno
+            yield "event: duplicate\ndata: %d\n\n" % duplicatelineno
+            duplicatelineno = 0
+
+        if duplicatelines != 0:
+            logger.info('lines = %s, duplicate lines = %s, log size = %s',
+                        lineno, duplicatelines, log_size)
+        else:
+            logger.info('lines = %s, log size = %s', lineno, log_size)
 
     # Finished Sending Log
     kill_scilab(diagram)
