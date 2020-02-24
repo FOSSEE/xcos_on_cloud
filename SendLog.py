@@ -153,8 +153,6 @@ ENDING = 1
 DATA = 2
 # to indicate there is no line in log file further
 NOLINE = -1
-# to indicate block id is present
-BLOCK_IDENTIFICATION = -2
 
 # display limit for long strings
 DISPLAY_LIMIT = 10
@@ -712,11 +710,6 @@ def parse_line(line, lineno):
     line_words = line.split(' ')  # Each line is split to read condition
     try:
         # The below condition determines the block ID
-        if line_words[0] == "Block":
-            # to get block id (Which is explicitly added by us while writing
-            # into log in scilab source code)
-            block_id = int(line_words[4])
-            return (block_id, BLOCK_IDENTIFICATION)
         if line_words[0] == "Initialization":
             # New figure created
             # Get fig id
@@ -760,9 +753,6 @@ def get_line_and_state(file, figure_list, lineno, incomplete_line):
         # Add figure ID to list
         figure_list.append(figure_id)  # figure id of block is added to list
         return (None, INITIALIZATION)
-    # Check for block identification
-    elif state == BLOCK_IDENTIFICATION:
-        return (line, BLOCK_IDENTIFICATION)
     elif state == ENDING:
         # End of figure
         # Remove figure ID from list
@@ -1352,9 +1342,7 @@ def event_stream():
                     duplicatelineno = 0
                 lastline = line
                 log_size += len(line)
-                if state == BLOCK_IDENTIFICATION:
-                    yield "event: block\ndata: %s\n\n" % line
-                elif state == DATA:
+                if state == DATA:
                     yield "event: log\ndata: %s\n\n" % line
             else:
                 duplicatelineno += 1
