@@ -759,28 +759,28 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
 
             // store length of data for each line
             var length_of_data = data.length;
-            var block_id = data[3]; // to store block id of affichm block
-            var rows = data[10]; // gets row of matrix
-            var columns = data[11]; // gets column of matrix
+            var block_id = data[2]; // to store block id of affichm block
+            var rows = data[4]; // gets row of matrix
+            var columns = data[5]; // gets column of matrix
 
             // below code creates a html code which is table with data in that
             // (To display it as matrix)
-            var p="<b>Value of Block : AFFICH_m-"+block_id+"</b> (Refer to label on block)<br><br><table style='width:100%'><tr>";
-            var count=1;
-            for (var k=12; k<(length_of_data-1); k++) {
+            var p = "<b>Value of Block : AFFICH_m-"+block_id+"</b> (Refer to label on block)<br><br><table style='width:100%'><tr>";
+            var count = 1;
+            for (var k = 6; k < (length_of_data-1); k++) {
                 if(data[k].length != 0){
-                    p+="<td>";
-                    p+=data[k];
-                    if ((count % columns)==0) {
+                    p += "<td>";
+                    p += data[k];
+                    if ((count % columns) == 0) {
                         // to break into new column of table
-                        p+="</td></tr><tr>";
+                        p += "</td></tr><tr>";
                     } else {
-                        p+="</td>";
+                        p += "</td>";
                     }
                     count++;
                 }
             }
-            p+="</table>";
+            p += "</table>";
             // to send data to display result
             create_affich_displaytext(p, block_id);
         }
