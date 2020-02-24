@@ -13,9 +13,9 @@ var interval2;
 var isDone = false;
 var firstPointAdded = false;
 // define variables for block event
-// fig_id, l_id - figure_id and line_id of blocks,
+// fig_id - figure_id  of blocks,
 // pnts - Points list of the blocks
-var fig_id, l_id, pnts = [];
+var fig_id, pnts = [];
 
 /*
  * Function to display values of all affich blocks
@@ -581,30 +581,32 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
     var buffer_canimxy;
     // Initialise variable for entry condition of creating chart for BARXY and
     // AFFICH_m
-    var block_entry_BARXY = 1, block_entry_AFFICH = 1;
+    var block_entry_BARXY = 1;
 
     // Start listening to server
     eventSource = new EventSource("/SendLog?id="+clientID, { withCredentials: true });
 
-    eventSource.addEventListener("block", function(event) {
+    eventSource.addEventListener("log", function(event) {
         var data = event.data.split(' ');
-        block = parseInt(data[4]);
+
+        // store block info. from the data line
+        block = parseInt(data[0]);
+
         // For BARXY
         if (block == 11) {
-            var x1 = parseFloat(data[5]);
-            var y1 = parseFloat(data[6]);
-            var x2 = parseFloat(data[7]);
-            var y2 = parseFloat(data[8]);
+            var x1 = parseFloat(data[4]);
+            var y1 = parseFloat(data[5]);
+            var x2 = parseFloat(data[6]);
+            var y2 = parseFloat(data[7]);
 
             if (block_entry_BARXY == 1) {
-                fig_id = block;
-                l_id = fig_id + 1;
+                fig_id = data[2];
 
-                create_new_chart(fig_id, data[14], data[11], data[12], data[9], data[10], 'line', data[13]+'-'+fig_id);
+                create_new_chart(fig_id, data[12], data[10], data[11], data[8], data[9], 'line', data[13]+'-'+fig_id);
                 block_entry_BARXY = block_entry_BARXY + 1;
                 var chart = $('#chart-'+fig_id.toString()).highcharts();
                 chart.addSeries({
-                    id: l_id.toString(),
+                    id: fig_id.toString(),
                     data: []
                 });
             }
@@ -618,17 +620,9 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
                 xhr.open("GET", "/endBlock/"+str(fig_id), true);
                 xhr.send();
             }
-        }
-    }, false);
 
-    eventSource.addEventListener("log", function(event) {
-        var data = event.data.split(' ');
-
-        // store block info. from the data line
-        block = parseInt(data[0]);
-
-        // handle writec_f and writeau_f
-        if (block==21||block==22) {
+        } else if (block==21||block==22) {
+            // handle writec_f and writeau_f
             // create a form and add the filename to it
             var form = new FormData()
             form.append('path', data[5]);
@@ -765,7 +759,7 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
 
             // below code creates a html code which is table with data in that
             // (To display it as matrix)
-            var p = "<b>Value of Block : AFFICH_m-"+block_id+"</b> (Refer to label on block)<br><br><table style='width:100%'><tr>";
+            var p = "<b>Value of Block : "+data[length_of_data-1]+"-"+block_id+"</b> (Refer to label on block)<br><br><table style='width:100%'><tr>";
             var count = 1;
             for (var k = 6; k < (length_of_data-1); k++) {
                 if(data[k].length != 0){
@@ -1051,7 +1045,7 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
             if (pnts.length > 0) {
                 var chart = $('#chart-'+fig_id.toString()).highcharts();
                 // Get chart data
-                var series = chart.get(l_id.toString())
+                var series = chart.get(fig_id.toString())
                 // dequeue the points and add them
                 series.addPoint(pnts.shift(), false);
                 series.addPoint(pnts.shift(), false);
