@@ -712,26 +712,26 @@ def parse_line(line, lineno):
     line_words = line.split(' ')  # Each line is split to read condition
     try:
         # The below condition determines the block ID
-        if line_words[2] == "Block":
+        if line_words[0] == "Block":
             # to get block id (Which is explicitly added by us while writing
             # into log in scilab source code)
             block_id = int(line_words[4])
             return (block_id, BLOCK_IDENTIFICATION)
-        if line_words[2] == "Initialization":
+        if line_words[0] == "Initialization":
             # New figure created
             # Get fig id
             # to extract figure ids (sometime multiple sinks can be used in one
             # diagram to differentiate that)
             figure_id = int(line_words[-1])
             return (figure_id, INITIALIZATION)
-        elif line_words[2] == "Ending":
+        elif line_words[0] == "Ending":
             # Current figure end
             # Get fig id
             figure_id = int(line_words[-1])
             return (figure_id, ENDING)
         else:
             # Current figure coordinates
-            figure_id = int(line_words[3])
+            figure_id = int(line_words[2])
             return (figure_id, DATA)
     except Exception as e:
         logger.error('%s while parsing %s on line %s', str(e), line, lineno)
