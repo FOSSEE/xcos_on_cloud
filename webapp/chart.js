@@ -663,12 +663,11 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
         } else if (block < 5 ||block ==9 ||block ==23 ||block == 12) {
             // added new condition for ceventscope
             // process data for 2D-SCOPE blocks
-
-            var figure_id = parseInt(data[5]);
-            var line_id = parseInt(data[7]);
-            var x = parseFloat(data[9]);
-            var y = parseFloat(data[10]);
-            var z = parseFloat(data[11]);
+            var figure_id = parseInt(data[4]);
+            var line_id = parseInt(data[6]);
+            var x = parseFloat(data[8]);
+            var y = parseFloat(data[9]);
+            var z = parseFloat(data[10]);
             if (chart_id_list.indexOf(figure_id)<0) {
                 // set default chart type
                 var chart_type = 'line';
@@ -676,11 +675,11 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
                 // if sink block is CSCOPXY or CANIMXY
                 if (block == 4||block== 9) {
                     chart_type = 'scatter';
-                    create_new_chart(figure_id, data[12], data[15], data[16], data[13], data[14], chart_type, data[17]+'-'+data[3]);
+                    create_new_chart(figure_id, data[11], data[14], data[15], data[12], data[13], chart_type, data[17]+'-'+data[2]);
                     // Set buffer size for CANIMXY
                     if (block == 9)
-                        buffer_canimxy = data[18];
-                    RANGE[chart_id_list.indexOf(figure_id)]=parseFloat(data[14]);
+                        buffer_canimxy = data[16];
+                    RANGE[chart_id_list.indexOf(figure_id)]=parseFloat(data[13]);
                 } else {
                     // Event Handling block is ceventscope
                     if (block ==23) {
