@@ -696,8 +696,8 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
                         RANGE[chart_id_list.indexOf(figure_id)] = parseFloat(30);
                     } else {
                         // sink block is not CSCOPXY
-                        create_new_chart(figure_id, data[12], data[13], data[14], 0, data[15], chart_type, data[16]+'-'+data[3]);
-                        RANGE[chart_id_list.indexOf(figure_id)] = parseFloat(data[15]);
+                        create_new_chart(figure_id, data[10], data[11], data[12], 0, data[13], chart_type, data[14]+'-'+data[2]);
+                        RANGE[chart_id_list.indexOf(figure_id)] = parseFloat(data[13]);
                     }
                 }
             }
