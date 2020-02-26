@@ -663,7 +663,12 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
         } else if (block < 5 ||block == 9 ||block == 23 ||block == 12) {
             // added new condition for ceventscope
             // process data for 2D-SCOPE blocks
-            var figure_id = parseInt(data[2]);
+            var figure_id = 0 ;
+            if(block == 2){ //For cmscope block
+                figure_id = parseInt(data[4]);
+            }else{
+                figure_id = parseInt(data[2]);
+            }
             var line_id = parseInt(data[6]);
             var x = parseFloat(data[8]);
             var y = parseFloat(data[9]);
