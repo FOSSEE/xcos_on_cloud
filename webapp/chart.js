@@ -663,11 +663,10 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
         } else if (block < 5 ||block == 9 ||block == 23 ||block == 12) {
             // added new condition for ceventscope
             // process data for 2D-SCOPE blocks
-            var figure_id = parseInt(data[4]);
+            var figure_id = parseInt(data[2]);
             var line_id = parseInt(data[6]);
             var x = parseFloat(data[8]);
             var y = parseFloat(data[9]);
-            var z = parseFloat(data[10]);
             if (chart_id_list.indexOf(figure_id) < 0) {
                 // set default chart type
                 var chart_type = 'line';
@@ -684,8 +683,8 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
                     // Event Handling block is ceventscope
                     if (block == 23) {
                         chart_type = 'column';
-                        create_new_chart(figure_id, data[12], 0, 1, 0, data[13], chart_type, data[14]+'-'+data[3]);
-                        RANGE[chart_id_list.indexOf(figure_id)] = parseFloat(data[13]);
+                        create_new_chart(figure_id, data[10], 0, 1, 0, data[11], chart_type, data[12]+'-'+data[2]);
+                        RANGE[chart_id_list.indexOf(figure_id)] = parseFloat(data[11]);
                     } else if (block == 12) {
                         // process data for CMATVIEW blocks
                         var m = data[11];
@@ -925,7 +924,7 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
                         else
                             series.addPoint([x, y], false);
 
-                        if (block < 4||block==23) {
+                        if (block < 4||block == 23) {
                             // Shift chart axis to display new values(only for
                             // blocks requiring shift, i.e, blocks 1-3)
                             if (x>(RANGE[index]))
