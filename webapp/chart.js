@@ -677,13 +677,15 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
                 var chart_type = 'line';
 
                 // if sink block is CSCOPXY or CANIMXY
-                if (block == 4||block == 9) {
+                if (block == 4) {
                     chart_type = 'scatter';
-                    create_new_chart(figure_id, data[11], data[14], data[15], data[12], data[13], chart_type, data[17]+'-'+data[2]);
-                    // Set buffer size for CANIMXY
-                    if (block == 9)
-                        buffer_canimxy = data[16];
-                    RANGE[chart_id_list.indexOf(figure_id)] = parseFloat(data[13]);
+                    create_new_chart(figure_id, data[10], data[13], data[14], data[11], data[12], chart_type, data[15]+'-'+data[2]);
+                    RANGE[chart_id_list.indexOf(figure_id)] = parseFloat(data[12]);
+                } else if (block == 9){
+                    chart_type = 'scatter';
+                    create_new_chart(figure_id, data[10], data[13], data[14], data[11], data[12], chart_type, data[16]+'-'+data[2]);
+                    buffer_canimxy = data[15];
+                    RANGE[chart_id_list.indexOf(figure_id)] = parseFloat(data[12]);
                 } else {
                     // Event Handling block is ceventscope
                     if (block == 23) {
