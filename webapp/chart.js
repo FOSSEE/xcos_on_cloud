@@ -677,14 +677,14 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
                 var chart_type = 'line';
 
                 // if sink block is CSCOPXY or CANIMXY
-                if (block == 4) {
+                if (block == 4 || block == 9) {
                     chart_type = 'scatter';
-                    create_new_chart(figure_id, data[10], data[13], data[14], data[11], data[12], chart_type, data[15]+'-'+data[2]);
-                    RANGE[chart_id_list.indexOf(figure_id)] = parseFloat(data[12]);
-                } else if (block == 9){
-                    chart_type = 'scatter';
-                    create_new_chart(figure_id, data[10], data[13], data[14], data[11], data[12], chart_type, data[16]+'-'+data[2]);
-                    buffer_canimxy = data[15];
+                    if(block == 4){
+                        create_new_chart(figure_id, data[10], data[13], data[14], data[11], data[12], chart_type, data[15]+'-'+data[2]);
+                    }else{
+                        create_new_chart(figure_id, data[10], data[13], data[14], data[11], data[12], chart_type, data[16]+'-'+data[2]);
+                        buffer_canimxy = data[15];
+                    }
                     RANGE[chart_id_list.indexOf(figure_id)] = parseFloat(data[12]);
                 } else {
                     // Event Handling block is ceventscope
@@ -726,12 +726,15 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
             var x = parseFloat(data[8]);
             var y = parseFloat(data[9]);
             var z = parseFloat(data[10]);
-            if (chart_id_list.indexOf(figure_id)<0) {
+            if (chart_id_list.indexOf(figure_id) < 0) {
                 chart_type = 'scatter';
-                create_new_chart_3d(figure_id, data[11], data[12], data[13], data[14], data[15], data[16], data[17], chart_type, data[21]+'-'+data[2], data[18], data[19]);
-                // Set buffer size for CANIMXY3D
-                if (block == 10)
+                if(block == 10){
+                    create_new_chart_3d(figure_id, data[11], data[12], data[13], data[14], data[15], data[16], data[17], chart_type, data[21]+'-'+data[2], data[18], data[19]);
+                    // Set buffer size for CANIMXY3D
                     buffer = data[20];
+                }else{
+                    create_new_chart_3d(figure_id, data[11], data[12], data[13], data[14], data[15], data[16], data[17], chart_type, data[20]+'-'+data[2], data[18], data[19]);
+                }
             }
             var index = chart_id_list.indexOf(figure_id);
             // store 3d-data
