@@ -625,7 +625,7 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
             // handle writec_f and writeau_f
             // create a form and add the filename to it
             var form = new FormData()
-            form.append('path', data[5]);
+            form.append('path', data[4]);
             var xhr = new XMLHttpRequest();
             xhr.responseType = 'blob';
             // sending form to get file for download
