@@ -55,20 +55,20 @@ var create_new_chart = function(id, no_of_graph, ymin, ymax, xmin, xmax, type_ch
     pointRangevalue = null;
 
     var thickness = 2, chart_animation = false;
-    if (title_text.substring(0, 5)=="BARXY") {
+    if (title_text.substring(0, 5) == "BARXY") {
         // chart_animation = true;
         thickness = no_of_graph;
         no_of_graph = 1;
-    } else if (title_text.substring(0, 7)=="CSCOPXY") {
+    } else if (title_text.substring(0, 7) == "CSCOPXY") {
         // disable line by putting thickness as 0
         thickness = 0
-    } else if (title_text.substring(0, 7)=="CANIMXY") {
+    } else if (title_text.substring(0, 7) == "CANIMXY") {
         // disable line by putting thickness as 0
-        thickness= 0
-    } else if (title_text.substring(0, 7)=="CEVSCPE") {
+        thickness = 0
+    } else if (title_text.substring(0, 7) == "CEVSCPE") {
         // To manipulate the graph width of ceventscope
-        pointWidthvalue=2;
-        pointplacementvalue=0;
+        pointWidthvalue = 2;
+        pointplacementvalue = 0;
         pointRangevalue = 0.05;
     }
 
@@ -77,7 +77,7 @@ var create_new_chart = function(id, no_of_graph, ymin, ymax, xmin, xmax, type_ch
     // change graph height if block has only 1 output graph
     if (no_of_graph == 1)
         $('#chart-'+id.toString()).css('height', '300px');
-    if (title_text.substring(0, 5)=="BARXY")
+    if (title_text.substring(0, 5) == "BARXY")
         $('#chart-'+id.toString()).css('height', '400px');
 
     $('#chart-'+id.toString()).highcharts({
@@ -150,7 +150,7 @@ var create_new_chart = function(id, no_of_graph, ymin, ymax, xmin, xmax, type_ch
         series: []
     });
 
-    if (title_text.substring(0, 5)!="BARXY") {
+    if (title_text.substring(0, 5) != "BARXY") {
         chart_id_list.push(id);
         points_list.push(new Queue());
         series_list.push([]);
@@ -160,7 +160,7 @@ var create_new_chart = function(id, no_of_graph, ymin, ymax, xmin, xmax, type_ch
 function get_color_for_index(data, block_uid, m, n){
     var array_data = [];
     var get_hex_color_array = name_values_colormap.get(block_uid);
-    var i = 15;
+    var i = 12;
     for (var x = (m-2) ; x >= 0; x--){
         for (var y = 0 ; y < (n-1) ; y++){
             var data_values = {};
@@ -621,7 +621,7 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
                 xhr.send();
             }
 
-        } else if (block==21||block==22) {
+        } else if (block == 21 || block == 22) {
             // handle writec_f and writeau_f
             // create a form and add the filename to it
             var form = new FormData()
@@ -631,9 +631,9 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
             // sending form to get file for download
             xhr.open("POST", "/downloadfile", true);
             xhr.onload = function() {
-                if (this.status==200) {
+                if (this.status == 200) {
                     // blob data type to receive the file
-                    var blob=this.response;
+                    var blob = this.response;
                     var url = window.URL.createObjectURL(blob);
                     // popup for download option of the file
                     var anchor = document.createElement("a");
@@ -651,10 +651,10 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
                 }
             };
             xhr.send(form);
-            var xhr2= new XMLHttpRequest();
+            var xhr2 = new XMLHttpRequest();
             xhr2.open("POST", "/deletefile");
             xhr2.onload = function() {
-                if (this.status==200) {
+                if (this.status == 200) {
                     // blob data type to receive the file
                     var x=this.response;
                 }
@@ -694,9 +694,9 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
                         RANGE[chart_id_list.indexOf(figure_id)] = parseFloat(data[11]);
                     } else if (block == 12) {
                         // process data for CMATVIEW blocks
-                        var m = data[11];
-                        var n = data[13];
-                        var block_uid = data[9];
+                        var m = data[8];
+                        var n = data[10];
+                        var block_uid = data[2];
                         var chart_type = 'heatmap';
                         var title_text = "CMATVIEW-" + block_uid;
                         create_chart_for_cmatview(figure_id, m, n, data[data.length-1]+'-'+block_uid);
@@ -713,7 +713,7 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
             if(block != 12){
                 points_list[index].enqueue([line_id, x, y]);
             }else{
-                var values = get_color_for_index(data, data[9], data[11], data[13]);
+                var values = get_color_for_index(data, data[2], data[8], data[10]);
                 points_list[index].enqueue([line_id, values]);
             }
             // store block number for chart creation
@@ -743,17 +743,17 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
             block_list[index] = block;
         } else if(block == 13){
             // process data for CMAT3D blocks
-            var block_uid = data[9];
-            var m = data[11];
-            var n = data[13];
-            var xmin = data[15];
-            var xmax = data[17];
-            var ymin = data[19];
-            var ymax = data[21];
-            var zmin = data[23];
-            var zmax = data[25];
-            var alpha = data[27];
-            var theta = data[29];
+            var block_uid = data[2];
+            var m = data[8];
+            var n = data[10];
+            var xmin = data[12];
+            var xmax = data[14];
+            var ymin = data[16];
+            var ymax = data[18];
+            var zmin = data[20];
+            var zmax = data[22];
+            var alpha = data[24];
+            var theta = data[26];
             //Chart function need to be written
 
         } else if (block == 20) {
@@ -767,7 +767,7 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
 
             // below code creates a html code which is table with data in that
             // (To display it as matrix)
-            var p = "<b>Value of Block : "+data[length_of_data-1]+"-"+block_id+"</b> (Refer to label on block)<br><br><table style='width:100%'><tr>";
+            var p = "<b>Value of Block : " + data[length_of_data-1] + "-" + block_id + "</b> (Refer to label on block)<br><br><table style='width:100%'><tr>";
             var count = 1;
             for (var k = 6; k < (length_of_data-1); k++) {
                 if(data[k].length != 0){
@@ -818,7 +818,7 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
         setSimulationFlags(false);
         stopSimulation();
         stopSimulationWindows();
-        if (event.data=="Empty diagram")
+        if (event.data == "Empty diagram")
             alert(event.data);
         else
             alert("Error occurred! "+event.data);
@@ -829,7 +829,7 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
         setSimulationFlags(false);
         stopSimulation();
         stopSimulationWindows();
-        if (event.data!="")
+        if (event.data != "")
             alert(event.data);
         isDone = true;
     }, false);
@@ -869,7 +869,7 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
     if (with_interval) {
         interval = setInterval(function() {
             var chart_count = 0;
-            for (var i=0;i<chart_id_list.length;i++) {
+            for (var i = 0; i < chart_id_list.length; i++) {
                 // For each chart
                 // Get id and points queue
                 var figure_id = chart_id_list[i];
@@ -878,12 +878,12 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
                     continue;
                 chart_count++;
                 // get index of the chart
-                var index= chart_id_list.indexOf(figure_id);
-                var block=block_list[index];
+                var index = chart_id_list.indexOf(figure_id);
+                var block = block_list[index];
                 var pointAdded = false;
                 var pointsAdded = 0;
 
-                if (block != 10 && block!=9 && block != 12) {
+                if (block != 10 && block !=9 && block != 12) {
                     // Get chart container
                     var chart = $('#chart-'+figure_id.toString()).highcharts();
                     // Add points
@@ -897,7 +897,7 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
                             z = point[3];
                         // If there is no line with line_id
                         // add new line with line_id
-                        if (series_list[i].indexOf(line_id)<0) {
+                        if (series_list[i].indexOf(line_id) < 0) {
                             series_list[i].push(line_id);
 
                             // for CSCOPXY-3D chart, add line to the scatter
@@ -921,9 +921,9 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
                         // Get chart data
                         var series = chart.get(line_id.toString());
 
-                        if (block!=5) {
+                        if (block != 5) {
                             // If there are more points, remove old points
-                            if (x>1.5*RANGE[index])
+                            if (x > 1.5*RANGE[index])
                                 series.removePoint(0, false);
                         }
 
@@ -937,7 +937,7 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
                         if (block < 4||block == 23) {
                             // Shift chart axis to display new values(only for
                             // blocks requiring shift, i.e, blocks 1-3)
-                            if (x>(RANGE[index]))
+                            if (x > (RANGE[index]))
                                 chart.xAxis[0].setExtremes(Math.floor(x-(RANGE[index]-1.0)), Math.floor(x+1.0));
                         }
 
@@ -973,7 +973,7 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
                         var series = chart.get(line_id.toString());
                         // for 3d-charts, add 3d-points (xzy-coordinates)
                         series.addPoint([x, z, y], false);
-                        if (series.xData.length>buffer)
+                        if (series.xData.length > buffer)
                             series.removePoint(0, false);
 
                         chart.redraw();
@@ -1005,7 +1005,7 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
 
                         chart.redraw();
                     }
-                }else if (block==12){
+                }else if (block == 12){
                     // Get chart container
                     var chart = $('#chart-'+figure_id.toString()).highcharts();
                     // Add points
@@ -1015,7 +1015,7 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
                         var points_array = point[1];
                         // If there is no line with line_id
                         // add new line with line_id
-                        if (series_list[i].indexOf(line_id)<0) {
+                        if (series_list[i].indexOf(line_id) < 0) {
                             series_list[i].push(line_id);
 
                             chart.addSeries({
