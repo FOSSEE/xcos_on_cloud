@@ -715,16 +715,16 @@ def parse_line(line, lineno):
             # Get fig id
             # to extract figure ids (sometime multiple sinks can be used in one
             # diagram to differentiate that)
-            figure_id = int(line_words[-1])
+            figure_id = line_words[-1]
             return (figure_id, INITIALIZATION)
         elif line_words[0] == "Ending":
             # Current figure end
             # Get fig id
-            figure_id = int(line_words[-1])
+            figure_id = line_words[-1]
             return (figure_id, ENDING)
         else:
             # Current figure coordinates
-            figure_id = int(line_words[2])
+            figure_id = line_words[2]
             return (figure_id, DATA)
     except Exception as e:
         logger.error('%s while parsing %s on line %s', str(e), line, lineno)
