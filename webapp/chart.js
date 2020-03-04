@@ -663,9 +663,10 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
     // Start listening to server
     eventSource = new EventSource("/SendLog?id="+clientID, { withCredentials: true });
 
+    var cmatview_counter = 0; // counter to know how many line in log
+
     eventSource.addEventListener("log", function(event) {
         var data = event.data.split(' ');
-        var cmatview_counter = 0; // counter to know how many line in log
         // store block info. from the data line
         block = parseInt(data[0]);
 
@@ -795,12 +796,23 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
             if(block != 12){
                 points_list[index].enqueue([line_id, x, y]);
             }else{
+                var values = get_points_for_data(data, data[8], data[10]);
                 cmatview_counter++; // to count lines from log
-                //Only add points of line which are multiple of 10 (this is to reduce load on browser)
-                var count = cmatview_counter % 10;
-                if(count == 0){
-                    var values = get_points_for_data(data, data[8], data[10]);
-                    points_list[index].enqueue([line_id, values]);
+                if(cmatview_counter == 1){
+                     //Only add points of line 1, so that no delay in chart)
+                     points_list[index].enqueue([line_id, values]);
+                }else if(cmatview_counter < 16){
+                     //Only add points of line which are multiple of 5 (this is to reduce load on browser)
+                    var count = cmatview_counter % 5;
+                    if(count == 0){
+                        points_list[index].enqueue([line_id, values]);
+                    }
+                }else{
+                    //Only add points of line which are multiple of 10 (this is to reduce load on browser)
+                    var count = cmatview_counter % 10;
+                    if(count == 0){
+                        points_list[index].enqueue([line_id, values]);
+                    }
                 }
             }
             // store block number for chart creation
