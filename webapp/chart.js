@@ -682,9 +682,9 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
 
                 create_new_chart(fig_id, data[12], data[10], data[11], data[8], data[9], 'line', data[13]+'-'+fig_id);
                 block_entry_BARXY = block_entry_BARXY + 1;
-                var chart = $('#chart-'+fig_id.toString()).highcharts();
+                var chart = $('#chart-'+fig_id).highcharts();
                 chart.addSeries({
-                    id: fig_id.toString(),
+                    id: fig_id,
                     data: []
                 });
             }
@@ -695,7 +695,7 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
             // Ending condition for blocks not having a dataline for 'Ending'
             if (pnts.length == (this.finalIntegrationTime*10-1)) {
                 var xhr = new XMLHttpRequest();
-                xhr.open("GET", "/endBlock/"+str(fig_id), true);
+                xhr.open("GET", "/endBlock/"+fig_id, true);
                 xhr.send();
             }
 
@@ -743,9 +743,9 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
             // process data for 2D-SCOPE blocks
             var figure_id = 0 ;
             if(block == 2){ //For cmscope block
-                figure_id = parseInt(data[4]);
+                figure_id = data[4];
             }else{
-                figure_id = parseInt(data[2]);
+                figure_id = data[2];
             }
             var line_id = parseInt(data[6]);
             var x = parseFloat(data[8]);
@@ -820,7 +820,7 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
         } else if (block == 5 || block == 10) {
             // process data for 3D-SCOPE blocks
 
-            var figure_id = parseInt(data[2]);
+            var figure_id = data[2];
             var line_id = parseInt(data[6]);
             var x = parseFloat(data[8]);
             var y = parseFloat(data[9]);
@@ -1145,9 +1145,9 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
         interval2 = setInterval(function() {
             // display the points for BARXY block
             if (pnts.length > 0) {
-                var chart = $('#chart-'+fig_id.toString()).highcharts();
+                var chart = $('#chart-'+fig_id).highcharts();
                 // Get chart data
-                var series = chart.get(fig_id.toString())
+                var series = chart.get(fig_id)
                 // dequeue the points and add them
                 series.addPoint(pnts.shift(), false);
                 series.addPoint(pnts.shift(), false);
