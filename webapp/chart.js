@@ -157,31 +157,46 @@ var create_new_chart = function(id, no_of_graph, ymin, ymax, xmin, xmax, type_ch
     }
 };
 
-function get_color_for_index(data, block_uid, m, n){
-    var array_data = [];
+//To create coloraxis array which will be passed to cmatview chart for heatmap creation
+function get_color_axis_for_points(block_uid){
+    var color_axis_array = [];
     var get_hex_color_array = name_values_colormap.get(block_uid);
+    for(var i = 0; i < get_hex_color_array.length; i++){
+        var color_values = {};
+        var temp = i;
+        color_values["from"] = temp + 1;
+        color_values["to"] = temp + 2;
+        color_values["color"] = get_hex_color_array[i];
+        color_axis_array.push(color_values);
+    }
+    return color_axis_array;
+}
+
+//Gets data (array with x , y and coloraxis values) to be passed to chart points
+function get_points_for_data(data, m, n){
+    var array_data = [];
     var i = 12;
     for (var x = (m-2) ; x >= 0; x--){
         for (var y = 0 ; y < (n-1) ; y++){
-            var data_values = {};
-            data_values["x"] = x;
-            data_values["y"] = y;
-            data_values["color"] = get_hex_color_array[parseInt(data[i]) - 1];
+            var data_values = [];
+            data_values[0] = x;
+            data_values[1] = y;
+            data_values[2] = parseInt(data[i]);
             array_data.push(data_values);
             i++;
         }
     }
     return array_data;
-
 }
 
-var create_chart_for_cmatview = function(id, m, n, title_text) {
+//Chart function for cmatview which has less than 10*10 matrix size
+var create_chart_for_cmatview = function(id, m, n, title_text, color_axis) {
     xmin = 0;
-    xmax = parseFloat(m);
+    xmax = m;
     ymin = 0;
-    ymax = parseFloat(n);
-    $('#charts').append("<div id='chart-"+id.toString()+"' style = 'height:300px;width:100%'></div>");
-    $('#chart-'+id.toString()).highcharts({
+    ymax = n;
+    $('#charts').append("<div id='chart-"+id+"' style = 'height:100%;width:100%'></div>");
+    $('#chart-'+id).highcharts({
         tooltip: {
             enabled: false
         },
@@ -207,16 +222,82 @@ var create_chart_for_cmatview = function(id, m, n, title_text) {
                 enableMouseTracking: false
             }
         },
+        colorAxis: {
+            dataClasses: color_axis
+        },
         legend: {
             enabled: false
         },
         series: []
-        });
+    });
 
     chart_id_list.push(id);
     points_list.push(new Queue());
     series_list.push([]);
 };
+
+//Chart function for cmatview large data ie matrix more than 10*10 size
+var create_chart_for_large_data_cmatview = function(id, m, n, title_text, color_axis) {
+    xmin = 0;
+    xmax = m;
+    ymin = 0;
+    ymax = n;
+    $('#charts').append("<div id='chart-"+id+"' style = 'height:100%;width:100%'></div>");
+    $('#chart-'+id).highcharts({
+        tooltip: {
+            enabled: false
+        },
+        chart: {
+            type: 'heatmap'
+        },
+        boost: {
+            useGPUTranslations: true,
+            usePreallocated: true
+        },
+        title: {
+            text: title_text
+        },
+        xAxis: {
+            min: 0,
+            max: xmax
+        },
+        yAxis: {
+            min: 0,
+            max: ymax
+        },
+        plotOptions: {
+           series: {
+                animation:false,
+                boostThreshold : 400000,
+                turboThreshold : 0,
+                stickyTracking: false,
+                shadow: false
+            },
+            marker: {
+                enabled: false
+            },
+             heatmap: {
+                shadow: false,
+                animation: false
+            }
+        },
+        legend: {
+            enabled: false
+        },
+        colorAxis: {
+            dataClasses: color_axis
+        },
+        series: [{
+            seriesThreshold: 2
+        }]
+    });
+
+    chart_id_list.push(id);
+    points_list.push(new Queue());
+    series_list.push([]);
+};
+
+
 // Function to create a new 3d-chart
 var create_new_chart_3d = function(id, no_of_graph, xmin, xmax, ymin, ymax, zmin, zmax, type_chart, title_text, alpha, theta) {
     /*
@@ -696,10 +777,14 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
                         // process data for CMATVIEW blocks
                         var m = data[8];
                         var n = data[10];
-                        var block_uid = data[2];
                         var chart_type = 'heatmap';
-                        var title_text = "CMATVIEW-" + block_uid;
-                        create_chart_for_cmatview(figure_id, m, n, data[data.length-1]+'-'+block_uid);
+                        var title_text = "CMATVIEW-" + figure_id;
+                        var color_axis = get_color_axis_for_points(figure_id);
+                         if (m*n <= 100) {
+                            create_chart_for_cmatview(figure_id, m, n, data[data.length-1]+'-'+figure_id, color_axis);
+                        }else{
+                            create_chart_for_large_data_cmatview(figure_id, m, n, data[data.length-1]+'-'+figure_id, color_axis);
+                        }
                         RANGE[chart_id_list.indexOf(figure_id)] = parseFloat(30);
                     } else {
                         // sink block is not CSCOPXY
@@ -713,7 +798,7 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
             if(block != 12){
                 points_list[index].enqueue([line_id, x, y]);
             }else{
-                var values = get_color_for_index(data, data[2], data[8], data[10]);
+                var values = get_points_for_data(data, data[8], data[10]);
                 points_list[index].enqueue([line_id, values]);
             }
             // store block number for chart creation
@@ -1006,6 +1091,8 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
                         chart.redraw();
                     }
                 }else if (block == 12){
+                    //Process for CMATVIEW
+
                     // Get chart container
                     var chart = $('#chart-'+figure_id).highcharts();
                     // Add points
