@@ -237,6 +237,68 @@ var create_chart_for_cmatview = function(id, m, n, title_text, color_axis) {
     series_list.push([]);
 };
 
+//Chart function for cmatview large data ie matrix more than 10*10 size
+var create_chart_for_large_data_cmatview = function(id, m, n, title_text, color_axis) {
+    xmin = 0;
+    xmax = m;
+    ymin = 0;
+    ymax = n;
+    $('#charts').append("<div id='chart-"+id.toString()+"' style = 'height:100%;width:100%'></div>");
+    $('#chart-'+id.toString()).highcharts({
+        tooltip: {
+            enabled: false
+        },
+        chart: {
+            type: 'heatmap'
+        },
+        boost: {
+            useGPUTranslations: true,
+            usePreallocated: true
+        },
+        title: {
+            text: title_text
+        },
+        xAxis: {
+            min: 0,
+            max: xmax
+        },
+        yAxis: {
+            min: 0,
+            max: ymax
+        },
+        plotOptions: {
+           series: {
+                animation:false,
+                boostThreshold : 400000,
+                turboThreshold : 0,
+                stickyTracking: false,
+                shadow: false
+            },
+            marker: {
+                enabled: false
+            },
+             heatmap: {
+                shadow: false,
+                animation: false
+            }
+        },
+        legend: {
+            enabled: false
+        },
+        colorAxis: {
+            dataClasses: color_axis
+        },
+        series: [{
+            seriesThreshold: 2
+        }]
+    });
+
+    chart_id_list.push(id);
+    points_list.push(new Queue());
+    series_list.push([]);
+};
+
+
 // Function to create a new 3d-chart
 var create_new_chart_3d = function(id, no_of_graph, xmin, xmax, ymin, ymax, zmin, zmax, type_chart, title_text, alpha, theta) {
     /*
@@ -722,6 +784,8 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
                         var color_axis = get_color_axis_for_points(block_uid);
                         if(m <=10 && n <=10 ){
                             create_chart_for_cmatview(figure_id, m, n, data[data.length-1]+'-'+block_uid, color_axis);
+                        }else{
+                            create_chart_for_large_data_cmatview(figure_id, m, n, data[data.length-1]+'-'+block_uid, color_axis);
                         }
                         RANGE[chart_id_list.indexOf(figure_id)] = parseFloat(30);
                     } else {
