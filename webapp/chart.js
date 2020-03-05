@@ -195,8 +195,8 @@ var create_chart_for_cmatview = function(id, m, n, title_text, color_axis) {
     xmax = m;
     ymin = 0;
     ymax = n;
-    $('#charts').append("<div id='chart-"+id.toString()+"' style = 'height:100%;width:100%'></div>");
-    $('#chart-'+id.toString()).highcharts({
+    $('#charts').append("<div id='chart-"+id+"' style = 'height:100%;width:100%'></div>");
+    $('#chart-'+id).highcharts({
         tooltip: {
             enabled: false
         },
@@ -242,8 +242,8 @@ var create_chart_for_large_data_cmatview = function(id, m, n, title_text, color_
     xmax = m;
     ymin = 0;
     ymax = n;
-    $('#charts').append("<div id='chart-"+id.toString()+"' style = 'height:100%;width:100%'></div>");
-    $('#chart-'+id.toString()).highcharts({
+    $('#charts').append("<div id='chart-"+id+"' style = 'height:100%;width:100%'></div>");
+    $('#chart-'+id).highcharts({
         tooltip: {
             enabled: false
         },
@@ -777,14 +777,13 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
                         // process data for CMATVIEW blocks
                         var m = data[8];
                         var n = data[10];
-                        var block_uid = data[2];
                         var chart_type = 'heatmap';
-                        var title_text = "CMATVIEW-" + block_uid;
-                        var color_axis = get_color_axis_for_points(block_uid);
+                        var title_text = "CMATVIEW-" + figure_id;
+                        var color_axis = get_color_axis_for_points(figure_id);
                         if(m <=10 && n <=10 ){
-                            create_chart_for_cmatview(figure_id, m, n, data[data.length-1]+'-'+block_uid, color_axis);
+                            create_chart_for_cmatview(figure_id, m, n, data[data.length-1]+'-'+figure_id, color_axis);
                         }else{
-                            create_chart_for_large_data_cmatview(figure_id, m, n, data[data.length-1]+'-'+block_uid, color_axis);
+                            create_chart_for_large_data_cmatview(figure_id, m, n, data[data.length-1]+'-'+figure_id, color_axis);
                         }
                         RANGE[chart_id_list.indexOf(figure_id)] = parseFloat(30);
                     } else {
@@ -1092,6 +1091,8 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
                         chart.redraw();
                     }
                 }else if (block == 12){
+                    //Process for CMATVIEW
+
                     // Get chart container
                     var chart = $('#chart-'+figure_id).highcharts();
                     // Add points
