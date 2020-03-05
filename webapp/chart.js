@@ -190,12 +190,13 @@ function get_color_for_index(data, block_uid, m, n){
 
 }
 
-var create_chart_for_cmatview = function(id, m, n, title_text) {
+//Chart function for cmatview which has less than 10*10 matrix size
+var create_chart_for_cmatview = function(id, m, n, title_text, color_axis) {
     xmin = 0;
-    xmax = parseFloat(m);
+    xmax = m;
     ymin = 0;
-    ymax = parseFloat(n);
-    $('#charts').append("<div id='chart-"+id.toString()+"' style = 'height:300px;width:100%'></div>");
+    ymax = n;
+    $('#charts').append("<div id='chart-"+id.toString()+"' style = 'height:100%;width:100%'></div>");
     $('#chart-'+id.toString()).highcharts({
         tooltip: {
             enabled: false
@@ -222,16 +223,20 @@ var create_chart_for_cmatview = function(id, m, n, title_text) {
                 enableMouseTracking: false
             }
         },
+        colorAxis: {
+            dataClasses: color_axis
+        },
         legend: {
             enabled: false
         },
         series: []
-        });
+    });
 
     chart_id_list.push(id);
     points_list.push(new Queue());
     series_list.push([]);
 };
+
 // Function to create a new 3d-chart
 var create_new_chart_3d = function(id, no_of_graph, xmin, xmax, ymin, ymax, zmin, zmax, type_chart, title_text, alpha, theta) {
     /*
@@ -715,7 +720,9 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
                         var chart_type = 'heatmap';
                         var title_text = "CMATVIEW-" + block_uid;
                         var color_axis = get_color_axis_for_points(block_uid);
-                        create_chart_for_cmatview(figure_id, m, n, data[data.length-1]+'-'+block_uid);
+                        if(m <=10 && n <=10 ){
+                            create_chart_for_cmatview(figure_id, m, n, data[data.length-1]+'-'+block_uid, color_axis);
+                        }
                         RANGE[chart_id_list.indexOf(figure_id)] = parseFloat(30);
                     } else {
                         // sink block is not CSCOPXY
