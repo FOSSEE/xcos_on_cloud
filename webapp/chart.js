@@ -780,7 +780,7 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
                         var chart_type = 'heatmap';
                         var title_text = "CMATVIEW-" + figure_id;
                         var color_axis = get_color_axis_for_points(figure_id);
-                        if(m <=10 && n <=10 ){
+                         if (m*n <= 100) {
                             create_chart_for_cmatview(figure_id, m, n, data[data.length-1]+'-'+figure_id, color_axis);
                         }else{
                             create_chart_for_large_data_cmatview(figure_id, m, n, data[data.length-1]+'-'+figure_id, color_axis);
