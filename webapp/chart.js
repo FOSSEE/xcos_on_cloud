@@ -172,22 +172,21 @@ function get_color_axis_for_points(block_uid){
     return color_axis_array;
 }
 
-function get_color_for_index(data, block_uid, m, n){
+//Gets data (array with x , y and coloraxis values) to be passed to chart points
+function get_points_for_data(data, m, n){
     var array_data = [];
-    var get_hex_color_array = name_values_colormap.get(block_uid);
     var i = 12;
     for (var x = (m-2) ; x >= 0; x--){
         for (var y = 0 ; y < (n-1) ; y++){
-            var data_values = {};
-            data_values["x"] = x;
-            data_values["y"] = y;
-            data_values["color"] = get_hex_color_array[parseInt(data[i]) - 1];
+            var data_values = [];
+            data_values[0] = x;
+            data_values[1] = y;
+            data_values[2] = parseInt(data[i]);
             array_data.push(data_values);
             i++;
         }
     }
     return array_data;
-
 }
 
 //Chart function for cmatview which has less than 10*10 matrix size
@@ -800,7 +799,7 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
             if(block != 12){
                 points_list[index].enqueue([line_id, x, y]);
             }else{
-                var values = get_color_for_index(data, data[2], data[8], data[10]);
+                var values = get_points_for_data(data, data[8], data[10]);
                 points_list[index].enqueue([line_id, values]);
             }
             // store block number for chart creation
