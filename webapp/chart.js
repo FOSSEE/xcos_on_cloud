@@ -157,6 +157,21 @@ var create_new_chart = function(id, no_of_graph, ymin, ymax, xmin, xmax, type_ch
     }
 };
 
+//To create coloraxis array which will be passed to cmatview chart for heatmap creation
+function get_color_axis_for_points(block_uid){
+    var color_axis_array = [];
+    var get_hex_color_array = name_values_colormap.get(block_uid);
+    for(var i = 0; i < get_hex_color_array.length; i++){
+        var color_values = {};
+        var temp = i;
+        color_values["from"] = temp + 1;
+        color_values["to"] = temp + 2;
+        color_values["color"] = get_hex_color_array[i];
+        color_axis_array.push(color_values);
+    }
+    return color_axis_array;
+}
+
 function get_color_for_index(data, block_uid, m, n){
     var array_data = [];
     var get_hex_color_array = name_values_colormap.get(block_uid);
@@ -699,6 +714,7 @@ function chart_init(graph, wnd, affichwnd, with_interval, with_interval2, show_i
                         var block_uid = data[2];
                         var chart_type = 'heatmap';
                         var title_text = "CMATVIEW-" + block_uid;
+                        var color_axis = get_color_axis_for_points(block_uid);
                         create_chart_for_cmatview(figure_id, m, n, data[data.length-1]+'-'+block_uid);
                         RANGE[chart_id_list.indexOf(figure_id)] = parseFloat(30);
                     } else {
