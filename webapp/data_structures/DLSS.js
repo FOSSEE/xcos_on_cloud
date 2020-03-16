@@ -37,19 +37,49 @@ DLSS.prototype.get = function DLSS() {
         return options
     }
 DLSS.prototype.set = function DLSS() {
-    this.A = MatrixInverse(arguments[0]["A"])
-    this.B = MatrixInverse(arguments[0]["B"])
-    this.C = MatrixInverse(arguments[0]["C"])
-    this.D = MatrixInverse(arguments[0]["D"])
-    this.x0 = MatrixInverse(arguments[0]["x0"])
-    this.out = size(this.C,1)
-    if(this.out == 0)
+    var A1 = arguments[0]["A"];
+    var B1 = arguments[0]["B"];
+    var C1 = arguments[0]["C"];
+    var D1 = arguments[0]["D"];
+    var regex_char = /[a-zA-Z]/g; //check character
+    var charA = A1.match(regex_char);
+    if(charA != null){
+        this.A = MatrixInverse(get_value_for_variable(A1));
+    }else{
+        this.A = MatrixInverse(A1);
+    }
+
+    var charB = B1.match(regex_char);
+    if(charB != null){
+        this.B = MatrixInverse(get_value_for_variable(B1));
+    }else{
+        this.B = MatrixInverse(B1);
+    }
+
+    var charC = C1.match(regex_char);
+    if(charC != null){
+        this.C = MatrixInverse(get_value_for_variable(C1));
+    }else{
+        this.C = MatrixInverse(C1);
+    }
+    var charD = D1.match(regex_char);
+    if(charD != null){
+        this.D = MatrixInverse(get_value_for_variable(D1));
+    }else{
+        this.D = MatrixInverse(D1);
+    }
+
+    this.x0 = inverse(arguments[0]["x0"]);
+    this.out = size(this.C,1);
+    if(this.out == 0){
         this.out = []
-    this.in = size(this.B,2)
-    if(this.in == 0)
+    }
+    this.in = size(this.B,2);
+    if(this.in == 0){
         this.in = []
-    var ms=size(this.A,1);
-    var ns=size(this.A,2);
+    }
+    var ms = size(this.A,1);
+    var ns = size(this.A,2);
             /*var okD=true;
             if(size(this.D,"*")!=(size(this.C,1)*size(this.B,2))){
                 if(size(this.D,"*")==1){
@@ -61,9 +91,9 @@ DLSS.prototype.set = function DLSS() {
                 else
                     okD=false;
             }*/
-            if(ms!=ns){
+            if(ms != ns){
                 alert("Matrix A is not square");
-                DLSS.get();
+                throw "incorrect";
             }
     var io = check_io(this.x.model,this.x.graphics,[this.in],[this.out],[],[])
 
