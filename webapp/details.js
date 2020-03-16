@@ -1228,3 +1228,30 @@ function objToArrayList(graphPoints) {
     }
     return tempPoints;
 }
+
+function get_value_for_variable(variable_name){
+
+    var regex_char = /[a-zA-Z]/g; //check character
+    var chararray = variable_name.match(regex_char);
+    var value = "";
+    if(chararray != null){
+        var contextValue = handleContext("get");
+        var context_values_for_import = new Map();
+        for(var i = 0; i < contextValue.length; i++){
+            var context_text = contextValue[i];
+            var temp = context_text.split("=");
+            if(temp.length == 2){
+                context_values_for_import.set(temp[0], temp[1]);
+            }
+        }
+        value = context_values_for_import.get(variable_name);
+        if(value != null || value.length != 0){
+            return value
+        }else{
+            console.log("Need to get it from workspace");
+        }
+    }else{
+        value = variable_name;
+        return value;
+    }
+}

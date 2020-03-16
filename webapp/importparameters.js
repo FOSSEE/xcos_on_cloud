@@ -826,15 +826,16 @@ DLSS.prototype.importset = function DLSS() {
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
     this.A = ary[0];
-    this.B = inverse(ary[1]);
-    this.C = inverse(ary[2]);
+    this.B = ary[1];
+    this.C = ary[2];
     this.D = ary[3];
     this.x0 = ary[4];
-
-    var in1 = size(this.B, 2);
+    var temp_B = inverse(get_value_for_variable(this.B));
+    var temp_C = inverse(get_value_for_variable(this.C));
+    var in1 = size(temp_B, 2);
     if (in1 == 0)
         in1 = [];
-    var out1 = size(this.C, 1);
+    var out1 = size(temp_C, 1);
     if (out1 == 0)
         out1 = [];
     check_io(model, graphics, [in1], [out1], [], []);
