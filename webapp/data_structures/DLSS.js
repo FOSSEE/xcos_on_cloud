@@ -26,8 +26,8 @@ function DLSS() {
     DLSS.prototype.details = function DLSS() {
         return this.x;
     }
-DLSS.prototype.get = function DLSS() {
-        var options={
+    DLSS.prototype.get = function DLSS() {
+        var options = {
             A:["A matrix",sci2exp(this.A)],
             B:["B matrix",sci2exp(this.B)],
             C:["C matrix",sci2exp(this.C)],
@@ -36,50 +36,56 @@ DLSS.prototype.get = function DLSS() {
         }
         return options
     }
-DLSS.prototype.set = function DLSS() {
-    var A1 = arguments[0]["A"];
-    var B1 = arguments[0]["B"];
-    var C1 = arguments[0]["C"];
-    var D1 = arguments[0]["D"];
-    var regex_char = /[a-zA-Z]/g; //check character
-    var charA = A1.match(regex_char);
-    if(charA != null){
-        this.A = MatrixInverse(get_value_for_variable(A1));
-    }else{
-        this.A = MatrixInverse(A1);
-    }
+    DLSS.prototype.set = function DLSS() {
+        var A1 = arguments[0]["A"];
+        var B1 = arguments[0]["B"];
+        var C1 = arguments[0]["C"];
+        var D1 = arguments[0]["D"];
+        var x01 = arguments[0]["x0"];
+        var regex_char = /[a-zA-Z]/g; //check character
+        var A2, B2, C2, D2, x02 = [];
+        var charA = A1.match(regex_char);
+        if(charA != null){
+            A2 = MatrixInverse(get_value_for_variable(A1));
+        }else{
+            A2 = MatrixInverse(A1);
+        }
 
-    var charB = B1.match(regex_char);
-    if(charB != null){
-        this.B = MatrixInverse(get_value_for_variable(B1));
-    }else{
-        this.B = MatrixInverse(B1);
-    }
+        var charB = B1.match(regex_char);
+        if(charB != null){
+            B2 = MatrixInverse(get_value_for_variable(B1));
+        }else{
+            B2 = MatrixInverse(B1);
+        }
 
-    var charC = C1.match(regex_char);
-    if(charC != null){
-        this.C = MatrixInverse(get_value_for_variable(C1));
-    }else{
-        this.C = MatrixInverse(C1);
-    }
-    var charD = D1.match(regex_char);
-    if(charD != null){
-        this.D = MatrixInverse(get_value_for_variable(D1));
-    }else{
-        this.D = MatrixInverse(D1);
-    }
-
-    this.x0 = inverse(arguments[0]["x0"]);
-    this.out = size(this.C,1);
-    if(this.out == 0){
-        this.out = []
-    }
-    this.in = size(this.B,2);
-    if(this.in == 0){
-        this.in = []
-    }
-    var ms = size(this.A,1);
-    var ns = size(this.A,2);
+        var charC = C1.match(regex_char);
+        if(charC != null){
+            C2 = MatrixInverse(get_value_for_variable(C1));
+        }else{
+            C2 = MatrixInverse(C1);
+        }
+        var charD = D1.match(regex_char);
+        if(charD != null){
+            D2 = MatrixInverse(get_value_for_variable(D1));
+        }else{
+            D2 = MatrixInverse(D1);
+        }
+        var charx0 = x01.match(regex_char);
+        if(charx0 != null){
+            x02 = MatrixInverse(get_value_for_variable(x01));
+        }else{
+            x02 = MatrixInverse(x01);
+        }
+        this.out = size(C2,1);
+        if(this.out == 0){
+            this.out = []
+        }
+        this.in = size(B2,2);
+        if(this.in == 0){
+            this.in = []
+        }
+        var ms = size(A2,1);
+        var ns = size(A2,2);
             /*var okD=true;
             if(size(this.D,"*")!=(size(this.C,1)*size(this.B,2))){
                 if(size(this.D,"*")==1){
@@ -91,22 +97,27 @@ DLSS.prototype.set = function DLSS() {
                 else
                     okD=false;
             }*/
-            if(ms != ns){
-                alert("Matrix A is not square");
-                throw "incorrect";
-            }
-    var io = check_io(this.x.model,this.x.graphics,[this.in],[this.out],[],[])
+        if(ms != ns){
+            alert("Matrix A is not square");
+            throw "incorrect";
+        }
+        this.A = A1;
+        this.B = B1;
+        this.C = C1;
+        this.D = D1;
+        this.x0 = x01;
+        var io = check_io(this.x.model,this.x.graphics,[this.in],[this.out],[],[])
 
-    var rpar = new ScilabDouble(...colon_operator(this.A),...colon_operator(this.B),...colon_operator(this.C),...colon_operator(this.D))
-    this.x.model.dep_ut = new ScilabBoolean(false,false)
-    this.x.model.rpar = rpar
-    this.x.model.dstate = new ScilabDouble(...this.x0)
-    var exprs = new ScilabString([sci2exp(this.A)],[sci2exp(this.B)],[sci2exp(this.C)],[sci2exp(this.D)],[sci2exp(this.x0)])
-    this.x.graphics.exprs=exprs
-    return new BasicBlock(this.x)
+        var rpar = new ScilabDouble(...colon_operator(A2),...colon_operator(B2),...colon_operator(C2),...colon_operator(D2))
+        this.x.model.dep_ut = new ScilabBoolean(false,false)
+        this.x.model.rpar = rpar
+        this.x.model.dstate = new ScilabDouble(...x02)
+        var exprs = new ScilabString([sci2exp(this.A)],[sci2exp(this.B)],[sci2exp(this.C)],[sci2exp(this.D)],[sci2exp(this.x0)])
+        this.x.graphics.exprs = exprs
+        return new BasicBlock(this.x)
     }
     DLSS.prototype.get_popup_title = function DLSS() {
-        var set_param_popup_title="Set discrete linear system parameters";
+        var set_param_popup_title = "Set discrete linear system parameters";
         return set_param_popup_title
     }
     DLSS.prototype.getDimensionForDisplay = function DLSS(){

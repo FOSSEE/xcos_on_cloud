@@ -1245,10 +1245,11 @@ function get_value_for_variable(variable_name){
             }
         }
         value = context_values_for_import.get(variable_name);
-        if(value != null || value.length != 0){
-            return value
+        if(value == undefined){
+            alert("Make sure variable is defined in context or workspace before using it");
+            throw "incorrect";
         }else{
-            console.log("Need to get it from workspace");
+            return value;
         }
     }else{
         value = variable_name;
