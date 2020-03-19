@@ -86,17 +86,18 @@ function DLSS() {
         }
         var ms = size(A2,1);
         var ns = size(A2,2);
-            /*var okD=true;
-            if(size(this.D,"*")!=(size(this.C,1)*size(this.B,2))){
-                if(size(this.D,"*")==1){
-                    this.D = this.D*ones(this.C*this.B) ;
-                }
-                else if(size(this.D,"*")==0){
-                    this.D = zeros(this.C*this.B) ;
-                }
-                else
-                    okD=false;
-            }*/
+        /*var okD = true;
+        if(size(D2,"*") != (size(C2,1)*size(B2,2))){
+            if(size(D2,"*")==1){
+                D2 = D2*ones(C2*B2);
+            }
+            else if(size(D2,"*")==0){
+                D2 = zeros(C2*B2);
+            }
+            else{
+                okD = false;
+            }
+        }*/
         if(ms != ns){
             alert("Matrix A is not square");
             throw "incorrect";

@@ -192,6 +192,7 @@ CLEANDATA_SCI_FUNC_WRITE = "ajax-scilab/scifunc-cleandata-do_spline.sci"
 EXP_SCI_FUNC_WRITE = "ajax-scilab/expression-sci-function.sci"
 GET_COLORMAP_VALUES_SCI_FUNC_WRITE = "ajax-scilab/get_colormap_values.sci"
 RANDFUNC = "ajax-scilab/randfunc.sci"
+GET_VARIABLE_VALUE = "ajax-scilab/get_variable_value.sci"
 
 
 INTERNAL = {
@@ -224,5 +225,10 @@ INTERNAL = {
         'scriptfiles': [RANDFUNC],
         'function': 'randfunc',
         'parameters': ['inputvalue'],
+    },
+    'getvariablevalue': {
+        'scriptfiles': [GET_VARIABLE_VALUE],
+        'function': 'get_variable_value',
+        'parameters': ['variable_name'],
     }
 }
