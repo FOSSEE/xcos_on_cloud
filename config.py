@@ -229,6 +229,6 @@ INTERNAL = {
     'getvariablevalue': {
         'scriptfiles': [GET_VARIABLE_VALUE],
         'function': 'get_variable_value',
-        'parameters': ['variable_name'],
+        'parameters': ['var_name'],
     }
 }

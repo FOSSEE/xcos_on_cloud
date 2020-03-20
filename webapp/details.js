@@ -1246,8 +1246,13 @@ function get_value_for_variable(variable_name){
         }
         value = context_values_for_import.get(variable_name);
         if(value == undefined){
-            alert("Make sure variable is defined in context or workspace before using it");
-            throw "incorrect";
+            var text = get_variable_value_from_workspace(variable_name);
+            if(text == null || text.length == 0 ||text == undefined){
+                alert("Make sure variable is defined in context or workspace before using it");
+                throw "incorrect";
+            }else{
+                return text;
+            }
         }else{
             return value;
         }

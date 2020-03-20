@@ -2167,6 +2167,40 @@ function get_colormap(colormapString) {
     return call_internal_fun("get_colormap_values", { colormapString });
 }
 
+function get_variable_value_from_workspace(var_name){
+
+    var value_to_be_return = "";
+    var value_array = call_internal_fun("getvariablevalue", { var_name });
+    if(Array.isArray(value_array)){
+        var regex_char = /[a-zA-Z]/g; //check character
+        var chararray = value_array.toString().match(regex_char);
+        if(chararray == null){
+        var str = "[";
+        for (var i = 0;i < value_array.length; i++){
+            for (var j = 0; j < value_array[i].length; j++){
+                var arry = value_array[i];
+                if(j == (arry.length - 1)){
+                    if(i == (value_array.length - 1)){
+                        str += arry[j];
+                    }else{
+                        str += arry[j] +";";
+                    }
+                }else{
+                    str += arry[j] +",";
+                }
+            }
+        }
+        str += "]";
+        value_to_be_return = str;
+        }else{
+            value_to_be_return = value_array.toString();
+        }
+    }else{
+        value_to_be_return = "";
+    }
+    return value_to_be_return;
+}
+
 function call_internal_fun(internal_key, data) {
     var response;
 
@@ -2180,7 +2214,10 @@ function call_internal_fun(internal_key, data) {
             response = rv;
         },
         error: function(xhr, textStatus) {
-            var msg = "An error occurred!! \n\nPlease try again"
+            var msg = "An error occurred!! \n\nPlease try again";
+            if(xhr.responseText != null || xhr.responseText != ""){
+                msg = xhr.responseText;
+            }
             alert(msg);
             throw "error";
         }
