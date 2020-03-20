@@ -1850,9 +1850,9 @@ def internal_fun(internal_key):
     cmd = ""
     # to check script is working fine and reading variable value
     #after loading workspace file (Hardcoded for testing)
-    #
     work_name = join(sessiondir, "script_files/0_script_workspace.dat")
     cmd += load_variables(work_name)
+    #end of test
     for f in internal_data['scriptfiles']:
         scriptfile = join(ROOTDIR, f)
         cmd += "exec('%s');" % scriptfile
