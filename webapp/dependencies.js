@@ -2224,8 +2224,15 @@ function call_internal_fun(internal_key, data) {
     });
 
     if (response.msg != undefined) {
-        alert(response.msg);
-        throw "error";
+        if(internal_key == "getvariablevalue"){
+            alert(response.msg);
+            editor.execute('selectAll');
+            editor.execute('delete');
+            throw "error";
+        }else{
+            alert(response.msg);
+            throw "error";
+        }
     }
     return response;
 }
