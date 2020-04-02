@@ -1675,7 +1675,7 @@ function main(container, outline, toolbar, sidebar, status) {
             if(prerequisite_content.length != 0){
                 var parse_content = parser.parseFromString(prerequisite_content, "text/html");
                 prerequisite_content = parse_content.body.textContent;
-                executePrerequisiteFile();
+                executePrerequisiteFile(false);
                 displayPrerequisiteFile(graph);//onload open prerequisite file
             }
         }
