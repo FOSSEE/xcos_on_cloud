@@ -171,7 +171,7 @@ function uploadPrerequisiteFile() {
         prerequisite_window.setVisible(false);
 }
 
-function executePrerequisiteFile() {
+function executePrerequisiteFile(async = true) {
     if (prerequisite_content == "")
         return;
 
@@ -185,7 +185,7 @@ function executePrerequisiteFile() {
     $.ajax({
         type: "POST",
         url: "/uploadscript",
-        async: true,
+        async: async,
         processData: false,
         contentType: false,
         data: formData,
@@ -203,7 +203,7 @@ function executePrerequisiteFile() {
                 $.ajax({
                     type: "POST",
                     url: "/getscriptoutput",
-                    async: true,
+                    async: async,
                     data: { script_id: script_id },
                     dataType: "json",
                     success: function(rv) {
