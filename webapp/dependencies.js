@@ -1418,55 +1418,46 @@ function MatrixInverse() {
     return array;
 }
 
-/*function inverse() {
-    var str = "[["
-    var arg = arguments[0];
-    if (typeof arg == 'number') {
-        str += arg + "]]";
-    } else if (arg != "[]") {
-        arg = arg.replace(/int8\(([^)]*)\)/, "$1");
-        arg = arg.replace(/[\[\]; ]+/g, " ").trim();
-        arg = arg.replace(/[ ,]+/g, "],[");
-        str += arg + "]]";
-    } else {
-        str = "[]"
-    }
-    var array = JSON.parse(str);
-    return array;
-}*/
-
 // converts [1,1;1,2] => [[1,1],[1,2]]
 // [1,1,1] => [[1],[1],[1]]
 // [1 1 1] => [[1],[1],[1]]
 // 1 1 1 => [[1],[1],[1]]
 // [1 1 1] => [[1],[1],[1]]
 function inverse() {
-    var str = "[["
     var arg = arguments[0];
-    if (typeof arg == 'number') {
-        str += arg + "]]";
-    } else if (arg != "[]") {
-        if(!arg.includes(";")){
-            arg = arg.replace(/[\[\]; ]+/g, " ").trim();
-            arg = arg.replace(/[ ,]+/g, "],[");
-        }else{
-            arg = arg.replace(/[\[\] ]+/g, " ").trim();
-            var arry = arg.split(";");
-            var temp ="";
-            for (var i=0;i<arry.length;i++){
-                if(i == (arry.length -1)){
-                     temp += arry[i].trim();
-                }else{
-                    temp += arry[i].trim() + ";";
+    var regex_char = /[a-zA-Z]/g; //check character for string/ variable input
+    var chararray = arg.match(regex_char);
+    if (chararray != null) {
+        //Need to add code to call and check values of variable from context and workspace. 
+        str = arguments[0];
+        console.log(str);
+    }else{
+        var str = "[["
+        if (typeof arg == 'number') {
+            str += arg + "]]";
+        } else if (arg != "[]") {
+            if(!arg.includes(";")){
+                arg = arg.replace(/[\[\]; ]+/g, " ").trim();
+                arg = arg.replace(/[ ,]+/g, "],[");
+            }else{
+                arg = arg.replace(/[\[\] ]+/g, " ").trim();
+                var arry = arg.split(";");
+                var temp ="";
+                for (var i=0;i<arry.length;i++){
+                    if(i == (arry.length -1)){
+                         temp += arry[i].trim();
+                    }else{
+                        temp += arry[i].trim() + ";";
+                    }
                 }
+                arg = temp;
+                arg = arg.replace(/[ ,]+/g, ",");
+                arg = arg.replace(/[;]+/g, "],[");
             }
-            arg = temp;
-            arg = arg.replace(/[ ,]+/g, ",");
-            arg = arg.replace(/[;]+/g, "],[");
+            str += arg + "]]";
+        } else {
+            str = "[]"
         }
-        str += arg + "]]";
-    } else {
-        str = "[]"
     }
     try {
         var array = JSON.parse(str);
