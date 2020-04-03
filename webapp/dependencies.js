@@ -1418,7 +1418,7 @@ function MatrixInverse() {
     return array;
 }
 
-function inverse() {
+/*function inverse() {
     var str = "[["
     var arg = arguments[0];
     if (typeof arg == 'number') {
@@ -1433,6 +1433,48 @@ function inverse() {
     }
     var array = JSON.parse(str);
     return array;
+}*/
+
+// converts [1,1;1,2] => [[1,1],[1,2]]
+// [1,1,1] => [[1],[1],[1]]
+// [1 1 1] => [[1],[1],[1]]
+// 1 1 1 => [[1],[1],[1]]
+// [1 1 1] => [[1],[1],[1]]
+function inverse() {
+    var str = "[["
+    var arg = arguments[0];
+    if (typeof arg == 'number') {
+        str += arg + "]]";
+    } else if (arg != "[]") {
+        if(!arg.includes(";")){
+            arg = arg.replace(/[\[\]; ]+/g, " ").trim();
+            arg = arg.replace(/[ ,]+/g, "],[");
+        }else{
+            arg = arg.replace(/[\[\] ]+/g, " ").trim();
+            var arry = arg.split(";");
+            var temp ="";
+            for (var i=0;i<arry.length;i++){
+                if(i == (arry.length -1)){
+                     temp += arry[i].trim();
+                }else{
+                    temp += arry[i].trim() + ";";
+                }
+            }
+            arg = temp;
+            arg = arg.replace(/[ ,]+/g, ",");
+            arg = arg.replace(/[;]+/g, "],[");
+        }
+        str += arg + "]]";
+    } else {
+        str = "[]"
+    }
+    try {
+        var array = JSON.parse(str);
+        return array;
+    }catch(err) {
+        alert("Not a valid value.Please check");
+        throw "incorrect";
+    }
 }
 
 // replaces ',' by " " and ];[ by ;
