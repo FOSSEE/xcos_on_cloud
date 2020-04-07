@@ -56,7 +56,7 @@ function SWITCH2_m() {
     }
 SWITCH2_m.prototype.set = function SWITCH2_m() {
     var model = scicos_model();
-    this.ot = MatrixInverse((arguments[0]["ot"]))
+    this.ot = inverse((arguments[0]["ot"]))
     if ((this.ot<1)|(this.ot>8)){
         alert("Datatype is not supported");
         SWITCH2_m.get();

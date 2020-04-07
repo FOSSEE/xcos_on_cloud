@@ -50,7 +50,7 @@ function CONST() {
 			    }
 
 		    } else {
-			    this.C = MatrixInverse(C_value);
+			    this.C = inverse(C_value);
 			    this.sz = size(this.C);
 			    this.nout = size(this.C, "*");
 

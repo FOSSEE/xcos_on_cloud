@@ -29,7 +29,7 @@ function CONST_f() {
         return options
     }
 CONST_f.prototype.set = function CONST_f() {
-    this.C = MatrixInverse(arguments[0]["C"])
+    this.C = inverse(arguments[0]["C"])
     this.nout = size(this.C,"*")
     if(this.nout==0){
         alert("C must have at least one element");

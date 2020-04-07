@@ -90,7 +90,7 @@ function GAINBLK() {
 		} else {
 			var str = arguments[0]["gain"];
 		    str = convertInputVectorFormat(str);
-			this.gain = MatrixInverse(str);
+			this.gain = inverse(str);
 			this.out = size(this.gain,1);
     		this.in = size(this.gain,2);
     		if(this.out*this.in == 1){

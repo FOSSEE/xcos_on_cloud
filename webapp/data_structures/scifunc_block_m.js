@@ -82,7 +82,7 @@ function scifunc_block_m() {
         if(!(i1.includes("[")) && !(i1.includes("]"))){
             i1 = "["+i1+"]";
         }
-        var in1 = MatrixInverse(i1);
+        var in1 = inverse(i1);
         if(isNaN(in1[0].length)){
             if(in1.length == 1 || in1.length > 2 ){
                 alert("Answer given for input ports sizes \nhas invalid dimension:\nwaiting for dimension -1 x 2.");
@@ -103,7 +103,7 @@ function scifunc_block_m() {
         if(!(o1.includes("[")) && !(o1.includes("]"))){
             o1 = "["+o1+"]";
         }
-        var out = MatrixInverse(o1);
+        var out = inverse(o1);
         if(isNaN(out[0].length)){
             if(out.length == 1 || out.length > 2 ){
                 alert("Answer given for output ports sizes \nhas invalid dimension:\nwaiting for dimension -1 x 2.");
@@ -124,7 +124,7 @@ function scifunc_block_m() {
         if(!(ci1.includes("[")) && !(ci1.includes("]"))){
             ci1 = "["+ci1+"]";
         }
-        var clkin = MatrixInverse(ci1);
+        var clkin = inverse(ci1);
         if(clkin.length == 0){
             clkin = [];
         }else{
@@ -138,7 +138,7 @@ function scifunc_block_m() {
         if(!(co1.includes("[")) && !(co1.includes("]"))){
             co1 = "["+co1+"]";
         }
-        var clkout = MatrixInverse(co1);
+        var clkout = inverse(co1);
         if(clkout.length == 0){
             clkout = [];
         }else{
@@ -152,7 +152,7 @@ function scifunc_block_m() {
         if(!(xx1.includes("[")) && !(xx1.includes("]"))){
             xx1 = "["+xx1+"]";
         }
-        var x0 = MatrixInverse(xx1);
+        var x0 = inverse(xx1);
         if(x0.length == 0){
             x0 = [];
         }else{
@@ -166,7 +166,7 @@ function scifunc_block_m() {
         if(!(z1.includes("[")) && !(z1.includes("]"))){
             z1 = "["+z1+"]";
         }
-        var z0 = MatrixInverse(z1);
+        var z0 = inverse(z1);
         if(z0.length == 0){
             z0 = [];
         }else{
@@ -180,7 +180,7 @@ function scifunc_block_m() {
         if(!(rpar1.includes("[")) && !(rpar1.includes("]"))){
             rpar1 = "["+rpar1+"]";
         }
-        var rpar0 = MatrixInverse(rpar1);
+        var rpar0 = inverse(rpar1);
         if(rpar0.length == 0){
             rpar0 = [];
         }else{
@@ -194,7 +194,7 @@ function scifunc_block_m() {
         if(!(auto01.includes("[")) && !(auto01.includes("]"))){
             auto01 = "["+auto01+"]";
         }
-        var auto = MatrixInverse(auto01);
+        var auto = inverse(auto01);
         if(auto.length == 0){
             auto = [];
         }else{
