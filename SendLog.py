@@ -279,7 +279,12 @@ def prestart_scilab_instances():
                 return
 
             if FIRST_INSTANCE:
-                gevent.sleep(2)
+                gevent.sleep(1)
+                for i in range(2, 4):
+                    if proc.poll() is not None:
+                        break
+                    gevent.sleep(i)
+
             if proc.poll() is not None:
                 (out, err) = proc.communicate()
                 out = re.sub(r'^[ !\\-]*\n', r'', out, flags=re.MULTILINE)
