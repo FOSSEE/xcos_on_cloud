@@ -61,9 +61,9 @@ function DLRADAPT_f() {
 
     DLRADAPT_f.prototype.set = function DLRADAPT_f() {
 
-        this.p = MatrixInverse(arguments[0]["p"])
+        this.p = inverse(arguments[0]["p"])
 
-        this.rn = MatrixInverse(arguments[0]["rn"])
+        this.rn = inverse(arguments[0]["rn"])
 
 	this.rd = arguments[0]["rd"]
 
@@ -120,11 +120,11 @@ function DLRADAPT_f() {
 	}
 
 	//this.x.model.ipar = new ScilabDouble(m, n, npt);
-	this.g = MatrixInverse(arguments[0]["g"])
+	this.g = inverse(arguments[0]["g"])
 
-	this.last_u = MatrixInverse(arguments[0]["last_u"])
+	this.last_u = inverse(arguments[0]["last_u"])
 
-	this.last_y = MatrixInverse(arguments[0]["last_y"])
+	this.last_y = inverse(arguments[0]["last_y"])
 	if (str1.includes("i")) {
             var exprs = new ScilabString([sci2exp(this.p)], [sci2exp(this.rn)], [sci2exp(this.rd, 0)], [sci2exp(this.g)], [sci2exp(this.last_u)], [sci2exp(this.last_y)]);
         } else {

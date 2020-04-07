@@ -31,8 +31,8 @@ INTRPLBLK_f.prototype.get = function INTRPLBLK_f() {
         return options
     }
 INTRPLBLK_f.prototype.set = function INTRPLBLK_f() {
-    this.a = MatrixInverse(arguments[0]["a"])
-    this.b = MatrixInverse(arguments[0]["b"])
+    this.a = inverse(arguments[0]["a"])
+    this.b = inverse(arguments[0]["b"])
     if(size(this.a,"*")!=size(this.b,"*")){
         alert("X and Y must have the same size");
         INTRPLBLK_f.get();

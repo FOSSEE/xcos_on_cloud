@@ -27,7 +27,7 @@ function EXTRACTOR() {
         return options
     }
 EXTRACTOR.prototype.set = function EXTRACTOR() {
-    this.ind = MatrixInverse(arguments[0]["ind"])
+    this.ind = inverse(arguments[0]["ind"])
     for (var i =this.ind.length - 1; i >= 0; i--) {
         this.ind[i] = Math.floor(this.ind[i])
     }

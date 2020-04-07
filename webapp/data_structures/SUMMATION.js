@@ -44,7 +44,7 @@ function SUMMATION() {
     }
     SUMMATION.prototype.set = function SUMMATION() {
         this.Datatype = parseInt((arguments[0]["Datatype"]))
-	this.sgn = MatrixInverse(arguments[0]["sgn"])
+	this.sgn = inverse(arguments[0]["sgn"])
         this.satur = parseInt((arguments[0]["satur"]))
         if((this.satur!=0)&&(this.satur!=1)&&(this.satur!=2)){
                 alert("Do on overflow must be 0,1,2");

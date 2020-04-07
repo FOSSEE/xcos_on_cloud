@@ -41,8 +41,8 @@ function M_freq() {
          return options
      }
      M_freq.prototype.set = function M_freq() {
-        this.frequ = MatrixInverse(arguments[0]["frequ"])
-        this.offset = MatrixInverse(arguments[0]["offset"])
+        this.frequ = inverse(arguments[0]["frequ"])
+        this.offset = inverse(arguments[0]["offset"])
        // if((size(frequ,"*"))!=(size(offset,"*"))){
        //     alert("offset and frequency must have the same size");
        //     M_freq.get();

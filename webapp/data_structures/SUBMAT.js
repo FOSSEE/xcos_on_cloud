@@ -66,7 +66,7 @@ SUBMAT.prototype.set = function SUBMAT() {
     this.b = parseFloat((arguments[0]["b"]))
     this.c = parseFloat((arguments[0]["c"]))
     this.d = parseFloat((arguments[0]["d"]))
-    this.inp = MatrixInverse((arguments[0]["inp"]))
+    this.inp = inverse((arguments[0]["inp"]))
     if(this.typ == 1){
         this.function_name = "submat"
         this.ot = 1

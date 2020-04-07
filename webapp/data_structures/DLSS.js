@@ -37,11 +37,11 @@ DLSS.prototype.get = function DLSS() {
         return options
     }
 DLSS.prototype.set = function DLSS() {
-    this.A = MatrixInverse(arguments[0]["A"])
-    this.B = MatrixInverse(arguments[0]["B"])
-    this.C = MatrixInverse(arguments[0]["C"])
-    this.D = MatrixInverse(arguments[0]["D"])
-    this.x0 = MatrixInverse(arguments[0]["x0"])
+    this.A = inverse(arguments[0]["A"])
+    this.B = inverse(arguments[0]["B"])
+    this.C = inverse(arguments[0]["C"])
+    this.D = inverse(arguments[0]["D"])
+    this.x0 = inverse(arguments[0]["x0"])
     this.out = size(this.C,1)
     if(this.out == 0)
         this.out = []

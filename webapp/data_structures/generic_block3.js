@@ -163,8 +163,8 @@ function generic_block3() {
             alert("Answer given for Output event ports sizes\n is incorrect: Undefined variable: "+co1);
             throw "incorrect";
         }
-        ci1 = MatrixInverse(ci1);
-        co1 = MatrixInverse(co1);
+        ci1 = inverse(ci1);
+        co1 = inverse(co1);
         if (ci1.length == 0 || ci1[0].length == 0){
             ci1 = [];
         }
@@ -183,7 +183,7 @@ function generic_block3() {
             alert("Answer given for Initial continuous state\n is incorrect: Undefined variable: "+xx1);
             throw "incorrect";
         }
-        xx1 = MatrixInverse(xx1);
+        xx1 = inverse(xx1);
         if (xx1.length == 0 || xx1[0].length == 0){
             xx1 = [];
         }
@@ -193,7 +193,7 @@ function generic_block3() {
             alert("Answer given for Initial discrete state\n is incorrect: Undefined variable: "+z1);
             throw "incorrect";
         }
-        z1 = MatrixInverse(z1);
+        z1 = inverse(z1);
         if (z1.length == 0 || z1[0].length == 0){
             z1 = [];
         }
@@ -225,7 +225,7 @@ function generic_block3() {
             alert("Answer given for Real parameters vector\nis incorrect: Incompatible output argument");
             throw "incorrect";
         }
-        rpar1 = MatrixInverse(rpar1);
+        rpar1 = inverse(rpar1);
         if (rpar1.length == 0 || rpar1[0].length == 0){
             rpar1 = [];
         }
@@ -240,7 +240,7 @@ function generic_block3() {
             alert("Answer given for Integer parameters vector\nis incorrect: Incompatible output argument");
             throw "incorrect";
         }
-        ipar1 = MatrixInverse(ipar1);
+        ipar1 = inverse(ipar1);
         if (ipar1.length == 0 || ipar1[0].length == 0){
             ipar1 = [];
         }
@@ -286,7 +286,7 @@ function generic_block3() {
             }
         }
 
-        auto01 = MatrixInverse(auto01);
+        auto01 = inverse(auto01);
         if (auto01.length == 0 || auto01[0].length == 0){
             auto01 = [];
         }

@@ -136,8 +136,8 @@ function STEP_FUNCTION() {
             }
         }
 
-        initial1 = MatrixInverse(initial1);
-	    final1 = MatrixInverse(final1);
+        initial1 = inverse(initial1);
+	    final1 = inverse(final1);
 	    this.step = step1;
         this.initial = initial1;
         this.final = final1;

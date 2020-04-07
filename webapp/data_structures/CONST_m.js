@@ -61,7 +61,7 @@ function CONST_m() {
 		} else {
 			var str = arguments[0]["vec"];
 		    str = convertInputVectorFormat(str);
-			this.C = MatrixInverse(str);
+			this.C = inverse(str);
 			this.nout = size(this.C, "*")
 			if (this.nout == 0) {
 				alert("Wrong size for 'Constant Value' parameter" + "\nConstant value must have at least one element.");

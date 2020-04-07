@@ -32,9 +32,9 @@ INTRP2BLK_f.prototype.get = function INTRP2BLK_f() {
         return options
     }
 INTRP2BLK_f.prototype.set = function INTRP2BLK_f() {
-    this.a = MatrixInverse(arguments[0]["a"])
-    this.b = MatrixInverse(arguments[0]["b"])
-    this.c = MatrixInverse(arguments[0]["c"])
+    this.a = inverse(arguments[0]["a"])
+    this.b = inverse(arguments[0]["b"])
+    this.c = inverse(arguments[0]["c"])
     if((size(this.a,"*")!=size(this.c,"c"))||(size(this.b,"*")!=size(this.c,"r"))){
         alert("incompatible dimension");
         INTRP2BLK_f.get();
