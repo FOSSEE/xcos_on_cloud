@@ -36,57 +36,62 @@ function AUTOMAT() {
         return this.x;
     }
     AUTOMAT.prototype.get=function AUTOMAT(){
-        var options={
+        var options = {
             NMode:["Number (finite-state) Modes",this.NMode],
             Minitial:["Initial Mode",this.Minitial],
             NX:["Number of continuous-time states",this.NX],
-            X0:["Continuous-time states intial values",this.X0.toString().replace(/,/g," ")],
-            XP:["Xproperties of continuous-time states in each Mode",this.XP.toString().replace(/,/g," ")],
-            C1:["Jump from Mode 1:[..;M_final(Guard=In(1).i);..]",this.C1.toString().replace(/,/g," ")],
-            C2:["Jump from Mode 2:[..;M_final(Guard=In(2).i);..]",this.C2.toString().replace(/,/g," ")],
+            X0:["Continuous-time states intial values",this.X0],
+            XP:["Xproperties of continuous-time states in each Mode",this.XP],
+            C1:["Jump from Mode 1:[..;M_final(Guard=In(1).i);..]",this.C1],
+            C2:["Jump from Mode 2:[..;M_final(Guard=In(2).i);..]",this.C2],
         }
         return options
     }
     AUTOMAT.prototype.set=function AUTOMAT(){
-        this.NMode=parseFloat(arguments[0]["NMode"])
-        this.Minitial=parseFloat(arguments[0]["Minitial"])
-        this.NX=parseFloat(arguments[0]["NX"])
-        this.X0=inverse(arguments[0]["X0"])
-        this.XP=inverse(arguments[0]["XP"])
-        this.C1=inverse(arguments[0]["C1"])
-        this.C2=inverse(arguments[0]["C2"])
-        if(this.NX!=size(this.X0,"*")){
+        this.NMode = parseFloat(arguments[0]["NMode"]);
+        this.Minitial = parseFloat(arguments[0]["Minitial"]);
+        this.NX = parseFloat(arguments[0]["NX"]);
+        this.X0 = arguments[0]["X0"];
+        this.XP = arguments[0]["XP"];
+        this.C1 = arguments[0]["C1"];
+        this.C2 = arguments[0]["C2"];
+        var X0_1 = inverse(this.X0);
+        var XP_1 = inverse(this.XP);
+        var C1_1 = inverse(this.C1);
+        var C2_1 =  inverse(this.C2);
+        if(this.NX != size(X0_1,"*")){
             alert("the size of intial continuous-time states should be NX="+this.NX);
-            AUTOMAT.get();
+            throw "inorrect";
         }
-        var rXP=size(this.XP,1);
-        var cXP=size(this.XP,2);
-        if(cXP!=this.NX){
+        var rXP = size(XP_1,1);
+        var cXP = size(XP_1,2);
+        if(cXP != this.NX){
             alert("Xproperty matrix is not valid: it should have NX="+this.NX+" columns");
-            AUTOMAT.get();
+            throw "inorrect";
         }
-        else if((rXP!=this.NMode)&&(rXP>1)){
+        else if(rXP != this.NMode && rXP > 1){
             alert("Xproperty matrix is not valid: it should have NMode="+this.NMode+" or 1 row(s)");
-            AUTOMAT.get();
+            throw "inorrect";
         }
-        else if(rXP==1){
+        else if(rXP == 1){
             //for i=1:NMode-1
-                this.XP[rXP]=this.XP[0];// xproprties are identical in modes.
+                XP_1[rXP] = XP_1[0];// xproprties are identical in modes.
             //end
         }
-        var YP=math.matrix(transpose(this.XP));
-        this.XP=YP.resize([this.NMode*this.NX,1]);
-        var ipar=[[this.NMode],[this.Minitial],[this.NX],[this.XP]];
-        var Y0=math.matrix(this.X0);
-        var rpar=Y0.resize([this.NX,1]);// put X0 in a column vector;
-        var INP=ones(this.NMode,1);
+        var YP = math.matrix(transpose(XP_1));
+        XP_1 = YP.resize([this.NMode*this.NX,1]);
+        var ipar = [[this.NMode],[this.Minitial],[this.NX],[XP_1]];
+        var Y0 = math.matrix(X0_1);
+        var rpar = Y0.resize([this.NX,1]);// put X0 in a column vector;
+        var INP = ones(this.NMode,1);
         var OUT;
-        if(this.NX>0)
-            OUT=[[2],[2*this.NX]];
-        else
-            OUT=[2];
-        MaxModes=1;
-        nzcross=0;
+        if(this.NX > 0){
+            OUT = [[2],[2*this.NX]];
+        }else{
+            OUT = [2];
+        }
+        MaxModes = 1;
+        nzcross = 0;
         /*if(MaxModes>this.NMode){
             alert("Number of Modes should be "+MaxModes+"\nA destination Mode in Mode#"+imax+"''s targets is invalid!");
             AUTOMAT.get();
@@ -95,19 +100,19 @@ function AUTOMAT() {
             alert("There is an unused Mode or the Number of Modes should be "+MaxModes);
             AUTOMAT.get();
         }*/
-        var io=check_io(this.x.model,this.x.graphics,[INP],[OUT],[],[1])
-        this.x.model.nzcross=nzcross;
-        this.x.model.state=ones(2*this.NX,1);
-        this.x.graphics.gr_i[0][0]="txt=[''Automaton'';''nM="+this.NMode+",nX="+this.NX+"''];"
-        var exprs=new ScilabString([this.NMode],[this.Minitial],[this.NX],[this.X0.toString().replace(/,/g," ")],[this.XP.toString().replace(/,/g," ")],[this.C1.toString().replace(/,/g," ")],[this.C2.toString().replace(/,/g," ")])
-        this.x.graphics.exprs=exprs
-        this.x.model.ipar=ipar;
-        this.x.model.rpar=rpar;
+        var io = check_io(this.x.model,this.x.graphics,[INP],[OUT],[],[1]);
+        this.x.model.nzcross = nzcross;
+        this.x.model.state = ones(2*this.NX,1);
+        this.x.graphics.gr_i[0][0] = "txt=[''Automaton'';''nM=" + this.NMode + ",nX=" + this.NX + "''];"
+        var exprs = new ScilabString([this.NMode],[this.Minitial],[this.NX],[this.X0],[this.XP],[this.C1],[this.C2]);
+        this.x.graphics.exprs = exprs;
+        this.x.model.ipar = ipar;
+        this.x.model.rpar = rpar;
         return new BasicBlock(this.x);
     }
 
     AUTOMAT.prototype.get_popup_title = function AUTOMAT() {
-        var set_param_popup_title="Set parameters";
+        var set_param_popup_title = "Set parameters";
         return set_param_popup_title
     }
     AUTOMAT.prototype.getDimensionForDisplay = function AUTOMAT(){
