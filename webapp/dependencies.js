@@ -1395,30 +1395,6 @@ function compare() {
 }
 
 // converts [1,1;1,2] => [[1,1],[1,2]]
-// and [1,1,1] => [1,1,1]
-// and 1 => [0]
-function MatrixInverse() {
-    var str = "["
-    var arg = arguments[0];
-    if (arg.indexOf(';') == -1) {
-        if (arg.indexOf(',') == -1) {
-            str += arg + ']';
-            var array = JSON.parse(str);
-        } else
-            var array = JSON.parse(arg);
-    } else {
-        if (arg != "[]") {
-            arg = arg.replace(/;/g, "],[");
-            str += arg + "]";
-        } else {
-            str = "[]"
-        }
-        var array = JSON.parse(str);
-    }
-    return array;
-}
-
-// converts [1,1;1,2] => [[1,1],[1,2]]
 // [1,1,1] => [[1],[1],[1]]
 // [1 1 1] => [[1],[1],[1]]
 // 1 1 1 => [[1],[1],[1]]
@@ -1426,38 +1402,43 @@ function MatrixInverse() {
 function inverse() {
     var arg = arguments[0];
     var regex_char = /[a-zA-Z]/g; //check character for string/ variable input
-    var chararray = arg.match(regex_char);
-    if (chararray != null) {
-        //Need to add code to call and check values of variable from context and workspace. 
-        str = arguments[0];
-        console.log(str);
-    }else{
-        var str = "[["
-        if (typeof arg == 'number') {
-            str += arg + "]]";
-        } else if (arg != "[]") {
-            if(!arg.includes(";")){
-                arg = arg.replace(/[\[\]; ]+/g, " ").trim();
-                arg = arg.replace(/[ ,]+/g, "],[");
+    var str = "[["
+    if (typeof arg == 'number') {
+        str += arg + "]]";
+    } else if (arg != "[]") {
+        var chararray = arg.match(regex_char);
+        if (chararray != null) {
+            //Check context variable exist or not
+            var return_str = get_value_for_variable_from_context(arg);
+            if(return_str != "NoContextValue"){
+                arg = return_str;
             }else{
-                arg = arg.replace(/[\[\] ]+/g, " ").trim();
-                var arry = arg.split(";");
-                var temp ="";
-                for (var i=0;i<arry.length;i++){
-                    if(i == (arry.length -1)){
-                         temp += arry[i].trim();
-                    }else{
-                        temp += arry[i].trim() + ";";
-                    }
-                }
-                arg = temp;
-                arg = arg.replace(/[ ,]+/g, ",");
-                arg = arg.replace(/[;]+/g, "],[");
+                // hv to add code for workspace
+                alert("support for workspace need to be added yet");
+                throw "incorrect";
             }
-            str += arg + "]]";
-        } else {
-            str = "[]"
         }
+        if(!arg.includes(";")){
+            arg = arg.replace(/[\[\]; ]+/g, " ").trim();
+            arg = arg.replace(/[ ,]+/g, "],[");
+        }else{
+            arg = arg.replace(/[\[\] ]+/g, " ").trim();
+            var arry = arg.split(";");
+            var temp ="";
+            for (var i=0;i<arry.length;i++){
+                if(i == (arry.length -1)){
+                    temp += arry[i].trim();
+                }else{
+                    temp += arry[i].trim() + ";";
+                   }
+            }
+            arg = temp;
+            arg = arg.replace(/[ ,]+/g, ",");
+            arg = arg.replace(/[;]+/g, "],[");
+        }
+        str += arg + "]]";
+    } else {
+        str = "[]"
     }
     try {
         var array = JSON.parse(str);
