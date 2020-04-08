@@ -44,13 +44,13 @@ function BOUNCEXY() {
     }
 
     BOUNCEXY.prototype.details = function BOUNCEXY() {
-
         return this.x;
     }
-BOUNCEXY.prototype.get = function BOUNCEXY() {
-         var options={
-            clrs:["colors",this.clrs.toString().replace(/,/g," ")],
-            siz:["radii",this.siz.toString().replace(/,/g," ")],
+
+    BOUNCEXY.prototype.get = function BOUNCEXY() {
+        var options = {
+            clrs:["colors",this.clrs],
+            siz:["radii",this.siz],
             win:["window number (-1 for automatic)",this.win],
             imode:["animation mode (0,1)",this.imode],
             xmin:["Xmin",this.xmin],
@@ -61,50 +61,53 @@ BOUNCEXY.prototype.get = function BOUNCEXY() {
         return options
     }
 BOUNCEXY.prototype.set = function BOUNCEXY() {
-    this.clrs = inverse(arguments[0]["clrs"])
-    this.siz = inverse(arguments[0]["siz"])
-    this.win = parseFloat((arguments[0]["win"]))
-    this.imode = parseFloat((arguments[0]["imode"]))
-    this.xmin = parseFloat((arguments[0]["xmin"]))
-    this.xmax = parseFloat((arguments[0]["xmax"]))
-    this.ymin = parseFloat((arguments[0]["ymin"]))
-    this.ymax = parseFloat((arguments[0]["ymax"]))
-    if(size(this.clrs,"*")!=size(this.siz,"*")){
+    this.clrs = arguments[0]["clrs"];
+    this.siz = arguments[0]["siz"];
+    this.win = parseFloat(arguments[0]["win"]);
+    this.imode = parseFloat(arguments[0]["imode"]);
+    this.xmin = parseFloat(arguments[0]["xmin"]);
+    this.xmax = parseFloat(arguments[0]["xmax"]);
+    this.ymin = parseFloat(arguments[0]["ymin"]);
+    this.ymax = parseFloat(arguments[0]["ymax"]);
+    var clrs_1 = inverse(this.clrs);
+    var siz_1 = inverse(this.siz);
+
+    if(size(clrs_1,"*") != size(siz_1,"*")){
         alert("colors and radii must have equal size (number of balls)");
-        BOUNCEXY.get();
+        throw "incorrect";
     }
-            if(this.win<-1){
-                alert("Window number cannot be inferior than -1");
-                BOUNCEXY.get();
-            }
-            if(this.ymin>=this.ymax){
-                alert("Ymax must be greater than Ymin");
-                BOUNCEXY.get();
-            }
-            if(this.xmin>=this.xmax){
-                alert("Xmax must be greater than Xmin");
-                BOUNCEXY.get();
-            }
+    if(this.win < -1){
+        alert("Window number cannot be inferior than -1");
+        throw "incorrect";
+    }
+    if(this.ymin >= this.ymax){
+        alert("Ymax must be greater than Ymin");
+        throw "incorrect";
+    }
+    if(this.xmin >= this.xmax){
+        alert("Xmax must be greater than Xmin");
+        throw "incorrect";
+    }
     this.z = [];
-    for (var i = 0; i < size(this.clrs, "*"); i++) {
+    for (var i = 0; i < size(clrs_1, "*"); i++) {
         this.z[6 * (i) + 0] = [0];
         this.z[6 * (i) + 1] = [0];
-        this.z[6 * (i) + 2] = [2 * this.siz[i]];
-        this.z[6 * (i) + 3] = [2 * this.siz[i]];
+        this.z[6 * (i) + 2] = [2 * siz_1[i]];
+        this.z[6 * (i) + 3] = [2 * siz_1[i]];
         this.z[6 * (i) + 4] = [0.000];
         this.z[6 * (i) + 5] = [64.0 * 360.000];
 
     }
     model.dstate = new ScilabDouble(...this.z);
     model.rpar = new ScilabDouble([this.xmin], [this.xmax], [this.ymin], [this.ymax]);
-    model.ipar = new ScilabDouble([this.win], [this.imode], ...colon_operator(this.clrs));
-    var exprs = new ScilabString([this.clrs.toString().replace(/,/g, " ")],[this.siz.toString().replace(/,/g, " ")],[this.win],[this.imode],[this.xmin],[this.xmax],[this.ymin],[this.ymax])
-    this.x.graphics.exprs=exprs
-    return new BasicBlock(this.x)
+    model.ipar = new ScilabDouble([this.win], [this.imode], ...colon_operator(clrs_1));
+    var exprs = new ScilabString([this.clrs],[this.siz],[this.win],[this.imode],[this.xmin],[this.xmax],[this.ymin],[this.ymax]);
+    this.x.graphics.exprs = exprs;
+    return new BasicBlock(this.x);
     }
 
 BOUNCEXY.prototype.get_popup_title = function BOUNCEXY() {
-        var set_param_popup_title="Set Scope parameters";
+        var set_param_popup_title = "Set Scope parameters";
         return set_param_popup_title
     }
     BOUNCEXY.prototype.getDimensionForDisplay = function BOUNCEXY(){
