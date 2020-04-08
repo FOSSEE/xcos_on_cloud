@@ -1414,8 +1414,10 @@ function inverse() {
                 arg = return_str;
             }else{
                 // hv to add code for workspace
-                alert("support for workspace need to be added yet");
-                throw "incorrect";
+                var return_value = get_value_for_variable_from_workspace(arg);
+                if(return_value != "NoWorkspaceValue"){
+                    arg = return_value;
+                }
             }
         }
         if(!arg.includes(";")){
@@ -1444,7 +1446,7 @@ function inverse() {
         var array = JSON.parse(str);
         return array;
     }catch(err) {
-        alert("Not a valid value.Please check");
+        alert("Not a valid input parameter. Please check");
         throw "incorrect";
     }
 }

@@ -1250,3 +1250,19 @@ function get_value_for_variable_from_context(variable_name){
         return value;
     }
 }
+
+// Get value of variable from workspace variable list
+function get_value_for_variable_from_workspace(variable_name){
+    var workspace_values_for_import = new Map();
+    for(var i = 0; i < variable_list.length; i++){
+        var variable_value = variable_list[i];
+        workspace_values_for_import.set(variable_value.name, variable_value.value);
+    }
+    value = workspace_values_for_import.get(variable_name);
+    if(value == undefined || value == null){
+        return "NoWorkspaceValue";
+    }else{
+        return value;
+    }
+
+}
