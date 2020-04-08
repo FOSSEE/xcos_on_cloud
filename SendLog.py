@@ -279,7 +279,12 @@ def prestart_scilab_instances():
                 return
 
             if FIRST_INSTANCE:
-                gevent.sleep(2)
+                gevent.sleep(1)
+                for i in range(2, 4):
+                    if proc.poll() is not None:
+                        break
+                    gevent.sleep(i)
+
             if proc.poll() is not None:
                 (out, err) = proc.communicate()
                 out = re.sub(r'^[ !\\-]*\n', r'', out, flags=re.MULTILINE)
@@ -949,8 +954,44 @@ def getscriptoutput():
                     script.script_id, script.workspace_filename)
         msg = ''
         script.status = 0
+
+        cmd = list_variables(script.workspace_filename)
+        script.instance = run_scilab(cmd, script)
+        instance = script.instance
+
+        if instance is None:
+            msg = "Resource not available"
+            script.status = -2
+            rv = {'status': script.status, 'msg': msg}
+            return Response(json.dumps(rv), mimetype='application/json')
+
+        proc = instance.proc
+        listoutput = proc.communicate(timeout=10)[0]
+        remove_scilab_instance(script.instance)
+        script.instance = None
+
+        returncode = proc.returncode
+        if returncode < 0 or returncode == 2:
+            logger.warning('return code is %s', returncode)
+            msg = 'Script stopped'
+            script.status = -5
+            rv = {'status': script.status, 'msg': msg, 'output': listoutput}
+            return Response(json.dumps(rv), mimetype='application/json')
+        if returncode > 0:
+            logger.info('return code is %s', returncode)
+            if listoutput:
+                logger.info('=== List output from scilab console ===\n%s',
+                            listoutput)
+        try:
+            listoutput = listoutput.strip()
+            variables = json.loads(listoutput)
+        except Exception as e:
+            logger.warning('error while loading: %s: %s', listoutput, str(e))
+            variables = []
+
         rv = {'script_id': script.script_id, 'status': script.status,
-              'msg': msg, 'output': output, 'returncode': returncode}
+              'msg': msg, 'output': output, 'returncode': returncode,
+              'variables': variables}
         return Response(json.dumps(rv), mimetype='application/json')
     except subprocess.TimeoutExpired:
         kill_script(script)
@@ -1110,20 +1151,70 @@ def kill_scilab(diagram=None):
     stopDetailsThread(diagram)
 
 
+def list_variables(filename):
+    '''
+    add scilab commands to list only user defined variables
+    '''
+
+    command = "[__V1,__V2,__V3]=listvarinfile('%s');" % filename
+    command += "__V5=grep(string(__V2),'/^([124568]|1[7])$/','r');"
+    command += "__V1=__V1(__V5);"
+    command += "__V2=__V2(__V5);"
+    command += "__V3=list(__V3(__V5));"
+    command += "__V5=grep(__V1,'/^[^%]+$/','r');"
+    command += "if ~isempty(__V5) then;"
+    command += "__V1=__V1(__V5);"
+    command += "__V2=__V2(__V5);"
+    command += "__V3=list(__V3(__V5));"
+    command += "__V6=''''+strcat(__V1,''',''')+'''';"
+    command += "__V7='load(''%s'','+__V6+');';" % filename
+    command += "execstr(__V7);"
+    command += "__V9='[';"
+    command += "for __V8=1:size(__V5,2) do;"
+    command += "__V18=__V1(__V8);"
+    command += "__V28=__V2(__V8);"
+    command += "__V38=__V3(__V8);"
+    command += "__V9=__V9+'{\"\"name\"\":\"\"'+__V18+'\"\",'+"
+    command += "'\"\"type\"\":\"\"'+string(__V28)+'\"\",'+"
+    command += "'\"\"size\"\":\"\"'+sci2exp(__V38)+'\"\",'+"
+    command += "'\"\"value\"\":\"\"';"
+    command += "if size(__V38,2)>1 then;"
+    command += "__V10=__V38(1)*__V38(2);"
+    command += "else;"
+    command += "__V10=__V38;"
+    command += "end;"
+    command += "if __V10<=100 then;"
+    command += "__V9=__V9+sci2exp(eval(__V18));"
+    command += "end;"
+    command += "__V9=__V9+'\"\"}';"
+    command += "if __V8<size(__V5,2) then;"
+    command += "__V9=__V9+',';"
+    command += "end;"
+    command += "end;"
+    command += "__V9=__V9+']';"
+    command += "printf('%s',__V9);"
+    command += "end;"
+    return command
+
+
 def load_variables(filename):
     '''
     add scilab commands to load only user defined variables
     '''
 
     command = "[__V1,__V2]=listvarinfile('%s');" % filename
-    command += "__V3=__V1(grep(string(__V2),'/^([124568]|1[7])$/','r'));"
-    command += "__V4=__V3(grep(__V3,'/^[^%]+$/','r'));"
-    command += "if ~isempty(__V4) then;"
-    command += "__V5=''''+strcat(__V4,''',''')+'''';"
-    command += "__V6='load(''%s'','+__V5+');';" % filename
-    command += "execstr(__V6);"
+    command += "__V5=grep(string(__V2),'/^([124568]|1[7])$/','r');"
+    command += "__V1=__V1(__V5);"
+    command += "__V2=__V2(__V5);"
+    command += "__V5=grep(__V1,'/^[^%]+$/','r');"
+    command += "if ~isempty(__V5) then;"
+    command += "__V1=__V1(__V5);"
+    command += "__V2=__V2(__V5);"
+    command += "__V6=''''+strcat(__V1,''',''')+'''';"
+    command += "__V7='load(''%s'','+__V6+');';" % filename
+    command += "execstr(__V7);"
     command += "end;"
-    command += "clear __V1 __V2 __V3 __V4 __V5 __V6;"
+    command += "clear __V1 __V2 __V5 __V6 __V7;"
     return command
 
 
