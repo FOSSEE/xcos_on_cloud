@@ -85,8 +85,9 @@ function displayResultforCode(visible_flag) {
 
 }
 
-var old_script_id = null;
 var script_id = null;
+var new_script_id = null;
+var scilabVariableMap = new Map();
 
 function clean_text_2(s) {
     // handle whitespace
@@ -197,19 +198,34 @@ function executePrerequisiteFile(async = true) {
             }
             var id = rv.script_id;
             if (id != null) {
-                old_script_id = script_id;
-                script_id = id;
+                new_script_id = id;
 
                 $.ajax({
                     type: "POST",
                     url: "/getscriptoutput",
                     async: async,
-                    data: { script_id: script_id },
+                    data: { script_id: new_script_id },
                     dataType: "json",
                     success: function(rv) {
                         var msg = rv.msg;
                         if (msg != '') {
                             alert("Error while executing script\n\n" + msg);
+                        } else {
+                            script_id = new_script_id;
+                            var variables = rv.variables;
+                            var variableMap = new Map();
+                            if (Array.isArray(variables)) {
+                                for (var v of variables) {
+                                    var name = v.name;
+                                    var type = v.type;
+                                    var size = v.size;
+                                    var value = v.value;
+                                    if (name == null || type == null || size == null || value == null)
+                                        continue;
+                                    variableMap.set(name, { type, size, value });
+                                }
+                            }
+                            scilabVariableMap = variableMap;
                         }
                         var output = rv.output;
                         if (output != null) {
@@ -218,6 +234,7 @@ function executePrerequisiteFile(async = true) {
                             /* if code window is open, show the output window */
                             displayResultforCode(output != '');
                         }
+                        new_script_id = null;
                         setScriptSimulationFlags(false);
                     },
                     error: function(xhr, textStatus, errorThrown) {
@@ -251,7 +268,7 @@ function executePrerequisiteFile(async = true) {
 }
 
 function stopPrerequisiteFile() {
-    if (script_id === null)
+    if (new_script_id === null)
         return;
 
     stopScriptButton.disabled = true;
@@ -260,9 +277,9 @@ function stopPrerequisiteFile() {
         type: "POST",
         url: "/stopscript",
         async: true,
-        data: { script_id: script_id },
+        data: { script_id: new_script_id },
         success: function(rv) {
-            script_id = old_script_id;
+            new_script_id = null;
             setScriptSimulationFlags(false);
         }
     });
@@ -272,5 +289,7 @@ function clearPrerequisiteFile() {
     prerequisite_content = "";
     prerequisite_output = "";
     script_id = null;
+    new_script_id = null;
+    scilabVariableMap = new Map();
     setScriptSimulationFlags(false);
 }
