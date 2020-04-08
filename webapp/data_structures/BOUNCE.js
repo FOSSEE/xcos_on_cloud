@@ -61,9 +61,9 @@ function BOUNCE() {
         this.rpar2 = arguments[0]["rpar2"];
         this.walls = arguments[0]["walls"];
 	    this.xt = arguments[0]["xt"];
-	    this.xd = inverse(arguments[0]["xd"]);
-	    this.y = inverse(arguments[0]["y"]);
-	    this.yd = inverse(arguments[0]["yd"]);
+	    this.xd = arguments[0]["xd"];
+	    this.y = arguments[0]["y"];
+	    this.yd = arguments[0]["yd"];
 	    var rpar1_1 = inverse(this.rpar1);
 	    var rpar2_1 = inverse(this.rpar2);
 	    var walls_1 = inverse(this.walls);
