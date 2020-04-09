@@ -3,7 +3,6 @@
 var prerequisite_window = null;
 var editorCodeMirror = null;
 var resultCodeMirror = null;
-var variable_list = [];
 
 function displayPrerequisiteFile(graph) {
     var maindiv = document.createElement('div');
@@ -227,10 +226,6 @@ function executePrerequisiteFile(async = true) {
                                 }
                             }
                             scilabVariableMap = variableMap;
-                        }
-                        var var_list = rv.variables;
-                        if(var_list.length > 0){
-                            variable_list = var_list;
                         }
                         var output = rv.output;
                         if (output != null) {

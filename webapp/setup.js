@@ -62,6 +62,7 @@ function handleContext() {
         return expressionArray;
     } else if (method == "set") {
         expressionArray = [];
+        scilabVariableMap = new Map();
         var contextValues = arguments[1];
         for (var prop in contextValues) {
                 // Eliminate null values
@@ -71,5 +72,6 @@ function handleContext() {
                 expressionArray[prop] = contextValues[prop];
             }
         }
+        get_map_of_context_values(expressionArray); //create a map for storing context value (only call on set method)
     }
 }

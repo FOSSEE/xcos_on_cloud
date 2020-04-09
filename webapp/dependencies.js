@@ -1410,13 +1410,13 @@ function inverse() {
         if (chararray != null) {
             //Check context variable exist or not
             var return_str = get_value_for_variable_from_context(arg);
-            if(return_str != "NoContextValue"){
+            if(return_str != null){
                 arg = return_str;
             }else{
                 // hv to add code for workspace
-                var return_value = get_value_for_variable_from_workspace(arg);
-                if(return_value != "NoWorkspaceValue"){
-                    arg = return_value;
+                var return_map = get_value_for_variable_from_workspace(arg);
+                if(return_map != null){
+                    arg = return_map.value;
                 }
             }
         }
