@@ -1253,12 +1253,7 @@ function get_value_for_variable_from_context(variable_name){
 
 // Get value of variable from workspace variable list
 function get_value_for_variable_from_workspace(variable_name){
-    var workspace_values_for_import = new Map();
-    for(var i = 0; i < variable_list.length; i++){
-        var variable_value = variable_list[i];
-        workspace_values_for_import.set(variable_value.name, variable_value.value);
-    }
-    value = workspace_values_for_import.get(variable_name);
+    var value = scilabVariableMap.get(variable_name).value; // map in prerequisitefile.js
     if(value == undefined || value == null){
         return "NoWorkspaceValue";
     }else{
