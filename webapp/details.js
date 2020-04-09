@@ -1229,33 +1229,37 @@ function objToArrayList(graphPoints) {
     return tempPoints;
 }
 
-// Get context variable values from context
-// and stored them in map for easy retriving.
-function get_value_for_variable_from_context(variable_name){
-
-    var value = "";
-    var contextValue = handleContext("get");
-    var context_values_for_import = new Map();
-    for(var i = 0; i < contextValue.length; i++){
-        var context_text = contextValue[i];
-        var temp = context_text.split("=");
-        if(temp.length == 2){
-            context_values_for_import.set(temp[0], temp[1]);
+var contextVariableMap = new Map(); // Global map for storing context variable of diagram
+// Get context variables values from context
+// and stored them in map and return that map
+function get_map_of_context_values(context_map){
+    if(context_map.length != 0){
+        for(var i = 0; i < context_map.length; i++){
+            var context_text = context_map[i];
+            var temp = context_text.split("=");
+            if(temp.length == 2){
+                contextVariableMap.set(temp[0], temp[1]);
+            }
         }
-    }
-    value = context_values_for_import.get(variable_name);
-    if(value == undefined || value == null){
-        return "NoContextValue";
-    }else{
-        return value;
     }
 }
 
-// Get value of variable from workspace variable list
+// Get value of variable from workspace variable map
 function get_value_for_variable_from_workspace(variable_name){
-    var value = scilabVariableMap.get(variable_name).value; // map in prerequisitefile.js
+    var value = scilabVariableMap.get(variable_name); // map in prerequisitefile.js
     if(value == undefined || value == null){
-        return "NoWorkspaceValue";
+        return null;
+    }else{
+        return value;
+    }
+
+}
+
+// Get value of variable from context variable map
+function get_value_for_variable_from_context(variable_name){
+    var value = contextVariableMap.get(variable_name); // map in details.js
+    if(value == undefined || value == null){
+        return null;
     }else{
         return value;
     }
