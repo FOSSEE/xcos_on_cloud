@@ -20,6 +20,7 @@ CREATE TABLE `textbook_companion_chapter` (
   `number` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `cloud_chapter_err_status` varchar(255) NOT NULL DEFAULT '0',
+  `xcos_cloud_chapter_error_status` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -34,6 +35,7 @@ CREATE TABLE `textbook_companion_example` (
   `approval_status` int(11) NOT NULL,
   `timestamp` int(11) NOT NULL,
   `cloud_err_status` int(11) NOT NULL DEFAULT '0',
+  `xcos_cloud_example_error_status` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -48,6 +50,7 @@ CREATE TABLE `textbook_companion_example_files` (
   `filetype` varchar(1) NOT NULL,
   `caption` varchar(100) NOT NULL DEFAULT 'None',
   `timestamp` int(11) NOT NULL,
+  `xcos_cloud_example_file_error_status` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -68,6 +71,7 @@ CREATE TABLE `textbook_companion_preference` (
   `pLike` int(11) NOT NULL DEFAULT '0',
   `pDislike` int(11) NOT NULL DEFAULT '0',
   `cloud_pref_err_status` int(11) NOT NULL DEFAULT '0',
+  `xcos_cloud_book_error_status` int(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
