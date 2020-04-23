@@ -62,7 +62,6 @@ function handleContext() {
         return expressionArray;
     } else if (method == "set") {
         expressionArray = [];
-        scilabVariableMap = new Map();
         var contextValues = arguments[1];
         for (var prop in contextValues) {
                 // Eliminate null values
