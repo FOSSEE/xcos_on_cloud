@@ -105,7 +105,8 @@ QUERY_BOOK = (
     "JOIN textbook_companion_example tce ON tcc.id = tce.chapter_id "
     "JOIN textbook_companion_example_files tcef ON tce.id = tcef.example_id "
     "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND "
-    "pe.approval_status = 1 AND tcef.xcos_cloud_example_file_error_status = 0 AND "
+    "pe.approval_status = 1 AND "
+    "tcef.xcos_cloud_example_file_error_status = 0 AND "
     "pe.category = %s "
     "GROUP BY 1 "
     "ORDER BY 2 ASC")
@@ -120,7 +121,8 @@ QUERY_CHAPTER = (
     "JOIN textbook_companion_example tce ON tcc.id = tce.chapter_id "
     "JOIN textbook_companion_example_files tcef ON tce.id = tcef.example_id "
     "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND "
-    "pe.approval_status = 1 AND tcef.xcos_cloud_example_file_error_status = 0 AND "
+    "pe.approval_status = 1 AND "
+    "tcef.xcos_cloud_example_file_error_status = 0 AND "
     "tcc.preference_id = %s "
     "ORDER BY tcc.number ASC")
 
