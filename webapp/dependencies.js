@@ -1400,14 +1400,14 @@ function compare() {
 // 1 1 1 => [[1],[1],[1]]
 // [1 1 1] => [[1],[1],[1]]
 function inverse() {
-    var arg = arguments[0];
-    var regex_char = /[a-zA-Z]/g; //check character for string/ variable input
+    var arg = arguments[0].trim();
+    var regex_char = /[a-zA-Z]/g; //check characters for string/variable input eg. A / abc /vv12 etc
     var str = "[["
     if (typeof arg == 'number') {
         str += arg + "]]";
     } else if (arg != "[]") {
-        var chararray = arg.match(regex_char);
-        if (chararray != null) {
+        arg = arg.replace(/int8\(([^)]*)\)/, "$1"); // extracting value from int8(12) => 12
+        if (regex_char.test(arg)) {
             //Check context variable exist or not
             var return_str = get_value_for_variable_from_context(arg);
             if(return_str != null){
@@ -1421,13 +1421,27 @@ function inverse() {
             }
         }
         if(!arg.includes(";")){
+            /*
+             test case :
+                [1,1,1] => [[1],[1],[1]]
+                [1 1 1] => [[1],[1],[1]]
+                1 1 1 => [[1],[1],[1]]
+                1,1,1 => [[1],[1],[1]]
+            */
             arg = arg.replace(/[\[\]; ]+/g, " ").trim();
             arg = arg.replace(/[ ,]+/g, "],[");
         }else{
+            /*
+            test case :
+                [1,1;1,2] => [[1,1],[1,2]]
+                1,1;1,2  => [[1,1],[1,2]]
+                1 1;1 2 = > [[1,1],[1,2]]
+                1   1 ; 1   2 => [[1,1],[1,2]]
+            */
             arg = arg.replace(/[\[\] ]+/g, " ").trim();
             var arry = arg.split(";");
-            var temp ="";
-            for (var i=0;i<arry.length;i++){
+            var temp = "";
+            for (var i = 0; i < arry.length; i++){
                 if(i == (arry.length -1)){
                     temp += arry[i].trim();
                 }else{

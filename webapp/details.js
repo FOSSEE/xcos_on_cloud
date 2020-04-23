@@ -1233,12 +1233,13 @@ var contextVariableMap = new Map(); // Global map for storing context variable o
 // Get context variables values from context
 // and stored them in map and return that map
 function get_map_of_context_values(context_map){
+    contextVariableMap = new Map();
     if(context_map.length != 0){
         for(var i = 0; i < context_map.length; i++){
             var context_text = context_map[i];
             var temp = context_text.split("=");
             if(temp.length == 2){
-                contextVariableMap.set(temp[0], temp[1]);
+                contextVariableMap.set(temp[0].trim(), temp[1].trim());
             }
         }
     }
