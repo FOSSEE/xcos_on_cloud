@@ -79,7 +79,7 @@ QUERY_COUNT = (
     "JOIN textbook_companion_example tce ON tcc.id = tce.chapter_id "
     "JOIN textbook_companion_example_files tcef ON tce.id = tcef.example_id "
     "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND "
-    "pe.xcos_cloud_book_error_status = 0 AND pe.approval_status = 1")
+    "tcef.xcos_cloud_example_file_error_status = 0 AND pe.approval_status = 1")
 
 QUERY_CATEGORY = (
     "SELECT loc.id, loc.category_name, COUNT(*) "
@@ -91,7 +91,7 @@ QUERY_CATEGORY = (
     "JOIN textbook_companion_example tce ON tcc.id = tce.chapter_id "
     "JOIN textbook_companion_example_files tcef ON tce.id = tcef.example_id "
     "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND "
-    "pe.approval_status = 1 AND pe.xcos_cloud_book_error_status = 0 "
+    "pe.approval_status = 1 AND tcef.xcos_cloud_example_file_error_status = 0 "
     "GROUP BY 1 "
     "ORDER BY 2 ASC")
 
@@ -105,7 +105,7 @@ QUERY_BOOK = (
     "JOIN textbook_companion_example tce ON tcc.id = tce.chapter_id "
     "JOIN textbook_companion_example_files tcef ON tce.id = tcef.example_id "
     "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND "
-    "pe.approval_status = 1 AND pe.xcos_cloud_book_error_status = 0 AND "
+    "pe.approval_status = 1 AND tcef.xcos_cloud_example_file_error_status = 0 AND "
     "pe.category = %s "
     "GROUP BY 1 "
     "ORDER BY 2 ASC")
@@ -120,7 +120,7 @@ QUERY_CHAPTER = (
     "JOIN textbook_companion_example tce ON tcc.id = tce.chapter_id "
     "JOIN textbook_companion_example_files tcef ON tce.id = tcef.example_id "
     "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND "
-    "pe.approval_status = 1 AND tcc.xcos_cloud_chapter_error_status = 0 AND "
+    "pe.approval_status = 1 AND tcef.xcos_cloud_example_file_error_status = 0 AND "
     "tcc.preference_id = %s "
     "ORDER BY tcc.number ASC")
 
@@ -134,7 +134,7 @@ QUERY_EXAMPLE = (
     "JOIN textbook_companion_example tce ON tcc.id = tce.chapter_id "
     "JOIN textbook_companion_example_files tcef ON tce.id = tcef.example_id "
     "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND "
-    "tce.xcos_cloud_example_error_status = 0 AND "
+    "tcef.xcos_cloud_example_file_error_status = 0 AND "
     "pe.approval_status = 1 AND tce.chapter_id = %s "
     "ORDER BY tce.number ASC")
 
