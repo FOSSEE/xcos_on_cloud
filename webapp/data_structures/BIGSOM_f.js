@@ -28,8 +28,9 @@ function BIGSOM_f() {
         return options
     }
     BIGSOM_f.prototype.set = function BIGSOM_f() {
-        this.sgn = arguments[0]["sgn"];
-        var sgn_1 = inverse(this.sgn);
+        var temp_sgn = arguments[0]["sgn"];
+        var sgn_1 = inverse(temp_sgn);
+        this.sgn = temp_sgn;
         this.in = ones(size(sgn_1,"*"),1);
         for (var i = this.in.length - 1; i >= 0; i--) {
             this.in[i] = -1*this.in[i];

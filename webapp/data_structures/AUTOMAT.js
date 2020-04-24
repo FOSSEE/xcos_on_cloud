@@ -51,14 +51,14 @@ function AUTOMAT() {
         this.NMode = parseFloat(arguments[0]["NMode"]);
         this.Minitial = parseFloat(arguments[0]["Minitial"]);
         this.NX = parseFloat(arguments[0]["NX"]);
-        this.X0 = arguments[0]["X0"];
-        this.XP = arguments[0]["XP"];
-        this.C1 = arguments[0]["C1"];
-        this.C2 = arguments[0]["C2"];
-        var X0_1 = inverse(this.X0);
-        var XP_1 = inverse(this.XP);
-        var C1_1 = inverse(this.C1);
-        var C2_1 =  inverse(this.C2);
+        var temp_X0 = arguments[0]["X0"];
+        var temp_XP = arguments[0]["XP"];
+        var temp_C1 = arguments[0]["C1"];
+        var temp_C2 = arguments[0]["C2"];
+        var X0_1 = inverse(temp_X0);
+        var XP_1 = inverse(temp_XP);
+        var C1_1 = inverse(temp_C1);
+        var C2_1 =  inverse(temp_C2);
         if(this.NX != size(X0_1,"*")){
             alert("the size of intial continuous-time states should be NX="+this.NX);
             throw "inorrect";
@@ -100,6 +100,10 @@ function AUTOMAT() {
             alert("There is an unused Mode or the Number of Modes should be "+MaxModes);
             AUTOMAT.get();
         }*/
+        this.X0 = temp_X0;
+        this.XP = temp_XP;
+        this.C1 = temp_C1;
+        this.C2 = temp_C2;
         var io = check_io(this.x.model,this.x.graphics,[INP],[OUT],[],[1]);
         this.x.model.nzcross = nzcross;
         this.x.model.state = ones(2*this.NX,1);

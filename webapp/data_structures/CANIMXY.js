@@ -55,15 +55,15 @@ CANIMXY.prototype.set = function CANIMXY() {
     this.clrs = parseFloat(arguments[0]["clrs"]);
     this.siz = parseFloat(arguments[0]["siz"]);
     this.win = parseFloat(arguments[0]["win"]);
-    this.wpos = arguments[0]["wpos"];
-    this.wdim = arguments[0]["wdim"];
+    var temp_wpos = arguments[0]["wpos"];
+    var temp_wdim = arguments[0]["wdim"];
     this.xmin = parseFloat(arguments[0]["xmin"]);
     this.xmax = parseFloat(arguments[0]["xmax"]);
     this.ymin = parseFloat(arguments[0]["ymin"]);
     this.ymax = parseFloat(arguments[0]["ymax"]);
     this.N = parseFloat(arguments[0]["N"]);
-    var wpos_1 = inverse(this.wpos);
-    var wdim_1 = inverse(this.wdim);
+    var wpos_1 = inverse(temp_wpos);
+    var wdim_1 = inverse(temp_wdim);
     if((size(wpos_1,"*") != 0) && (size(wdim_1,"*") != 2)){
         alert("Window position must be [] or a 2 vector");
         throw "incorrect";
@@ -111,6 +111,8 @@ CANIMXY.prototype.set = function CANIMXY() {
     if(wdim_1.length == 0){
         wdim_1 = [[-1],[-1]];
     }
+    this.wpos = temp_wpos;
+    this.wdim = temp_wdim;
     var rpar = new ScilabDouble([this.xmin],[this.xmax],[this.ymin],[this.ymax])
     var ipar = new ScilabDouble([this.win],[1],[this.N],[this.clrs],[this.siz],[0],...wpos_1,...wdim_1,[this.nbr_curves])
     model.rpar = rpar
