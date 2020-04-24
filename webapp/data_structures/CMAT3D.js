@@ -62,11 +62,11 @@ function CMAT3D () {
             }
         }
         this.colormap_string = colormap_string_1;
-        var vec_x_1 = arguments[0]["vec_x"];
-        var vec_y_1 = arguments[0]["vec_y"];
-        this.vec_x = inverse(vec_x_1);
-        this.vec_y = inverse(vec_y_1);
-        if(size(this.vec_x,"*") != size(this.vec_y,"*")){
+        var temp_vec_x = arguments[0]["vec_x"];
+        var temp_vec_y = arguments[0]["vec_y"];
+        var vec_x_1 = inverse(temp_vec_x);
+        var vec_y_1 = inverse(temp_vec_y);
+        if(size(vec_x_1,"*") != size(vec_y_1,"*")){
             alert("Vector X and Vector Y must have the same size");
             throw "incorrect";
         }
@@ -76,14 +76,16 @@ function CMAT3D () {
             alert("Error with minimum and maximum value");
             throw "incorrect";
         }
+        this.vec_x = temp_vec_x;
+        this.vec_y = temp_vec_y;
         this.cmin = cmin_1;
         this.cmax = cmax_1;
-        var size_x = size(this.vec_x,"*");
+        var size_x = size(vec_x_1,"*");
         var ipar = new ScilabDouble([this.cmin],[this.cmax],[size_c],[size_x]);
-        var rpar = new ScilabDouble(...colon_operator(colormap_values),...this.vec_x,...this.vec_y);
+        var rpar = new ScilabDouble(...colon_operator(colormap_values),...vec_x_1,...vec_y_1);
         this.x.model.ipar = ipar;
         this.x.model.rpar = rpar;
-        var exprs = new ScilabString([this.vec_x.toString().replace(/,/g, " ")],[this.vec_y.toString().replace(/,/g, " ")],[this.colormap_string],[this.cmin],[this.cmax]);
+        var exprs = new ScilabString([this.vec_x],[this.vec_y],[this.colormap_string],[this.cmin],[this.cmax]);
         this.x.graphics.exprs = exprs;
         return new BasicBlock(this.x)
     }
