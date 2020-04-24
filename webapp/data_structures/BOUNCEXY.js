@@ -61,16 +61,16 @@ function BOUNCEXY() {
         return options
     }
 BOUNCEXY.prototype.set = function BOUNCEXY() {
-    this.clrs = arguments[0]["clrs"];
-    this.siz = arguments[0]["siz"];
+    var temp_clrs = arguments[0]["clrs"];
+    var temp_siz = arguments[0]["siz"];
     this.win = parseFloat(arguments[0]["win"]);
     this.imode = parseFloat(arguments[0]["imode"]);
     this.xmin = parseFloat(arguments[0]["xmin"]);
     this.xmax = parseFloat(arguments[0]["xmax"]);
     this.ymin = parseFloat(arguments[0]["ymin"]);
     this.ymax = parseFloat(arguments[0]["ymax"]);
-    var clrs_1 = inverse(this.clrs);
-    var siz_1 = inverse(this.siz);
+    var clrs_1 = inverse(temp_clrs);
+    var siz_1 = inverse(temp_siz);
 
     if(size(clrs_1,"*") != size(siz_1,"*")){
         alert("colors and radii must have equal size (number of balls)");
@@ -98,6 +98,8 @@ BOUNCEXY.prototype.set = function BOUNCEXY() {
         this.z[6 * (i) + 5] = [64.0 * 360.000];
 
     }
+    this.clrs = temp_clrs;
+    this.siz = temp_siz;
     model.dstate = new ScilabDouble(...this.z);
     model.rpar = new ScilabDouble([this.xmin], [this.xmax], [this.ymin], [this.ymax]);
     model.ipar = new ScilabDouble([this.win], [this.imode], ...colon_operator(clrs_1));

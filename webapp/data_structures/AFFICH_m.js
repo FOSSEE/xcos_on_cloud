@@ -44,15 +44,15 @@ function AFFICH_m() {
         return options;
     }
     AFFICH_m.prototype.set = function AFFICH_m() {
-        this.in = arguments[0]["in"];
+        var temp_in = arguments[0]["in"];
         this.font = parseFloat(arguments[0]["font"]);
         this.fontsize = parseFloat(arguments[0]["fontsize"]);
         this.colr = parseFloat(arguments[0]["colr"]);
         this.nt = parseFloat(arguments[0]["nt"]);
         this.nd = parseFloat(arguments[0]["nd"]);
         this.herit = parseFloat(arguments[0]["herit"]);
-        var in_1 = inverse(this.in);
-        if(this.in.includes(";") || in_1.length > 2 || in_1[0].length > 1 || in_1[1].length > 1 ){
+        var in_1 = inverse(temp_in);
+        if(temp_in.includes(";") || in_1.length > 2 || in_1[0].length > 1 || in_1[1].length > 1 ){
             alert("Answer given for Input Size\nhas invalid dimension:\nwaiting for dimension 1 x 2");
             throw "incorrect";
         }
@@ -77,6 +77,7 @@ function AFFICH_m() {
             alert("Accept inherited values are 0 and 1");
             throw "incorrect";
         }
+        this.in = temp_in;
         this.displayParameter =[this.displayParameter];
         this.x.model.intyp = new ScilabDouble([1]);
         var io = set_io(this.x.model,this.x.graphics,in_1,[],ones(1-this.herit,1),[]);

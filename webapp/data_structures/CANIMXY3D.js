@@ -54,24 +54,24 @@ function CANIMXY3D() {
     }
     CANIMXY3D.prototype.set = function CANIMXY3D() {
         this.nbr_curves = parseFloat(arguments[0]["nbr_curves"]);
-        this.clrs = arguments[0]["clrs"];
-        this.siz = arguments[0]["siz"];
+        var temp_clrs = arguments[0]["clrs"];
+        var temp_siz = arguments[0]["siz"];
         this.win = parseFloat(arguments[0]["win"]);
-        this.wpos = arguments[0]["wpos"];
-        this.wdim = arguments[0]["wdim"];
-        this.vec_x = arguments[0]["vec_x"];
-        this.vec_y = arguments[0]["vec_y"];
-        this.vec_z = arguments[0]["vec_z"];
-        this.param3ds = arguments[0]["param3ds"];
+        var temp_wpos = arguments[0]["wpos"];
+        var temp_wdim = arguments[0]["wdim"];
+        var temp_vec_x = arguments[0]["vec_x"];
+        var temp_vec_y = arguments[0]["vec_y"];
+        var temp_vec_z = arguments[0]["vec_z"];
+        var temp_param3ds = arguments[0]["param3ds"];
         this.N = parseFloat(arguments[0]["N"]);
-        var clrs_1 = inverse(this.clrs);
-        var siz_1 = inverse(this.siz);
-        var wpos_1 = inverse(this.wpos);
-        var wdim_1 = inverse(this.wdim);
-        var vec_x_1 = inverse(this.vec_x);
-        var vec_y_1 = inverse(this.vec_y);
-        var vec_z_1 = inverse(this.vec_z);
-        var param3ds_1 = inverse(this.param3ds);
+        var clrs_1 = inverse(temp_clrs);
+        var siz_1 = inverse(temp_siz);
+        var wpos_1 = inverse(temp_wpos);
+        var wdim_1 = inverse(temp_wdim);
+        var vec_x_1 = inverse(temp_vec_x);
+        var vec_y_1 = inverse(temp_vec_y);
+        var vec_z_1 = inverse(temp_vec_z);
+        var param3ds_1 = inverse(temp_param3ds);
         if(size(clrs_1,"*") != size(siz_1,"*")){
             alert("Colors and Size must have same size");
             throw "incorrect";
@@ -134,6 +134,14 @@ function CANIMXY3D() {
         if(wdim_1.length == 0){
             this.wdim = [[-1],[-1]];
         }
+        this.clrs = temp_clrs;
+        this.siz = temp_siz;
+        this.wpos = temp_wpos;
+        this.wdim = temp_wdim;
+        this.vec_x = temp_vec_x;
+        this.vec_y = temp_vec_y;
+        this.vec_z = temp_vec_z;
+        this.param3ds = temp_param3ds;
         var rpar = new ScilabDouble(...vec_x_1,...vec_y_1,...vec_z_1,...param3ds_1);
         this.size_siz = size(siz_1,"*");
         var ipar = new ScilabDouble([this.win],[this.size_siz],[this.N],...clrs_1,...siz_1,[1],...wpos_1,...wdim_1,[this.nbr_curves]);
