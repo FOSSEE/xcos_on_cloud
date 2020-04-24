@@ -48,6 +48,7 @@ CREATE TABLE `textbook_companion_example_files` (
   `filetype` varchar(1) NOT NULL,
   `caption` varchar(100) NOT NULL DEFAULT 'None',
   `timestamp` int(11) NOT NULL,
+  `xcos_cloud_example_file_error_status` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
