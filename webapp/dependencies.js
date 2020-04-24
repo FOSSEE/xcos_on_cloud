@@ -1394,18 +1394,13 @@ function compare() {
     return result;
 }
 
-// converts [1,1;1,2] => [[1,1],[1,2]]
-// [1,1,1] => [[1],[1],[1]]
-// [1 1 1] => [[1],[1],[1]]
-// 1 1 1 => [[1],[1],[1]]
-// [1 1 1] => [[1],[1],[1]]
-function inverse() {
-    var arg = arguments[0].trim();
-    var regex_char = /[a-zA-Z]/g; //check characters for string/variable input eg. A / abc /vv12 etc
+function inverse(arg) {
+    var regex_char = /^[a-zA-Z_][a-zA-Z_0-9]*$/;
     var str = "[["
     if (typeof arg == 'number') {
         str += arg + "]]";
     } else if (arg != "[]") {
+        arg = arg.trim();
         arg = arg.replace(/int8\(([^)]*)\)/, "$1"); // extracting value from int8(12) => 12
         if (regex_char.test(arg)) {
             //Check context variable exist or not
@@ -1413,13 +1408,14 @@ function inverse() {
             if(return_str != null){
                 arg = return_str;
             }else{
-                // hv to add code for workspace
+                // get variable value from workspace variable map.
                 var return_map = get_value_for_variable_from_workspace(arg);
                 if(return_map != null){
                     arg = return_map.value;
                 }
             }
         }
+        arg = arg.replace(/[\[\]]+/g, ""); /* remove '[]' */
         if(!arg.includes(";")){
             /*
              test case :
@@ -1428,7 +1424,6 @@ function inverse() {
                 1 1 1 => [[1],[1],[1]]
                 1,1,1 => [[1],[1],[1]]
             */
-            arg = arg.replace(/[\[\]; ]+/g, " ").trim();
             arg = arg.replace(/[ ,]+/g, "],[");
         }else{
             /*
@@ -1438,19 +1433,8 @@ function inverse() {
                 1 1;1 2 = > [[1,1],[1,2]]
                 1   1 ; 1   2 => [[1,1],[1,2]]
             */
-            arg = arg.replace(/[\[\] ]+/g, " ").trim();
-            var arry = arg.split(";");
-            var temp = "";
-            for (var i = 0; i < arry.length; i++){
-                if(i == (arry.length -1)){
-                    temp += arry[i].trim();
-                }else{
-                    temp += arry[i].trim() + ";";
-                   }
-            }
-            arg = temp;
+            arg = arg.replace(/ *; */g, "],[");
             arg = arg.replace(/[ ,]+/g, ",");
-            arg = arg.replace(/[;]+/g, "],[");
         }
         str += arg + "]]";
     } else {
