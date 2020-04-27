@@ -570,7 +570,7 @@ CMSCOPE.prototype.importset = function CMSCOPE() {
     var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.in = inverse(ary[0]);
+    this.in = ary[0];
     this.clrs = ary[1];
     this.win = ary[2];
     this.wpos = ary[3];
@@ -581,11 +581,11 @@ CMSCOPE.prototype.importset = function CMSCOPE() {
     this.N = ary[8];
     this.heritance = parseInt(ary[9]);
     this.nom = ary[10];
-
-    this.in = colon_operator(this.in);
-    var a = size(this.in, 1);
+    var in_1 = inverse(this.in);
+    in_1 = colon_operator(in_1);
+    var a = size(in_1, 1);
     var in2 = ones(a, 1);
-    set_io(model, graphics, math.concat(this.in, in2), [], ones(1 - this.heritance, 1), []);
+    set_io(model, graphics, math.concat(in_1, in2), [], ones(1 - this.heritance, 1), []);
 }
 ConstantVoltage.prototype.importset = function ConstantVoltage() {
     var graphics = this.x.graphics;

@@ -25,12 +25,12 @@ function CONST() {
 	}
 	CONST.prototype.get = function CONST() {
 		var options = {
-			C: ["Constant", this.C.toString().replace(/,/g, " ")],
+			C: ["Constant", this.C],
 		}
 		return options
 	}
 	CONST.prototype.set = function CONST() {
-		var C_value = (arguments[0]["C"]);
+		var C_value = arguments[0]["C"];
 		var exprs;
 
 		    if (C_value.match(/[a-z()+\-*/.^{}]/i)) {
@@ -50,9 +50,10 @@ function CONST() {
 			    }
 
 		    } else {
-			    this.C = inverse(C_value);
-			    this.sz = size(this.C);
-			    this.nout = size(this.C, "*");
+			    var temp_C = C_value;
+			    var C_1 = inverse(temp_C);
+			    this.sz = size(C_1);
+			    this.nout = size(C_1, "*");
 
 			    if (this.nout == 0) {
 			    	alert("C must have at least one element");
@@ -62,7 +63,8 @@ function CONST() {
 			    	alert("C matrix is not supported, use CONST_m instead");
 			    	throw "incorrect";
 			    }
-			    exprs = new ScilabString([sci2exp(this.C)]);
+			    this.C = temp_C;
+			    exprs = new ScilabString([this.C]);
 			    this.x.model.rpar = new ScilabDouble([this.C]);
 			    this.displayParameter = [this.C];
 
@@ -73,7 +75,7 @@ function CONST() {
 		    return new BasicBlock(this.x)
 	    }
         CONST.prototype.get_popup_title = function CONST() {
-            var set_param_popup_title="Set Contant Block";
+            var set_param_popup_title = "Set Contant Block";
             return set_param_popup_title
         }
         CONST.prototype.getDimensionForDisplay = function CONST(){
