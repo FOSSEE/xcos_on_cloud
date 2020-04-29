@@ -30,46 +30,39 @@ function CONST() {
 		return options
 	}
 	CONST.prototype.set = function CONST() {
-		var C_value = arguments[0]["C"];
-		var exprs;
-
-		    if (C_value.match(/[a-z()+\-*/.^{}]/i)) {
-		        if(C_value.includes("rand(")){
-			        alert("C matrix is not supported, use CONST_m instead");
-			    	throw "incorrect";
-			    }else{
-			        var value = getValueOfImaginaryInput(C_value, "CONST");
-			        if (value == "undefined") {
-                        throw "incorrect";
-			        } else {
-			            exprs = new ScilabString([C_value]);
-			            this.x.model.rpar = new ScilabDouble([value]);
-			            this.C = C_value;
-			            this.displayParameter = [this.C];
-			        }
+		var temp_C = arguments[0]["C"];
+		if (temp_C.match(/[a-z()+\-*/.^{}]/i)) {
+		    if(temp_C.includes("rand(")){
+			    alert("C matrix is not supported, use CONST_m instead");
+			    throw "incorrect";
+			}else{
+			    var value = getValueOfImaginaryInput(temp_C, "CONST");
+			    if (value == "undefined") {
+                    throw "incorrect";
+			    } else {
+			        this.x.model.rpar = new ScilabDouble([value]);
 			    }
+			}
 
-		    } else {
-			    var temp_C = C_value;
-			    var C_1 = inverse(temp_C);
-			    this.sz = size(C_1);
-			    this.nout = size(C_1, "*");
+	    } else {
+	        var C_1 = inverse(temp_C);
+			this.sz = size(C_1);
+			this.nout = size(C_1, "*");
 
-			    if (this.nout == 0) {
-			    	alert("C must have at least one element");
-			    	throw "incorrect";
-			    }
-			    if (this.sz > 1) {
-			    	alert("C matrix is not supported, use CONST_m instead");
-			    	throw "incorrect";
-			    }
-			    this.C = temp_C;
-			    exprs = new ScilabString([this.C]);
-			    this.x.model.rpar = new ScilabDouble([this.C]);
-			    this.displayParameter = [this.C];
+			if (this.nout == 0) {
+			    alert("C must have at least one element");
+			    throw "incorrect";
+			}
+			if (this.sz > 1) {
+			    alert("C matrix is not supported, use CONST_m instead");
+			    throw "incorrect";
+			}
+			this.x.model.rpar = new ScilabDouble([C_1]);
 
-		    }
-
+		}
+		    this.C = temp_C;
+			this.displayParameter = [this.C];
+            var exprs = new ScilabString([this.C]);
 		    this.x.model.out = new ScilabDouble([this.nout]);
 		    this.x.graphics.exprs = exprs;
 		    return new BasicBlock(this.x)

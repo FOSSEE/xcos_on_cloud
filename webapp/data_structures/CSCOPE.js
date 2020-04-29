@@ -102,8 +102,8 @@ function CSCOPE() {
         if(wdim_1.length == 0){
             wdim_1 = [[-1],[-1]];
         }
-        if(this.clrs.length > 8){
-		    alert("there should be less than or equal to 8 entries");
+        if(clrs_1.length != 8){
+            alert("Answer given for Color (>0) or mark (0) vector (8 entries)\nhas invalid dimension:\nwaiting for dimension 8.");
 		    throw "incorrect";
 	    }
 	    this.clrs = temp_clrs;
