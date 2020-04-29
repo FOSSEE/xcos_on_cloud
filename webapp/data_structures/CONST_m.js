@@ -1,49 +1,22 @@
 function CONST_m() {
 	CONST_m.prototype.get = function CONST_m() {
-
-		var options = "";
-		var str = this.C.toString();
-		if (!str.match(/[a-z()+\-*/.^{}]/i)) {
-			if(str.match(/\[[0-9]+\]/)){
-
-			options = {
-				vec: ["Constant Value", this.C]
-			};
-
-			}else{
-				options = {
-				vec: ["Constant Value", sci2exp(this.C)]
-			      };
-			}
-
-		} else {
-			options = {
-				vec: ["Constant Value", this.C]
-			};
-
-		}
-
-
+		var options = {
+		    vec: ["Constant Value", this.C]
+		};
 		return options;
 	}
 	CONST_m.prototype.set = function CONST_m() {
 		var exprs = "";
-		var str = arguments[0]["vec"];
-		str = convertInputVectorFormat(str);
-		if (str.match(/[a-z()+\-*/.^{}]/i)) {
-			var value = getValueOfImaginaryInput(str, "CONST_m");
+		var temp_C = arguments[0]["vec"];
+		if (temp_C.match(/[a-z()+\-*/.^{}]/i)) {
+			var value = getValueOfImaginaryInput(temp_C, "CONST_m");
 			if (value == "null") {
 				throw "incorrect";
 			} else {
-
-				this.displayParameter = [arguments[0]["vec"]];
-				if(str.includes("rand(")){
-				    exprs = new ScilabString([arguments[0]["vec"]]);
+				if(temp_C.includes("rand(")){
 				    this.x.model.opar = new ScilabDouble(...value);
 				    this.nout = value.length;
-
 				}else{
-				    exprs = new ScilabString([str]);
 				    this.x.model.opar = list(new ScilabDouble([value]));
 				    this.nout = size(value, "*");
 				}
@@ -51,41 +24,24 @@ function CONST_m() {
 					    alert("Wrong size for 'Constant Value' parameter" + "\nConstant value must have at least one element.");
 					    throw "incorrect";
 				}
-				this.x.model.rpar = new ScilabDouble();
-				this.x.model.out = new ScilabDouble([this.nout]);
-				this.C = str;
-
 			}
-
-
 		} else {
-			var str = arguments[0]["vec"];
-		    str = convertInputVectorFormat(str);
-			this.C = inverse(str);
-			this.nout = size(this.C, "*")
+			var C_1 = inverse(temp_C);
+			this.nout = size(C_1, "*");
 			if (this.nout == 0) {
 				alert("Wrong size for 'Constant Value' parameter" + "\nConstant value must have at least one element.");
 				throw "incorrect";
 			}
-			this.x.model.rpar = new ScilabDouble();
-			this.x.model.out = new ScilabDouble([this.nout]);
-			this.x.model.opar = list(new ScilabDouble([this.C][0]));
-
-			if(str.match(/\[[0-9]+\]/)){
-				this.displayParameter = [arguments[0]["vec"]];//[sci2exp(this.C)];
-				exprs = new ScilabString(["["+this.C+"]"]);
-				this.C=["["+this.C+"]"];
-
-			}else{
-				this.displayParameter = [arguments[0]["vec"]];
-				exprs = new ScilabString([sci2exp(this.C)]);
-
-			}
+			this.x.model.opar = list(new ScilabDouble([C_1][0]));
 
 		}
 
-
-		this.x.graphics.exprs = exprs
+        this.C = temp_C;
+		this.displayParameter = [this.C];
+		exprs = new ScilabString([this.C]);
+		this.x.model.rpar = new ScilabDouble();
+		this.x.model.out = new ScilabDouble([this.nout]);
+		this.x.graphics.exprs = exprs;
 		return new BasicBlock(this.x)
 	}
 	CONST_m.prototype.internal = function CONST_m() {
@@ -133,7 +89,7 @@ function CONST_m() {
 	}
 
    CONST_m.prototype.get_popup_title = function CONST_m() {
-        var set_param_popup_title="Set CONST_m block parameters <br> Constant value generator<br>";
+        var set_param_popup_title = "Set CONST_m block parameters <br> Constant value generator<br>";
         return set_param_popup_title
    }
    CONST_m.prototype.getDimensionForDisplay = function CONST_m(){
