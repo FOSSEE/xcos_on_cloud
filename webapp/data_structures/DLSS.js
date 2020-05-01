@@ -27,7 +27,7 @@ function DLSS() {
         return this.x;
     }
     DLSS.prototype.get = function DLSS() {
-        var options={
+        var options = {
             A:["A matrix",this.A],
             B:["B matrix",this.B],
             C:["C matrix",this.C],

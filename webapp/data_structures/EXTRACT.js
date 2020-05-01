@@ -40,62 +40,64 @@ function EXTRACT() {
         if(this.b == undefined || this.b == null){
             this.b = "1"
         }
-        var options={
-            typ:["Datatype (1=real double  2=Complex)",this.typ],
-            a:["Lines to extract",this.a.toString().replace(/,/g," ")],
-            b:["Columns to extract",this.b.toString().replace(/,/g," ")],
+        var options = {
+            typ:["Datatype (1=real double 2=Complex)",this.typ],
+            a:["Lines to extract",this.a],
+            b:["Columns to extract",this.b],
         }
         return options
     }
     EXTRACT.prototype.set = function EXTRACT() {
-        this.typ = parseFloat((arguments[0]["typ"]))
-        this.a = inverse(arguments[0]["a"])
-        this.b = inverse(arguments[0]["b"])
+        this.typ = parseFloat(arguments[0]["typ"]);
+        var temp_a = arguments[0]["a"];
+        var temp_b = arguments[0]["b"];
+        var a_1 = inverse(temp_a);
+        var b_1 = inverse(temp_b);
         if(this.typ == 1){
-            this.function_name = "extract"
-            this.x.model.intyp = new ScilabDouble([1])
-            this.x.model.outtyp = new ScilabDouble([1])
-        }
-        else if(this.typ == 2){
-            this.function_name = "extractz"
-            this.x.model.intyp = new ScilabDouble([2])
-            this.x.model.outtyp = new ScilabDouble([2])
-        }
-        else{
+            this.function_name = "extract";
+            this.x.model.intyp = new ScilabDouble([1]);
+            this.x.model.outtyp = new ScilabDouble([1]);
+        }else if(this.typ == 2){
+            this.function_name = "extractz";
+            this.x.model.intyp = new ScilabDouble([2]);
+            this.x.model.outtyp = new ScilabDouble([2]);
+        }else{
                 alert("Datatype is not supported");
-                EXTRACT.get();
+                throw "incorrect";
         }
-        this.ma = size(this.a,1)
-        this.mb = size(this.b,1)
-        if((this.ma==0)||(this.mb==0)){
+        this.ma = size(a_1,1);
+        this.mb = size(b_1,1);
+        if(this.ma == 0 || this.mb == 0){
             alert("empty field");
-            EXTRACT.get();
+            throw "incorrect";
         }
-            for(var i=this.ma-1;i>=0;i--){
-                if(this.a[i]<=0){
-                    alert("invalid index");
-                    EXTRACT.get();
-                }
+        for(var i = this.ma-1; i>=0; i--){
+            if(a_1[i] <= 0){
+                alert("invalid index");
+                throw "incorrect";
             }
-            for(j=this.mb-1;j>=0;j--){
-                if(this.b[j]<=0){
-                    alert("invalid index");
-                    EXTRACT.get();
-                }
+        }
+        for(var j = this.mb-1; j>=0; j--){
+            if(b_1[j] <= 0){
+                alert("invalid index");
+                throw "incorrect";
             }
-        this.x.model.ipar = new ScilabDouble(...this.a,...this.b,[this.ma],[this.mb])
-        this.in = [parseFloat(getData(this.x.model.in)),parseFloat(getData(this.x.model.in2))]
-        this.out = [[this.ma],[this.mb]]
-        var io = set_io(this.x.model,this.x.graphics,this.in,this.out,[],[])
+        }
+        this.a = temp_a;
+        this.b = temp_b;
+        this.x.model.ipar = new ScilabDouble(...a_1,...b_1,[this.ma],[this.mb]);
+        this.in = [parseFloat(getData(this.x.model.in)),parseFloat(getData(this.x.model.in2))];
+        this.out = [[this.ma],[this.mb]];
+        var io = set_io(this.x.model,this.x.graphics,this.in,this.out,[],[]);
         model.sim = list(new ScilabString([this.function_name]), new ScilabDouble([4]));
-        this.x.graphics.exprs = label
-        var exprs = new ScilabString([this.typ],[this.a.toString().replace(/,/g, " ")],[this.b.toString().replace(/,/g, " ")])
-        this.x.graphics.exprs=exprs
+        this.x.graphics.exprs = label;
+        var exprs = new ScilabString([this.typ],[this.a],[this.b]);
+        this.x.graphics.exprs = exprs;
         return new BasicBlock(this.x)
     }
 
     EXTRACT.prototype.get_popup_title = function EXTRACT() {
-        var set_param_popup_title="Set EXTRACT Block";
+        var set_param_popup_title = "Set EXTRACT Block";
         return set_param_popup_title
     }
     EXTRACT.prototype.getDimensionForDisplay = function EXTRACT(){

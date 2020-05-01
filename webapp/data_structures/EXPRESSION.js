@@ -25,21 +25,22 @@ function EXPRESSION () {
         return this.x;
     }
     EXPRESSION.prototype.set = function EXPRESSION() {
-        this.in = inverse(arguments[0]["in"] || arguments[0]["inp"])
-        this.exx = arguments[0]["exx"]
-        this.usenz = parseFloat((arguments[0]["usenz"]))
+        var temp_in = (arguments[0]["in"] || arguments[0]["inp"]);
+        var in_1 = inverse(temp_in);
+        this.exx = arguments[0]["exx"];
+        this.usenz = parseFloat(arguments[0]["usenz"]);
 
         if(this.exx.length == 0){
             this.exx = "0";
         }
-        if(this.in == 0){
+        if(in_1 == 0){
             alert("Variable u1 is not defined.");
-            throw "incorrect value";
+            throw "incorrect";
         }
-        if(this.in == 1){
+        if(in_1 == 1){
             this.nini = 8;
         }else{
-            this.nini = this.in;
+            this.nini = in_1;
         }
         this.head = "%foo(";
         for(var i = 1; i <= this.nini-1; i++){
@@ -53,9 +54,9 @@ function EXPRESSION () {
             alert("Answer given for scilab expression is incorrect : \n\n" + ok.split(":")[0]);
             throw "incorrect value";
         }
-        if(this.in > 1){
+        if(in_1 > 1){
             this.inp = []
-            for (var i = 1; i <= this.in; i++ ){
+            for (var i = 1; i <= in_1; i++ ){
                 this.inp.push([-1*i])
             }
             var io = check_io(this.x.model,this.x.graphics,this.inp,[1],[],[])
@@ -76,14 +77,15 @@ function EXPRESSION () {
                 this.x.model.nmode = 0;
             }
         }
-        var exprs = new ScilabString([this.in.toString()],[this.exx],[this.usenz])
-	    this.displayParameter = [[this.exx]]
+        this.in = temp_in;
+        var exprs = new ScilabString([this.in],[this.exx],[this.usenz]);
+	    this.displayParameter = [[this.exx]];
         this.x.graphics.exprs = exprs;
         return new BasicBlock(this.x)
     }
     EXPRESSION.prototype.get = function EXPRESSION() {
-         var options={
-            in:["number of inputs",this.in.toString()],
+         var options = {
+            in:["number of inputs",this.in],
             exx:["scilab expression",this.exx.toString()],
             usenz:["use zero-crossing (0: no, 1 yes)",this.usenz],
         }
