@@ -754,19 +754,19 @@ DEMUX_f.prototype.importset = function DEMUX_f() {
     var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.out = inverse(ary[0]);
-
+    this.out = ary[0];
+    var out_1 = inverse(this.out);
     var in1;
     var out1;
-    if (size(this.out, "*") == 1) {
+    if (size(out_1, "*") == 1) {
         in1 = 0;
         out1 = [];
-        for (var i = 1; i <= this.out[0]; i++) {
+        for (var i = 1; i <= out_1[0]; i++) {
             out1.push([-1 * i]);
         }
     } else {
-        in1 = sum(this.out);
-        out1 = this.out;
+        in1 = sum(out_1);
+        out1 = out_1;
     }
     check_io(model, graphics, in1, out1, [], []);
 }
@@ -774,19 +774,19 @@ DEMUX.prototype.importset = function DEMUX() {
     var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.out = inverse(ary[0]);
-
+    this.out = ary[0];
+    var out_1 = inverse(this.out);
     var in1;
     var out1;
-    if (size(this.out, "*") == 1) {
+    if (size(out_1, "*") == 1) {
         in1 = 0;
         out1 = [];
-        for (var i = 1; i <= this.out[0]; i++) {
+        for (var i = 1; i <= out_1[0]; i++) {
             out1.push([-1 * i]);
         }
     } else {
-        in1 = sum(this.out);
-        out1 = this.out;
+        in1 = sum(out_1);
+        out1 = out_1;
     }
     check_io(model, graphics, in1, out1, [], []);
 }
@@ -852,10 +852,11 @@ DOLLAR.prototype.importset = function DOLLAR() {
     var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.a = inverse(ary[0]);
+    this.a = ary[0];
+    var a_1 = inverse(this.a);
     this.inh = parseInt(ary[1]);
 
-    var out1 = [[size(this.a, 1)], [size(this.a, 2)]];
+    var out1 = [[size(a_1, 1)], [size(a_1, 2)]];
     if (out1 == 0)
         out1 = [];
     var in1 = out1;
@@ -867,10 +868,11 @@ DOLLAR_m.prototype.importset = function DOLLAR_m() {
     var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.a = inverse(ary[0]);
+    this.a = ary[0];
+    var a_1 = inverse(this.a);
     this.inh = parseInt(ary[1]);
 
-    var out1 = [[size(this.a, 1)], [size(this.a, 2)]];
+    var out1 = [[size(a_1, 1)], [size(a_1, 2)]];
     if (out1 == 0)
         out1 = [];
     var in1 = out1;
