@@ -37,32 +37,45 @@ function PerteDP() {
         return this.x;
     }
     PerteDP.prototype.get = function PerteDP() {
-        var options={
-            L:["Longueur du tube : L (m)",this.L.toString().replace(/,/g," ")],
-            D:["Diamètre interne du tube : D (m)",this.D.toString().replace(/,/g," ")],
-            lambda:["Coefficient de perte de charge-frottement(S.U) : lambda",this.lambda.toString().replace(/,/g," ")],
-            z1:["Altitude entrée tuyauterie : z1 (m)",this.z1.toString().replace(/,/g," ")],
-            z2:["Altitude sortie tuyauterie : z2 (m)",this.z2.toString().replace(/,/g," ")],
-            p_rho:["Si >0, masse volumique imposée fu fluide : p_rho (kg/m3)",this.p_rho.toString().replace(/,/g," ")],
+        var options = {
+            L:["Longueur du tube : L (m)",this.L)],
+            D:["Diamètre interne du tube : D (m)",this.D],
+            lambda:["Coefficient de perte de charge-frottement(S.U) : lambda",this.lambda],
+            z1:["Altitude entrée tuyauterie : z1 (m)",this.z1],
+            z2:["Altitude sortie tuyauterie : z2 (m)",this.z2],
+            p_rho:["Si >0, masse volumique imposée fu fluide : p_rho (kg/m3)",this.p_rho],
         }
         return options
     }
-PerteDP.prototype.set = function PerteDP() {
-    this.L = inverse(arguments[0]["L"])
-    this.D = inverse(arguments[0]["D"])
-    this.lambda = inverse(arguments[0]["lambda"])
-    this.z1 = inverse(arguments[0]["z1"])
-    this.z2 = inverse(arguments[0]["z2"])
-    this.p_rho = inverse(arguments[0]["p_rho"])
-    this.x.model.rpar = new ScilabDouble(...this.L,...this.D,...this.lambda,...this.z1,...this.z2,...this.p_rho)
-    this.x.model.equations.parameters = list(new ScilabString(["L"], ["D"], ["lambda"], ["z1"], ["z2"], ["p_rho"]), list(new ScilabDouble([this.L]),new ScilabDouble(...this.D),new ScilabDouble(...this.lambda),new ScilabDouble([this.z1]),new ScilabDouble([this.z2]),new ScilabDouble([this.p_rho])));
-    var exprs = new ScilabString([this.L.toString().replace(/,/g, " ")],[this.D.toString().replace(/,/g, " ")],[this.lambda.toString().replace(/,/g, " ")],[this.z1.toString().replace(/,/g, " ")],[this.z2.toString().replace(/,/g, " ")],[this.p_rho.toString().replace(/,/g, " ")])
-    this.x.graphics.exprs=exprs
-    return new BasicBlock(this.x)
+    PerteDP.prototype.set = function PerteDP() {
+        var temp_L = arguments[0]["L"];
+        var temp_D = arguments[0]["D"];
+        var temp_lambda = arguments[0]["lambda"];
+        var temp_z1 = arguments[0]["z1"];
+        var temp_z2 = arguments[0]["z2"];
+        var temp_p_rho = arguments[0]["p_rho"];
+        var L_1 = inverse(temp_L);
+        var D_1 = inverse(temp_D);
+        var lambda_1 = inverse(temp_lambda);
+        var z1_1 = inverse(temp_z1);
+        var z2_1 = inverse(temp_z2);
+        var p_rho_1 = inverse(temp_p_rho);
+
+        this.L = temp_L;
+        this.D = temp_D;
+        this.lambda = temp_lambda;
+        this.z1 = temp_z1;
+        this.z2 = temp_z2;
+        this.p_rho = temp_p_rho;
+        this.x.model.rpar = new ScilabDouble(...L_1,...D_1,...lambda_1,...z1_1,...z2_1,...p_rho_1);
+        this.x.model.equations.parameters = list(new ScilabString(["L"], ["D"], ["lambda"], ["z1"], ["z2"], ["p_rho"]), list(new ScilabDouble([L_1]),new ScilabDouble(...D_1),new ScilabDouble(...lambda_1),new ScilabDouble([z1_1]),new ScilabDouble([z2_1]),new ScilabDouble([p_rho_1])));
+        var exprs = new ScilabString([this.L],[this.D],[this.lambda],[this.z1],[this.z2],[this.p_rho]);
+        this.x.graphics.exprs = exprs;
+        return new BasicBlock(this.x)
     }
 
     PerteDP.prototype.get_popup_title = function PerteDP() {
-        var set_param_popup_title="Set block parameters:";
+        var set_param_popup_title = "Set block parameters:";
         return set_param_popup_title
     }
     PerteDP.prototype.getDimensionForDisplay = function PerteDP(){
