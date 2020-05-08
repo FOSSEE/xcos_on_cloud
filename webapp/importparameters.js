@@ -2021,15 +2021,17 @@ RFILE_f.prototype.importset = function RFILE_f() {
     var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.tmask1 = inverse(ary[0]);
-    this.outmask = inverse(ary[1]);
+    this.tmask1 = ary[0];
+    this.outmask = ary[1];
+    var tmask1_1 = inverse(this.tmask1);
+    var outmask_1 = inverse(this.outmask);
     this.fname1 = ary[2];
     this.frmt1 = ary[3];
     this.N = ary[4];
 
-    var out1 = size(this.outmask, "*");
+    var out1 = size(outmask_1, "*");
     var cout;
-    if (this.tmask1.length == 0) {
+    if (tmask1_1.length == 0) {
         cout = [];
     } else {
         cout = 1;
