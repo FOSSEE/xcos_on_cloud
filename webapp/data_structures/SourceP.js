@@ -34,28 +34,36 @@ function SourceP() {
         return this.x;
     }
     SourceP.prototype.get = function SourceP() {
-        var options={
-            P0:["Pression de la source : P0 (Pa)",this.P0.toString().replace(/,/g," ")],
-            T0:["Temperature de la source : T0 (K)",this.T0.toString().replace(/,/g," ")],
-            H0:["Enthalpie spécifique de la source : H0 (J/kg)",this.H0.toString().replace(/,/g," ")],
-            option_temperature:["1:température fixée - 2:enthalpie fixée : option_temperature",this.option_temperature.toString().replace(/,/g," ")],
+        var options = {
+            P0:["Pression de la source : P0 (Pa)",this.P0],
+            T0:["Temperature de la source : T0 (K)",this.T0)],
+            H0:["Enthalpie spécifique de la source : H0 (J/kg)",this.H0],
+            option_temperature:["1:température fixée - 2:enthalpie fixée : option_temperature",this.option_temperature],
         }
         return options
     }
-SourceP.prototype.set = function SourceP() {
-    this.P0 = inverse(arguments[0]["P0"])
-    this.T0 = inverse(arguments[0]["T0"])
-    this.H0 = inverse(arguments[0]["H0"])
-    this.option_temperature = inverse(arguments[0]["option_temperature"])
-    this.x.model.rpar = new ScilabDouble(...this.P0,...this.T0,...this.H0,...this.option_temperature)
-    this.x.model.equations.parameters = list(new ScilabString(["P0"], ["T0"], ["H0"], ["option_temperature"]), list(new ScilabDouble([this.P0]),new ScilabDouble([this.T0]),new ScilabDouble([this.H0]),new ScilabDouble([this.option_temperature])));
-    var exprs = new ScilabString([this.P0.toString().replace(/,/g, " ")],[this.T0.toString().replace(/,/g, " ")],[this.H0.toString().replace(/,/g, " ")],[this.option_temperature.toString().replace(/,/g, " ")])
-    this.x.graphics.exprs=exprs
-    return new BasicBlock(this.x)
+    SourceP.prototype.set = function SourceP() {
+        var temp_P0 = arguments[0]["P0"];
+        var temp_T0 = arguments[0]["T0"];
+        var temp_H0 = arguments[0]["H0"];
+        var temp_option_temperature = arguments[0]["option_temperature"];
+        var P0_1 = inverse(temp_P0);
+        var T0_1 = inverse(temp_T0);
+        var H0_1 = inverse(temp_H0);
+        var option_temperature_1 = inverse(temp_option_temperature);
+        this.P0 = temp_P0;
+        this.T0 = temp_T0;
+        this.H0 = temp_H0;
+        this.option_temperature = temp_option_temperature;
+        this.x.model.rpar = new ScilabDouble(...P0_1,...T0_1,...H0_1,...option_temperature_1);
+        this.x.model.equations.parameters = list(new ScilabString(["P0"], ["T0"], ["H0"], ["option_temperature"]), list(new ScilabDouble([P0_1]),new ScilabDouble([T0_1]),new ScilabDouble([H0_1]),new ScilabDouble([option_temperature_1])));
+        var exprs = new ScilabString([this.P0],[this.T0],[this.H0],[this.option_temperature])
+        this.x.graphics.exprs = exprs
+        return new BasicBlock(this.x)
     }
 
-  SourceP.prototype.get_popup_title = function SourceP() {
-        var set_param_popup_title="Set Parameters";
+    SourceP.prototype.get_popup_title = function SourceP() {
+        var set_param_popup_title = "Set Parameters";
         return set_param_popup_title
     }
     SourceP.prototype.getDimensionForDisplay = function SourceP(){
