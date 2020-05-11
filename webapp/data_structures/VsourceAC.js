@@ -37,26 +37,30 @@ function VsourceAC() {
         return this.x;
     }
     VsourceAC.prototype.get = function VsourceAC() {
-        var options={
-            VA:["Amplitude (Volt)",this.VA.toString().replace(/,/g," ")],
-            FR:["Frequency (Hz)",this.FR.toString().replace(/,/g," ")],
+        var options = {
+            VA:["Amplitude (Volt)",this.VA],
+            FR:["Frequency (Hz)",this.FR],
         }
         return options
     }
-VsourceAC.prototype.set = function VsourceAC() {
-    this.VA = inverse(arguments[0]["VA"])
-    this.FR = inverse(arguments[0]["FR"])
-    this.x.model.rpar = new ScilabDouble([this.VA],[this.FR])
-    this.x.model.equations.parameters = list(new ScilabString(["VA"], ["f"]), list(new ScilabDouble(...this.VA), new ScilabDouble(...this.FR)));
-    var n =this.VA.toString();
-    var k= this.FR.toString();
-    this.displayParameter=[[n],[k]];
-    var exprs = new ScilabString([this.VA.toString().replace(/,/g, " ")],[this.FR.toString().replace(/,/g, " ")])
-    this.x.graphics.exprs=exprs
-    return new BasicBlock(this.x)
+    VsourceAC.prototype.set = function VsourceAC() {
+        var temp_VA = arguments[0]["VA"];
+        var temp_FR = arguments[0]["FR"];
+        var VA_1 = inverse(temp_VA);
+        var FR_1 = inverse(temp_FR);
+        this.VA = temp_VA;
+        this.FR = temp_FR;
+        this.x.model.rpar = new ScilabDouble([VA_1],[FR_1]);
+        this.x.model.equations.parameters = list(new ScilabString(["VA"], ["f"]), list(new ScilabDouble(...VA_1), new ScilabDouble(...FR_1)));
+        var n = this.VA;
+        var k = this.FR;
+        this.displayParameter = [[n],[k]];
+        var exprs = new ScilabString([this.VA],[this.FR]);
+        this.x.graphics.exprs = exprs;
+        return new BasicBlock(this.x)
     }
-VsourceAC.prototype.get_popup_title = function VsourceAC() {
-        var set_param_popup_title="Set voltage source parameter";
+    VsourceAC.prototype.get_popup_title = function VsourceAC() {
+        var set_param_popup_title = "Set voltage source parameter";
         return set_param_popup_title
     }
     VsourceAC.prototype.getDimensionForDisplay = function VsourceAC(){
