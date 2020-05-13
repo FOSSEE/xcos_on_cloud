@@ -47,7 +47,7 @@ function RAND_m() {
             flag:["flag",this.flag],
             a:["A",this.a],
             b:["B",this.b ],
-            seed_c:["SEED", this.seed_c.],
+            seed_c:["SEED", this.seed_c],
         }
         return options
     }

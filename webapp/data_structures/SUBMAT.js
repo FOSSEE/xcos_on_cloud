@@ -69,7 +69,7 @@ function SUBMAT() {
         var temp_inp = arguments[0]["inp"];
         var inp_1 = inverse(temp_inp);
         if(this.typ == 1){
-            this.function_name = "submat"'
+            this.function_name = "submat";
             this.ot = 1;
             this.it = 1;
         }else if(this.typ == 2){
