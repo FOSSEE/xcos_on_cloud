@@ -32,7 +32,7 @@ function PRODUCT() {
 	    var temp_sgn = arguments[0]["sgn"];
 	    var sgn_1 = inverse(temp_sgn);
 		if (size(sgn_1, 1) == 1) {
-			if sgn_1 < 1) {
+			if (sgn_1 < 1) {
 				alert("Number of inputs must be > 0");
 				throw "incorrect";
 			}

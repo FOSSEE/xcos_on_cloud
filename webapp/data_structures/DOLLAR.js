@@ -57,7 +57,7 @@ function DOLLAR() {
         this.a = temp_a;
         this.inh = temp_inh;
         var io = set_io(this.x.model,this.x.graphics,this.in,this.out,ones(1-inh_1,1),[]);
-        var exprs = new ScilabString([this.a)],[this.inh]);
+        var exprs = new ScilabString([this.a],[this.inh]);
         this.x.graphics.exprs = exprs;
         return new BasicBlock(this.x)
     }

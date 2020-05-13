@@ -38,7 +38,7 @@ function PerteDP() {
     }
     PerteDP.prototype.get = function PerteDP() {
         var options = {
-            L:["Longueur du tube : L (m)",this.L)],
+            L:["Longueur du tube : L (m)",this.L],
             D:["Diamètre interne du tube : D (m)",this.D],
             lambda:["Coefficient de perte de charge-frottement(S.U) : lambda",this.lambda],
             z1:["Altitude entrée tuyauterie : z1 (m)",this.z1],
