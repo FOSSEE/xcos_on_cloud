@@ -11,7 +11,13 @@ function CONST_m() {
 		if (temp_C.match(/[a-z()+\-*/.^{}]/i)) {
 			var value = getValueOfImaginaryInput(temp_C, "CONST_m");
 			if (value == "null") {
-				throw "incorrect";
+				var C_1 = inverse(temp_C);
+			    this.nout = size(C_1, "*");
+			    if (this.nout == 0) {
+				    alert("Wrong size for 'Constant Value' parameter" + "\nConstant value must have at least one element.");
+				    throw "incorrect";
+			    }
+			    this.x.model.opar = list(new ScilabDouble([C_1][0]));
 			} else {
 				if(temp_C.includes("rand(")){
 				    this.x.model.opar = new ScilabDouble(...value);

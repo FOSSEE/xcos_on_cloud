@@ -31,25 +31,19 @@ function CONST() {
 	}
 	CONST.prototype.set = function CONST() {
 		var temp_C = arguments[0]["C"];
-		if (temp_C.match(/[a-z()+\-*/.^{}]/i)) {
-		    if(temp_C.includes("rand(")){
-			    alert("C matrix is not supported, use CONST_m instead");
-			    throw "incorrect";
-			}else{
-			    var value = getValueOfImaginaryInput(temp_C, "CONST");
-			    if (value == "undefined") {
-                    throw "incorrect";
-			    } else {
-			        this.x.model.rpar = new ScilabDouble([value]);
-			    }
+		console.log(temp_C);
+		var C_1 = "";
+		if(temp_C.includes("rand(")){
+			alert("C matrix is not supported, use CONST_m instead");
+			throw "incorrect";
+		}else{
+			C_1 = getValueOfImaginaryInput(temp_C, "CONST");
+			if (C_1 == "null") {
+			    C_1 = inverse(temp_C);
 			}
-
-	    } else {
-	        var C_1 = inverse(temp_C);
-			this.sz = size(C_1);
+		    this.sz = size(C_1, "*");
 			this.nout = size(C_1, "*");
-
-			if (this.nout == 0) {
+			if(this.nout == 0) {
 			    alert("C must have at least one element");
 			    throw "incorrect";
 			}
@@ -57,23 +51,22 @@ function CONST() {
 			    alert("C matrix is not supported, use CONST_m instead");
 			    throw "incorrect";
 			}
-			this.x.model.rpar = new ScilabDouble([C_1]);
-
 		}
-		    this.C = temp_C;
-			this.displayParameter = [this.C];
-            var exprs = new ScilabString([this.C]);
-		    this.x.model.out = new ScilabDouble([this.nout]);
-		    this.x.graphics.exprs = exprs;
-		    return new BasicBlock(this.x)
-	    }
-        CONST.prototype.get_popup_title = function CONST() {
-            var set_param_popup_title = "Set Contant Block";
-            return set_param_popup_title
-        }
-        CONST.prototype.getDimensionForDisplay = function CONST(){
-            var dimension = { width: 40, height: 40 };
-            return dimension
-        }
+	    this.x.model.rpar = new ScilabDouble([C_1]);
+		this.C = temp_C;
+	    this.displayParameter = [this.C];
+        var exprs = new ScilabString([this.C]);
+		this.x.model.out = new ScilabDouble([this.nout]);
+		this.x.graphics.exprs = exprs;
+		return new BasicBlock(this.x)
+    }
+    CONST.prototype.get_popup_title = function CONST() {
+        var set_param_popup_title = "Set Contant Block";
+        return set_param_popup_title
+    }
+    CONST.prototype.getDimensionForDisplay = function CONST(){
+        var dimension = { width: 40, height: 40 };
+        return dimension
+    }
 
 }
