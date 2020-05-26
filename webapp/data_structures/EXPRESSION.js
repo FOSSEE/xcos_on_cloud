@@ -26,7 +26,7 @@ function EXPRESSION () {
     }
     EXPRESSION.prototype.set = function EXPRESSION() {
         var temp_in = (arguments[0]["in"] || arguments[0]["inp"]);
-        var in_1 = inverse(temp_in);
+        var in_1 = parseInt(temp_in);
         this.exx = arguments[0]["exx"];
         this.usenz = parseFloat(arguments[0]["usenz"]);
 
