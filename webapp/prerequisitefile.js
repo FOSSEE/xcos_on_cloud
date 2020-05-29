@@ -293,3 +293,40 @@ function clearPrerequisiteFile() {
     scilabVariableMap = new Map();
     setScriptSimulationFlags(false);
 }
+
+//To create a table for showing variables
+function getvaluesOfVariables(){
+    var table_content = "<table cellspacing='0' cellpadding='0' border='0'><tr><td>"
+                        +"<table cellspacing='0' cellpadding='1' border='1' width='400' >"
+                        +"<tr style='color:white;background-color:grey;font-size:12px'>"
+                        +"<th width ='130'>Name </th><th width ='130'> Value </th><th width ='130'> Type </th></tr></table></td></tr>"
+                        +"<tr><td><div style='width:410; height:66px; overflow:auto;'>"
+                        +"<table cellspacing='0' cellpadding='1' border='1' width='400'>" ;
+    for (const entry of scilabVariableMap.entries()) {
+        table_content += "<tr><td width ='125'>"+entry[0]+"</td><td width ='125'>"+entry[1].value+"</td><td width ='125'>"+get_type_of_variable(entry[1].type)+"</td></tr>"
+    }
+    table_content += "</table></div></td></tr></table>";
+    return table_content
+}
+
+//To get type of variable from map value type
+function get_type_of_variable(type_counter){
+    var type_name = "";
+    switch (type_counter) {
+        case "1":
+            type_name = "Double";
+            break;
+        case "2":
+            type_name = "Polynomial";
+            break;
+        case "4":
+            type_name = "Boolean";
+            break;
+        case "10":
+            type_name = "String";
+            break;
+        default:
+            type_name = "N/A";
+    }
+    return type_name
+}
