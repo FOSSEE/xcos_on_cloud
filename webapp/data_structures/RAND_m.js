@@ -42,56 +42,62 @@ function RAND_m() {
         if(this.seed_c == undefined || this.seed_c == null){
             this.seed_c = "["+parseFloat(Math.random() * (10000000-1)).toString()+" "+parseFloat(Math.random() * (10000000-1)).toString()+  "]"
         }
-        var options={
+        var options = {
             typ:["Datatype(1=real double  2=complex)",this.typ],
             flag:["flag",this.flag],
-            a:["A",this.a.toString().replace(/,/g," ")],
-            b:["B",this.b.toString().replace(/,/g," ") ],
-            seed_c:["SEED", this.seed_c.toString().replace(/,/g," ")],
+            a:["A",this.a],
+            b:["B",this.b ],
+            seed_c:["SEED", this.seed_c],
         }
         return options
     }
     //update it to except imaginary numbers also
-RAND_m.prototype.set = function RAND_m() {
-    this.typ = parseFloat((arguments[0]["typ"]))
-    this.flag = parseFloat((arguments[0]["flag"]))
-    this.a = inverse(arguments[0]["a"])
-    this.b = inverse(arguments[0]["b"])
-    this.seed_c = inverse(arguments[0]["seed_c"])
-    if((this.flag!=0)&&(this.flag!=1)){
-        alert("flag must be equal to 1 or 0");
-        RAND_m.get();
-    }
-    this.out = size(this.a)
+    RAND_m.prototype.set = function RAND_m() {
+        this.typ = parseFloat(arguments[0]["typ"]);
+        this.flag = parseFloat(arguments[0]["flag"]);
+        var temp_a = arguments[0]["a"];
+        var temp_b = arguments[0]["b"];
+        var temp_seed_c = arguments[0]["seed_c"];
+        var a_1 = inverse(temp_a);
+        var b_1 = inverse(temp_b);
+        var seed_c_1 = inverse(temp_seed_c);
 
-    if(this.typ == 1){
-        this.function_name = "rndblk_m"
-        this.x.model.rpar = new ScilabDouble(...this.a,...this.b)
-        this.x.model.outtyp = new ScilabDouble([1])
-        this.dstate = []
-        this.dstate.push([parseFloat(this.seed_c[0])])
-        for (var i = this.a.length - 1; i >= 0; i--) {
-            this.dstate.push([0*parseFloat(this.a[i])])
+        if(this.flag != 0 && this.flag != 1){
+            alert("flag must be equal to 1 or 0");
+            throw "incorrect";
         }
-        this.x.model.dstate = new ScilabDouble(...this.dstate)
-    }
-    else if(this.typ == 2){
-        alert("complex numbers not supported")
-    }
-    else{
+        this.out = size(a_1);
+
+        if(this.typ == 1){
+            this.function_name = "rndblk_m";
+            this.x.model.rpar = new ScilabDouble(...a_1,...b_1);
+            this.x.model.outtyp = new ScilabDouble([1]);
+            this.dstate = [];
+            this.dstate.push([parseFloat(seed_c_1[0])])
+            for (var i = a_1.length - 1; i >= 0; i--) {
+                this.dstate.push([0*parseFloat(a_1[i])])
+            }
+            this.x.model.dstate = new ScilabDouble(...this.dstate)
+        }else if(this.typ == 2){
+            alert("complex numbers not supported");
+            throw "incorrect";
+        }else{
             alert("Datatype is not supported");
-            RAND_m.get();
+            throw "incorrect";
         }
-    var io = set_io(this.x.model,this.x.graphics,[],this.out,[1],[])
-    this.x.model.sim = list(new ScilabString([this.function_name]),new ScilabDouble([4]))
-    this.x.model.ipar = new ScilabDouble([this.flag]);
-    var exprs = new ScilabString([sci2exp(this.typ)],[this.flag],[sci2exp(this.a)],[sci2exp(this.b)],[sci2exp(this.seed_c)])
-    this.x.graphics.exprs=exprs
-    return new BasicBlock(this.x)
+        this.a = temp_a;
+        this.b = temp_b;
+        this.seed_c = temp_seed_c;
+        var io = set_io(this.x.model,this.x.graphics,[],this.out,[1],[]);
+        this.x.model.sim = list(new ScilabString([this.function_name]),new ScilabDouble([4]));
+        this.x.model.ipar = new ScilabDouble([this.flag]);
+        var exprs = new ScilabString([sci2exp(this.typ)],[this.flag],[this.a],[this.b],[this.seed_c]);
+        this.x.graphics.exprs = exprs;
+        return new BasicBlock(this.x)
     }
 
     RAND_m.prototype.get_popup_title = function RAND_m() {
-        var set_param_popup_title="Set Random generator block parameters<br>     flag = 0 : Uniform distribution A is min and A+B max <br>     flag = 1 : Normal distribution A is mean and B deviation <br> <br>    A and B must be matrix with equal sizes <br>";
+        var set_param_popup_title = "Set Random generator block parameters<br>     flag = 0 : Uniform distribution A is min and A+B max <br>     flag = 1 : Normal distribution A is mean and B deviation <br> <br>    A and B must be matrix with equal sizes <br>";
         return set_param_popup_title
     }
     RAND_m.prototype.getDimensionForDisplay = function RAND_m(){

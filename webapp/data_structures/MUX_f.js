@@ -20,49 +20,49 @@ function MUX_f() {
         return new BasicBlock(this.x);
     }
     MUX_f.prototype.get = function MUX_f() {
-        var options={
-            in:["number of input ports or vector of sizes",this.in.toString()]
+        var options = {
+            in:["number of input ports or vector of sizes",this.in]
         }
         return options
     }
     MUX_f.prototype.set = function MUX_f() {
-    this.in = inverse(arguments[0]["in"])
-    if(size(this.in,"*")==1 ){
-        if(this.in<2||this.in>8){
-            alert("Block must have at least two input ports and at most 8");
-                MUX_f.get();
+        var temp_in = arguments[0]["in"];
+        var in_1 = inverse(temp_in);
+
+        if(size(in_1,"*")==1 ){
+            if(in_1 < 2 || in_1 > 8){
+                alert("Block must have at least two input ports and at most 8");
+                throw "incorrect";
+            }
+        }else{
+            if(size(in_1,"*")<2| or(in_1==0)|size(in_1,"*")>8){
+                alert("Block must have at least two input ports and at most 8. Size 0 is not allowed.");
+                throw "incorrect";
+            }
         }
-    }
-    else{
-        if(size(this.in,"*")<2| or(this.in==0)|size(this.in,"*")>8){
-            alert("Block must have at least two input ports and at most 8. Size 0 is not allowed.");
-            MUX_f.get();
+        if(size(in_1,"*") == 1){
+            var n = in_1[0];
+            this.inp = [];
+            for (var i = 1; i <= n; i++ ) {
+                this.inp.push([-1*i]);
+            }
+            var io = check_io(this.x.model,this.x.graphics,this.inp,0,[],[]);
+        }else{
+            this.nout = sum(in_1);
+            var io = check_io(this.x.model,this.x.graphics,in_1,this.nout,[],[]);
         }
+        this.in = temp_in;
+        this.x.model.out = new ScilabDouble([0]);
+        this.x.model.ipar = new ScilabDouble(...in_1);
+        var exprs = new ScilabString([this.in]);
+        this.x.graphics.exprs = exprs;
+        return new BasicBlock(this.x)
     }
-    if(size(this.in,"*") == 1){
-        var n = this.in[0]
-        this.inp = []
-        for (var i = 1; i <= n; i++ ) {
-            this.inp.push([-1*i])
-        }
-        var io = check_io(this.x.model,this.x.graphics,this.inp,0,[],[])
-    }
-    else{
-        this.nout = sum(this.in)
-        var io = check_io(this.x.model,this.x.graphics,this.in,this.nout,[],[])
-    }
-    this.x.model.out = new ScilabDouble([0]);
-    this.x.model.ipar = new ScilabDouble(...this.in)
-    var exprs = new ScilabString([this.in.toString()])
-    this.x.graphics.exprs = exprs
-    return new BasicBlock(this.x)
-}
-    MUX_f.prototype.details = function MUX_f() {
+    MUX_f.prototype.details = function MUX_f(){
         return this.x;
     }
-
-    MUX_f.prototype.get_popup_title = function MUX_f() {
-        var set_param_popup_title="Set MUX block parameters";
+    MUX_f.prototype.get_popup_title = function MUX_f(){
+        var set_param_popup_title = "Set MUX block parameters";
         return set_param_popup_title
     }
     MUX_f.prototype.getDimensionForDisplay = function MUX_f(){

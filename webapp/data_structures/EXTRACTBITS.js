@@ -2,10 +2,10 @@ function EXTRACTBITS() {
 
     EXTRACTBITS.prototype.define = function EXTRACTBITS() {
         this.numb = [];
-        this.Datatype=3
-        this.rule=1
-        this.bit=0
-        this.scal=0
+        this.Datatype = 3;
+        this.rule = 1;
+        this.bit = 0;
+        this.scal = 0
         var model = scicos_model();
         model.sim = list(new ScilabString(["extract_bit_32_UH0"]), new ScilabDouble([4]));
         model.in = new ScilabDouble([1]);
@@ -29,52 +29,51 @@ function EXTRACTBITS() {
         return this.x;
     }
     EXTRACTBITS.prototype.get=function EXTRACTBITS(){
-        var options={
+        var options = {
             Datatype:["Data Type (3:int32, 4:int16, 5:int8, ...)",this.Datatype],
             rule:["Bits to extract",this.rule],
-            bit:["Number of Bits or Index of Bit",this.bit.toString().replace(/,/g," ")],
+            bit:["Number of Bits or Index of Bit",this.bit],
             scal:["Treat Bit Field as an Integer (0:No, 1:Yes)",this.scal],
         }
         return options
     }
     EXTRACTBITS.prototype.set=function EXTRACTBITS(){
-        this.Datatype = parseFloat((arguments[0]["Datatype"]))
-        this.rule = parseFloat((arguments[0]["rule"]))
-        this.bit = inverse((arguments[0]["bit"]))
-        this.scal = parseFloat((arguments[0]["scal"]))
-
-        if((this.rule<1)||(this.rule>5)){
+        this.Datatype = parseFloat(arguments[0]["Datatype"]);
+        this.rule = parseFloat(arguments[0]["rule"]);
+        var temp_bit = arguments[0]["bit"];
+        this.scal = parseFloat(arguments[0]["scal"]);
+        var bit_1 = inverse(temp_bit);
+        if(this.rule < 1 || this.rule > 5){
                 alert("Wrong value for 'Bits to Extract' parameter: "+this.rule+"\nMust be in the interval [1, 5]");
-                EXTRACTBITS.get();
+                throw "incorrect";
         }
-        if((this.scal<0)||(this.scal>1)){
+        if(this.scal < 0 || this.scal > 1){
                 alert("Wrong value for 'Treat Bit Field as an Integer' parameter: "+this.scal+"\nMust be in the interval [0, 1]");
-                EXTRACTBITS.get();
+                throw "incorrect";
         }
-        this.in = [parseFloat(getData(this.x.model.in)),parseFloat(getData(this.x.model.in2))]
-        if((this.rule==3)||(this.rule==4)){
-            if(size(this.bit,"*")!=1){
-                alert("Wrong size for 'Number of Bits or Index of Bit' parameter: "+this.bit+"\nMust be a single value.");
-                EXTRACTBITS.get();
+        this.in = [parseFloat(getData(this.x.model.in)),parseFloat(getData(this.x.model.in2))];
+        if(this.rule == 3 || this.rule == 4){
+            if(size(bit_1,"*") != 1){
+                alert("Wrong size for 'Number of Bits or Index of Bit' parameter: "+temp_bit+"\nMust be a single value.");
+                throw "incorrect";
+            }else{
+                this.numb = bit_1;
+            }
+        }else if(this.rule == 5){
+            if(size(bit_1,"*") != 2){
+                alert("Wrong size for 'Number of Bits or Index of Bit' parameter: "+temp_bit+"\nMust have this form: [Start, End].");
+                throw "incorrect";
+            }
+            else if(bit_1[0] > bit_1[1]){
+                alert("Wrong values for 'Number of Bits or Index of Bit' parameter: "+temp_bit+"\n''Start'' must be less than ''End''.");
+                throw "incorrect";
             }
             else
-                this.numb=this.bit;
-        }
-        else if(this.rule==5){
-            if(size(this.bit,"*")!=2){
-                alert("Wrong size for 'Number of Bits or Index of Bit' parameter: "+this.bit+"\nMust have this form: [Start, End].");
-                EXTRACTBITS.get();
-            }
-            else if(this.bit[0]>this.bit[1]){
-                alert("Wrong values for 'Number of Bits or Index of Bit' parameter: "+this.bit+"\n''Start'' must be less than ''End''.");
-                EXTRACTBITS.get();
-            }
-            else
-                this.numb=this.bit[1]-this.bit[0];
-        }
-        else{
-            this.bit=0;
-            this.numb=[];
+                this.numb = bit_1[1]-bit_1[0];
+        }else{
+            bit_1 = 0;
+            this.bit = 0
+            this.numb = [];
         }
 
         if((this.Datatype==3)||(this.Datatype==6))
@@ -218,19 +217,19 @@ function EXTRACTBITS() {
                 }
         }
 
-        this.x.model.intyp = new ScilabDouble([this.Datatype])
-        this.x.model.outtyp = new ScilabDouble([this.Datatype])
-
-        this.out = [[1],[1]]
-        var io = set_io(this.x.model,this.x.graphics,this.in,this.out,[],[])
-        this.x.model.ipar = new ScilabDouble([this.bit],[this.numb])
-        var exprs = new ScilabString([sci2exp(this.Datatype)],[sci2exp(this.rule)],[sci2exp(this.bit)],[sci2exp(this.scal)])
-        this.x.graphics.exprs=exprs
+        this.x.model.intyp = new ScilabDouble([this.Datatype]);
+        this.x.model.outtyp = new ScilabDouble([this.Datatype]);
+        this.bit = temp_bit;
+        this.out = [[1],[1]];
+        var io = set_io(this.x.model,this.x.graphics,this.in,this.out,[],[]);
+        this.x.model.ipar = new ScilabDouble([bit_1],[this.numb]);
+        var exprs = new ScilabString([sci2exp(this.Datatype)],[sci2exp(this.rule)],[this.bit],[sci2exp(this.scal)]);
+        this.x.graphics.exprs = exprs;
         return new BasicBlock(this.x)
     }
 
     EXTRACTBITS.prototype.get_popup_title = function EXTRACTBITS() {
-        var set_param_popup_title="Set EXTRACTBITS block parameters <br> Bits Extraction <br> - Bits to Extract: <br> 1 Upper Half <br> 2 Lower Half <br> 3 Range from MSB <br> 4 Range to LSB <br> 5 Range of Bits <br> - Number of Bits or Index of bit : Index 0 is LSB. <br> If \"Bits to Extract\" is set to \"Range of bits\": [Start, End]";
+        var set_param_popup_title = "Set EXTRACTBITS block parameters <br> Bits Extraction <br> - Bits to Extract: <br> 1 Upper Half <br> 2 Lower Half <br> 3 Range from MSB <br> 4 Range to LSB <br> 5 Range of Bits <br> - Number of Bits or Index of bit : Index 0 is LSB. <br> If \"Bits to Extract\" is set to \"Range of bits\": [Start, End]";
         return set_param_popup_title
     }
     EXTRACTBITS.prototype.getDimensionForDisplay = function EXTRACTBITS(){

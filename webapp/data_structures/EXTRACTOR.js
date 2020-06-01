@@ -21,24 +21,26 @@ function EXTRACTOR() {
         return this.x;
     }
     EXTRACTOR.prototype.get = function EXTRACTOR() {
-        var options={
-            ind:["indices to extract",sci2exp(this.ind)],
+        var options = {
+            ind:["indices to extract",this.ind],
         }
         return options
     }
-EXTRACTOR.prototype.set = function EXTRACTOR() {
-    this.ind = MatrixInverse(arguments[0]["ind"])
-    for (var i =this.ind.length - 1; i >= 0; i--) {
-        this.ind[i] = Math.floor(this.ind[i])
-    }
-    this.x.model.ipar = new ScilabDouble(...this.ind);
-    var exprs = new ScilabString([sci2exp(this.ind)])
-    this.x.graphics.exprs=exprs
-    return new BasicBlock(this.x)
+    EXTRACTOR.prototype.set = function EXTRACTOR() {
+        var temp_ind = arguments[0]["ind"];
+        var ind_1 = inverse(temp_ind);
+        for (var i = ind_1.length - 1; i >= 0; i--) {
+            ind_1[i] = Math.floor(ind_1[i]);
+        }
+        this.ind = temp_ind;
+        this.x.model.ipar = new ScilabDouble(...ind_1);
+        var exprs = new ScilabString([this.ind]);
+        this.x.graphics.exprs = exprs;
+        return new BasicBlock(this.x)
     }
 
     EXTRACTOR.prototype.get_popup_title = function EXTRACTOR() {
-        var set_param_popup_title="Set block parameters";
+        var set_param_popup_title = "Set block parameters";
         return set_param_popup_title
     }
     EXTRACTOR.prototype.getDimensionForDisplay = function EXTRACTOR(){

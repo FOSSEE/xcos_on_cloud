@@ -129,26 +129,27 @@ function DELAY_f() {
 	DELAY_f.prototype.get = function DELAY_f() {
 		var options = {
 			dt: ["Discretization time step", this.dt],
-			zz0: ["Register initial state", this.zz0.toString().replace(/,/g, " ")],
+			zz0: ["Register initial state", this.zz0],
 		}
 		return options;
 	}
 	DELAY_f.prototype.set = function DELAY_f() {
-		this.dt = parseFloat((arguments[0]["dt"]))
-		this.zz0 = inverse(arguments[0]["zz0"])
-		if (size(this.zz0, "*") < 1) {
+		this.dt = parseFloat(arguments[0]["dt"]);
+		var temp_zz0 = arguments[0]["zz0"];
+		var zz0_1 = inverse(temp_zz0);
+		if (size(zz0_1, "*") < 1) {
 			alert("Register length must be at least 1");
-			DELAY_f.get();
+			throw "incorrect";
 		}
 		if (this.dt <= 0) {
 			alert("Discretization time step must be positive");
-			DELAY_f.get();
+			throw "incorrect";
 		}
 
-
+        this.zz0 = temp_zz0;
 
 		evtdly.model.rpar = new ScilabDouble(this.dt);
-		register.graphics.exprs = new ScilabString([this.zz0.toString().replace(/,/g, ";")]);
+		register.graphics.exprs = new ScilabString([this.zz0]);
 		diagram.objs.push(input_port);
 		diagram.objs.push(output_port);
 		diagram.objs.push(register);
@@ -188,15 +189,11 @@ function DELAY_f() {
 			to: new ScilabDouble([4, 1, 1])
 		}));
 		this.x.model.rpar = diagram;
-
-
-
-
 		return new BasicBlock(this.x)
 	}
 
-        DELAY_f.prototype.get_popup_title = function DELAY_f() {
-        var set_param_popup_title="This block implements as a discretized delay<br> it is consist of a shift register and a clock<br> value of the delay is given by<br> the discretization time step multiplied by the<br> number-1 of state of the register<br>";
+    DELAY_f.prototype.get_popup_title = function DELAY_f() {
+        var set_param_popup_title = "This block implements as a discretized delay<br> it is consist of a shift register and a clock<br> value of the delay is given by<br> the discretization time step multiplied by the<br> number-1 of state of the register<br>";
         return set_param_popup_title
     }
     DELAY_f.prototype.getDimensionForDisplay = function DELAY_f(){

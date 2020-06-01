@@ -23,58 +23,46 @@ function INTRPLBLK_f() {
     INTRPLBLK_f.prototype.details = function INTRPLBLK_f() {
         return this.x;
     }
-INTRPLBLK_f.prototype.get = function INTRPLBLK_f() {
-        var options={
-            a:["X coord.",sci2exp(this.a)],
-            b:["Y coord.",sci2exp(this.b)],
+    INTRPLBLK_f.prototype.get = function INTRPLBLK_f() {
+        var options = {
+            a:["X coord.",this.a],
+            b:["Y coord.",this.b],
         }
         return options
     }
-INTRPLBLK_f.prototype.set = function INTRPLBLK_f() {
-    this.a = MatrixInverse(arguments[0]["a"])
-    this.b = MatrixInverse(arguments[0]["b"])
-    if(size(this.a,"*")!=size(this.b,"*")){
-        alert("X and Y must have the same size");
-        INTRPLBLK_f.get();
-    }
-    if(size(this.a,1)>1){
-    var m=0;
-    for(var i=0;i<size(this.a,1)-1;i++)
-    {
-        if((this.a[i+1][0]-this.a[i][0])<=0){
-            m=1;
-            break;
+    INTRPLBLK_f.prototype.set = function INTRPLBLK_f() {
+        var temp_a = arguments[0]["a"];
+        var temp_b = arguments[0]["b"];
+        var a_1 = inverse(temp_a);
+        var b_1 = inverse(temp_a);
+        if(size(a_1,"*") != size(b_1,"*")){
+            alert("X and Y must have the same size");
+            throw "incorrect";
         }
+        if(size(a_1,1) > 1){
+            var m = 0;
+            for(var i = 0; i < size(a_1,1)-1; i++)
+            {
+                if((a_1[i+1][0]-a_1[i][0]) <= 0){
+                    m = 1;
+                    break;
+                }
 
-    }
-    if(m==1){
+            }
+            if(m == 1){
                 alert("X must be strictly increasing");
-                INTRPLBLK_f.get();
+                throw "incorrect";
             }
-    }
-    /*if(size(this.b,1)>1){
-    var n=0;
-    for(var i=1;i<size(this.b,1)-1;i++)
-    {
-        if((this.b[i+1][0]-this.b[i][0])<=0)
-        {
-            n=1;
-            break;
         }
-    }
-
-            if(n==1){
-                alert("Y must be strictly increasing");
-                INTRP2BLK_f.get();
-            }
-        }*/
-    this.x.model.rpar = new ScilabDouble(...colon_operator(this.a),...colon_operator(this.b))
-    var exprs = new ScilabString([sci2exp(this.a)],[sci2exp(this.b)])
-    this.x.graphics.exprs=exprs
-    return new BasicBlock(this.x)
+        this.a = temp_a;
+        this.b = temp_b;
+        this.x.model.rpar = new ScilabDouble(...colon_operator(a_1),...colon_operator(a_1));
+        var exprs = new ScilabString([this.a],[this.b]);
+        this.x.graphics.exprs = exprs;
+        return new BasicBlock(this.x)
     }
     INTRPLBLK_f.prototype.get_popup_title = function INTRPLBLK_f() {
-        var set_param_popup_title="Set Interpolation block parameters";
+        var set_param_popup_title = "Set Interpolation block parameters";
         return set_param_popup_title
     }
     INTRPLBLK_f.prototype.getDimensionForDisplay = function INTRPLBLK_f(){

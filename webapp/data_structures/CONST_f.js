@@ -23,29 +23,30 @@ function CONST_f() {
         return this.x;
     }
     CONST_f.prototype.get = function CONST_f() {
-        var options={
-            C:["Constant",sci2exp(this.C)],
+        var options = {
+            C:["Constant",this.C],
         }
         return options
     }
-CONST_f.prototype.set = function CONST_f() {
-    this.C = MatrixInverse(arguments[0]["C"])
-    this.nout = size(this.C,"*")
-    if(this.nout==0){
-        alert("C must have at least one element");
-        CONST_f.get();
-    }
-    this.displayParameter = [this.C];
-    this.x.model.rpar = new ScilabDouble(...this.C)
-    this.x.model.out = new ScilabDouble(this.nout)
-    var exprs = new ScilabString([sci2exp(this.C)]);
-    //var exprs = new ScilabString([this.C.toString().replace(/,/g, " ")])
-    this.x.graphics.exprs=exprs
-    return new BasicBlock(this.x)
+    CONST_f.prototype.set = function CONST_f() {
+        var temp_C = arguments[0]["C"];
+        var C_1 = inverse(temp_C);
+        this.nout = size(C_1,"*");
+        if(this.nout == 0){
+            alert("C must have at least one element");
+            throw "incorrect";
+        }
+        this.C = temp_C;
+        this.displayParameter = [this.C];
+        this.x.model.rpar = new ScilabDouble(...C_1);
+        this.x.model.out = new ScilabDouble(this.nout);
+        var exprs = new ScilabString([this.C]);
+        this.x.graphics.exprs = exprs;
+        return new BasicBlock(this.x)
     }
 
     CONST_f.prototype.get_popup_title = function CONST_f() {
-        var set_param_popup_title="Set Contant Block";
+        var set_param_popup_title = "Set Contant Block";
         return set_param_popup_title
     }
     CONST_f.prototype.getDimensionForDisplay = function CONST_f(){

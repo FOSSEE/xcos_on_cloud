@@ -32,47 +32,60 @@ function TCLSS() {
         return this.x;
     }
     TCLSS.prototype.get = function DLSS() {
-        var options={
-            A:["A matrix",sci2exp(this.A)],
-            B:["B matrix",sci2exp(this.B)],
-            C:["C matrix",sci2exp(this.C)],
-            D:["D matrix",sci2exp(this.D)],
-            x0:["Initial state",sci2exp(this.x0)],
+        var options = {
+            A:["A matrix",this.A],
+            B:["B matrix",this.B],
+            C:["C matrix",this.C],
+            D:["D matrix",this.D],
+            x0:["Initial state",this.x0],
         }
         return options
     }
-    TCLSS.prototype.set=function TCLSS(){
-        this.A = MatrixInverse(arguments[0]["A"])
-        this.B = MatrixInverse(arguments[0]["B"])
-        this.C = MatrixInverse(arguments[0]["C"])
-        this.D = MatrixInverse(arguments[0]["D"])
-        this.x0 = MatrixInverse(arguments[0]["x0"])
-        this.out=size(this.C,1);
-        if(this.out==0)
-            this.out=[]
-        this.in=size(this.B,2);
-        if(this.in==0)
-            this.in=[]
-        var ms=size(this.A,1);
-        var ns=size(this.A,2);
-        if(ms!=ns){
-            alert("A matrix must be square");
-            TCLSS.get();
+    TCLSS.prototype.set = function TCLSS(){
+        var temp_A = arguments[0]["A"];
+        var temp_B = arguments[0]["B"];
+        var temp_C = arguments[0]["C"];
+        var temp_D = arguments[0]["D"];
+        var temp_x0 = arguments[0]["x0"];
+        var A_1 = inverse(temp_A);
+        var B_1 = inverse(temp_B);
+        var C_1 = inverse(temp_C);
+        var D_1 = inverse(temp_D);
+        var x0_1 = inverse(temp_x0);
+        this.out = size(C_1,1);
+        if(this.out == 0){
+            this.out = [];
         }
-        var io = check_io(this.x.model,this.x.graphics,[[this.in],[ms]],[this.out],1,[])
-        var exprs = new ScilabString([sci2exp(this.A)],[sci2exp(this.B)],[sci2exp(this.C)],[sci2exp(this.D)],[sci2exp(this.x0)])
-        this.x.graphics.exprs=exprs
-        var rpar = new ScilabDouble(...colon_operator(this.A),...colon_operator(this.B),...colon_operator(this.C),...colon_operator(this.D))
-        this.x.model.rpar = rpar
-        this.x.model.dep_ut = new ScilabBoolean(false,true)
-        if(this.D!=[])
+        this.in = size(B_1,2);
+        if(this.in == 0){
+            this.in = [];
+        }
+        var ms = size(A_1,1);
+        var ns = size(A_1,2);
+        if(ms != ns){
+            alert("A matrix must be square");
+            throw "incorrect";
+        }
+        this.A = temp_A;
+        this.B = temp_B;
+        this.C = temp_C;
+        this.D = temp_D;
+        this.x0 = temp_x0;
+        var io = check_io(this.x.model,this.x.graphics,[[this.in],[ms]],[this.out],1,[]);
+        var exprs = new ScilabString([this.A],[this.B],[this.C],[this.D],[this.x0]);
+        this.x.graphics.exprs = exprs;
+        var rpar = new ScilabDouble(...colon_operator(A_1),...colon_operator(B_1),...colon_operator(C_1),...colon_operator(D_1));
+        this.x.model.rpar = rpar;
+        this.x.model.dep_ut = new ScilabBoolean(false,true);
+        if(this.D != []){
             this.x.model.sim = list(new ScilabString(["tcslti4"]), new ScilabDouble([4]));
-        else
+        }else{
             this.x.model.sim = list(new ScilabString(["tcsltj4"]), new ScilabDouble([4]));
-        return new BasicBlock(this.x)
+        }
+        return new BasicBlock(this.x);
     }
     TCLSS.prototype.get_popup_title = function TCLSS() {
-        var set_param_popup_title="Set continuous linear system parameters";
+        var set_param_popup_title = "Set continuous linear system parameters";
         return set_param_popup_title
     }
     TCLSS.prototype.getDimensionForDisplay = function TCLSS(){

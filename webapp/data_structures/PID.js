@@ -632,35 +632,22 @@ function PID() {
 	    return options
     }
     PID.prototype.set = function PID() {
-	    var regex = /[a-zA-Z]/g;
-        var prop1 = arguments[0]["prop"].replace(/\s/g, "");
-        var charInprop = prop1.match(regex);
-        if(charInprop != null){
-            alert("Answer given for Proportional \nis incorrect: Undefined variable :"+arguments[0]["prop"]);
-            throw "incorrect";
-        }
-        var integ1 = arguments[0]["integ"].replace(/\s/g, "");
-        var charIninteg = integ1.match(regex);
-        if(charIninteg != null){
-            alert("Answer given for Integration \nis incorrect: Undefined variable :"+arguments[0]["integ"]);
-            throw "incorrect";
-        }
-        var deriv1 = arguments[0]["deriv"].replace(/\s/g, "");
-        var charInderiv = deriv1.match(regex);
-        if(charInderiv != null){
-            alert("Answer given for Derivation \nis incorrect: Undefined variable :"+arguments[0]["deriv"]);
-            throw "incorrect";
-        }
-        this.prop = inverse(prop1);
-        this.integ = inverse(integ1);
-        this.deriv = inverse(deriv1);
+        var temp_prop = arguments[0]["prop"];
+        var temp_integ = arguments[0]["integ"];
+        var temp_deriv = arguments[0]["deriv"];
+	    var prop_1 = inverse(temp_prop);
+	    var integ_1 = inverse(temp_integ);
+	    var deriv_1 = inverse(temp_deriv);
+        this.prop = temp_prop;
+        this.integ = temp_integ;
+        this.deriv = temp_deriv;
         var gainblk_objs = getRparObjsByLinkToGui(this.x, 'GAINBLK', 'SUMMATION', 'INTEGRAL_m', 'DERIV');
-        gainblk_objs[0].model.rpar = new ScilabDouble([this.prop]);
-        gainblk_objs[0].graphics.exprs = new ScilabString([this.prop.toString().replace(/,/g, " ")]);
-        gainblk_objs[1].model.rpar = new ScilabDouble([this.integ]);
-        gainblk_objs[1].graphics.exprs = new ScilabString([this.integ.toString().replace(/,/g, " ")]);
-        gainblk_objs[2].model.rpar = new ScilabDouble([this.deriv]);
-        gainblk_objs[2].graphics.exprs = new ScilabString([this.deriv.toString().replace(/,/g, " ")]);
+        gainblk_objs[0].model.rpar = new ScilabDouble([prop_1]);
+        gainblk_objs[0].graphics.exprs = new ScilabString([this.prop]);
+        gainblk_objs[1].model.rpar = new ScilabDouble([integ_1]);
+        gainblk_objs[1].graphics.exprs = new ScilabString([this.integ]);
+        gainblk_objs[2].model.rpar = new ScilabDouble([deriv_1]);
+        gainblk_objs[2].graphics.exprs = new ScilabString([this.deriv]);
         return new BasicBlock(this.x);
     }
     PID.prototype.details = function PID() {

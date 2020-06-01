@@ -1,74 +1,5 @@
 function CFSCOPE() {
 
-    CFSCOPE.prototype.get = function CFSCOPE() {
-
-        var options={
-            clrs:["Color (>0) or mark (<0) vector (8 entries)",this.clrs.toString().replace(/,/g, " ")],
-            win:["Output window number (-1 for automatic)",this.win],
-            wpos:["Output window position",this.wpos.toString().replace(/,/g, " ")],
-            wdim:["Output window sizes", this.wdim.toString().replace(/,/g, " ")],
-            ymin:["Ymin",this.ymin],
-            ymax:["Ymax",this.ymax],
-            per:["Refresh Period",this.per],
-            N:["Buffer size",this.N],
-            wu:["Links to view",this.wu],
-        };
-        return options;
-    }
-
-
-    CFSCOPE.prototype.set = function CFSCOPE() {
-        this.clrs = inverse(arguments[0]["clrs"]);
-        this.win = parseFloat((arguments[0]["win"]));
-        this.wpos = inverse((arguments[0]["wpos"]));
-        this.wdim = inverse((arguments[0]["wdim"]));
-        this.ymin = parseFloat(arguments[0]["ymin"]);
-        this.ymax = parseFloat(arguments[0]["ymax"]);
-        this.per = parseFloat(arguments[0]["per"]);
-        this.N = parseFloat((arguments[0]["N"]));
-        this.wu = parseFloat(arguments[0]["wu"]);
-        if((size(this.wpos,"*")!=0)&&(size(this.wpos,"*")!=2)){
-                alert("Window position must be [] or a 2 vector");
-                CFSCOPE.get();
-            }
-            if((size(this.wdim,"*")!=0)&&(size(this.wdim,"*")!=2)){
-                alert("Window dim must be [] or a 2 vector");
-                CFSCOPE.get();
-            }
-            if(this.win<-1){
-                alert("Window number cannot be inferior than -1");
-                CFSCOPE.get();
-            }
-            if(this.per<=0){
-                alert("Refresh period must be positive");
-                CFSCOPE.get();
-            }
-            if(this.N<2){
-                alert("Buffer size must be at least 2");
-                CFSCOPE.get();
-            }
-            if(this.ymin>=this.ymax){
-                alert("Ymax must be greater than Ymin");
-                CFSCOPE.get();
-            }
-            if(this.wu<0){
-                alert("Link to view must be positive");
-                CFSCOPE.get();
-            }
-        if(this.wpos.length == 0 || this.wpos[0].length == 0){
-            this.wpos = [[-1], [-1]]
-        }
-        var rpar = new ScilabDouble([0], [this.ymin], [this.ymax], [this.per])
-        var ipar = new ScilabDouble([this.win], [1], [this.N], ...this.clrs, ...this.wpos, ...this.wdim, [this.wu.length], [this.wu]);
-        var exprs = new ScilabString([this.clrs.toString().replace(/,/g, " ")], [this.win], [sci2exp(this.wpos)], [sci2exp(this.wdim)], [this.ymin], [this.ymax], [this.per], [this.N], [this.wu]);
-        this.x.model.ipar = ipar;
-        this.x.model.rpar = rpar;
-        this.x.model.dep_ut = new ScilabBoolean([true, false]);
-        this.x.graphics.exprs = exprs;
-        return new BasicBlock(this.x);
-    };
-
-
     CFSCOPE.prototype.define = function CFSCOPE() {
         this.wu = 1;
         this.win = -1;
@@ -93,12 +24,86 @@ function CFSCOPE() {
         this.x.graphics.style = new ScilabString(["CFSCOPE"]);
         return new BasicBlock(this.x);
     }
+
+    CFSCOPE.prototype.get = function CFSCOPE() {
+        var options = {
+            clrs:["Color (>0) or mark (<0) vector (8 entries)",this.clrs],
+            win:["Output window number (-1 for automatic)",this.win],
+            wpos:["Output window position",this.wpos],
+            wdim:["Output window sizes", this.wdim],
+            ymin:["Ymin",this.ymin],
+            ymax:["Ymax",this.ymax],
+            per:["Refresh Period",this.per],
+            N:["Buffer size",this.N],
+            wu:["Links to view",this.wu],
+        };
+        return options;
+    }
+
+
+    CFSCOPE.prototype.set = function CFSCOPE() {
+        var temp_clrs = arguments[0]["clrs"];
+        this.win = parseFloat(arguments[0]["win"]);
+        var temp_wpos = arguments[0]["wpos"];
+        var temp_wdim = arguments[0]["wdim"];
+        this.ymin = parseFloat(arguments[0]["ymin"]);
+        this.ymax = parseFloat(arguments[0]["ymax"]);
+        this.per = parseFloat(arguments[0]["per"]);
+        this.N = parseFloat(arguments[0]["N"]);
+        this.wu = parseFloat(arguments[0]["wu"]);
+        var clrs_1 = inverse(temp_clrs);
+        var wpos_1 = inverse(temp_wpos);
+        var wdim_1 = inverse(temp_wdim);
+        if((size(wpos_1,"*") != 0) && (size(wpos_1,"*") != 2)){
+            alert("Window position must be [] or a 2 vector");
+            throw "incorrect";
+        }
+        if((size(wdim_1,"*") != 0) && (size(wdim_1,"*") != 2)){
+            alert("Window dim must be [] or a 2 vector");
+            throw "incorrect";
+        }
+        if(this.win < -1){
+            alert("Window number cannot be inferior than -1");
+            throw "incorrect";
+        }
+        if(this.per <= 0){
+            alert("Refresh period must be positive");
+            throw "incorrect";
+        }
+        if(this.N < 2){
+            alert("Buffer size must be at least 2");
+            throw "incorrect";
+        }
+        if(this.ymin >= this.ymax){
+            alert("Ymax must be greater than Ymin");
+            throw "incorrect";
+        }
+        if(this.wu < 0){
+            alert("Link to view must be positive");
+            throw "incorrect";
+        }
+        if(wpos_1.length == 0 || wpos_1[0].length == 0){
+            wpos_1 = [[-1], [-1]];
+        }
+        this.clrs = temp_clrs;
+        this.wpos = temp_wpos;
+        this.wdim = temp_wdim;
+        var rpar = new ScilabDouble([0], [this.ymin], [this.ymax], [this.per]);
+        var ipar = new ScilabDouble([this.win], [1], [this.N], ...clrs_1, ...wpos_1, ...wdim_1, [this.wu.length], [this.wu]);
+        var exprs = new ScilabString([this.clrs], [this.win], [this.wpos], [this.wdim], [this.ymin], [this.ymax], [this.per], [this.N], [this.wu]);
+        this.x.model.ipar = ipar;
+        this.x.model.rpar = rpar;
+        this.x.model.dep_ut = new ScilabBoolean([true, false]);
+        this.x.graphics.exprs = exprs;
+        return new BasicBlock(this.x);
+    };
+
     CFSCOPE.prototype.details = function CFSCOPE() {
         return this.x;
     }
 
     CFSCOPE.prototype.get_popup_title = function CFSCOPE() {
-        var set_param_popup_title="Set Scope parameters";
+        var set_param_popup_title = "Set Scope parameters";
         return set_param_popup_title
     }
     CFSCOPE.prototype.getDimensionForDisplay = function CFSCOPE(){

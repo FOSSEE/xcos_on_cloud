@@ -1170,47 +1170,51 @@ function sign() {
  * compute value
  */
 function getValueOfImaginaryInput(inputvalue, blockname) {
-    var actualDoubleValue=null;
-
-    if (inputvalue.includes("pi")) {
-        inputvalue=inputvalue.replace("%pi", Math.PI);
-        actualDoubleValue=math.eval(inputvalue);
-    } else if (inputvalue.includes("e")) {
-        inputvalue=inputvalue.replace("%e", Math.E);
-        actualDoubleValue=math.eval(inputvalue);
-    } else if (inputvalue.includes("%i")) {
-        // For imaginary inputs used in complex
-        // Different condition of using imaginary and operators (More condition
-        // will be added in future)
-        if (inputvalue.includes("*%i")) {
-            inputvalue=inputvalue.replace("*%i","i");
-        } else if (inputvalue.includes("%i*")) {
-            inputvalue=inputvalue.replace("%i*","i");
-        } else if (inputvalue.includes("/%i")) {
-            inputvalue=inputvalue.replace("/%i","i");
-        } else if (inputvalue.includes("%i/")) {
-            inputvalue=inputvalue.replace("%i/","i");
+    var actualDoubleValue = null;
+    try{
+        if (inputvalue.includes("pi")) {
+            inputvalue = inputvalue.replace("%pi", Math.PI);
+            actualDoubleValue = math.eval(inputvalue);
+        } else if (inputvalue.includes("e")) {
+            inputvalue=inputvalue.replace("%e", Math.E);
+            actualDoubleValue = math.eval(inputvalue);
+        } else if (inputvalue.includes("%i")) {
+            // For imaginary inputs used in complex
+            // Different condition of using imaginary and operators (More condition
+            // will be added in future)
+            if (inputvalue.includes("*%i")) {
+                inputvalue = inputvalue.replace("*%i","i");
+            } else if (inputvalue.includes("%i*")) {
+                inputvalue = inputvalue.replace("%i*","i");
+            } else if (inputvalue.includes("/%i")) {
+                inputvalue = inputvalue.replace("/%i","i");
+            } else if (inputvalue.includes("%i/")) {
+                inputvalue = inputvalue.replace("%i/","i");
+            } else {
+                inputvalue = inputvalue.replace("%i","i");
+            }
+            // As complex doesn't accepts array format [], those bracket are
+            // removed
+            if (inputvalue.includes("[")||inputvalue.includes("]")) {
+                inputvalue = inputvalue.replace("[","");
+                inputvalue = inputvalue.replace("]","");
+            }
+            var complexnumber = inputvalue.toString();
+            // convert into const to extract real part from complex number for
+            // passing it to rpar/opar
+            const b = math.complex(complexnumber);
+            actualDoubleValue = b.re;
+        } else if (inputvalue.includes("rand(")){
+            if(blockname == "CONST_m"){
+                actualDoubleValue = call_internal_fun("randfunc", { inputvalue });
+            }
         } else {
-            inputvalue=inputvalue.replace("%i","i");
+            actualDoubleValue = math.eval(inputvalue);
         }
-        // As complex doesn't accepts array format [], those bracket are
-        // removed
-        if (inputvalue.includes("[")||inputvalue.includes("]")) {
-            inputvalue=inputvalue.replace("[","");
-            inputvalue=inputvalue.replace("]","");
-        }
-        var complexnumber=inputvalue.toString();
-        // convert into const to extract real part from complex number for
-        // passing it to rpar/opar
-        const b = math.complex(complexnumber);
-        actualDoubleValue=b.re;
-    } else if (inputvalue.includes("rand(")){
-        if(blockname == "CONST_m"){
-            actualDoubleValue = call_internal_fun("randfunc", { inputvalue });
-        }
-    } else {
-        actualDoubleValue=math.eval(inputvalue);
+    }catch (err) {
+        actualDoubleValue = null;
     }
+
     return actualDoubleValue;
 }
 
@@ -1227,4 +1231,42 @@ function objToArrayList(graphPoints) {
         }
     }
     return tempPoints;
+}
+
+var contextVariableMap = new Map(); // Global map for storing context variable of diagram
+// Get context variables values from context
+// and stored them in map and return that map
+function get_map_of_context_values(context_map){
+    contextVariableMap = new Map();
+    if(context_map.length != 0){
+        for(var i = 0; i < context_map.length; i++){
+            var context_text = context_map[i];
+            var temp = context_text.split("=");
+            if(temp.length == 2){
+                contextVariableMap.set(temp[0].trim(), temp[1].trim());
+            }
+        }
+    }
+}
+
+// Get value of variable from workspace variable map
+function get_value_for_variable_from_workspace(variable_name){
+    var value = scilabVariableMap.get(variable_name); // map in prerequisitefile.js
+    if(value == undefined || value == null){
+        return null;
+    }else{
+        return value;
+    }
+
+}
+
+// Get value of variable from context variable map
+function get_value_for_variable_from_context(variable_name){
+    var value = contextVariableMap.get(variable_name); // map in details.js
+    if(value == undefined || value == null){
+        return null;
+    }else{
+        return value;
+    }
+
 }
