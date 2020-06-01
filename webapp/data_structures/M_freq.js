@@ -2,8 +2,8 @@ function M_freq() {
 
     M_freq.prototype.define = function M_freq() {
         var model = scicos_model();
-	this.frequ = [[1],[2]];
-	this.offset = [[0],[0]];
+	    this.frequ = [[1],[2]];
+	    this.offset = [[0],[0]];
         model.sim = list(new ScilabString(["m_frequ"]), new ScilabDouble([4]));
         model.evtout = new ScilabDouble([1], [1], [1]);
         model.evtin = new ScilabDouble([1]);
@@ -20,11 +20,9 @@ function M_freq() {
         return new BasicBlock(this.x);
     }
 
-
     M_freq.prototype.details = function M_freq() {
         return this.x;
     }
-    /**m_freq function is needed**/
 
     M_freq.prototype.get = function M_freq() {
          if(this.frequ == undefined || this.frequ == null ){
@@ -34,70 +32,69 @@ function M_freq() {
              this.offset = [[0],[0]];
          }
 
-         var options={
-             frequ:["Sample time",sci2exp(this.frequ)],
-             offset:["Offset",sci2exp(this.offset)],
+         var options = {
+             frequ:["Sample time",this.frequ],
+             offset:["Offset",this.offset],
          }
          return options
-     }
+    }
+
      M_freq.prototype.set = function M_freq() {
-        this.frequ = MatrixInverse(arguments[0]["frequ"])
-        this.offset = MatrixInverse(arguments[0]["offset"])
-       // if((size(frequ,"*"))!=(size(offset,"*"))){
-       //     alert("offset and frequency must have the same size");
-       //     M_freq.get();
-       // }
-        for(var i=0;i<size(this.frequ,1);i++)
-        {
-            for(j=0;j<size(this.frequ,2);j++)
-            {
-                if(this.frequ[i][j]<=0)
-                {
+        var temp_frequ = arguments[0]["frequ"];
+        var temp_offset = arguments[0]["offset"];
+        var frequ_1 = inverse(temp_frequ);
+        var offset_1 = inverse(temp_offset);
+
+        if(size(frequ_1,"*") != size(offset_1,"*")){
+            alert("offset and frequency must have the same size");
+            throw "incorrect";
+        }
+        for(var i = 0; i < size(frequ_1,1); i++){
+            for(j = 0; j < size(frequ_1,2); j++){
+                if(frequ_1[i][j] <= 0){
                     alert("Frequency must be a positive number");
-                    M_freq.get();
+                    throw "incorrect";
                 }
-                if(Math.abs(this.offset[i][j])>this.frequ[i][j])
-                {
+                if(Math.abs(offset_1[i][j]) > frequ_1u[i][j]){
                     alert("The |Offset| must be less than the Frequency");
-                    M_freq.get();
+                    throw "incorrect";
                 }
             }
         }
 
 		var model = scicos_model();
-		var mainre=mfrequ_clk(this.frequ, this.offset)
-		var m=mainre[0];
-		var den=mainre[1];
-		var off=mainre[2];
-		var count=mainre[3];
-		var m1=mainre[4];
-		var fir=mainre[5];
+		var mainre = mfrequ_clk(frequ_1, offset_1);
+		var m = mainre[0];
+		var den = mainre[1];
+		var off = mainre[2];
+		var count = mainre[3];
+		var m1 = mainre[4];
+		var fir = mainre[5];
 
-		if(this.frequ=="1,2"&&this.offset=="0,0"){
-			this.m=[[1, 1, 1],[1, 3, 2]];
+		if(frequ_1.toString() == "1,2" && offset_1.toString() == "0,0"){
+			this.m = [[1, 1, 1],[1, 3, 2]];
 		}
+        model.opar = list(new ScilabDouble(...this.m),new ScilabDouble([parseFloat(den)]),new ScilabDouble([off]),new ScilabInteger([count]));
+		var mn = (2*m1.length)-1;
 
-                model.opar=list(new ScilabDouble(...this.m),new ScilabDouble([parseFloat(den)]),new ScilabDouble([off]),new ScilabInteger([count]));
-		var mn=(2*m1.length)-1;
-
-                if (mn>3){
-                    this.x.graphics.sz=new ScilabDouble([40+(mn-3)*10,40]);
-                        }
-                else{
-                   this.x.graphics.sz=new ScilabDouble([50,40]);
-               }
-                model.firing=new ScilabDouble(fir);
-
-		var exprs = new ScilabString([sci2exp(this.frequ)], [sci2exp(this.offset)]);
+        if (mn > 3){
+            this.x.graphics.sz = new ScilabDouble([40+(mn-3)*10,40]);
+        }else{
+            this.x.graphics.sz = new ScilabDouble([50,40]);
+        }
+        model.firing = new ScilabDouble(fir);
+        this.frequ =  temp_frequ;
+        this.offset = temp_offset;
+		var exprs = new ScilabString([this.frequ], [this.offset]);
 		var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"M_freq\",sz(1),sz(2));"]);
-                this.x = new standard_define(new ScilabDouble([3, 2]), model, exprs, gr_i);
-                this.x.graphics.exprs=exprs
-                var io =set_io(this.x.model,this.x.graphics,[],[],[1],ones(mn,1));
-         return new BasicBlock(this.x)
-     }
+        this.x = new standard_define(new ScilabDouble([3, 2]), model, exprs, gr_i);
+        this.x.graphics.exprs = exprs;
+        var io = set_io(this.x.model,this.x.graphics,[],[],[1],ones(mn,1));
+        return new BasicBlock(this.x)
+    }
 
-     M_freq.prototype.get_popup_title = function M_freq() {
-        var set_param_popup_title="Set block parameters";
+    M_freq.prototype.get_popup_title = function M_freq() {
+        var set_param_popup_title = "Set block parameters";
         return set_param_popup_title
     }
     M_freq.prototype.getDimensionForDisplay = function M_freq(){

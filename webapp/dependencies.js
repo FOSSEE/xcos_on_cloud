@@ -1394,45 +1394,59 @@ function compare() {
     return result;
 }
 
-// converts [1,1;1,2] => [[1,1],[1,2]]
-// and [1,1,1] => [1,1,1]
-// and 1 => [0]
-function MatrixInverse() {
-    var str = "["
-    var arg = arguments[0];
-    if (arg.indexOf(';') == -1) {
-        if (arg.indexOf(',') == -1) {
-            str += arg + ']';
-            var array = JSON.parse(str);
-        } else
-            var array = JSON.parse(arg);
-    } else {
-        if (arg != "[]") {
-            arg = arg.replace(/;/g, "],[");
-            str += arg + "]";
-        } else {
-            str = "[]"
-        }
-        var array = JSON.parse(str);
-    }
-    return array;
-}
-
-function inverse() {
+function inverse(arg) {
+    var regex_char = /^[a-zA-Z_][a-zA-Z_0-9]*$/;
     var str = "[["
-    var arg = arguments[0];
     if (typeof arg == 'number') {
         str += arg + "]]";
     } else if (arg != "[]") {
-        arg = arg.replace(/int8\(([^)]*)\)/, "$1");
-        arg = arg.replace(/[\[\]; ]+/g, " ").trim();
-        arg = arg.replace(/[ ,]+/g, "],[");
+        arg = arg.trim();
+        arg = arg.replace(/int8\(([^)]*)\)/, "$1"); // extracting value from int8(12) => 12
+        if (regex_char.test(arg)) {
+            //Check context variable exist or not
+            var return_str = get_value_for_variable_from_context(arg);
+            if(return_str != null){
+                arg = return_str;
+            }else{
+                // get variable value from workspace variable map.
+                var return_map = get_value_for_variable_from_workspace(arg);
+                if(return_map != null){
+                    arg = return_map.value;
+                }
+            }
+        }
+        arg = arg.replace(/[\[\]]+/g, ""); /* remove '[]' */
+        if(!arg.includes(";")){
+            /*
+             test case :
+                [1,1,1] => [[1],[1],[1]]
+                [1 1 1] => [[1],[1],[1]]
+                1 1 1 => [[1],[1],[1]]
+                1,1,1 => [[1],[1],[1]]
+            */
+            arg = arg.replace(/[ ,]+/g, "],[");
+        }else{
+            /*
+            test case :
+                [1,1;1,2] => [[1,1],[1,2]]
+                1,1;1,2  => [[1,1],[1,2]]
+                1 1;1 2 = > [[1,1],[1,2]]
+                1   1 ; 1   2 => [[1,1],[1,2]]
+            */
+            arg = arg.replace(/ *; */g, "],[");
+            arg = arg.replace(/[ ,]+/g, ",");
+        }
         str += arg + "]]";
     } else {
         str = "[]"
     }
-    var array = JSON.parse(str);
-    return array;
+    try {
+        var array = JSON.parse(str);
+        return array;
+    }catch(err) {
+        alert("Not a valid input parameter. Please check");
+        throw "incorrect";
+    }
 }
 
 // replaces ',' by " " and ];[ by ;

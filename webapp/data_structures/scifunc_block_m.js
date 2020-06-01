@@ -79,10 +79,7 @@ function scifunc_block_m() {
         var regex_parentheses = /[\])}[{(]/g;
         var regex_semicolon_comma = /[,;]+/;
 
-        if(!(i1.includes("[")) && !(i1.includes("]"))){
-            i1 = "["+i1+"]";
-        }
-        var in1 = MatrixInverse(i1);
+        var in1 = inverse(i1);
         if(isNaN(in1[0].length)){
             if(in1.length == 1 || in1.length > 2 ){
                 alert("Answer given for input ports sizes \nhas invalid dimension:\nwaiting for dimension -1 x 2.");
@@ -100,10 +97,7 @@ function scifunc_block_m() {
                 }
             }
         }
-        if(!(o1.includes("[")) && !(o1.includes("]"))){
-            o1 = "["+o1+"]";
-        }
-        var out = MatrixInverse(o1);
+        var out = inverse(o1);
         if(isNaN(out[0].length)){
             if(out.length == 1 || out.length > 2 ){
                 alert("Answer given for output ports sizes \nhas invalid dimension:\nwaiting for dimension -1 x 2.");
@@ -121,10 +115,7 @@ function scifunc_block_m() {
                 }
             }
         }
-        if(!(ci1.includes("[")) && !(ci1.includes("]"))){
-            ci1 = "["+ci1+"]";
-        }
-        var clkin = MatrixInverse(ci1);
+        var clkin = inverse(ci1);
         if(clkin.length == 0){
             clkin = [];
         }else{
@@ -135,10 +126,7 @@ function scifunc_block_m() {
                 }
             }
         }
-        if(!(co1.includes("[")) && !(co1.includes("]"))){
-            co1 = "["+co1+"]";
-        }
-        var clkout = MatrixInverse(co1);
+        var clkout = inverse(co1);
         if(clkout.length == 0){
             clkout = [];
         }else{
@@ -149,10 +137,7 @@ function scifunc_block_m() {
                 }
             }
         }
-        if(!(xx1.includes("[")) && !(xx1.includes("]"))){
-            xx1 = "["+xx1+"]";
-        }
-        var x0 = MatrixInverse(xx1);
+        var x0 = inverse(xx1);
         if(x0.length == 0){
             x0 = [];
         }else{
@@ -163,10 +148,7 @@ function scifunc_block_m() {
                 }
             }
         }
-        if(!(z1.includes("[")) && !(z1.includes("]"))){
-            z1 = "["+z1+"]";
-        }
-        var z0 = MatrixInverse(z1);
+        var z0 = inverse(z1);
         if(z0.length == 0){
             z0 = [];
         }else{
@@ -177,10 +159,7 @@ function scifunc_block_m() {
                 }
             }
         }
-        if(!(rpar1.includes("[")) && !(rpar1.includes("]"))){
-            rpar1 = "["+rpar1+"]";
-        }
-        var rpar0 = MatrixInverse(rpar1);
+        var rpar0 = inverse(rpar1);
         if(rpar0.length == 0){
             rpar0 = [];
         }else{
@@ -191,10 +170,7 @@ function scifunc_block_m() {
                 }
             }
         }
-        if(!(auto01.includes("[")) && !(auto01.includes("]"))){
-            auto01 = "["+auto01+"]";
-        }
-        var auto = MatrixInverse(auto01);
+        var auto = inverse(auto01);
         if(auto.length == 0){
             auto = [];
         }else{
@@ -263,7 +239,7 @@ function scifunc_block_m() {
             this.x.model.dstate = new ScilabDouble(...z0);
             rpar0 = inverse(rpar1);
             this.x.model.rpar = new ScilabDouble(...rpar0);
-            this.x.graphics.exprs = list(new ScilabString([sci2exp(this.i)], [sci2exp(this.o)], [sci2exp(this.ci)], [sci2exp(this.co)], [sci2exp(this.xx)], [sci2exp(this.z)], [sci2exp(this.rpar)], [sci2exp(this.auto0)], [sci2exp(this.deptime)]), list(new ScilabString(...tt[0]), new ScilabString(...tt[1]), new ScilabString(...tt[2]), new ScilabString(...tt[3]), new ScilabString(...tt[4]),
+            this.x.graphics.exprs = list(new ScilabString([this.i], [this.o], [this.ci], [this.co], [this.xx], [this.z], [this.rpar], [this.auto0], [this.deptime]), list(new ScilabString(...tt[0]), new ScilabString(...tt[1]), new ScilabString(...tt[2]), new ScilabString(...tt[3]), new ScilabString(...tt[4]),
 new ScilabString(...tt[5]), new ScilabString(...tt[6])));
             this.displayParameter = [tt[0]];
         }

@@ -35,24 +35,27 @@ function VanneReglante() {
         return this.x;
     }
     VanneReglante.prototype.get = function VanneReglante() {
-        var options={
-            Cvmax:["Cvmax",this.Cvmax.toString().replace(/,/g," ")],
-            p_rho:["p_rho",this.p_rho.toString().replace(/,/g," ")],
+        var options = {
+            Cvmax:["Cvmax",this.Cvmax],
+            p_rho:["p_rho",this.p_rho],
         }
         return options
     }
-VanneReglante.prototype.set = function VanneReglante() {
-    this.Cvmax = inverse(arguments[0]["Cvmax"])
-    this.p_rho = inverse(arguments[0]["p_rho"])
-    this.x.model.rpar = new ScilabDouble(...this.Cvmax,...this.p_rho)
-    this.x.model.equations.parameters = list(new ScilabString(["Cvmax"], ["p_rho"]),list(new ScilabDouble(...this.Cvmax),new ScilabDouble([this.p_rho])));
-    var exprs = new ScilabString([this.Cvmax.toString().replace(/,/g, " ")],[this.p_rho.toString().replace(/,/g, " ")])
-    this.x.graphics.exprs=exprs
-    return new BasicBlock(this.x)
+    VanneReglante.prototype.set = function VanneReglante() {
+        var temp_Cvmax = arguments[0]["Cvmax"];
+        var temp_p_rho = arguments[0]["p_rho"];
+        var Cvmax_1 = inverse(temp_Cvmax);
+        var p_rho_1 = inverse(temp_p_rho);
+        this.Cvmax = temp_Cvmax;
+        this.p_rho = temp_p_rho;
+        this.x.model.rpar = new ScilabDouble(...Cvmax_1,...p_rho_1);
+        this.x.model.equations.parameters = list(new ScilabString(["Cvmax"], ["p_rho"]),list(new ScilabDouble(...Cvmax_1),new ScilabDouble([p_rho_1])));
+        var exprs = new ScilabString([this.Cvmax],[this.p_rho]);
+        this.x.graphics.exprs = exprs;
+        return new BasicBlock(this.x)
     }
-
     VanneReglante.prototype.get_popup_title = function VanneReglante() {
-        var set_param_popup_title="Set parameters";
+        var set_param_popup_title = "Set parameters";
         return set_param_popup_title
     }
     VanneReglante.prototype.getDimensionForDisplay = function VanneReglante(){

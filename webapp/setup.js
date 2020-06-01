@@ -71,5 +71,6 @@ function handleContext() {
                 expressionArray[prop] = contextValues[prop];
             }
         }
+        get_map_of_context_values(expressionArray); //create a map for storing context value (only call on set method)
     }
 }

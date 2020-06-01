@@ -35,13 +35,13 @@ function CSCOPXY() {
     }
     CSCOPXY.prototype.get = function CSCOPXY() {
 
-        var options={
+        var options = {
             nbr_curves:["Number of Curves",this.nbr_curves],
-            clrs:["color (>0) or mark (<0)",this.clrs.toString().replace(/,/g," ")],
-            siz:["line or mark size",this.siz.toString().replace(/,/g," ")],
+            clrs:["color (>0) or mark (<0)",this.clrs],
+            siz:["line or mark size",this.siz],
             win:["Output window number (-1 for automatic)",this.win],
-            wpos:["Output window position",this.wpos.toString().replace(/,/g," ")],
-            wdim:["Output window sizes",this.wdim.toString().replace(/,/g," ")],
+            wpos:["Output window position",this.wpos],
+            wdim:["Output window sizes",this.wdim],
             xmin:["Xmin",this.xmin],
             xmax:["Xmax",this.xmax],
             ymin:["Ymin",this.ymin],
@@ -50,67 +50,71 @@ function CSCOPXY() {
         }
         return options
     }
-CSCOPXY.prototype.set = function CSCOPXY() {
-    this.nbr_curves = parseFloat((arguments[0]["nbr_curves"]))
-    this.clrs = parseFloat((arguments[0]["clrs"]))
-    this.siz = parseFloat((arguments[0]["siz"]))
-    this.win = parseFloat((arguments[0]["win"]))
-    this.wpos = inverse(arguments[0]["wpos"])
-    this.wdim = inverse(arguments[0]["wdim"])
-    this.xmin = parseFloat((arguments[0]["xmin"]))
-    this.xmax = parseFloat((arguments[0]["xmax"]))
-    this.ymin = parseFloat((arguments[0]["ymin"]))
-    this.ymax = parseFloat((arguments[0]["ymax"]))
-    this.N = parseFloat((arguments[0]["N"]))
-    if((size(this.wpos,"*")!=0)&&(size(this.wpos,"*")!=2)){
-                alert("Window position must be [] or a 2 vector");
-                CSCOPXY.get();
-            }
-            if((size(this.wdim,"*")!=0)&&(size(this.wdim,"*")!=2)){
-                alert("Window dim must be [] or a 2 vector");
-                CSCOPXY.get();
-            }
-            if(this.nbr_curves<=0){
-                alert("Number of Curves cannot be negative or null");
-                CSCOPXY.get();
-            }
-            if(this.win<-1){
-                alert("Window number cannot be inferior than -1");
-                CSCOPXY.get();
-            }
-            if(this.N<1){
-                alert("Buffer size must be at least 1");
-                CSCOPXY.get();
-            }
-            if((this.N==1)&&(this.clrs>0)){
-                alert("Buffer size must be at least 2");
-                CSCOPXY.get();
-            }
-            if(this.ymin>=this.ymax){
-                alert("Ymax must be greater than Ymin");
-                CSCOPXY.get();
-            }
-            if(this.xmin>=this.xmax){
-                alert("Xmax must be greater than Xmin");
-                CSCOPXY.get();
-            }
-    if(this.wpos.length == 0){
-        this.wpos = [[-1],[-1]];
-    }
-    if(this.wdim.length == 0){
-        this.wdim = [[-1],[-1]];
-    }
-    var rpar = new ScilabDouble([this.xmin],[this.xmax],[this.ymin],[this.ymax])
-    var ipar = new ScilabDouble([this.win],[1],[this.N],[this.clrs],[this.siz],[1],...this.wpos,...this.wdim,[this.nbr_curves])
-    this.x.model.rpar = rpar
-    this.x.model.ipar = ipar
-    var exprs = new ScilabString([this.nbr_curves],[sci2exp(this.clrs)],[sci2exp(this.siz)],[this.win],[sci2exp(this.wpos)],[sci2exp(this.wdim)],[this.xmin],[this.xmax],[this.ymin],[this.ymax],[this.N])
-    this.x.graphics.exprs=exprs
-    return new BasicBlock(this.x)
+    CSCOPXY.prototype.set = function CSCOPXY() {
+        this.nbr_curves = parseFloat(arguments[0]["nbr_curves"]);
+        this.clrs = parseFloat(arguments[0]["clrs"]);
+        this.siz = parseFloat(arguments[0]["siz"]);
+        this.win = parseFloat(arguments[0]["win"]);
+        var temp_wpos = arguments[0]["wpos"];
+        var temp_wdim = arguments[0]["wdim"];
+        this.xmin = parseFloat(arguments[0]["xmin"]);
+        this.xmax = parseFloat(arguments[0]["xmax"]);
+        this.ymin = parseFloat(arguments[0]["ymin"]);
+        this.ymax = parseFloat(arguments[0]["ymax"]);
+        this.N = parseFloat(arguments[0]["N"]);
+        var wpos_1 = inverse(temp_wpos);
+        var wdim_1 = inverse(temp_wdim);
+        if(size(wpos_1,"*") != 0 && size(wpos_1,"*") != 2){
+            alert("Window position must be [] or a 2 vector");
+            throw "incorrect";
+        }
+        if(size(wdim_1,"*") != 0 && size(wdim_1,"*") != 2){
+            alert("Window dim must be [] or a 2 vector");
+            throw "incorrect";
+        }
+        if(this.nbr_curves <= 0){
+            alert("Number of Curves cannot be negative or null");
+            throw "incorrect";
+        }
+        if(this.win < -1){
+            alert("Window number cannot be inferior than -1");
+            throw "incorrect";
+        }
+        if(this.N < 1){
+            alert("Buffer size must be at least 1");
+            throw "incorrect";
+        }
+        if(this.N == 1 && this.clrs > 0){
+            alert("Buffer size must be at least 2");
+            throw "incorrect";
+        }
+        if(this.ymin >= this.ymax){
+            alert("Ymax must be greater than Ymin");
+            throw "incorrect";
+        }
+        if(this.xmin >= this.xmax){
+            alert("Xmax must be greater than Xmin");
+            throw "incorrect";
+        }
+        if(wpos_1.length == 0){
+            wpos_1 = [[-1],[-1]];
+        }
+        if(wdim_1.length == 0){
+            wpos_1 = [[-1],[-1]];
+        }
+        this.wpos = temp_wpos;
+        this.wdim = temp_wdim;
+        var rpar = new ScilabDouble([this.xmin],[this.xmax],[this.ymin],[this.ymax]);
+        var ipar = new ScilabDouble([this.win],[1],[this.N],[this.clrs],[this.siz],[1],...wpos_1,...wdim_1,[this.nbr_curves]);
+        this.x.model.rpar = rpar;
+        this.x.model.ipar = ipar;
+        var exprs = new ScilabString([this.nbr_curves],[sci2exp(this.clrs)],[sci2exp(this.siz)],[this.win],[this.wpos],[this.wdim],[this.xmin],[this.xmax],[this.ymin],[this.ymax],[this.N]);
+        this.x.graphics.exprs = exprs;
+        return new BasicBlock(this.x)
     }
 
     CSCOPXY.prototype.get_popup_title = function CSCOPXY() {
-        var set_param_popup_title="Set Scope parameters";
+        var set_param_popup_title = "Set Scope parameters";
         return set_param_popup_title
     }
     CSCOPXY.prototype.getDimensionForDisplay = function CSCOPXY(){

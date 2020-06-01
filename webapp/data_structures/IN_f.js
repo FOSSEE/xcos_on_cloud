@@ -60,7 +60,7 @@ function IN_f () {
             this.ot = "-1"
         }
 
-        var options={
+        var options = {
             prt:["Port number",this.prt],
             otsz:["Outport size ([-1 -2] for inherit)",this.otsz],
             ot:["Outport Type (-1 for inherit)",this.ot]
@@ -69,34 +69,35 @@ function IN_f () {
     }
 IN_f.prototype.set = function IN_f() {
 
-    this.prt = parseFloat((arguments[0]["prt"]))
-    this.otsz = inverse(arguments[0]["otsz"])
-    this.ot = parseFloat((arguments[0]["ot"]))
-    if(this.prt<=0){
+    this.prt = parseFloat(arguments[0]["prt"]);
+    this.otsz = arguments[0]["otsz"];
+    var otsz_1 = inverse(this.otsz);
+    this.ot = parseFloat(arguments[0]["ot"]);
+    if(this.prt <= 0){
         alert("Port number must be a positive integer");
-        IN_f.get();
+        throw "incorrect";
     }
-    if(size(this.otsz,"*")!=2){
+    if(size(otsz_1,"*") != 2){
         alert("Outport Size must be a 2 elements vector");
-        IN_f.get();
+        throw "incorrect";
     }
-    if(((this.ot<1)||(this.ot>9))&&(this.ot!=-1)){
+    if((this.ot < 1 || this.ot > 9 ) && this.ot != -1){
         alert("Outport type must be a number between 1 and 9, or -1 for inheritance.");
-        IN_f.get();
+        throw "incorrect";
     }
     this.x.model.out = new ScilabDouble([-1]);
     this.x.model.out2 = new ScilabDouble([-2]);
     this.x.model.ipar = new ScilabDouble([this.prt]);
-    this.x.model.firing = new ScilabDouble()
+    this.x.model.firing = new ScilabDouble();
     this.x.model.outtyp = new ScilabDouble(this.ot);
-    var exprs = new ScilabString()
+    var exprs = new ScilabString();
     this.displayParameter = [this.prt];
-    this.x.graphics.exprs=exprs
+    this.x.graphics.exprs = exprs;
     return new ExplicitInBlock(this.x)
     }
 
 IN_f.prototype.get_popup_title = function IN_f() {
-        var set_param_popup_title="Set Input block parameters";
+        var set_param_popup_title = "Set Input block parameters";
         return set_param_popup_title
     }
     IN_f.prototype.getDimensionForDisplay = function IN_f(){
