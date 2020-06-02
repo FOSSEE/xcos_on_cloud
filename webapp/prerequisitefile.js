@@ -18,13 +18,15 @@ function displayPrerequisiteFile(graph) {
         +"<img src='images/close.gif' style='float:right;' onclick='displayResultforCode(false);' title='Close result window'>"
         +"<textarea id='resultTextArea'></textarea>"
         +"</div>"
-        +"</td></tr></table><table width='100%' style='padding-top:30px'><tr><td><div id='buttondiv'style='padding-top:40px' >"
+        +"</td></tr></table><table width='100%'style='padding-top:30px'><tr>"
+        +"<td><div style='text-align:center;height:66px;width:50% '>"
+        +"<div style='margin-top:35px;text-align:center;width:410px;height:80px;'id ='buttondiv'>"
         +"<button id='uploadPrerequisite' onclick='uploadPrerequisiteFile();' title='Upload and Execute Script'>Upload</button>"
-        +"<button id='executePrerequisite' style='margin-left:20px' onclick='executePrerequisiteFile();' title='Execute Script'>Execute</button>"
-        +"<button id='stopPrerequisite' style='margin-left:20px' onclick='stopPrerequisiteFile();' title='Stop Script'>Stop</button>"
-        +"<button id='showresult' style='margin-left:20px' onclick='displayResultforCode(true);' title='Show Script Result'>Show Result</button>"
-        +"<button id='showbrowser' style='margin-left:20px' onclick='displayVarBrowser(true);' title='Show variable browser'>Show Variables</button>"
-        +"</div></td><td><div id='var_browser_div' style='display:none;'>"
+        +"<button id='executePrerequisite' style='margin-left:15px' onclick='executePrerequisiteFile();' title='Execute Script'>Execute</button>"
+        +"<button id='stopPrerequisite' style='margin-left:15px' onclick='stopPrerequisiteFile();' title='Stop Script'>Stop</button>"
+        +"<button id='showresult' style='margin-left:15px' onclick='displayResultforCode(true);' title='Show Script Result'>Show Result</button>"
+        +"<button id='showbrowser' style='margin-left:15px' onclick='displayVarBrowser(true);' title='Show variable browser'>Show Variables</button>"
+        +"</div></div></td><td><div id='var_browser_div' style='display:none;'>"
         +"<label style= 'font-weight:bold'>Variable Browser :</label>"
         +"<img src='images/close.gif' style='float:right;' onclick='displayVarBrowser(false);' title='Close variable browser'>"
         +"<div id='var_browser'></div></div>"
@@ -71,7 +73,6 @@ function displayResultforCode(visible_flag) {
     var codediv = document.getElementById("codediv");
     var resultdiv = document.getElementById("resultdiv");
     var showresult = document.getElementById("showresult");
-    var button_div = document.getElementById("buttondiv");
     if (codediv === null || resultdiv === null)
         return;
     if (visible_flag) {
@@ -83,7 +84,6 @@ function displayResultforCode(visible_flag) {
         resultdiv.style.height="320px";
         resultCodeMirror.setValue(prerequisite_output);
         resultCodeMirror.refresh();
-        button_div.style.marginBottom = "58px";
     } else {
         showresult.disabled = (prerequisite_output.length == 0);
         codediv.style.width="830px";
@@ -319,16 +319,11 @@ function clearPrerequisiteFile() {
 
 //To create a table for showing variables
 function getvaluesOfVariables(){
-    var table_content = "<table cellspacing='0' cellpadding='0' border='0'><tr><td>"
-                        +"<table cellspacing='0' cellpadding='1' border='1' width='400' >"
-                        +"<tr style='color:white;background-color:grey;font-size:12px'>"
-                        +"<th width ='130'>Name </th><th width ='130'> Value </th><th width ='130'> Type </th></tr></table></td></tr>"
-                        +"<tr><td><div style='width:410; height:66px; overflow:auto;'>"
-                        +"<table cellspacing='0' cellpadding='1' border='1' width='400'>" ;
+    var table_content = "<div style='width:410; height:66px;' class='table-wrapper'><table cellspacing='0' cellpadding='1' border='1'><thead><tr><th>Name </th><th> Value </th><th width ='130'> Type </th> </tr></thead><tbody>" ;
     for (const entry of scilabVariableMap.entries()) {
-        table_content += "<tr><td width ='125'>"+entry[0]+"</td><td width ='125'>"+entry[1].value+"</td><td width ='125'>"+get_type_of_variable(entry[1].type)+"</td></tr>"
+        table_content += "<tr><td width ='125'>"+entry[0]+"</td><td width ='125'>"+entry[1].value+"</td><td width ='125'>" +get_type_of_variable(entry[1].type)+"</td></tr>"
     }
-    table_content += "</table></div></td></tr></table>";
+    table_content += " </tbody></table></div>";
     return table_content
 }
 

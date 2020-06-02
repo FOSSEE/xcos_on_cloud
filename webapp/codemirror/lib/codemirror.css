@@ -357,3 +357,22 @@ span.CodeMirror-selectedtext { background: none; }
   font-size:18px;
   font-weight:bold;
 }
+/* Class used for creating scrollable table with header fixed (Used in variable browser)*/
+div.table-wrapper {
+  border: 1px solid #ccc;
+  height: 100px;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+table {
+  width: 100%;
+}
+table thead tr th {
+  text-align: center;
+  position: sticky;
+  top: 0px;
+  font-size: 10px;
+  background-color: #666;
+  color: #fff;
+}
