@@ -31,6 +31,7 @@ from tempfile import mkdtemp, mkstemp
 from threading import Timer, current_thread
 from time import time
 import uuid
+from werkzeug.http import dump_cookie
 from xml.dom import minidom
 
 import config
@@ -53,6 +54,15 @@ class MyWSGIHandler(WSGIHandler):
             (self._orig_status or self.status or '000').split()[0],
             length,
             delta)
+
+
+class MyResponse(Response):
+    def set_cookie(self, *args, **kwargs):
+        cookie = dump_cookie(*args, **kwargs)
+        if kwargs.get('samesite', None) is None:
+            cookie = '%s; %s=%s' % (cookie,
+                                    'SameSite', config.SESSION_COOKIE_SAMESITE)
+        self.headers.add('Set-Cookie', cookie)
 
 
 def makedirs(dirname, dirtype):
@@ -116,8 +126,11 @@ cache = Cache(config={
 app = flask.Flask(__name__, static_folder='webapp/', template_folder='webapp')
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SESSION_FILE_DIR'] = FLASKSESSIONDIR
+app.config['SESSION_COOKIE_SAMESITE'] = config.SESSION_COOKIE_SAMESITE
+app.config['SESSION_COOKIE_SECURE'] = config.SESSION_COOKIE_SECURE
 # These are the extension that we are accepting to be uploaded
 app.config['ALLOWED_EXTENSIONS'] = set(['zcos', 'xcos', 'txt'])
+app.response_class = MyResponse
 cache.init_app(app)
 flask_session.Session(app)
 versioned = Versioned(app)
