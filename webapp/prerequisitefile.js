@@ -98,14 +98,16 @@ function displayVarBrowser(visible_flag){
     var showbrowser = document.getElementById("showbrowser");
     var variable_browser = document.getElementById("var_browser");
     if (visible_flag) {
-        if(variable_browser != null){
+        if(variable_browser != null && showbrowser != null && main_var_browser != null){
             variable_browser.innerHTML = getvaluesOfVariables();
             main_var_browser.style.display = "block";
             showbrowser.disabled = true;
         }
     }else{
-        main_var_browser.style.display = "none";
-        showbrowser.disabled = (scilabVariableMap.size == 0);
+        if(main_var_browser != null && showbrowser != null){
+            main_var_browser.style.display = "none";
+            showbrowser.disabled = (scilabVariableMap.size == 0);
+        }
     }
 }
 
