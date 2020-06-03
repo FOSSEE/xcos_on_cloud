@@ -357,18 +357,36 @@ span.CodeMirror-selectedtext { background: none; }
   font-size:18px;
   font-weight:bold;
 }
-/* Class used for creating scrollable table with header fixed (Used in variable browser)*/
-div.table-wrapper {
-  border: 1px solid #ccc;
+/* Class used for creating scrollable table with header fixed (Used in variable browser)
+   As css was geting overlap by default css of mxgraph, all different tags of table are given class
+*/
+div.table-varbrowser {
+  border: 0px solid #ccc;
   height: 100px;
   width: 100%;
   overflow-y: auto;
   overflow-x: auto;
 }
-table {
+table.table-varbrowser{
   width: 100%;
 }
-table thead tr th {
+theah.table-varbrowser {
+  text-align: center;
+  position: sticky;
+  top: 0px;
+  font-size: 10px;
+  background-color: #666;
+  color: #fff;
+}
+tr.table-varbrowser {
+  text-align: center;
+  position: sticky;
+  top: 0px;
+  font-size: 10px;
+  background-color: #666;
+  color: #fff;
+}
+th.table-varbrowser {
   text-align: center;
   position: sticky;
   top: 0px;
