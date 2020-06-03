@@ -9,6 +9,9 @@ FLASKSESSIONDIR = '/tmp/flask-sessiondir'
 SESSIONDIR = '/tmp/sessiondir'
 SESSIONTIMEOUT = 21600
 
+SESSION_COOKIE_SAMESITE = 'Strict'
+SESSION_COOKIE_SECURE = False
+
 # The location to keep the flask caching data on server.
 FLASKCACHINGDEFAULTTIMEOUT = 900
 FLASKCACHINGDIR = '/tmp/flask-caching-dir'
