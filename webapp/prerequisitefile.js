@@ -29,7 +29,7 @@ function displayPrerequisiteFile(graph) {
         +"</div></div></td><td><div id='var_browser_div' style='display:none;'>"
         +"<label style= 'font-weight:bold'>Variable Browser :</label>"
         +"<img src='images/close.gif' style='float:right;' onclick='displayVarBrowser(false);' title='Close variable browser'>"
-        +"<div id='var_browser'></div></div>"
+        +"<div id='var_browser' ></div></div>"
         +"</td></tr></table>";
     prerequisite_window = showModalWindow(graph, 'Prerequisite File', maindiv, 900, 515);
     prerequisite_window.addListener(mxEvent.DESTROY, function(evt) {
@@ -98,9 +98,11 @@ function displayVarBrowser(visible_flag){
     var showbrowser = document.getElementById("showbrowser");
     var variable_browser = document.getElementById("var_browser");
     if (visible_flag) {
-        variable_browser.innerHTML = getvaluesOfVariables();
-        main_var_browser.style.display = "block";
-        showbrowser.disabled = true;
+        if(variable_browser != null){
+            variable_browser.innerHTML = getvaluesOfVariables();
+            main_var_browser.style.display = "block";
+            showbrowser.disabled = true;
+        }
     }else{
         main_var_browser.style.display = "none";
         showbrowser.disabled = (scilabVariableMap.size == 0);
@@ -319,7 +321,7 @@ function clearPrerequisiteFile() {
 
 //To create a table for showing variables
 function getvaluesOfVariables(){
-    var table_content = "<div style='width:410; height:66px;' class='table-wrapper'><table cellspacing='0' cellpadding='1' border='1'><thead><tr><th>Name </th><th> Value </th><th width ='130'> Type </th> </tr></thead><tbody>" ;
+    var table_content = "<div style='width:410; height:65px;' class='table-varbrowser'><table class='table-varbrowser' cellspacing='0' cellpadding='1' border='1'><thead class='table-varbrowser'><tr class='table-varbrowser'><th class='table-varbrowser'>Name </th><th class='table-varbrowser'> Value </th><th class='table-varbrowser'> Type </th> </tr></thead><tbody>" ;
     for (const entry of scilabVariableMap.entries()) {
         table_content += "<tr><td width ='125'>"+entry[0]+"</td><td width ='125'>"+entry[1].value+"</td><td width ='125'>" +get_type_of_variable(entry[1].type)+"</td></tr>"
     }
