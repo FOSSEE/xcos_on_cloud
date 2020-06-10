@@ -1373,7 +1373,7 @@ LOGIC.prototype.importset = function LOGIC() {
     var mat_1 = inverse(this.mat);
     this.herit = parseInt(ary[1]);
 
-    var nin = log(size(mat_1, 1)) / log(2);
+    var nin = Math.log(size(mat_1, 1)) / Math.log(2);
     var nout = size(mat_1, 2);
     var in1 = math.concat(ones(nin, 1), ones(nin, 1));
     var out1 = math.concat(ones(nout, 1), ones(nout, 1));
