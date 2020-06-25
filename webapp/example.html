@@ -127,8 +127,8 @@
                     <div class="col-sm-4">
                         <select id="category-list">
                             <option value="0">Select Category</option>
-                            {% for item in data %}
-                            <option value="{{item[0]}}">{{item[1]}} ({{item[2]}} examples)</option>
+                            {% for item in category %}
+                            <option value="{{item[0]}}"{{ " selected" if category_id == item[0] }}>{{item[1]}} ({{item[2]}} examples)</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -282,7 +282,77 @@
             </div>
         </div>
     </div>
-    <!-- --------------------contributor modal ends------------------ -->
+<script>
+    {% if category_id is not none %}
+        var options = [];
+        options.push($('<option />', {
+            "value": 0,
+            "text": "Select Book"
+        }));
+        {% for row in book %}
+            options.push($('<option />', {
+                "value": {{row[0]}},
+                "text": "{{row[1]}} (Author: {{row[2]}}) ({{row[3]}} {{ "examples" if row[3] != 1 else "example" }})"
+            }));
+        {% endfor %}
+        $("#book-list").empty().append(options);
+        $('#book').show();
+    {% endif %}
+    {% if book_id is not none %}
+        $("#book-list").val({{book_id}});
+        $('#contributor').show();
+        var options = [];
+        options.push($('<option />', {
+            "value": 0,
+            "text": "Select Chapter"
+        }));
+        {% for row in chapter %}
+            options.push($('<option />', {
+                "value": {{row[0]}},
+                "text": "{{row[1]}}) {{row[2]}})"
+            }));
+        {% endfor %}
+        $("#chapter-list").empty().append(options);
+        $('#chapter').show();
+    {% endif %}
+    {% if chapter_id is not none %}
+        $("#chapter-list").val({{chapter_id}});
+        var options = [];
+        options.push($('<option />', {
+            "value": 0,
+            "text": "Select Example"
+        }));
+        {% for row in example %}
+            options.push($('<option />', {
+                "value": {{row[0]}},
+                "text": "{{row[1]}}) {{row[2]}})"
+            }));
+        {% endfor %}
+        $("#example-list").empty().append(options);
+        $('#example').show();
+    {% endif %}
+    {% if example_id is not none %}
+        $("#example-list").val({{example_id}});
+        $("#example-file-list > tbody:last-child").empty();
+        {% for row in example_file %}
+            {% if row[2] == 'X' %}
+                {% set dispfiletype = 'Xcos File' %}
+                {% set actions = "<a href='/example_file?efid="|safe ~ row[0] ~ "' target='_blank'>Download</a> | <a href='/open?efid="|safe ~ row[0] ~ "' target='_blank'>Open on Cloud</a>"|safe %}
+            {% elif row[2] == 'S' %}
+                {% set dispfiletype = 'Prerequisite' %}
+                {% set actions = "<a href='/prerequisite_file?efid="|safe ~ row[0] ~ "' target='_blank'>Download</a>"|safe %}
+            {% endif %}
+            $('#example-file-list > tbody:last-child')
+                .append("<tr>")
+                .append("<td>{{row[1]}}</td>")
+                .append("<td>{{dispfiletype}}</td>")
+                .append("<td>{{actions}}</td>")
+                .append("</tr>");
+        {% endfor %}
+        $('#example-file').show();
+    {% endif %}
+</script>
+    <!-- contributor modal ends -->
 </body>
 
 </html>
