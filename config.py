@@ -58,6 +58,7 @@ VERSIONED_FILES = [
     "custom.js",
     "dependencies.js",
     "details.js",
+    "example.html",
     "finalmodsheet.xsl",
     "importparameters.js",
     "indexfunctions.js",
@@ -72,6 +73,66 @@ VERSIONED_CHECK_INTERVAL = 15
 
 # the database queries
 
+QUERY_ID_EXAMPLE_FILE = (
+    "SELECT loc.id, pe.id, tcc.id, tce.id "
+    "FROM textbook_companion_preference pe "
+    "JOIN textbook_companion_proposal po ON pe.proposal_id = po.id "
+    "JOIN list_of_category loc ON pe.category = loc.id "
+    "JOIN textbook_companion_chapter tcc ON pe.id = tcc.preference_id "
+    "JOIN xcos_on_cloud_enable_book xceb ON pe.id = xceb.book_id "
+    "JOIN textbook_companion_example tce ON tcc.id = tce.chapter_id "
+    "JOIN textbook_companion_example_files tcef ON tce.id = tcef.example_id "
+    "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND "
+    "tcef.xcos_cloud_example_file_error_status = 0 AND "
+    "pe.approval_status = 1 AND "
+    "tcef.id = %s "
+    "LIMIT 1")
+
+QUERY_ID_EXAMPLE = (
+    "SELECT loc.id, pe.id, tcc.id "
+    "FROM textbook_companion_preference pe "
+    "JOIN textbook_companion_proposal po ON pe.proposal_id = po.id "
+    "JOIN list_of_category loc ON pe.category = loc.id "
+    "JOIN textbook_companion_chapter tcc ON pe.id = tcc.preference_id "
+    "JOIN xcos_on_cloud_enable_book xceb ON pe.id = xceb.book_id "
+    "JOIN textbook_companion_example tce ON tcc.id = tce.chapter_id "
+    "JOIN textbook_companion_example_files tcef ON tce.id = tcef.example_id "
+    "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND "
+    "tcef.xcos_cloud_example_file_error_status = 0 AND "
+    "pe.approval_status = 1 AND "
+    "tce.id = %s "
+    "LIMIT 1")
+
+QUERY_ID_CHAPTER = (
+    "SELECT loc.id, pe.id "
+    "FROM textbook_companion_preference pe "
+    "JOIN textbook_companion_proposal po ON pe.proposal_id = po.id "
+    "JOIN list_of_category loc ON pe.category = loc.id "
+    "JOIN textbook_companion_chapter tcc ON pe.id = tcc.preference_id "
+    "JOIN xcos_on_cloud_enable_book xceb ON pe.id = xceb.book_id "
+    "JOIN textbook_companion_example tce ON tcc.id = tce.chapter_id "
+    "JOIN textbook_companion_example_files tcef ON tce.id = tcef.example_id "
+    "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND "
+    "tcef.xcos_cloud_example_file_error_status = 0 AND "
+    "pe.approval_status = 1 AND "
+    "tcc.id = %s "
+    "LIMIT 1")
+
+QUERY_ID_BOOK = (
+    "SELECT loc.id "
+    "FROM textbook_companion_preference pe "
+    "JOIN textbook_companion_proposal po ON pe.proposal_id = po.id "
+    "JOIN list_of_category loc ON pe.category = loc.id "
+    "JOIN textbook_companion_chapter tcc ON pe.id = tcc.preference_id "
+    "JOIN xcos_on_cloud_enable_book xceb ON pe.id = xceb.book_id "
+    "JOIN textbook_companion_example tce ON tcc.id = tce.chapter_id "
+    "JOIN textbook_companion_example_files tcef ON tce.id = tcef.example_id "
+    "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND "
+    "tcef.xcos_cloud_example_file_error_status = 0 AND "
+    "pe.approval_status = 1 AND "
+    "pe.id = %s "
+    "LIMIT 1")
+
 QUERY_COUNT = (
     "SELECT COUNT(*) "
     "FROM textbook_companion_preference pe "
@@ -82,7 +143,8 @@ QUERY_COUNT = (
     "JOIN textbook_companion_example tce ON tcc.id = tce.chapter_id "
     "JOIN textbook_companion_example_files tcef ON tce.id = tcef.example_id "
     "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND "
-    "tcef.xcos_cloud_example_file_error_status = 0 AND pe.approval_status = 1")
+    "tcef.xcos_cloud_example_file_error_status = 0 AND "
+    "pe.approval_status = 1")
 
 QUERY_CATEGORY = (
     "SELECT loc.id, loc.category_name, COUNT(*) "
@@ -94,7 +156,8 @@ QUERY_CATEGORY = (
     "JOIN textbook_companion_example tce ON tcc.id = tce.chapter_id "
     "JOIN textbook_companion_example_files tcef ON tce.id = tcef.example_id "
     "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND "
-    "pe.approval_status = 1 AND tcef.xcos_cloud_example_file_error_status = 0 "
+    "tcef.xcos_cloud_example_file_error_status = 0 AND "
+    "pe.approval_status = 1 "
     "GROUP BY 1 "
     "ORDER BY 2 ASC")
 
@@ -108,8 +171,8 @@ QUERY_BOOK = (
     "JOIN textbook_companion_example tce ON tcc.id = tce.chapter_id "
     "JOIN textbook_companion_example_files tcef ON tce.id = tcef.example_id "
     "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND "
-    "pe.approval_status = 1 AND "
     "tcef.xcos_cloud_example_file_error_status = 0 AND "
+    "pe.approval_status = 1 AND "
     "pe.category = %s "
     "GROUP BY 1 "
     "ORDER BY 2 ASC")
@@ -124,8 +187,8 @@ QUERY_CHAPTER = (
     "JOIN textbook_companion_example tce ON tcc.id = tce.chapter_id "
     "JOIN textbook_companion_example_files tcef ON tce.id = tcef.example_id "
     "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND "
-    "pe.approval_status = 1 AND "
     "tcef.xcos_cloud_example_file_error_status = 0 AND "
+    "pe.approval_status = 1 AND "
     "tcc.preference_id = %s "
     "ORDER BY tcc.number ASC")
 
@@ -140,7 +203,8 @@ QUERY_EXAMPLE = (
     "JOIN textbook_companion_example_files tcef ON tce.id = tcef.example_id "
     "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND "
     "tcef.xcos_cloud_example_file_error_status = 0 AND "
-    "pe.approval_status = 1 AND tce.chapter_id = %s "
+    "pe.approval_status = 1 AND "
+    "tce.chapter_id = %s "
     "ORDER BY tce.number ASC")
 
 QUERY_EXAMPLE_FILE = (
