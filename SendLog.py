@@ -2038,12 +2038,72 @@ def db_query(query, parameters=None):
 def example_page():
     set_session()
     version_check()
+
     try:
+        example_file_id = request.args.get('example_file_id')
+        example_id = request.args.get('example_id')
+        chapter_id = request.args.get('chapter_id')
+        book_id = request.args.get('book_id')
+        category_id = request.args.get('cat_id')
+
+        if example_file_id is not None:
+            result = db_query(config.QUERY_ID_EXAMPLE_FILE, [example_file_id])
+            if len(result) > 0:
+                (category_id, book_id, chapter_id, example_id) = result[0]
+                example_file_id = int(example_file_id)
+            else:
+                example_file_id = None
+        elif example_id is not None:
+            result = db_query(config.QUERY_ID_EXAMPLE, [example_id])
+            if len(result) > 0:
+                (category_id, book_id, chapter_id) = result[0]
+                example_id = int(example_id)
+            else:
+                example_id = None
+        elif chapter_id is not None:
+            result = db_query(config.QUERY_ID_CHAPTER, [chapter_id])
+            if len(result) > 0:
+                (category_id, book_id) = result[0]
+                chapter_id = int(chapter_id)
+            else:
+                chapter_id = None
+        elif book_id is not None:
+            result = db_query(config.QUERY_ID_BOOK, [book_id])
+            if len(result) > 0:
+                (category_id, ) = result[0]
+                book_id = int(book_id)
+            else:
+                book_id = None
+        elif category_id is not None:
+            category_id = int(category_id)
+
+        if category_id is not None:
+            logger.info("ids = %s %s %s %s %s", category_id, book_id,
+                        chapter_id, example_id, example_file_id)
+
+        book = db_query(config.QUERY_BOOK, [category_id]) \
+            if category_id is not None else None
+        chapter = db_query(config.QUERY_CHAPTER, [book_id]) \
+            if book_id is not None else None
+        example = db_query(config.QUERY_EXAMPLE, [chapter_id]) \
+            if chapter_id is not None else None
+        example_file = db_query(config.QUERY_EXAMPLE_FILE, [example_id]) \
+            if example_id is not None else None
+
         count = db_query(config.QUERY_COUNT)[0][0]
-        data = db_query(config.QUERY_CATEGORY)
+        category = db_query(config.QUERY_CATEGORY)
         return render_template('example.html',
                                count=count,
-                               data=data)
+                               category=category,
+                               category_id=category_id,
+                               book=book,
+                               book_id=book_id,
+                               chapter=chapter,
+                               chapter_id=chapter_id,
+                               example=example,
+                               example_id=example_id,
+                               example_file=example_file,
+                               example_file_id=example_file_id)
     except Exception as e:
         return str(e)
 
@@ -2056,16 +2116,17 @@ def example_page():
 @app.route('/exampl<s>')
 def redirect_to_example_page(s):
     set_session()
-    return flask.redirect(flask.url_for('example_page'))
+    qs = request.query_string.decode('utf-8', 'ignore')
+    return flask.redirect(flask.url_for('example_page') + '?' + qs)
 
 
 @app.route('/get_book', methods=['GET', 'POST'])
 def ajax_get_book():
     set_session()
-    cat_id = request.args.get('catid')
+    category_id = request.args.get('catid')
     try:
-        data = db_query(config.QUERY_BOOK, [cat_id])
-        return jsonify(data)
+        book = db_query(config.QUERY_BOOK, [category_id])
+        return jsonify(book)
     except Exception as e:
         return str(e)
 
