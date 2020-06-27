@@ -2,12 +2,18 @@ $(function() {
     $(document).ready(function() {
 
         //clear
-        if ($('#book-list').val() == 0) {
+        if ($('#category-list').val() == 0) {
             $('#book').hide();
-            $('#chapter').hide();
-            $('#example').hide();
-            $('#example-file').hide();
+        }
+        if ($('#book-list').val() == 0) {
             $("#contributor").hide();
+            $('#chapter').hide();
+        }
+        if ($('#chapter-list').val() == 0) {
+            $('#example').hide();
+        }
+        if ($('#example-list').val() == 0) {
+            $('#example-file').hide();
         }
         // books fetch
         $('#category-list').on('change', function() {
