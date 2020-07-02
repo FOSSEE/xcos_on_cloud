@@ -50,7 +50,7 @@ MATTRAN.prototype.set = function MATTRAN() {
     }
     else{
                 alert("Datatype is not supported");
-                MATTRAN.get();
+                throw "incorrect";
         }
     this.x.model.sim = list(new ScilabString([this.function_name]),new ScilabDouble([4]))
     this.x.graphics.exprs = label

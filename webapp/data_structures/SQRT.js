@@ -40,7 +40,7 @@ SQRT.prototype.set = function SQRT() {
     else
     {
         alert("type is not supported");
-        SQRT.get();
+        throw "incorrect";
     }
     this.x.model.intyp = new ScilabDouble([this.typ])
     this.x.model.outyp = new ScilabDouble([this.typ])

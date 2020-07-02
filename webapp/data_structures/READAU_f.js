@@ -50,17 +50,17 @@ function READAU_f() {
                 //       message(['You cannot modify time management when running';'End current simulation first'])
             if(this.fname1==""){
                 alert("Wrong value for 'Input File Name' parameter."+"\nYou must provide a filename.");
-                READAU_f.get();
+                throw "incorrect";
             }
             if(this.N<1){
                 alert("Wrong value for 'Buffer size' parameter: "+this.N+"\nMust be greater than 1");
-                READAU_f.get();
+                throw "incorrect";
             }
             //elseif alreadyran & (N <> ipar(6)) then
                // block_parameter_error(msprintf(gettext("You cannot modify ''%s'' when running."), gettext("Buffer Size")), gettext("End current simulation first."));
             if((this.swap!=0)&&(this.swap!=1)){
                 alert("Wrong value for 'Swap Mode' parameter: "+this.swap+"\nMust be in the interval [0, 1]");
-                READAU_f.get();
+                throw "incorrect";
             }
         this.M = 1
         this.frmt1 = "uc"

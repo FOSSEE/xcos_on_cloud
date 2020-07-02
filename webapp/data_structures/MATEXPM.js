@@ -49,7 +49,7 @@ MATEXPM.prototype.set = function MATEXPM() {
     }
     else{
                 alert("Datatype is not supported");
-                MATEXPM.get();
+                throw "incorrect";
         }
     this.x.model.sim = list(new ScilabString([this.function_name]),new ScilabDouble([4]))
     var exprs = new ScilabString([this.typ])

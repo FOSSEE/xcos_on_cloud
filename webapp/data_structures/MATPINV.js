@@ -55,7 +55,7 @@ MATPINV.prototype.set = function MATPINV() {
     }
     else{
                 alert("Datatype is not supported");
-                MATPINV.get();
+                throw "incorrect";
         }
     this.x.model.intyp = new ScilabDouble([this.it])
     this.x.model.outtyp = new ScilabDouble([this.ot])

@@ -37,7 +37,7 @@ SAMPHOLD_m.prototype.set = function SAMPHOLD_m() {
     this.it = parseFloat((arguments[0]["it"]))
     if((this.it<1)||(this.it>8)){
                 alert("Datatype is not supported");
-                SAMPHOLD_m.get();
+                throw "incorrect";
     }
     this.x.model.intyp = new ScilabDouble([this.it])
     this.x.model.outtyp = new ScilabDouble([this.it])

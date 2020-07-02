@@ -36,7 +36,7 @@ function ZCROSS_f() {
         this.in = parseFloat((arguments[0]["in"]))
         if(this.in<=0){
             alert("Block must have at least one input");
-            ZCROSS_f.get();
+            throw "incorrect";
         }
         this.kk=0
         for (var jj = 1; jj <= this.in; jj++) {

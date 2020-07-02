@@ -30,7 +30,7 @@ SCALAR2VECTOR.prototype.set = function SCALAR2VECTOR() {
     this.nout = Math.floor(this.nout)
     if(this.nout!=-1 &&this.nout<=0){
         alert("size of output must be -1 or >0");
-        SCALAR2VECTOR.get();
+        throw "incorrect";
     }
     var io = check_io(this.x.model,this.x.graphics,[1],[this.nout],[],[])
     var exprs = new ScilabString([this.nout])

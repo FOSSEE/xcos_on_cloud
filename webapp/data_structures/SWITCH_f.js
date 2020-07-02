@@ -60,7 +60,7 @@ SWITCH_f.prototype.set = function SWITCH_f() {
     this.z0 = parseFloat((arguments[0]["z0"]))
     if(this.z0>this.nin||this.z0<=0){
         alert("initial connected input is not a valid input port number");
-        SWITCH_f.get();
+        throw "incorrect";
     }
     this.x.model.ipar = new ScilabDouble([this.z0]-1)
     var exprs = new ScilabString([this.nin],[this.z0])

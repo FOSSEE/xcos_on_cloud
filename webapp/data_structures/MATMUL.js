@@ -41,11 +41,11 @@ function MATMUL() {
         this.np = parseFloat((arguments[0]["np"]))
         if((this.dtype<1)||(this.dtype>8)){
                 alert("type is not supported");
-                MATMUL.get();
+                throw "incorrect";
         }
             if((this.rule<1)||(this.rule>3)){
                 alert("Multiplication rule must be only 1,2 or 3");
-                MATMUL.get();
+                throw "incorrect";
             }
         if(this.rule == 2){
             if(this.np == 0)

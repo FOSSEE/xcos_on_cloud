@@ -57,7 +57,7 @@ ROOTCOEF.prototype.set = function ROOTCOEF() {
     else
     {
         alert("Datatype is not supported");
-        ROOTCOEF.get();
+        throw "incorrect";
     }
     this.x.model.intyp = new ScilabDouble([this.it])
     this.x.model.outtyp = new ScilabDouble([this.ot])
