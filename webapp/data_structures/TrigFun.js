@@ -32,7 +32,7 @@ TrigFun.prototype.set = function TrigFun() {
     if((this.fun!="sin")&&(this.fun!="cos")&&(this.fun!="tan")&&(this.fun!="sinh")&&(this.fun!="cosh")&&(this.fun!="tanh")&&(this.fun!="asin")&&(this.fun!="acos")&&(this.fun!="atan")&&(this.fun!="asinh")&&(this.fun!="acosh")&&(this.fun!="atanh"))
     {
         alert("Sorry but "+this.fun +" is not in the list!");
-        TrigFun.get();
+        throw "incorrect";
     }
     model.sim = list(new ScilabString([this.fun+"_blk"]), new ScilabDouble([4]));
     var exprs = new ScilabString([this.fun])

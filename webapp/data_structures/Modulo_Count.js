@@ -57,11 +57,11 @@ Modulo_Count.prototype.set = function Modulo_Count() {
     this.ini_c = Math.floor(this.ini_c)
     if(this.ini_c<0){
         alert("Wrong value for ''Initial State'' parameter: "+this.ini_c+"\nNull or positive integer expected.");
-        Modulo_Count.get();
+        throw "incorrect";
     }
     if(this.base<=0){
         alert("Wrong values for ''Upper Limit'' parameter: "+this.base+"\nStrictly positive integer expected.");
-        Modulo_Count.get();
+        throw "incorrect";
     }
     this.x.model.ipar = new ScilabDouble([this.base]);
     this.x.model.dstate = new ScilabDouble([this.ini_c]);

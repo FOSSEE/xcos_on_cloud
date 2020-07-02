@@ -50,15 +50,15 @@ function WRITEC_f () {
         this.swap = parseFloat((arguments[0]["swap"]));
         if(this.N<1){
                 alert("Wrong value for 'Buffer Size' parameter: "+this.N+"\nStrictly positive integer expected.");
-                WRITEC_f.get();
+                throw "incorrect";
         }
         if(this.in<=0){
                 alert("Wrong value for 'Input Size' parameter: "+this.in+"\nStrictly positive integer expected.");
-                WRITEC_f.get();
+                throw "incorrect";
         }
         if((this.swap!=0)&&(this.swap!=1)){
                 alert("Wrong value for 'Swap Mode' parameter: "+this.swap+"\nMust be in the interval [0, 1]");
-                WRITEC_f.get();
+                throw "incorrect";
         }
         this.nin=this.in;
         this.x.model.ipar = new ScilabDouble([this.fname1.length], ..._str2code(this.frmt1), [this.N], [this.swap], ..._str2code(this.fname1));

@@ -60,7 +60,7 @@ MATEIG.prototype.set = function MATEIG() {
         }
         else{
                     alert("decomposition type is not supported");
-                    MATEIG.get();
+                    throw "incorrect";
             }
         this.it = 1
     }
@@ -77,13 +77,13 @@ MATEIG.prototype.set = function MATEIG() {
         }
         else{
                     alert("decomposition type is not supported");
-                    MATEIG.get();
+                    throw "incorrect";
             }
         this.it = 2
     }
     else{
                 alert("Datatype is not supported");
-                MATEIG.get();
+                throw "incorrect";
         }
     this.in = [[-1],[-1]]
     this.x.model.intyp = new ScilabDouble([this.it])

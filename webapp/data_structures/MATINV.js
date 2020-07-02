@@ -54,7 +54,7 @@ MATINV.prototype.set = function MATINV() {
     }
     else{
                 alert("Datatype is not supported");
-                MATINV.get();
+                throw "incorrect";
         }
     this.x.model.intyp = new ScilabDouble([this.it])
     this.x.model.outtyp = new ScilabDouble([this.ot])

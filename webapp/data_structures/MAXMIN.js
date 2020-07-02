@@ -38,7 +38,7 @@ MAXMIN.prototype.set = function MAXMIN() {
     this.nin = parseFloat((arguments[0]["nin"]))
     if((this.nin!=1)&&(this.nin!=2)){
                 alert("Wrong number of inputs, only 1 and 2 allowed");
-                MAXMIN.get();
+                throw "incorrect";
     }
     this.zcr = parseFloat((arguments[0]["zcr"]))
     if(this.zcr != 0){

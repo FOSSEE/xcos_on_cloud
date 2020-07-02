@@ -42,11 +42,11 @@ function WRITEAU_f() {
         this.swap= parseFloat((arguments[0]["swap"]));
         if(this.N<1){
                 alert("Wrong value for 'Buffer Size' parameter: "+this.N+"\nStrictly positive integer expected.");
-                WRITEAU_f.get();
+                throw "incorrect";
         }
             if((this.swap!=0)&&(this.swap!=1)){
                 alert("Wrong value for 'Swap Mode (0:No, 1:Yes)' parameter: "+this.swap+"\nMust be in the interval [0, 1]");
-                WRITEAU_f.get();
+                throw "incorrect";
             }
         this.x.model.sim = list(new ScilabString(["writeau"]), new ScilabDouble([2]));
         this.x.model.in = new ScilabDouble([this.in1]);
