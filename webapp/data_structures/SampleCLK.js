@@ -18,7 +18,7 @@ function SampleCLK() {
     SampleCLK.prototype.details = function SampleCLK() {
         return this.x;
     }
-SampleCLK.prototype.get = function SampleCLK() {
+    SampleCLK.prototype.get = function SampleCLK() {
     if(this.frequ == 'undefined' || this.frequ == null){
         this.frequ = 1
     }
@@ -31,17 +31,17 @@ SampleCLK.prototype.get = function SampleCLK() {
     }
     return options
     }
-SampleCLK.prototype.set = function SampleCLK() {
+    SampleCLK.prototype.set = function SampleCLK() {
     this.frequ = parseFloat((arguments[0]["frequ"]))
     this.offset = parseFloat((arguments[0]["offset"]))
     if(this.frequ<0){
         alert("Frequency must be a positive number");
-        SampleCLK.get();
+        throw "incorrect";
     }
 
             if(Math.abs(this.offset)>this.frequ){
                 alert("The |Offset| must be less than the Frequency");
-                SampleCLK.get();
+                throw "incorrect";
             }
     this.x.model.rpar = new ScilabDouble([this.frequ],[this.offset])
     this.x.model.evtout = new ScilabDouble([1]);

@@ -41,17 +41,17 @@ function CLKOUTV_f() {
     CLKOUTV_f.prototype.details = function CLKOUTV_f() {
         return this.x;
     }
-CLKOUTV_f.prototype.get = function CLKOUTV_f() {
+    CLKOUTV_f.prototype.get = function CLKOUTV_f() {
         var options={
             prt:["Port number",this.prt],
         }
         return options
     }
-CLKOUTV_f.prototype.set = function CLKOUTV_f() {
+    CLKOUTV_f.prototype.set = function CLKOUTV_f() {
     this.prt = parseFloat((arguments[0]["prt"]))
     if(this.prt<=0){
         alert("Wrong value for 'Port Number' parameter: "+this.prt+"\nStrictly positive integer expected.");
-        CLKOUTV_f.get();
+        throw "incorrect";
     }
     this.x.model.ipar = new ScilabDouble([this.prt]);
     this.x.model.evtin = new ScilabDouble([1]);

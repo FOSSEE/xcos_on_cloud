@@ -56,11 +56,11 @@ function OUT_f () {
         }
         return options
     }
-OUT_f.prototype.set = function OUT_f() {
+    OUT_f.prototype.set = function OUT_f() {
     this.prt = parseFloat((arguments[0]["prt"]))
     if(this.prt<=0){
         alert("Wrong value for 'Port Number' parameter: "+this.prt+"\nStrictly positive integer expected.");
-        OUT_f.get();
+        throw "incorrect";
     }
     this.x.model.ipar = new ScilabDouble([this.prt]);
     var exprs = new ScilabString([this.prt])

@@ -55,11 +55,11 @@ function EVTDLY_c() {
         }
         return options
     }
-EVTDLY_c.prototype.set = function EVTDLY_c() {
+    EVTDLY_c.prototype.set = function EVTDLY_c() {
     this.dt = parseFloat((arguments[0]["dt"]))
     if(this.dt<=0){
         alert("Delay must be positive");
-        EVTDLY_c.get();
+        throw "incorrect";
     }
     this.ff = parseFloat((arguments[0]["ff"]))
     this.x.model.rpar = new ScilabDouble([this.dt],[this.ff])

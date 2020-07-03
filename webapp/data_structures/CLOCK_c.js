@@ -11,7 +11,7 @@ function CLOCK_c() {
     CLOCK_c.prototype.set = function CLOCK_c() {
         if(this.dt<=0){
                 alert("Wrong values for 'Period' parameter: "+this.dt+"\nStrictly positive number expected.");
-                CLOCK_c.get();
+                throw "incorrect";
         }
         this.x.model.rpar.objs[1].model.firing = new ScilabDouble([arguments[0]["t0"]]);
         this.x.model.rpar.objs[1].model.rpar = new ScilabDouble([arguments[0]["dt"]], [arguments[0]["t0"]]);

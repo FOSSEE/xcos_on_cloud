@@ -41,7 +41,7 @@ function MATPINV() {
         }
         return options
     }
-MATPINV.prototype.set = function MATPINV() {
+    MATPINV.prototype.set = function MATPINV() {
     this.typ = parseFloat((arguments[0]["typ"]))
     if(this.typ == 1){
         this.function_name = "mat_pinv"
@@ -55,7 +55,7 @@ MATPINV.prototype.set = function MATPINV() {
     }
     else{
                 alert("Datatype is not supported");
-                MATPINV.get();
+                throw "incorrect";
         }
     this.x.model.intyp = new ScilabDouble([this.it])
     this.x.model.outtyp = new ScilabDouble([this.ot])

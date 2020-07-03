@@ -44,7 +44,7 @@ function MATSING() {
         }
         return options
     }
-MATSING.prototype.set = function MATSING() {
+    MATSING.prototype.set = function MATSING() {
     this.typ = parseFloat((arguments[0]["typ"]))
     this.decomptyp = parseFloat((arguments[0]["decomptyp"]))
     if(this.typ == 1){
@@ -64,7 +64,7 @@ MATSING.prototype.set = function MATSING() {
         }
         else{
                     alert("decomposition type is not supported");
-                    MATSING.get();
+                    throw "incorrect";
             }
         this.it = 1
     }
@@ -86,13 +86,13 @@ MATSING.prototype.set = function MATSING() {
         }
         else{
                     alert("decomposition type is not supported");
-                    MATSING.get();
+                    throw "incorrect";
             }
         this.it = 2
     }
     else{
                 alert("Datatype is not supported");
-                MATSING.get();
+                throw "incorrect";
         }
     this.x.model.intyp = new ScilabDouble([this.it])
     this.x.model.outtyp = new ScilabDouble(...this.ot)

@@ -39,7 +39,7 @@ function MATEXPM() {
         }
         return options
     }
-MATEXPM.prototype.set = function MATEXPM() {
+    MATEXPM.prototype.set = function MATEXPM() {
     this.typ = parseFloat((arguments[0]["typ"]))
     if(this.typ == 1){
         this.function_name = "mat_expm"
@@ -49,7 +49,7 @@ MATEXPM.prototype.set = function MATEXPM() {
     }
     else{
                 alert("Datatype is not supported");
-                MATEXPM.get();
+                throw "incorrect";
         }
     this.x.model.sim = list(new ScilabString([this.function_name]),new ScilabDouble([4]))
     var exprs = new ScilabString([this.typ])
@@ -57,11 +57,11 @@ MATEXPM.prototype.set = function MATEXPM() {
     return new BasicBlock(this.x)
     }
 
-MATEXPM.prototype.get_popup_title = function MATEXPM() {
+    MATEXPM.prototype.get_popup_title = function MATEXPM() {
         var set_param_popup_title="Set EXPM Block";
         return set_param_popup_title
     }
-MATEXPM.prototype.getDimensionForDisplay = function MATEXPM(){
+    MATEXPM.prototype.getDimensionForDisplay = function MATEXPM(){
         var dimension = { width: 40, height: 40 };
         return dimension
     }

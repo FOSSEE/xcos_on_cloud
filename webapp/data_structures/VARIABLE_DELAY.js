@@ -39,11 +39,11 @@ function VARIABLE_DELAY() {
         this.N = parseFloat((arguments[0]["N"]))
         if(this.N<2){
                 alert("Buffer must be larger than 2");
-                VARIABLE_DELAY.get();
+                throw "incorrect";
         }
             if(this.T<=0){
                 alert("Delay must be positive");
-                VARIABLE_DELAY.get();
+                throw "incorrect";
             }
         var io = check_io(this.x.model,this.x.graphics,[[-1],[1]],[-1],[],[])
         this.x.model.rpar = new ScilabDouble([this.T],[this.init])

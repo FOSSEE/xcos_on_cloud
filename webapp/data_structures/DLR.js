@@ -125,7 +125,7 @@ function DLR() {
         }
         if(m1>m2){
             alert("Transfer function must be proper");
-            DLR.get();
+            throw "incorrect";
         }
         this.value = cont_frm(this.num,this.den);
         var exprs = new ScilabString([this.num.toString()],[this.den.toString()])

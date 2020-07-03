@@ -57,7 +57,7 @@ function MATDIV() {
         }
         else{
                 alert("Datatype is not supported");
-                MATDIV.get();
+                throw "incorrect";
             }
         this.x.model.sim = list(new ScilabString([this.function_name]), new ScilabDouble([4]));
         var exprs = new ScilabString([this.typ])

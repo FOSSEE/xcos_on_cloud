@@ -42,7 +42,7 @@ function SATURATION() {
 
 		if (this.maxp <= this.minp) {
 			alert("Upper limit must be > Lower limit");
-			SATURATION.get();
+			throw "incorrect";
 		}
 		var rpar = new ScilabDouble([this.maxp], [this.minp])
 		this.x.model.rpar = rpar;

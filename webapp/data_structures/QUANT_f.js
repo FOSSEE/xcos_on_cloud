@@ -34,7 +34,7 @@ function QUANT_f() {
         this.meth = parseFloat((arguments[0]["meth"]))
         if((this.meth<1)||(this.meth>4)){
                 alert("Quantization Type must be from 1 to 4");
-                QUANT_f.get();
+                throw "incorrect";
         }
         this.x.model.rpar = new ScilabDouble([this.pas])
         this.x.model.ipar = new ScilabDouble([this.meth]);

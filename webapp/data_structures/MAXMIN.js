@@ -20,7 +20,7 @@ function MAXMIN() {
     MAXMIN.prototype.details = function MAXMIN() {
         return this.x;
     }
-MAXMIN.prototype.get = function MAXMIN() {
+    MAXMIN.prototype.get = function MAXMIN() {
     if(this.mm == undefined || this.mm == null){
         this.mm = "2"
         this.nin = "1"
@@ -33,12 +33,12 @@ MAXMIN.prototype.get = function MAXMIN() {
         }
         return options
     }
-MAXMIN.prototype.set = function MAXMIN() {
+    MAXMIN.prototype.set = function MAXMIN() {
     this.mm = parseFloat((arguments[0]["mm"]))
     this.nin = parseFloat((arguments[0]["nin"]))
     if((this.nin!=1)&&(this.nin!=2)){
                 alert("Wrong number of inputs, only 1 and 2 allowed");
-                MAXMIN.get();
+                throw "incorrect";
     }
     this.zcr = parseFloat((arguments[0]["zcr"]))
     if(this.zcr != 0){
@@ -72,11 +72,11 @@ MAXMIN.prototype.set = function MAXMIN() {
     return new BasicBlock(this.x)
     }
 
-MAXMIN.prototype.get_popup_title = function MAXMIN() {
+    MAXMIN.prototype.get_popup_title = function MAXMIN() {
         var set_param_popup_title="Set Max/Min block parameters";
         return set_param_popup_title
     }
-MAXMIN.prototype.getDimensionForDisplay = function MAXMIN(){
+    MAXMIN.prototype.getDimensionForDisplay = function MAXMIN(){
         var dimension = { width: 40, height: 40 };
         return dimension
     }

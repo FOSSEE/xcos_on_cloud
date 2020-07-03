@@ -36,7 +36,7 @@ function M_SWITCH() {
         }
         return options
     }
-M_SWITCH.prototype.set = function M_SWITCH() {
+    M_SWITCH.prototype.set = function M_SWITCH() {
     this.nin = parseFloat((arguments[0]["nin"]))
     this.base = parseFloat((arguments[0]["base"]))
     this.rule = parseFloat((arguments[0]["rule"]))
@@ -44,15 +44,15 @@ M_SWITCH.prototype.set = function M_SWITCH() {
     this.base = Math.floor(this.base)
     if(this.nin<1){
         alert("Number of inputs must be >=1 ");
-        M_SWITCH.get();
+        throw "incorrect";
     }
     else if((this.base!=1)&&(this.base!=0)){
         alert("base indexing must be 1 or 0");
-        M_SWITCH.get();
+        throw "incorrect";
     }
     else if((this.rule!=1)&&(this.rule!=0)&&(this.rule!=2)&&(this.rule!=3)){
         alert("incorrect rounding rule");
-        M_SWITCH.get();
+        throw "incorrect";
     }
     this.x.model.in = new ScilabDouble(...this.in1);
     this.x.model.ipar = new ScilabDouble([this.base],[this.rule])

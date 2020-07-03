@@ -37,7 +37,7 @@ z0:["Register initial condition",this.z0],
         this.z0 = arguments[0]["z0"]
         if((size(this.z0,1)*size(this.z0,2))<1){
                 alert("Register length must be at least 1");
-                REGISTER.get();
+                throw "incorrect";
         }
         this.it = parseInt((arguments[0]["it"]))
         if(this.it == 1){
@@ -85,7 +85,7 @@ z0:["Register initial condition",this.z0],
             else
             {
                 alert("Datatype is not supported");
-                    REGISTER.get();
+                    throw "incorrect";
             }
             this.x.model.odstate = list(new ScilabDouble(...this.z0))
             this.x.model.dstate = new ScilabDouble()

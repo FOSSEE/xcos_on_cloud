@@ -40,7 +40,7 @@ function MATMAGPHI() {
         }
         return options
     }
-MATMAGPHI.prototype.set = function MATMAGPHI() {
+    MATMAGPHI.prototype.set = function MATMAGPHI() {
     this.decomptyp = parseFloat((arguments[0]["decomptyp"]))
     if(this.decomptyp == 1){
         this.function_name = "matz_abs"
@@ -58,7 +58,7 @@ MATMAGPHI.prototype.set = function MATMAGPHI() {
     }
     else{
                 alert("decomposition type is not supported");
-                MATMAGPHI.get();
+                throw "incorrect";
         }
     var io = set_io(this.x.model,this.x.graphics,this.in,this.out,[],[])
     this.x.model.sim = list(new ScilabString([this.function_name]),new ScilabDouble([4]))
