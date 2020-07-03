@@ -55,7 +55,7 @@ function SWITCH_f() {
         }
         return options
     }
-SWITCH_f.prototype.set = function SWITCH_f() {
+    SWITCH_f.prototype.set = function SWITCH_f() {
     this.nin = parseFloat((arguments[0]["nin"]))
     this.z0 = parseFloat((arguments[0]["z0"]))
     if(this.z0>this.nin||this.z0<=0){
@@ -68,7 +68,7 @@ SWITCH_f.prototype.set = function SWITCH_f() {
     return new BasicBlock(this.x)
     }
 
-SWITCH_f.prototype.get_popup_title = function SWITCH_f() {
+    SWITCH_f.prototype.get_popup_title = function SWITCH_f() {
         var set_param_popup_title="Set switch parameters";
         return set_param_popup_title
     }

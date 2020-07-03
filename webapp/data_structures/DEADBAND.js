@@ -38,7 +38,7 @@ function DEADBAND() {
     this.minp = parseFloat((arguments[0]["minp"]))
     if(this.maxp<=this.minp){
                 alert("Upper limit must be > Lower limit");
-                DEADBAND.get();
+                throw "incorrect";
     }
     this.zeroc = parseFloat((arguments[0]["zeroc"]))
     var rpar = new ScilabDouble([this.maxp],[this.minp])

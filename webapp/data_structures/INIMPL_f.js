@@ -37,12 +37,12 @@ function INIMPL_f() {
         }
         return options
     }
-INIMPL_f.prototype.set = function INIMPL_f() {
+    INIMPL_f.prototype.set = function INIMPL_f() {
     this.prt = parseFloat((arguments[0]["prt"]))
     this.prt = Math.floor(this.prt)
     if(this.prt<=0){
         alert("Wrong value for ''Port Number'' parameter: "+this.prt+"\nStrictly positive integer expected.");
-        INIMPL_f.get();
+        throw "incorrect";
     }
     this.x.model.ipar = new ScilabDouble([this.prt]);
     var exprs = new ScilabString([this.prt])
@@ -50,7 +50,7 @@ INIMPL_f.prototype.set = function INIMPL_f() {
     return new ImplicitInBlock(this.x)
     }
 
-INIMPL_f.prototype.get_popup_title = function INIMPL_f() {
+    INIMPL_f.prototype.get_popup_title = function INIMPL_f() {
         var set_param_popup_title="Set INIMPL_f block parameters";
         return set_param_popup_title
     }

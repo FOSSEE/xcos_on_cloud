@@ -44,7 +44,7 @@ function MATSING() {
         }
         return options
     }
-MATSING.prototype.set = function MATSING() {
+    MATSING.prototype.set = function MATSING() {
     this.typ = parseFloat((arguments[0]["typ"]))
     this.decomptyp = parseFloat((arguments[0]["decomptyp"]))
     if(this.typ == 1){

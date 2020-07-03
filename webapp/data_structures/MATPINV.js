@@ -41,7 +41,7 @@ function MATPINV() {
         }
         return options
     }
-MATPINV.prototype.set = function MATPINV() {
+    MATPINV.prototype.set = function MATPINV() {
     this.typ = parseFloat((arguments[0]["typ"]))
     if(this.typ == 1){
         this.function_name = "mat_pinv"

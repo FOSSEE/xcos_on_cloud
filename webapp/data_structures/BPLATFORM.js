@@ -30,7 +30,7 @@ function BPLATFORM() {
 
         return this.x;
     }
-BPLATFORM.prototype.get = function BPLATFORM() {
+    BPLATFORM.prototype.get = function BPLATFORM() {
          var options={
             plen:["pendulum length",this.plen],
             csiz:["cart size (square side)",this.csiz],
@@ -42,7 +42,7 @@ BPLATFORM.prototype.get = function BPLATFORM() {
         }
         return options
     }
-BPLATFORM.prototype.set = function BPLATFORM() {
+    BPLATFORM.prototype.set = function BPLATFORM() {
     this.plen = parseFloat((arguments[0]["plen"]))
     this.csiz = parseFloat((arguments[0]["csiz"]))
     this.phi = parseFloat((arguments[0]["phi"]))
@@ -52,15 +52,15 @@ BPLATFORM.prototype.set = function BPLATFORM() {
     this.ymax = parseFloat((arguments[0]["ymax"]))
     if((this.plen<=0)||(this.csiz<=0)){
                 alert("Pendulum length and cart size must be positive.");
-                BPLATFORM.get();
+                throw "incorrect";
             }
             if(this.ymin>=this.ymax){
                 alert("Ymax must be greater than Ymin");
-                BPLATFORM.get();
+                throw "incorrect";
             }
             if(this.xmin>=this.xmax){
                 alert("Xmax must be greater than Xmin");
-                BPLATFORM.get();
+                throw "incorrect";
             }
     var rpar = new ScilabDouble([this.plen],[this.csiz],[this.phi],[this.xmin],[this.xmax],[this.ymin],[this.ymax])
     model.rpar = rpar

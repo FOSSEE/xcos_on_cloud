@@ -42,7 +42,7 @@ function MATEIG() {
         }
         return options
     }
-MATEIG.prototype.set = function MATEIG() {
+    MATEIG.prototype.set = function MATEIG() {
     this.typ = parseFloat((arguments[0]["typ"]))
     this.decomptyp = parseFloat((arguments[0]["decomptyp"]))
     if(this.typ == 1){

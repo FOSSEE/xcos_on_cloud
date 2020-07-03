@@ -44,7 +44,7 @@ function GOTO() {
         this.tagvis = parseFloat((arguments[0]["tagvis"]))
         if ((this.tagvis<1)||(this.tagvis>3)){
             alert("Tag Visibility must be between 1 and 3");
-            GOTO.get();
+            throw "incorrect";
         }
         this.x.model.opar = list(new ScilabString([this.tag]))
         this.x.model.ipar = new ScilabDouble([this.tagvis]);

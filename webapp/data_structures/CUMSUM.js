@@ -46,7 +46,7 @@ function CUMSUM() {
         }
         return options
     }
-CUMSUM.prototype.set = function CUMSUM() {
+    CUMSUM.prototype.set = function CUMSUM() {
     this.typ = parseFloat((arguments[0]["typ"]))
     this.decomptyp = parseFloat((arguments[0]["decomptyp"]))
     if(this.typ == 1){
@@ -64,7 +64,7 @@ CUMSUM.prototype.set = function CUMSUM() {
         }
         else{
                     alert("decomposition type is not supported");
-                    CUMSUM.get();
+                    throw "incorrect";
             }
         this.x.model.intyp = new ScilabDouble([1])
         this.x.model.outtyp = new ScilabDouble([1])
@@ -83,7 +83,7 @@ CUMSUM.prototype.set = function CUMSUM() {
         }
         else{
                     alert("decomposition type is not supported");
-                    CUMSUM.get();
+                    throw "incorrect";
             }
         this.x.model.intyp = new ScilabDouble([2])
         this.x.model.outtyp = new ScilabDouble([2])
@@ -91,7 +91,7 @@ CUMSUM.prototype.set = function CUMSUM() {
     }
     else{
                 alert("Datatype is not supported");
-                CUMSUM.get();
+                throw "incorrect";
         }
     this.in = [parseFloat(getData(this.x.model.in)),parseFloat(getData(this.x.model.in2))]
     this.out = [parseFloat(getData(this.x.model.out)),parseFloat(getData(this.x.model.out2))]

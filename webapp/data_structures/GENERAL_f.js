@@ -24,7 +24,7 @@ function GENERAL_f() {
     }
 
 
-GENERAL_f.prototype.get = function GENERAL_f() {
+    GENERAL_f.prototype.get = function GENERAL_f() {
         var options={
             in:["Input size",this.in],
             out:["No of event output",this.out],
@@ -36,11 +36,11 @@ GENERAL_f.prototype.get = function GENERAL_f() {
 	this.out = parseFloat((arguments[0]["out"]))
         if(this.in <=0){
             alert("Block must have at least one input");
-            ZCROSS_f.get();
+            throw "incorrect";
         }
         if(this.out <=0){
             alert("Block must have at least one input");
-            ZCROSS_f.get();
+            throw "incorrect";
         }
         this.kk=0
 	this.kk1=0

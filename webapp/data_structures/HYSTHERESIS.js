@@ -44,7 +44,7 @@ function HYSTHERESIS() {
     this.low_lim = parseFloat((arguments[0]["low_lim"]))
     if(this.low_lim>this.high_lim){
                 alert("switch on value must be larger than switch off value");
-                HYSTHERESIS.get();
+                throw "incorrect";
     }
     this.out_high = parseFloat((arguments[0]["out_high"]))
     this.out_low = parseFloat((arguments[0]["out_low"]))

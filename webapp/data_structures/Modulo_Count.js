@@ -51,7 +51,7 @@ function Modulo_Count() {
         }
         return options
     }
-Modulo_Count.prototype.set = function Modulo_Count() {
+    Modulo_Count.prototype.set = function Modulo_Count() {
     this.ini_c = parseFloat((arguments[0]["ini_c"]))
     this.base = parseFloat((arguments[0]["base"]))
     this.ini_c = Math.floor(this.ini_c)

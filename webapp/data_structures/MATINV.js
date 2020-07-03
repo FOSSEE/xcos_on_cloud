@@ -40,7 +40,7 @@ function MATINV() {
         }
         return options
     }
-MATINV.prototype.set = function MATINV() {
+    MATINV.prototype.set = function MATINV() {
     this.typ = parseFloat((arguments[0]["typ"]))
     if(this.typ == 1){
         this.function_name = "mat_inv"

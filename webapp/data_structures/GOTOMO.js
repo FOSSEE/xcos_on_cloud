@@ -43,12 +43,12 @@ function GOTOMO() {
         }
         return options
     }
-GOTOMO.prototype.set = function GOTOMO() {
+    GOTOMO.prototype.set = function GOTOMO() {
     this.tag = arguments[0]["tag"]
     this.tagvis = parseFloat((arguments[0]["tagvis"]))
     if((this.tagvis<1)||(this.tagvis>3)){
         alert("Tag Visibility must be between 1 and 3");
-        GOTOMO.get();
+        throw "incorrect";
     }
     this.x.model.opar = list(new ScilabString([this.tag]))
     this.x.model.ipar = new ScilabDouble([this.tagvis]);
@@ -58,7 +58,7 @@ GOTOMO.prototype.set = function GOTOMO() {
     return new BasicBlock(this.x)
     }
 
-GOTOMO.prototype.get_popup_title = function GOTOMO() {
+    GOTOMO.prototype.get_popup_title = function GOTOMO() {
         var set_param_popup_title="Set parameters";
         return set_param_popup_title
     }

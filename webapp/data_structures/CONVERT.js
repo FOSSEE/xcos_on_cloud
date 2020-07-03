@@ -54,15 +54,15 @@ function CONVERT() {
             this.ot = 1
         if((this.np!=0)&&(this.np!=1)&&(this.np!=2)){
                 alert("Wrong value for 'Do on Overflow' parameter: "+this.np+"\nMust be in the interval [0, 2]");
-                CONVERT.get();
+                throw "incorrect";
         }
         else if((this.it>8)||(this.it<1)){
                 alert("Wrong value for 'Input Type' parameter: "+this.it+"\nMust be in the interval [1, 8]");
-                CONVERT.get();
+                throw "incorrect";
         }
         else if((this.ot>8)||(this.ot<1)){
                 alert("Wrong value for 'Output Type' parameter: "+this.ot+"\nMust be in the interval [1, 8]");
-                CONVERT.get();
+                throw "incorrect";
         }
         this.x.model.sim = list(new ScilabString(["convert"]), new ScilabDouble([4]));
 

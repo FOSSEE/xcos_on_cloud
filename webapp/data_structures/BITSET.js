@@ -38,30 +38,30 @@ function BITSET() {
         this.bit = parseFloat((arguments[0]["bit"]))
         if(Math.floor(this.bit)!=this.bit){
                alert("Wrong type for 'Index of Bit' parameter:"+this.bit+"\nMust be integer.");
-                BITSET.get();
+               throw "incorrect";
         }
         if((this.Datatype == 3)||(this.Datatype == 6)){
             if((this.bit>31)||(this.bit < 0)){
                 alert("Wrong value for 'Index of Bit' parameter:"+this.bit+"\nMust be in the interval [0, 31]");
-                BITSET.get();
+                throw "incorrect";
             }
         }
         else if((this.Datatype==4)||(this.Datatype==7)){
                 if(this.bit > 15 ||this.bit < 0){
                     alert("Wrong value for 'Index of Bit' parameter: "+this.bit+"\nMust be in the interval [0, 15]");
-                    BITSET.get();
+                    throw "incorrect";
                 }
         }
         else if((this.Datatype==5)||(this.Datatype==8)){
 
                 if(this.bit > 7 ||this.bit < 0){
                     alert("Wrong value for 'Index of Bit' parameter: "+this.bit+"\nMust be in the interval [0, 7]");
-                    BITSET.get();
+                    throw "incorrect";
                 }
         }
         else{
                 alert("Wrong value for 'Data Type' parameter: "+this.Datatype+"\nMust be in the interval [3, 8]");
-                BITSET.get();
+                throw "incorrect";
         }
         if(this.Datatype == 3 || this.Datatype == 6){
             this.n = Math.pow(2,this.bit)

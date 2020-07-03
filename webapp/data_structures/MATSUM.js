@@ -42,7 +42,7 @@ function MATSUM() {
         }
         return options
     }
-MATSUM.prototype.set = function MATSUM() {
+    MATSUM.prototype.set = function MATSUM() {
     this.typ = parseFloat((arguments[0]["typ"]))
     this.decomptyp = parseFloat((arguments[0]["decomptyp"]))
     if(this.typ == 1){
