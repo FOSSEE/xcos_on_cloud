@@ -44,7 +44,7 @@ function EXTTRI() {
         }
         return options
     }
-EXTTRI.prototype.set = function EXTTRI() {
+    EXTTRI.prototype.set = function EXTTRI() {
     this.typ = parseFloat((arguments[0]["typ"]))
     this.decomptyp = parseFloat((arguments[0]["decomptyp"]))
     if(this.typ == 1){
@@ -60,7 +60,7 @@ EXTTRI.prototype.set = function EXTTRI() {
         }
         else{
                     alert("decomposition type is not supported");
-                    EXTTRI.get();
+                    throw "incorrect";
             }
         this.x.model.intyp = new ScilabDouble([1])
         this.x.model.outtyp = new ScilabDouble([1])
@@ -78,14 +78,14 @@ EXTTRI.prototype.set = function EXTTRI() {
         }
         else{
                     alert("decomposition type is not supported");
-                    EXTTRI.get();
+                    throw "incorrect";
             }
         this.x.model.intyp = new ScilabDouble([2])
         this.x.model.outtyp = new ScilabDouble([2])
     }
     else{
                 alert("Datatype is not supported");
-                EXTTRI.get();
+                throw "incorrect";
         }
     model.sim = list(new ScilabString([this.function_name]), new ScilabDouble([4]));
     this.x.graphics.exprs = label

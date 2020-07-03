@@ -49,7 +49,7 @@ function SHIFT() {
         this.np = parseFloat((arguments[0]["np"]))
         if((this.np!=0)&&(this.np!=1)){
                 alert("Wrong value for ''Shift Type' parameter: "+this.np+"\nMust be in the interval [0, 1]");
-                SHIFT.get();
+                throw "incorrect";
         }
         this.it = this.Datatype
         this.ot = this.Datatype
@@ -106,7 +106,7 @@ function SHIFT() {
         }
         else{
             alert( "Wrong value for 'Data Type' parameter: "+this.Datatype+"\nMust be in the interval [3, 8]");
-            SHIFT.get();
+            throw "incorrect";
         }
         this.x.model.sim = list(new ScilabString([this.function_name]), new ScilabDouble([4]));
         var io = set_io(this.x.model,this.x.graphics,[[-1],[-2]],[[-1],[-2]],[],[])

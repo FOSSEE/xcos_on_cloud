@@ -41,7 +41,7 @@ function MATDET() {
         }
         return options
     }
-MATDET.prototype.set = function MATDET() {
+    MATDET.prototype.set = function MATDET() {
     this.typ = parseFloat((arguments[0]["typ"]))
     if(this.typ == 1){
         this.function_name = "mat_det"
@@ -55,7 +55,7 @@ MATDET.prototype.set = function MATDET() {
     }
     else{
                 alert("Datatype is not supported");
-                MATDET.get();
+                throw "incorrect";
         }
     this.x.model.intyp = new ScilabDouble([this.it])
     this.x.model.outtyp = new ScilabDouble([this.ot])

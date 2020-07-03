@@ -33,7 +33,7 @@ function Counter() {
         }
         return options
     }
-Counter.prototype.set = function Counter() {
+    Counter.prototype.set = function Counter() {
     this.minim = parseFloat((arguments[0]["minim"]))
     this.maxim = parseFloat((arguments[0]["maxim"]))
     this.rule = parseFloat((arguments[0]["rule"]))
@@ -41,11 +41,11 @@ Counter.prototype.set = function Counter() {
     this.minim = Math.floor(this.minim)
     if(this.maxim<this.minim){
         alert("Wrong values for ''Maximum'' and ''Minimum'' parameters: "+this.minim+" "+this.maxim+"\n''Minimum'' must be less than ''Maximum''.");
-        Counter.get();
+        throw "incorrect";
     }
     if((this.rule!=1)&&(this.rule!=2)){
         alert("Wrong value for ''Rule'' parameter: "+this.rule+"\nMust be in the interval [1,2]");
-        Counter.get();
+        throw "incorrect";
     }
     this.x.model.dstate = new ScilabDouble([0]);
     this.x.model.ipar = new ScilabDouble([this.rule],[this.maxim],[this.minim])

@@ -42,7 +42,7 @@ function MATSUM() {
         }
         return options
     }
-MATSUM.prototype.set = function MATSUM() {
+    MATSUM.prototype.set = function MATSUM() {
     this.typ = parseFloat((arguments[0]["typ"]))
     this.decomptyp = parseFloat((arguments[0]["decomptyp"]))
     if(this.typ == 1){
@@ -61,7 +61,7 @@ MATSUM.prototype.set = function MATSUM() {
         }
         else{
                     alert("decomposition type is not supported");
-                    MATSUM.get();
+                    throw "incorrect";
             }
         this.it = 1
         this.ot = 1
@@ -84,14 +84,14 @@ MATSUM.prototype.set = function MATSUM() {
         }
         else{
                     alert("decomposition type is not supported");
-                    MATSUM.get();
+                    throw "incorrect";
             }
         this.it = 2
         this.ot = 2
     }
     else{
         alert("Datatype is not supported");
-        MATSUM.get();
+        throw "incorrect";
     }
     this.in = [parseFloat(getData(this.x.model.in)),parseFloat(getData(this.x.model.in2)) ]
     var io = set_io(this.x.model,this.x.graphics,this.in,this.out,[],[])

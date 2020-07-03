@@ -54,7 +54,7 @@ function MATDIAG() {
         }
         else{
                 alert("Datatype is not supported");
-                MATDIAG.get();
+                throw "incorrect";
             }
         this.x.model.sim = list(new ScilabString([this.function_name]), new ScilabDouble([4]));
         this.x.graphics.exprs = label

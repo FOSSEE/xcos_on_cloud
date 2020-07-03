@@ -30,7 +30,7 @@ function MATTRAN() {
         }
         return options
     }
-MATTRAN.prototype.set = function MATTRAN() {
+    MATTRAN.prototype.set = function MATTRAN() {
 
     this.typ = parseFloat((arguments[0]["typ"]))
     this.rule = parseFloat((arguments[0]["rule"]))
@@ -50,7 +50,7 @@ MATTRAN.prototype.set = function MATTRAN() {
     }
     else{
                 alert("Datatype is not supported");
-                MATTRAN.get();
+                throw "incorrect";
         }
     this.x.model.sim = list(new ScilabString([this.function_name]),new ScilabDouble([4]))
     this.x.graphics.exprs = label
@@ -59,7 +59,7 @@ MATTRAN.prototype.set = function MATTRAN() {
     return new BasicBlock(this.x)
     }
 
-MATTRAN.prototype.get_popup_title = function MATTRAN() {
+    MATTRAN.prototype.get_popup_title = function MATTRAN() {
         var set_param_popup_title="Set MATTRAN block";
         return set_param_popup_title
     }

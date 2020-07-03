@@ -40,7 +40,7 @@ function ESELECT_f() {
         }
         return options
     }
-ESELECT_f.prototype.set = function ESELECT_f() {
+    ESELECT_f.prototype.set = function ESELECT_f() {
     this.out = parseFloat((arguments[0]["out"]))
     this.inh = parseFloat((arguments[0]["inh"]))
     this.nmod = parseFloat((arguments[0]["nmod"]))
@@ -53,7 +53,7 @@ ESELECT_f.prototype.set = function ESELECT_f() {
     this.out = Math.floor(this.out)
     if(this.out<2){
         alert("Block must have at least two output ports");
-        ESELECT_f.get();
+        throw "incorrect";
     }
     var io = check_io(this.x.model,this.x.graphics,[1],[],[this.inh],ones(this.out,1))
     this.x.model.evtout = new ScilabDouble(...ones(this.out,1))

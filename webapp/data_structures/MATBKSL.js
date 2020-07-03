@@ -56,7 +56,7 @@ function MATBKSL() {
         }
         else{
                 alert("Datatype is not supported");
-                MATBKSL.get();
+                throw "incorrect";
             }
         this.x.model.sim = list(new ScilabString([this.function_name]), new ScilabDouble([4]));
         var exprs = new ScilabString([this.typ])

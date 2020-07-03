@@ -55,12 +55,12 @@ function SWITCH_f() {
         }
         return options
     }
-SWITCH_f.prototype.set = function SWITCH_f() {
+    SWITCH_f.prototype.set = function SWITCH_f() {
     this.nin = parseFloat((arguments[0]["nin"]))
     this.z0 = parseFloat((arguments[0]["z0"]))
     if(this.z0>this.nin||this.z0<=0){
         alert("initial connected input is not a valid input port number");
-        SWITCH_f.get();
+        throw "incorrect";
     }
     this.x.model.ipar = new ScilabDouble([this.z0]-1)
     var exprs = new ScilabString([this.nin],[this.z0])
@@ -68,7 +68,7 @@ SWITCH_f.prototype.set = function SWITCH_f() {
     return new BasicBlock(this.x)
     }
 
-SWITCH_f.prototype.get_popup_title = function SWITCH_f() {
+    SWITCH_f.prototype.get_popup_title = function SWITCH_f() {
         var set_param_popup_title="Set switch parameters";
         return set_param_popup_title
     }

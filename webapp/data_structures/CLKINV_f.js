@@ -40,17 +40,17 @@ function CLKINV_f() {
     CLKINV_f.prototype.details = function CLKINV_f() {
         return this.x;
     }
-CLKINV_f.prototype.get = function CLKINV_f() {
+    CLKINV_f.prototype.get = function CLKINV_f() {
         var options={
             prt:["Event input port",this.prt],
         }
         return options
     }
-CLKINV_f.prototype.set = function CLKINV_f() {
+    CLKINV_f.prototype.set = function CLKINV_f() {
     this.prt = parseFloat((arguments[0]["prt"]))
     if(this.prt<=0){
         alert("Wrong values for 'Port Number' parameter: "+this.prt+"\nStrictly positive integer expected.");
-        CLKINV_f_get();
+        throw "incorrect";
     }
     this.x.model.ipar = new ScilabDouble([this.prt]);
     this.x.model.evtout = new ScilabDouble([1]);
@@ -60,7 +60,7 @@ CLKINV_f.prototype.set = function CLKINV_f() {
     return new EventInBlock(this.x)
     }
 
-CLKINV_f.prototype.get_popup_title = function CLKINV_f() {
+    CLKINV_f.prototype.get_popup_title = function CLKINV_f() {
         var set_param_popup_title="Set CLKINV_f block parameters";
         return set_param_popup_title
     }

@@ -40,7 +40,7 @@ function MATZREIM() {
         }
         return options
     }
-MATZREIM.prototype.set = function MATZREIM() {
+    MATZREIM.prototype.set = function MATZREIM() {
     this.decomptyp = parseFloat((arguments[0]["decomptyp"]))
     if(this.decomptyp == 1){
         this.function_name = "matz_reim"
@@ -59,7 +59,7 @@ MATZREIM.prototype.set = function MATZREIM() {
     else
     {
         alert("decomposition type is not supported");
-        MATZREIM.get();
+        throw "incorrect";
     }
     var io = set_io(this.x.model,this.x.graphics,this.in,this.out,[],[])
     this.x.model.sim = list(new ScilabString([this.function_name]),new ScilabDouble([4]))

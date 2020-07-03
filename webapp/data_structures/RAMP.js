@@ -33,13 +33,13 @@ function RAMP() {
         }
         return options
     }
-RAMP.prototype.set = function RAMP() {
+    RAMP.prototype.set = function RAMP() {
     this.slope = parseFloat((arguments[0]["slope"]))
     this.stt = parseFloat((arguments[0]["stt"]))
     this.iout = parseFloat((arguments[0]["iout"]))
     if(this.stt<0){
         alert("Wrong value for ''Start Time'' parameter: "+this.stt+"\nNull or positive integer expected.");
-        RAMP.get();
+        throw "incorrect";
     }
     this.x.model.rpar = new ScilabDouble([this.slope],[this.stt],[this.iout])
     var exprs = new ScilabString([this.slope],[this.stt],[this.iout])

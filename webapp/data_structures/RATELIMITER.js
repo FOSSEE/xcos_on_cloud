@@ -34,7 +34,7 @@ function RATELIMITER() {
     this.minp = parseFloat((arguments[0]["minp"]))
     if((this.maxp<=this.minp)||(this.maxp<=0)||(this.minp>=0)){
                 alert("We must have max_slope> 0 > min_slope.");
-                RATELIMITER.get();
+                throw "incorrect";
     }
     var rpar = new ScilabDouble([this.maxp],[this.minp])
     this.x.model.rpar = new ScilabDouble(...this.rpar);
