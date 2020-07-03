@@ -27,7 +27,7 @@ function TrigFun() {
         }
         return options
     }
-TrigFun.prototype.set = function TrigFun() {
+    TrigFun.prototype.set = function TrigFun() {
     this.fun = arguments[0]["fun"]
     if((this.fun!="sin")&&(this.fun!="cos")&&(this.fun!="tan")&&(this.fun!="sinh")&&(this.fun!="cosh")&&(this.fun!="tanh")&&(this.fun!="asin")&&(this.fun!="acos")&&(this.fun!="atan")&&(this.fun!="asinh")&&(this.fun!="acosh")&&(this.fun!="atanh"))
     {
@@ -39,7 +39,7 @@ TrigFun.prototype.set = function TrigFun() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
-TrigFun.prototype.get_popup_title = function TrigFun() {
+    TrigFun.prototype.get_popup_title = function TrigFun() {
         var set_param_popup_title="Choose among sin, cos, tan, asin<br>             acos, atan, sinh, cosh, tanh, asinh, acosh, atanh";
         return set_param_popup_title
     }

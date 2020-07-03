@@ -48,11 +48,11 @@ function ISELECT_m() {
         this.z0 = parseFloat((arguments[0]["z0"]))
         if(this.z0>this.nout||this.z0<=0 ){
                 alert("initial connected input is not a valid input port number");
-                ISELECT_m.get();
+                throw "incorrect";
         }
         else if ((this.typ<1)||(this.typ>8)){
                 alert("Datatype is not supported");
-                ISELECT_m.get();
+                throw "incorrect";
         }
         else{
             this.x.model.dstate = new ScilabDouble([this.zo])

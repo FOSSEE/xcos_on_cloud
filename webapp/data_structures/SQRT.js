@@ -30,7 +30,7 @@ function SQRT() {
         }
         return options
     }
-SQRT.prototype.set = function SQRT() {
+    SQRT.prototype.set = function SQRT() {
     this.typ = parseFloat((arguments[0]["typ"]))
     if(this.typ == 1){
         this.function_name = "mat_sqrt"
@@ -52,7 +52,7 @@ SQRT.prototype.set = function SQRT() {
     this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
-SQRT.prototype.get_popup_title = function SQRT() {
+    SQRT.prototype.get_popup_title = function SQRT() {
         var set_param_popup_title="Set SQRT Block";
         return set_param_popup_title
     }

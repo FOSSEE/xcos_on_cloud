@@ -18,7 +18,7 @@ function SampleCLK() {
     SampleCLK.prototype.details = function SampleCLK() {
         return this.x;
     }
-SampleCLK.prototype.get = function SampleCLK() {
+    SampleCLK.prototype.get = function SampleCLK() {
     if(this.frequ == 'undefined' || this.frequ == null){
         this.frequ = 1
     }
@@ -31,7 +31,7 @@ SampleCLK.prototype.get = function SampleCLK() {
     }
     return options
     }
-SampleCLK.prototype.set = function SampleCLK() {
+    SampleCLK.prototype.set = function SampleCLK() {
     this.frequ = parseFloat((arguments[0]["frequ"]))
     this.offset = parseFloat((arguments[0]["offset"]))
     if(this.frequ<0){

@@ -25,7 +25,7 @@ function SCALAR2VECTOR() {
         }
         return options
     }
-SCALAR2VECTOR.prototype.set = function SCALAR2VECTOR() {
+    SCALAR2VECTOR.prototype.set = function SCALAR2VECTOR() {
     this.nout = parseInt((arguments[0]["nout"]))
     this.nout = Math.floor(this.nout)
     if(this.nout!=-1 &&this.nout<=0){

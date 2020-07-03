@@ -49,15 +49,15 @@ function BARXY() {
         this.thickness = parseFloat((arguments[0]["thickness"]))
         if(this.ymin>=this.ymax){
                 alert("Ymax must be greater than Ymin");
-                BARXY.get();
+                throw "incorrect";
         }
             if(this.xmin>=this.xmax){
                 alert("Xmax must be greater than Xmin");
-                BARXY.get();
+                throw "incorrect";
             }
             if(this.thickness<=0){
                 alert("Thickness must be strictly positive.");
-                BARXY.get();
+                throw "incorrect";
             }
         this.x.model.rpar = new ScilabDouble([this.xmin],[this.xmax],[this.ymin],[this.ymax])
         this.x.model.ipar = new ScilabDouble([this.thickness]);

@@ -36,7 +36,7 @@ function M_SWITCH() {
         }
         return options
     }
-M_SWITCH.prototype.set = function M_SWITCH() {
+    M_SWITCH.prototype.set = function M_SWITCH() {
     this.nin = parseFloat((arguments[0]["nin"]))
     this.base = parseFloat((arguments[0]["base"]))
     this.rule = parseFloat((arguments[0]["rule"]))

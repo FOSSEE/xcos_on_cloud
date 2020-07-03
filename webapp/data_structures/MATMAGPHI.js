@@ -40,7 +40,7 @@ function MATMAGPHI() {
         }
         return options
     }
-MATMAGPHI.prototype.set = function MATMAGPHI() {
+    MATMAGPHI.prototype.set = function MATMAGPHI() {
     this.decomptyp = parseFloat((arguments[0]["decomptyp"]))
     if(this.decomptyp == 1){
         this.function_name = "matz_abs"

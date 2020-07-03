@@ -42,7 +42,7 @@ function ROOTCOEF() {
         }
         return options
     }
-ROOTCOEF.prototype.set = function ROOTCOEF() {
+    ROOTCOEF.prototype.set = function ROOTCOEF() {
     this.typ = parseFloat((arguments[0]["typ"]))
     this.inp = parseFloat((arguments[0]["inp"]))
     if(this.typ == 1){

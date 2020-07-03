@@ -22,22 +22,22 @@ function CLKGOTO() {
     CLKGOTO.prototype.details = function CLKGOTO() {
         return this.x;
     }
-CLKGOTO.prototype.get = function CLKGOTO() {
+    CLKGOTO.prototype.get = function CLKGOTO() {
         var options={
             tag:["Tag",this.tag],
             tagvis:["Tag Visibility (1=Local 2=Scoped 3=Global)",this.tagvis],
         }
         return options
     }
-CLKGOTO.prototype.set = function CLKGOTO() {
+    CLKGOTO.prototype.set = function CLKGOTO() {
     this.tag = arguments[0]["tag"]
     this.tagvis = parseFloat((arguments[0]["tagvis"]))
     msg = "";
     if (this.tagvis>3||this.tagvis<1){
         msg = "Tag Visibility must be between 1 and 3";
     if (msg.length)
-    alert(msg);
-    CLKGOTO.get();
+    	alert(msg);
+    	throw "incorrect";
     }
     this.x.model.opar = list(new ScilabString(this.tag))
     this.x.model.ipar = new ScilabDouble([this.tagvis]);

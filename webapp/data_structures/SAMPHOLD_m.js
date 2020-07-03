@@ -24,7 +24,7 @@ function SAMPHOLD_m() {
     SAMPHOLD_m.prototype.details = function SAMPHOLD_m() {
         return this.x;
     }
-SAMPHOLD_m.prototype.get = function SAMPHOLD_m() {
+    SAMPHOLD_m.prototype.get = function SAMPHOLD_m() {
     if(this.it == 'undefined' || this.it == null){
         this.it = "1";
     }
@@ -33,7 +33,7 @@ SAMPHOLD_m.prototype.get = function SAMPHOLD_m() {
     }
     return options
     }
-SAMPHOLD_m.prototype.set = function SAMPHOLD_m() {
+    SAMPHOLD_m.prototype.set = function SAMPHOLD_m() {
     this.it = parseFloat((arguments[0]["it"]))
     if((this.it<1)||(this.it>8)){
                 alert("Datatype is not supported");

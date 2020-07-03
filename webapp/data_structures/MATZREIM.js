@@ -40,7 +40,7 @@ function MATZREIM() {
         }
         return options
     }
-MATZREIM.prototype.set = function MATZREIM() {
+    MATZREIM.prototype.set = function MATZREIM() {
     this.decomptyp = parseFloat((arguments[0]["decomptyp"]))
     if(this.decomptyp == 1){
         this.function_name = "matz_reim"
