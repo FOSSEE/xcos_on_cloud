@@ -1,6 +1,8 @@
-function MAXMIN() {
+function MAXMIN() 
+{
 
-    MAXMIN.prototype.define = function MAXMIN() {
+    MAXMIN.prototype.define = function MAXMIN() 
+    {
         var model = scicos_model();
         model.sim = list(new ScilabString(["minmax"]), new ScilabDouble([4]));
         model.out = new ScilabDouble([1]);
@@ -72,8 +74,6 @@ function MAXMIN() {
     this.displayParameter = [this.tag];
     var exprs = new ScilabString([this.mm],[this.nin],[this.zcr])
     this.x.graphics.exprs=exprs
-    //var exprs = new ScilabString([this.tag])
-    //this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
 
