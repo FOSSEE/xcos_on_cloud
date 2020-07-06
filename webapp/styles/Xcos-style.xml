@@ -376,7 +376,7 @@
 		-->
     </add>
     <add as="MAXMIN" extend="blockWithLabel">
-        <add as="displayedLabel" value="MIN / MAX"/>
+        <add as="displayedLabel" value="%s"/>
     </add>
     <add as="ABS_VALUE" extend="blockWithLabel">
         <add as="displayedLabel" value="ABS"/>

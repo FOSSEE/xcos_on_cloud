@@ -11,6 +11,7 @@ function MAXMIN() {
 
         var exprs = new ScilabString(...math.transpose([[2, 1, 1]]));
 
+        this.displayParameter = ["MAX"];
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"MAXMIN\",sz(1),sz(2));"]);
         this.x = new standard_define(new ScilabDouble([2, 2]), model, exprs, gr_i);
         this.x.graphics.style = new ScilabString(["MAXMIN;displayedLabel=MAX"]);
@@ -36,13 +37,14 @@ function MAXMIN() {
     MAXMIN.prototype.set = function MAXMIN() {
     this.mm = parseFloat((arguments[0]["mm"]))
     this.nin = parseFloat((arguments[0]["nin"]))
+    this.tag = arguments[0]["tag"]
     if((this.nin!=1)&&(this.nin!=2)){
                 alert("Wrong number of inputs, only 1 and 2 allowed");
                 throw "incorrect";
     }
     this.zcr = parseFloat((arguments[0]["zcr"]))
     if(this.zcr != 0){
-        this.zcr = -1
+        this.zcr = 1
     }
     if(this.mm != 1){
         this.mm = 2
@@ -61,14 +63,17 @@ function MAXMIN() {
         this.x.model.nmode = new ScilabDouble([this.zcr]);
     }
     this.x.model.ipar = new ScilabDouble([this.mm]);
-    if(this.mm=1){
-        this.x.graphics.style = new ScilabDouble(["MAXMIN;displayedLabel=" + "MIN"]);
+    if(this.mm == 1){
+        this.tag = "MIN";
     }
     else{
-        this.x.graphics.style = new ScilabDouble(["MAXMIN;displayedLabel=" + "MAX"]);
+        this.tag = "MAX";
     }
+    this.displayParameter = [this.tag];
     var exprs = new ScilabString([this.mm],[this.nin],[this.zcr])
     this.x.graphics.exprs=exprs
+    //var exprs = new ScilabString([this.tag])
+    //this.x.graphics.exprs=exprs
     return new BasicBlock(this.x)
     }
 
