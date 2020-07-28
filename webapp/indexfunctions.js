@@ -2870,20 +2870,51 @@ function showPropertiesWindow(graph, cell, diagRoot) {
         // Line break
         var linebreak = document.createElement('br');
         myform.appendChild(linebreak);
-
+        var counter_readau = 0;
+        //Button to browse file in READAU_f
+        var readAU_file_btn = document.createElement("button");
+        readAU_file_btn.innerHTML = 'Browse';
+        readAU_file_btn.type = "button";
+        readAU_file_btn.name = "readau_f_browser";
+        readAU_file_btn.id = "readau_f_browser";
+        readAU_file_btn.style.cssFloat = "right";
+        readAU_file_btn.style.marginTop = "-5px";
+        //File browser to store file which we browse.
+        var file_input = document.createElement('input');
+        file_input.name = "file_readau_f";
+        file_input.type = 'file';
+        file_input.accept = '.au';
+        file_input.style.display = 'none';
         for (var [key, value] of Object.entries(defaultProperties)) {
                 // Input Title
                 var namelabel = document.createElement('label');
                 namelabel.innerHTML = value[0];
                 myform.appendChild(namelabel);
 
-                // Input
-                var input = document.createElement("input");
-                input.name = key;
-                input.value = value[1];
-                input.setAttribute("id", key.toString());
-                input.setAttribute("class", "fieldInput");
-                myform.appendChild(input);
+                //Counter for getting 1st label
+                if(counter_readau == 0 && name == 'READAU_f'){
+                    // Input
+                    var input = document.createElement("input");
+                    input.name = key;
+                    input.value = value[1];
+                    input.setAttribute("id", key.toString());
+                    input.setAttribute("class", "fieldInput");
+                    input.style.width = "80px";
+                    input.readOnly = true;
+                    myform.appendChild(readAU_file_btn);
+                    myform.appendChild(input);
+                    myform.appendChild(file_input);
+                    counter_readau++;
+                }else{
+                    // Input
+                    var input = document.createElement("input");
+                    input.name = key;
+                    input.value = value[1];
+                    input.setAttribute("id", key.toString());
+                    input.setAttribute("class", "fieldInput");
+                    myform.appendChild(input);
+                    counter_readau++;
+                }
 
                 // Line break
                 var linebreak = document.createElement('br');
@@ -2893,7 +2924,15 @@ function showPropertiesWindow(graph, cell, diagRoot) {
                 var linebreak = document.createElement('br');
                 myform.appendChild(linebreak);
         }
-
+        //Onclick of browser button of READAU_f
+        readAU_file_btn.onclick = function() {
+            file_input.click();
+        };
+        //function to get choosen file name and file.
+        file_input.addEventListener('change', function(evt) {
+            var f = evt.target.files[0];
+            console.log(f.name);
+        }, false);
         // Line break
         var linebreak = document.createElement('br');
         myform.appendChild(linebreak);
