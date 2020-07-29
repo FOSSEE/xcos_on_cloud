@@ -1437,6 +1437,7 @@ function main(container, outline, toolbar, sidebar, status) {
 
             var cells = [];
             var scriptwarn = false;
+            var audiofilewarn = false;
 
             for (var currentNode = rootNode.firstChild;
                 currentNode != null;
@@ -1513,6 +1514,9 @@ function main(container, outline, toolbar, sidebar, status) {
                         if (ifaceFuncName == "scifunc_block_m") {
                             scriptwarn = true;
                         }
+                        if (ifaceFuncName == "READAU_f"){
+                            audiofilewarn = true;
+                        }
                     }
 
                     if (details_instance != null) {
@@ -1578,6 +1582,9 @@ function main(container, outline, toolbar, sidebar, status) {
 
             if (scriptwarn) {
                 alert("Upload a script to define functions used by the scifunc_block_m");
+            }
+            if (audiofilewarn){
+                alert("Upload a audio file which will be used by READAU_f block\n\nTo upload : Double click on READAU_f block and browse file");
             }
 
             /*
@@ -2871,6 +2878,8 @@ function showPropertiesWindow(graph, cell, diagRoot) {
         var linebreak = document.createElement('br');
         myform.appendChild(linebreak);
         var counter_readau = 0;
+        var first_para_key = "";
+
         //Button to browse file in READAU_f
         var readAU_file_btn = document.createElement("button");
         readAU_file_btn.innerHTML = 'Browse';
@@ -2879,12 +2888,16 @@ function showPropertiesWindow(graph, cell, diagRoot) {
         readAU_file_btn.id = "readau_f_browser";
         readAU_file_btn.style.cssFloat = "right";
         readAU_file_btn.style.marginTop = "-5px";
+
         //File browser to store file which we browse.
         var file_input = document.createElement('input');
         file_input.name = "file_readau_f";
         file_input.type = 'file';
         file_input.accept = '.au';
         file_input.style.display = 'none';
+
+        //Formdata for sending audio file
+        var readAU_fd = new FormData();
         for (var [key, value] of Object.entries(defaultProperties)) {
                 // Input Title
                 var namelabel = document.createElement('label');
@@ -2904,6 +2917,7 @@ function showPropertiesWindow(graph, cell, diagRoot) {
                     myform.appendChild(readAU_file_btn);
                     myform.appendChild(input);
                     myform.appendChild(file_input);
+                    first_para_key = key.toString();
                     counter_readau++;
                 }else{
                     // Input
@@ -2931,7 +2945,11 @@ function showPropertiesWindow(graph, cell, diagRoot) {
         //function to get choosen file name and file.
         file_input.addEventListener('change', function(evt) {
             var f = evt.target.files[0];
-            console.log(f.name);
+            document.getElementById(first_para_key.toString()).value = f.name;
+            if(f.name != null || f.name != ""){
+                readAU_fd.append('file',files);
+            }
+
         }, false);
         // Line break
         var linebreak = document.createElement('br');
@@ -2964,6 +2982,9 @@ function showPropertiesWindow(graph, cell, diagRoot) {
                 if(name == 'scifunc_block_m'){
                     graph_scifunc_block_m = graph;
                     cell_scifunc_block_m = cell;
+                }
+                if(name == "READAU_f"){
+                    //Ajax call to save the file in folder
                 }
 
                 var details_instance = cell.blockInstance.instance;
