@@ -3,7 +3,7 @@ function READAU_f() {
     READAU_f.prototype.define = function READAU_f() {
         this.frmt = "uc ";
         this.fname = "test.au";
-        this.fname1 = this.fname;
+        this.fname1 = "";
         this.lunit = 0;
         this.N = 20;
         this.M = 1;
