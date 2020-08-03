@@ -682,6 +682,12 @@ def add_diagram():
     return (diagram, scripts, sessiondir)
 
 
+def add_au_file():
+    ( __, __, __, __, sessiondir, __) = init_session()
+
+    return (sessiondir)
+
+
 def get_script(script_id, scripts=None, remove=False):
     if script_id is None:
         return None
@@ -855,6 +861,28 @@ def is_unsafe_script(filename):
     # Delete saved file if system commands are encountered in that file
     remove(filename)
     return True
+
+
+@app.route('/uploadaufile', methods=['POST'])
+def uploadaufile():
+    '''
+    Below route is called for uploading audio file.
+    '''
+    # Get the au file
+    file = request.files['file']
+    # Check if the au file is not null
+    if not file:
+        msg = "Error occured while uploading file. Please try again\n"
+        rv = {'msg': msg}
+        return Response(json.dumps(rv), mimetype='application/json')
+
+    (sessiondir) = add_au_file()
+    fname = join(sessiondir, UPLOAD_FOLDER,
+                     file.filename)
+    file.save(fname)
+    filepath = fname
+    rv = {'filepath': filepath}
+    return Response(json.dumps(rv), mimetype='application/json')
 
 
 @app.route('/uploadscript', methods=['POST'])

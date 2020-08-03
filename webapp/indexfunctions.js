@@ -2917,7 +2917,7 @@ function showPropertiesWindow(graph, cell, diagRoot) {
                     myform.appendChild(readAU_file_btn);
                     myform.appendChild(input);
                     myform.appendChild(file_input);
-                    first_para_key = key.toString();
+                    first_para_key = key;
                     counter_readau++;
                 }else{
                     // Input
@@ -2945,9 +2945,9 @@ function showPropertiesWindow(graph, cell, diagRoot) {
         //function to get choosen file name and file.
         file_input.addEventListener('change', function(evt) {
             var f = evt.target.files[0];
-            document.getElementById(first_para_key.toString()).value = f.name;
             if(f.name != null || f.name != ""){
-                readAU_fd.append('file',files);
+                document.getElementById(first_para_key.toString()).value = f.name;
+                readAU_fd.set('file',f);
             }
 
         }, false);
@@ -2985,6 +2985,26 @@ function showPropertiesWindow(graph, cell, diagRoot) {
                 }
                 if(name == "READAU_f"){
                     //Ajax call to save the file in folder
+                    $.ajax({
+                        type: "POST",
+                        url: "/uploadaufile",
+                        async: true,
+                        processData: false,
+                        contentType: false,
+                        data: readAU_fd,
+                        dataType: "json",
+                        success: function(rv) {
+                            var filepath = rv.filepath;
+                            if (filepath != '') {
+                                propertiesObject[first_para_key] = filepath;
+                            }
+                        },
+                        error: function(xhr, textStatus) {
+                            var msg = "An error occurred!! \n\nPlease try again"
+                            alert(msg);
+                            throw "error";
+                        }
+                    });
                 }
 
                 var details_instance = cell.blockInstance.instance;
