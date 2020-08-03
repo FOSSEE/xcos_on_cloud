@@ -683,9 +683,9 @@ def add_diagram():
 
 
 def add_au_file():
-    ( __, __, __, __, sessiondir, __) = init_session()
+    (__, __, __, __, sessiondir, __) = init_session()
 
-    return (sessiondir)
+    return sessiondir
 
 
 def get_script(script_id, scripts=None, remove=False):
@@ -876,9 +876,8 @@ def uploadaufile():
         rv = {'msg': msg}
         return Response(json.dumps(rv), mimetype='application/json')
 
-    (sessiondir) = add_au_file()
-    fname = join(sessiondir, UPLOAD_FOLDER,
-                     file.filename)
+    sessiondir = add_au_file()
+    fname = join(sessiondir, UPLOAD_FOLDER, file.filename)
     file.save(fname)
     filepath = fname
     rv = {'filepath': filepath}
