@@ -33,7 +33,7 @@ function READAU_f() {
     }
     READAU_f.prototype.get = function READAU_f() {
         var options = {
-            fname1:["Input File Name",this.fname1],
+            fname1:["Input File Name", this.fname1.slice(this.fname1.lastIndexOf('/') + 1)],
             N:["Buffer size",this.N],
             swap:["Swap Mode (0:No, 1:Yes)",this.swap]
         }
@@ -41,23 +41,23 @@ function READAU_f() {
     }
     READAU_f.prototype.set = function READAU_f() {
         var temp_fname1 = arguments[0]["fname1"];
-        console.log(arguments[0]);
-        console.log(temp_fname1);
-        this.fname1 = temp_fname1;
-        this.N = parseFloat(arguments[0]["N"]);
-        this.swap = parseFloat(arguments[0]["swap"]);
-        if(this.fname1 == ""){
+        var temp_N = parseFloat(arguments[0]["N"]);
+        var temp_swap = parseFloat(arguments[0]["swap"]);
+        if(temp_fname1 == ""){
             alert("Wrong value for 'Input File Name' parameter."+"\nYou must provide a filename.");
             throw "incorrect";
         }
-        if(this.N < 1){
-            alert("Wrong value for 'Buffer size' parameter: "+this.N+"\nMust be greater than 1");
+        if(temp_N < 1){
+            alert("Wrong value for 'Buffer size' parameter: "+temp_N+"\nMust be greater than 1");
             throw "incorrect";
         }
-        if((this.swap != 0) && (this.swap != 1)){
-            alert("Wrong value for 'Swap Mode' parameter: "+this.swap+"\nMust be in the interval [0, 1]");
+        if((temp_swap != 0) && (temp_swap != 1)){
+            alert("Wrong value for 'Swap Mode' parameter: "+temp_swap+"\nMust be in the interval [0, 1]");
             throw "incorrect";
         }
+        this.fname1 = temp_fname1;
+        this.N = temp_N;
+        this.swap = temp_swap;
         this.M = 1;
         this.frmt1 = "uc";
         this.outmask = 1;
