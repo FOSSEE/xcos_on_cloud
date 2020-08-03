@@ -2988,7 +2988,7 @@ function showPropertiesWindow(graph, cell, diagRoot) {
                     $.ajax({
                         type: "POST",
                         url: "/uploadaufile",
-                        async: true,
+                        async: false,
                         processData: false,
                         contentType: false,
                         data: readAU_fd,
