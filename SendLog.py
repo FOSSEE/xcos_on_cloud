@@ -477,12 +477,9 @@ class Diagram:
     # List to store figure IDs from log_name
     figure_list = None
     file_image = ''
-    # List to store audio filepath of READAU_f block
-    au_file_list = None
 
     def __init__(self):
         self.figure_list = []
-        self.au_file_list = []
 
     def __str__(self):
         return "{instance: %s, tkbool: %s, figure_list: %s}" % (
