@@ -33,6 +33,7 @@ from time import time
 import uuid
 from werkzeug.http import dump_cookie
 from xml.dom import minidom
+from werkzeug.utils import secure_filename
 
 import config
 
@@ -877,7 +878,7 @@ def uploadaufile():
         return Response(json.dumps(rv), mimetype='application/json')
 
     sessiondir = add_au_file()
-    fname = join(sessiondir, UPLOAD_FOLDER, file.filename)
+    fname = join(sessiondir, UPLOAD_FOLDER, secure_filename(file.filename))
     file.save(fname)
     filepath = fname
     rv = {'filepath': filepath}
