@@ -538,10 +538,21 @@ class SciFile:
             self.instance = None
 
 
+class au_file:
+    sessiondir = None
+    au_file_name = None
+
+    def clean(self):
+        if self.au_file_name is not None:
+            remove(self.au_file_name)
+            self.au_file_name = None
+
+
 class UserData:
     sessiondir = None
     diagrams = None
     scripts = None
+    au_files = None
     scriptcount = None
     scifile = None
     diagramlock = None
@@ -551,6 +562,7 @@ class UserData:
         self.sessiondir = mkdtemp(
             prefix=datetime.now().strftime('%Y%m%d.'), dir=SESSIONDIR)
         self.diagrams = []
+        self.au_files = []
         self.scripts = {}
         self.scriptcount = 0
         self.scifile = SciFile()
@@ -571,6 +583,9 @@ class UserData:
         for script in self.scripts:
             self.scripts[script].clean()
         self.scripts = None
+        for au_file in self.au_files:
+            au_files.clean()
+        self.au_files = None
         self.scifile.clean()
         self.scifile = None
         self.diagramlock = None
@@ -617,8 +632,8 @@ def init_session():
     makedirs(join(sessiondir, SCRIPT_FILES_FOLDER), 'script files')
     makedirs(join(sessiondir, WORKSPACE_FILES_FOLDER), 'workspace files')
 
-    return (ud.diagrams, ud.scripts, ud.getscriptcount, ud.scifile, sessiondir,
-            ud.diagramlock)
+    return (ud.diagrams, ud.scripts, ud.getscriptcount, ud.scifile, ud.au_files,
+            sessiondir, ud.diagramlock)
 
 
 def clean_sessions(final=False):
@@ -657,7 +672,7 @@ def get_diagram(xcos_file_id, remove=False):
         return None
     xcos_file_id = int(xcos_file_id)
 
-    (diagrams, __, __, __, __, __) = init_session()
+    (diagrams, __, __, __, __, __, __) = init_session()
 
     if xcos_file_id < 0 or xcos_file_id >= len(diagrams):
         logger.warning('id %s not in diagrams', xcos_file_id)
@@ -672,7 +687,7 @@ def get_diagram(xcos_file_id, remove=False):
 
 
 def add_diagram():
-    (diagrams, scripts, __, __, sessiondir, diagramlock) = init_session()
+    (diagrams, scripts, __, __, __, sessiondir, diagramlock) = init_session()
 
     with diagramlock:
         diagram = Diagram()
@@ -684,9 +699,12 @@ def add_diagram():
 
 
 def add_au_file():
-    (__, __, __, __, sessiondir, __) = init_session()
+    (__, __, __, __, au_files, sessiondir, __) = init_session()
 
-    return sessiondir
+    au_file = au_file()
+    au_file.sessiondir = sessiondir
+    au_files.append(au_file)
+    return (au_file, sessiondir)
 
 
 def get_script(script_id, scripts=None, remove=False):
@@ -697,7 +715,7 @@ def get_script(script_id, scripts=None, remove=False):
         return None
 
     if scripts is None:
-        (__, scripts, __, __, __, __) = init_session()
+        (__, scripts, __, __, __, __, __) = init_session()
 
     if script_id not in scripts:
         logger.warning('id %s not in scripts', script_id)
@@ -712,7 +730,7 @@ def get_script(script_id, scripts=None, remove=False):
 
 
 def add_script():
-    (__, scripts, getscriptcount, __, sessiondir, __) = init_session()
+    (__, scripts, getscriptcount, __, __, sessiondir, __) = init_session()
 
     script_id = getscriptcount()
 
@@ -877,11 +895,11 @@ def uploadaufile():
         rv = {'msg': msg}
         return Response(json.dumps(rv), mimetype='application/json')
 
-    sessiondir = add_au_file()
+    (au_file, sessiondir) = add_au_file()
     fname = join(sessiondir, UPLOAD_FOLDER, secure_filename(file.filename))
     file.save(fname)
-    filepath = fname
-    rv = {'filepath': filepath}
+    au_file.au_file_name = fname
+    rv = {'filepath': au_file.au_file_name}
     return Response(json.dumps(rv), mimetype='application/json')
 
 
@@ -1081,7 +1099,7 @@ def kill_script(script=None):
 def kill_scifile(scifile=None):
     '''Below route is called for stopping a running sci file.'''
     if scifile is None:
-        (__, __, __, scifile, __, __) = init_session()
+        (__, __, __, scifile, __, __, __) = init_session()
 
     logger.info('kill_scifile: scifile=%s', scifile)
 
@@ -1971,7 +1989,7 @@ def page():
 
 @app.route('/internal/<internal_key>', methods=['POST'])
 def internal_fun(internal_key):
-    (__, __, __, scifile, sessiondir, __) = init_session()
+    (__, __, __, scifile, __, sessiondir, __) = init_session()
 
     if internal_key not in config.INTERNAL:
         msg = internal_key + ' not found'
