@@ -538,7 +538,7 @@ class SciFile:
             self.instance = None
 
 
-class au_file:
+class Aufile:
     sessiondir = None
     au_file_name = None
 
@@ -552,7 +552,7 @@ class UserData:
     sessiondir = None
     diagrams = None
     scripts = None
-    au_files = None
+    aufiles = None
     scriptcount = None
     scifile = None
     diagramlock = None
@@ -562,7 +562,7 @@ class UserData:
         self.sessiondir = mkdtemp(
             prefix=datetime.now().strftime('%Y%m%d.'), dir=SESSIONDIR)
         self.diagrams = []
-        self.au_files = []
+        self.aufiles = []
         self.scripts = {}
         self.scriptcount = 0
         self.scifile = SciFile()
@@ -583,9 +583,9 @@ class UserData:
         for script in self.scripts:
             self.scripts[script].clean()
         self.scripts = None
-        for au_file in self.au_files:
-            au_files.clean()
-        self.au_files = None
+        for aufile in self.aufiles:
+            aufiles.clean()
+        self.aufiles = None
         self.scifile.clean()
         self.scifile = None
         self.diagramlock = None
@@ -632,8 +632,8 @@ def init_session():
     makedirs(join(sessiondir, SCRIPT_FILES_FOLDER), 'script files')
     makedirs(join(sessiondir, WORKSPACE_FILES_FOLDER), 'workspace files')
 
-    return (ud.diagrams, ud.scripts, ud.getscriptcount, ud.scifile, ud.au_files,
-            sessiondir, ud.diagramlock)
+    return (ud.diagrams, ud.scripts, ud.getscriptcount, ud.scifile,
+            ud.aufiles, sessiondir, ud.diagramlock)
 
 
 def clean_sessions(final=False):
@@ -698,13 +698,14 @@ def add_diagram():
     return (diagram, scripts, sessiondir)
 
 
-def add_au_file():
-    (__, __, __, __, au_files, sessiondir, __) = init_session()
+def add_aufile():
+    (__, __, __, __, aufiles, sessiondir, __) = init_session()
 
-    au_file = au_file()
-    au_file.sessiondir = sessiondir
-    au_files.append(au_file)
-    return (au_file, sessiondir)
+    aufile = aufile()
+    aufile.sessiondir = sessiondir
+    aufiles.append(aufile)
+
+    return (aufile, sessiondir)
 
 
 def get_script(script_id, scripts=None, remove=False):
@@ -895,11 +896,11 @@ def uploadaufile():
         rv = {'msg': msg}
         return Response(json.dumps(rv), mimetype='application/json')
 
-    (au_file, sessiondir) = add_au_file()
+    (aufile, sessiondir) = add_au_file()
     fname = join(sessiondir, UPLOAD_FOLDER, secure_filename(file.filename))
     file.save(fname)
-    au_file.au_file_name = fname
-    rv = {'filepath': au_file.au_file_name}
+    aufile.au_file_name = fname
+    rv = {'filepath': aufile.au_file_name}
     return Response(json.dumps(rv), mimetype='application/json')
 
 
