@@ -702,11 +702,10 @@ def add_datafile():
     (__, __, __, __, datafiles, sessiondir, __) = init_session()
 
     datafile = DataFile()
-    datafile.datafile_currlen = str(len(datafiles))
     datafile.sessiondir = sessiondir
     datafiles.append(datafile)
 
-    return (datafile, sessiondir)
+    return (datafile, sessiondir, str(len(datafiles)))
 
 
 def get_script(script_id, scripts=None, remove=False):
@@ -897,8 +896,8 @@ def uploaddatafile():
         rv = {'msg': msg}
         return Response(json.dumps(rv), mimetype='application/json')
 
-    (datafile, sessiondir) = add_datafile()
-    fname = join(sessiondir, UPLOAD_FOLDER, datafile.datafile_currlen + '@@'
+    (datafile, sessiondir, currlen) = add_datafile()
+    fname = join(sessiondir, UPLOAD_FOLDER, currlen + '@@'
                  + secure_filename(file.filename))
     file.save(fname)
     datafile.data_filename = fname
