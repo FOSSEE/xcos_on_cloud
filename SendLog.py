@@ -33,6 +33,7 @@ from time import time
 import uuid
 from werkzeug.http import dump_cookie
 from xml.dom import minidom
+from werkzeug.utils import secure_filename
 
 import config
 
@@ -537,10 +538,21 @@ class SciFile:
             self.instance = None
 
 
+class DataFile:
+    sessiondir = None
+    data_filename = None
+
+    def clean(self):
+        if self.data_filename is not None:
+            remove(self.data_filename)
+            self.data_filename = None
+
+
 class UserData:
     sessiondir = None
     diagrams = None
     scripts = None
+    datafiles = None
     scriptcount = None
     scifile = None
     diagramlock = None
@@ -550,6 +562,7 @@ class UserData:
         self.sessiondir = mkdtemp(
             prefix=datetime.now().strftime('%Y%m%d.'), dir=SESSIONDIR)
         self.diagrams = []
+        self.datafiles = []
         self.scripts = {}
         self.scriptcount = 0
         self.scifile = SciFile()
@@ -570,6 +583,9 @@ class UserData:
         for script in self.scripts:
             self.scripts[script].clean()
         self.scripts = None
+        for datafile in self.datafiles:
+            datafile.clean()
+        self.datafiles = None
         self.scifile.clean()
         self.scifile = None
         self.diagramlock = None
@@ -616,8 +632,8 @@ def init_session():
     makedirs(join(sessiondir, SCRIPT_FILES_FOLDER), 'script files')
     makedirs(join(sessiondir, WORKSPACE_FILES_FOLDER), 'workspace files')
 
-    return (ud.diagrams, ud.scripts, ud.getscriptcount, ud.scifile, sessiondir,
-            ud.diagramlock)
+    return (ud.diagrams, ud.scripts, ud.getscriptcount, ud.scifile,
+            ud.datafiles, sessiondir, ud.diagramlock)
 
 
 def clean_sessions(final=False):
@@ -656,7 +672,7 @@ def get_diagram(xcos_file_id, remove=False):
         return None
     xcos_file_id = int(xcos_file_id)
 
-    (diagrams, __, __, __, __, __) = init_session()
+    (diagrams, __, __, __, __, __, __) = init_session()
 
     if xcos_file_id < 0 or xcos_file_id >= len(diagrams):
         logger.warning('id %s not in diagrams', xcos_file_id)
@@ -671,7 +687,7 @@ def get_diagram(xcos_file_id, remove=False):
 
 
 def add_diagram():
-    (diagrams, scripts, __, __, sessiondir, diagramlock) = init_session()
+    (diagrams, scripts, __, __, __, sessiondir, diagramlock) = init_session()
 
     with diagramlock:
         diagram = Diagram()
@@ -682,6 +698,16 @@ def add_diagram():
     return (diagram, scripts, sessiondir)
 
 
+def add_datafile():
+    (__, __, __, __, datafiles, sessiondir, __) = init_session()
+
+    datafile = DataFile()
+    datafile.sessiondir = sessiondir
+    datafiles.append(datafile)
+
+    return (datafile, sessiondir, str(len(datafiles)))
+
+
 def get_script(script_id, scripts=None, remove=False):
     if script_id is None:
         return None
@@ -690,7 +716,7 @@ def get_script(script_id, scripts=None, remove=False):
         return None
 
     if scripts is None:
-        (__, scripts, __, __, __, __) = init_session()
+        (__, scripts, __, __, __, __, __) = init_session()
 
     if script_id not in scripts:
         logger.warning('id %s not in scripts', script_id)
@@ -705,7 +731,7 @@ def get_script(script_id, scripts=None, remove=False):
 
 
 def add_script():
-    (__, scripts, getscriptcount, __, sessiondir, __) = init_session()
+    (__, scripts, getscriptcount, __, __, sessiondir, __) = init_session()
 
     script_id = getscriptcount()
 
@@ -855,6 +881,28 @@ def is_unsafe_script(filename):
     # Delete saved file if system commands are encountered in that file
     remove(filename)
     return True
+
+
+@app.route('/uploaddatafile', methods=['POST'])
+def uploaddatafile():
+    '''
+    Below route is called for uploading audio/other file.
+    '''
+    # Get the au/other data file
+    file = request.files['file']
+    # Check if the data file is not null
+    if not file:
+        msg = "Error occured while uploading file. Please try again\n"
+        rv = {'msg': msg}
+        return Response(json.dumps(rv), mimetype='application/json')
+
+    (datafile, sessiondir, currlen) = add_datafile()
+    fname = join(sessiondir, UPLOAD_FOLDER, currlen + '@@'
+                 + secure_filename(file.filename))
+    file.save(fname)
+    datafile.data_filename = fname
+    rv = {'filepath': datafile.data_filename}
+    return Response(json.dumps(rv), mimetype='application/json')
 
 
 @app.route('/uploadscript', methods=['POST'])
@@ -1053,7 +1101,7 @@ def kill_script(script=None):
 def kill_scifile(scifile=None):
     '''Below route is called for stopping a running sci file.'''
     if scifile is None:
-        (__, __, __, scifile, __, __) = init_session()
+        (__, __, __, scifile, __, __, __) = init_session()
 
     logger.info('kill_scifile: scifile=%s', scifile)
 
@@ -1943,7 +1991,7 @@ def page():
 
 @app.route('/internal/<internal_key>', methods=['POST'])
 def internal_fun(internal_key):
-    (__, __, __, scifile, sessiondir, __) = init_session()
+    (__, __, __, scifile, __, sessiondir, __) = init_session()
 
     if internal_key not in config.INTERNAL:
         msg = internal_key + ' not found'
