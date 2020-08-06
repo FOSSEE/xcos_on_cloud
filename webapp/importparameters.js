@@ -1960,7 +1960,7 @@ READAU_f.prototype.importset = function READAU_f() {
     var model = this.x.model;
     var graphics = this.x.graphics;
     var ary = getData(graphics.exprs);
-    this.fname1 = ary[0];
+    this.fname1 = "";
     this.N = ary[1];
     this.swap = ary[2];
 
