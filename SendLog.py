@@ -898,7 +898,8 @@ def uploaddatafile():
         return Response(json.dumps(rv), mimetype='application/json')
 
     (datafile, sessiondir) = add_datafile()
-    fname = join(sessiondir, UPLOAD_FOLDER, datafile.datafile_currlen + '@@' + secure_filename(file.filename))
+    fname = join(sessiondir, UPLOAD_FOLDER, datafile.datafile_currlen + '@@'
+                 + secure_filename(file.filename))
     file.save(fname)
     datafile.data_filename = fname
     rv = {'filepath': datafile.data_filename}
