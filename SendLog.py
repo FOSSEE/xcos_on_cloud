@@ -538,21 +538,21 @@ class SciFile:
             self.instance = None
 
 
-class Aufile:
+class DataFile:
     sessiondir = None
-    au_file_name = None
+    data_filename = None
 
     def clean(self):
-        if self.au_file_name is not None:
-            remove(self.au_file_name)
-            self.au_file_name = None
+        if self.data_filename is not None:
+            remove(self.data_filename)
+            self.data_filename = None
 
 
 class UserData:
     sessiondir = None
     diagrams = None
     scripts = None
-    aufiles = None
+    datafiles = None
     scriptcount = None
     scifile = None
     diagramlock = None
@@ -562,7 +562,7 @@ class UserData:
         self.sessiondir = mkdtemp(
             prefix=datetime.now().strftime('%Y%m%d.'), dir=SESSIONDIR)
         self.diagrams = []
-        self.aufiles = []
+        self.datafiles = []
         self.scripts = {}
         self.scriptcount = 0
         self.scifile = SciFile()
@@ -583,9 +583,9 @@ class UserData:
         for script in self.scripts:
             self.scripts[script].clean()
         self.scripts = None
-        for aufile in self.aufiles:
-            aufiles.clean()
-        self.aufiles = None
+        for datafile in self.datafiles:
+            datafile.clean()
+        self.datafiles = None
         self.scifile.clean()
         self.scifile = None
         self.diagramlock = None
@@ -633,7 +633,7 @@ def init_session():
     makedirs(join(sessiondir, WORKSPACE_FILES_FOLDER), 'workspace files')
 
     return (ud.diagrams, ud.scripts, ud.getscriptcount, ud.scifile,
-            ud.aufiles, sessiondir, ud.diagramlock)
+            ud.datafiles, sessiondir, ud.diagramlock)
 
 
 def clean_sessions(final=False):
@@ -698,14 +698,15 @@ def add_diagram():
     return (diagram, scripts, sessiondir)
 
 
-def add_aufile():
-    (__, __, __, __, aufiles, sessiondir, __) = init_session()
+def add_datafile():
+    (__, __, __, __, datafiles, sessiondir, __) = init_session()
 
-    aufile = aufile()
-    aufile.sessiondir = sessiondir
-    aufiles.append(aufile)
+    datafile = DataFile()
+    datafile.datafile_currlen = str(len(datafiles))
+    datafile.sessiondir = sessiondir
+    datafiles.append(datafile)
 
-    return (aufile, sessiondir)
+    return (datafile, sessiondir)
 
 
 def get_script(script_id, scripts=None, remove=False):
@@ -883,24 +884,24 @@ def is_unsafe_script(filename):
     return True
 
 
-@app.route('/uploadaufile', methods=['POST'])
-def uploadaufile():
+@app.route('/uploaddatafile', methods=['POST'])
+def uploaddatafile():
     '''
-    Below route is called for uploading audio file.
+    Below route is called for uploading audio/other file.
     '''
-    # Get the au file
+    # Get the au/other data file
     file = request.files['file']
-    # Check if the au file is not null
+    # Check if the data file is not null
     if not file:
         msg = "Error occured while uploading file. Please try again\n"
         rv = {'msg': msg}
         return Response(json.dumps(rv), mimetype='application/json')
 
-    (aufile, sessiondir) = add_au_file()
-    fname = join(sessiondir, UPLOAD_FOLDER, secure_filename(file.filename))
+    (datafile, sessiondir) = add_datafile()
+    fname = join(sessiondir, UPLOAD_FOLDER, datafile.datafile_currlen + '@@' + secure_filename(file.filename))
     file.save(fname)
-    aufile.au_file_name = fname
-    rv = {'filepath': aufile.au_file_name}
+    datafile.data_filename = fname
+    rv = {'filepath': datafile.data_filename}
     return Response(json.dumps(rv), mimetype='application/json')
 
 

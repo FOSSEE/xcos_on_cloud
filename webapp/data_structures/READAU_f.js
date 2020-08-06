@@ -33,7 +33,7 @@ function READAU_f() {
     }
     READAU_f.prototype.get = function READAU_f() {
         var options = {
-            fname1:["Input File Name", this.fname1.slice(this.fname1.lastIndexOf('/') + 1)],
+            fname1:["Input File Name", this.fname1.slice(this.fname1.lastIndexOf('@') + 1)],
             N:["Buffer size",this.N],
             swap:["Swap Mode (0:No, 1:Yes)",this.swap]
         }

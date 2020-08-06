@@ -5,6 +5,7 @@ var get_parameters_wind_scifunc = ""; // for getting particular block parameter 
 var graph_scifunc_block_m = ""; //For storing graph for scifunc_block_m block
 var cell_scifunc_block_m = ""; //For storing cell for scifunc_block_m block
 var name_values_colormap = new Map(); //for storing colormap values of cmatview and cmat3d block
+var readAU_fd = new FormData(); //Formdata for sending audio/data file
 // function which makes the Ajax 'post' request with data sent in arguments
 function myAjaxreq(k,functionName) {
     var mbl = new Blob([k], { type: 'text/plain' });  // store the data in blob
@@ -2896,8 +2897,6 @@ function showPropertiesWindow(graph, cell, diagRoot) {
         file_input.accept = '.au';
         file_input.style.display = 'none';
 
-        //Formdata for sending audio file
-        var readAU_fd = new FormData();
         for (var [key, value] of Object.entries(defaultProperties)) {
                 // Input Title
                 var namelabel = document.createElement('label');
@@ -2987,7 +2986,7 @@ function showPropertiesWindow(graph, cell, diagRoot) {
                     //Ajax call to save the file in folder
                     $.ajax({
                         type: "POST",
-                        url: "/uploadaufile",
+                        url: "/uploaddatafile",
                         async: false,
                         processData: false,
                         contentType: false,
