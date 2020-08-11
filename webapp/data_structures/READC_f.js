@@ -2,7 +2,7 @@ function READC_f() {
 
     READC_f.prototype.define = function READC_f() {
         this.tmask1 = '[]';
-        this.fname1 = "foo";
+        this.fname1 = "";
         this.frmt1 = "d  ";
         var frmt = "d  ";
         var fname = "foo";
@@ -43,7 +43,7 @@ function READC_f() {
         var options = {
              tmask1:["Time Record Selection",this.tmask1],
              outmask:["Outputs Record Selection",this.outmask],
-             fname1:["Input File Name",this.fname1],
+             fname1:["Input File Name",this.fname1.slice(this.fname1.lastIndexOf('@') + 1)],
              frmt1:["Input Format",this.frmt1],
              M:["Record Size",this.M],
              N:["Buffer Size",this.N],
@@ -56,15 +56,21 @@ function READC_f() {
         var temp_tmask1 = arguments[0]["tmask1"];
         var temp_outmask = arguments[0]["outmask"];
         var temp_fname1 = arguments[0]["fname1"];
-        var temp_frmt1 = arguments[0]["frmt1"];
+        var temp_frmt1 = arguments[0]["frmt1"].trim();
         var temp_M = parseFloat(arguments[0]["M"]);
         var temp_N = parseFloat(arguments[0]["N"]);
         var temp_offset = parseFloat(arguments[0]["offset"]);
         var temp_swap = parseFloat(arguments[0]["swap"]);
-
+        var temp_tmask2 = inverse(temp_tmask1);
         var fmts = [ "s","l","d","f","c","us","ul","uc","ull","uls","ubl","ubs","dl","fl","ll","sl","db","fb","lb","sb"];
-        var nout  =  size(outmask,"*");
-        if(math.prod(size(temp_tmask1)) > 1) {
+        var nout  =  size(temp_outmask,"*");
+        var prod_cond = "";
+        if(temp_tmask2 != [] && temp_tmask2.length !=0 ){
+            prod_cond = math.prod(size(temp_tmask2,"r"),size(temp_tmask2,"c"));
+        }else{
+            prod_cond = 0;
+        }
+        if( prod_cond > 1) {
             alert("Wrong value for Time Record Selection parameter.\nMust be a scalar or an empty matrix.");
             throw "incorrect";
         }
@@ -80,7 +86,7 @@ function READC_f() {
             alert("Wrong value for Record Size parameter:"+ temp_M + ".\nStrictly positive integer expected.");
             throw "incorrect";
         }
-        if(temp_tmask1 != [] && (temp_tmask1 < 1 || temp_tmask1 > temp_M)){
+        if(temp_tmask2.length !=0 && (temp_tmask2[0] < 1 || temp_tmask2[0] > temp_M)){
             alert("Wrong value for Time Record Selection parameter:"+ temp_tmask1 +"\nMust be in the interval [1, Record Size =" +temp_M.toString()+"]");
             throw "incorrect";
         }
@@ -114,7 +120,7 @@ function READC_f() {
         this.offset = temp_offset;
         this.swap = temp_swap;
         var outpt = "";
-        if (temp_tmask1 == []){
+        if (temp_tmask2.length == 0){
             this.ievt = 0;
             this.tmask1 = 0;
             outpt = [];

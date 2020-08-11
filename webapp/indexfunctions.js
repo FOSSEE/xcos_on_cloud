@@ -5,7 +5,7 @@ var get_parameters_wind_scifunc = ""; // for getting particular block parameter 
 var graph_scifunc_block_m = ""; //For storing graph for scifunc_block_m block
 var cell_scifunc_block_m = ""; //For storing cell for scifunc_block_m block
 var name_values_colormap = new Map(); //for storing colormap values of cmatview and cmat3d block
-var readAU_fd = new FormData(); //Formdata for sending audio/data file
+var readAU_or_C_fd = new FormData(); //Formdata for sending audio/data file
 // function which makes the Ajax 'post' request with data sent in arguments
 function myAjaxreq(k,functionName) {
     var mbl = new Blob([k], { type: 'text/plain' });  // store the data in blob
@@ -1439,6 +1439,7 @@ function main(container, outline, toolbar, sidebar, status) {
             var cells = [];
             var scriptwarn = false;
             var audiofilewarn = false;
+            var c_filewarn = false;
 
             for (var currentNode = rootNode.firstChild;
                 currentNode != null;
@@ -1515,8 +1516,11 @@ function main(container, outline, toolbar, sidebar, status) {
                         if (ifaceFuncName == "scifunc_block_m") {
                             scriptwarn = true;
                         }
-                        if (ifaceFuncName == "READAU_f"){
+                        if (ifaceFuncName == "READAU_f") {
                             audiofilewarn = true;
+                        }
+                        if (ifaceFuncName == "READC_f") {
+                            c_filewarn = true;
                         }
                     }
 
@@ -1584,8 +1588,11 @@ function main(container, outline, toolbar, sidebar, status) {
             if (scriptwarn) {
                 alert("Upload a script to define functions used by the scifunc_block_m");
             }
-            if (audiofilewarn){
+            if (audiofilewarn) {
                 alert("Upload a audio file which will be used by READAU_f block\n\nTo upload : Double click on READAU_f block and browse file");
+            }
+            if (c_filewarn) {
+                alert("Upload a c/data file which will be used by READC_f block\n\nTo upload : Double click on READC_f block and browse file");
             }
 
             /*
@@ -2878,8 +2885,8 @@ function showPropertiesWindow(graph, cell, diagRoot) {
         // Line break
         var linebreak = document.createElement('br');
         myform.appendChild(linebreak);
-        var counter_readau = 0;
-        var first_para_key = "";
+        var counter_readau_or_c = 0;
+        var para_key = "";
 
         //Button to browse file in READAU_f
         var readAU_file_btn = document.createElement("button");
@@ -2897,6 +2904,22 @@ function showPropertiesWindow(graph, cell, diagRoot) {
         file_input.accept = '.au';
         file_input.style.display = 'none';
 
+        //Button to browse file in READC_f
+        var readc_file_btn = document.createElement("button");
+        readc_file_btn.innerHTML = 'Browse';
+        readc_file_btn.type = "button";
+        readc_file_btn.name = "readc_f_browser";
+        readc_file_btn.id = "readc_f_browser";
+        readc_file_btn.style.cssFloat = "right";
+        readc_file_btn.style.marginTop = "-5px";
+
+        //File browser to store file which we browse.
+        var file_input_c = document.createElement('input');
+        file_input_c.name = "file_readc_f";
+        file_input_c.type = 'file';
+        file_input_c.accept = '.c,.bin,.o,.exe';
+        file_input_c.style.display = 'none';
+
         for (var [key, value] of Object.entries(defaultProperties)) {
                 // Input Title
                 var namelabel = document.createElement('label');
@@ -2904,7 +2927,7 @@ function showPropertiesWindow(graph, cell, diagRoot) {
                 myform.appendChild(namelabel);
 
                 //Counter for getting 1st label
-                if(counter_readau == 0 && name == 'READAU_f'){
+                if(counter_readau_or_c == 0 && name == 'READAU_f'){
                     // Input
                     var input = document.createElement("input");
                     input.name = key;
@@ -2916,8 +2939,23 @@ function showPropertiesWindow(graph, cell, diagRoot) {
                     myform.appendChild(readAU_file_btn);
                     myform.appendChild(input);
                     myform.appendChild(file_input);
-                    first_para_key = key;
-                    counter_readau++;
+                    para_key = key;
+                    counter_readau_or_c++;
+                }else if(counter_readau_or_c == 2 && name == 'READC_f'){
+                    //Counter for getting 3rd label
+                    // Input
+                    var input = document.createElement("input");
+                    input.name = key;
+                    input.value = value[1];
+                    input.setAttribute("id", key.toString());
+                    input.setAttribute("class", "fieldInput");
+                    input.style.width = "80px";
+                    input.readOnly = true;
+                    myform.appendChild(readc_file_btn);
+                    myform.appendChild(input);
+                    myform.appendChild(file_input_c);
+                    para_key = key;
+                    counter_readau_or_c++;
                 }else{
                     // Input
                     var input = document.createElement("input");
@@ -2926,7 +2964,7 @@ function showPropertiesWindow(graph, cell, diagRoot) {
                     input.setAttribute("id", key.toString());
                     input.setAttribute("class", "fieldInput");
                     myform.appendChild(input);
-                    counter_readau++;
+                    counter_readau_or_c++;
                 }
 
                 // Line break
@@ -2945,8 +2983,21 @@ function showPropertiesWindow(graph, cell, diagRoot) {
         file_input.addEventListener('change', function(evt) {
             var f = evt.target.files[0];
             if(f.name != null || f.name != ""){
-                document.getElementById(first_para_key.toString()).value = f.name;
-                readAU_fd.set('file',f);
+                document.getElementById(para_key.toString()).value = f.name;
+                readAU_or_C_fd.set('file',f);
+            }
+
+        }, false);
+        //Onclick of browser button of READC_f
+        readc_file_btn.onclick = function() {
+            file_input_c.click();
+        };
+        //function to get choosen file name and file.
+        file_input_c.addEventListener('change', function(evt) {
+            var f = evt.target.files[0];
+            if(f.name != null || f.name != ""){
+                document.getElementById(para_key.toString()).value = f.name;
+                readAU_or_C_fd.set('file',f);
             }
 
         }, false);
@@ -2982,7 +3033,7 @@ function showPropertiesWindow(graph, cell, diagRoot) {
                     graph_scifunc_block_m = graph;
                     cell_scifunc_block_m = cell;
                 }
-                if(name == "READAU_f"){
+                if(name == "READAU_f" || name == "READC_f"){
                     //Ajax call to save the file in folder
                     $.ajax({
                         type: "POST",
@@ -2990,12 +3041,12 @@ function showPropertiesWindow(graph, cell, diagRoot) {
                         async: false,
                         processData: false,
                         contentType: false,
-                        data: readAU_fd,
+                        data: readAU_or_C_fd,
                         dataType: "json",
                         success: function(rv) {
                             var filepath = rv.filepath;
                             if (filepath != '') {
-                                propertiesObject[first_para_key] = filepath;
+                                propertiesObject[para_key] = filepath;
                             }
                         },
                         error: function(xhr, textStatus) {
