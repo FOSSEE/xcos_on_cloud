@@ -120,12 +120,14 @@ function READC_f() {
         this.offset = temp_offset;
         this.swap = temp_swap;
         var outpt = "";
+        var tmask1_ipar = "";
         if (temp_tmask2.length == 0){
             this.ievt = 0;
-            this.tmask1 = 0;
+            tmask1_ipar = 0;
             outpt = [];
         }else{
             this.ievt = 1;
+            tmask1_ipar = this.tmask1;
             outpt = 1;
         }
         var out = size(this.outmask,"*");
@@ -135,7 +137,7 @@ function READC_f() {
         }else{
             this.x.model.firing = new ScilabDouble([0]);
         }
-        var ipar = new ScilabDouble([this.fname1.length], ..._str2code(this.frmt1), [this.ievt], [this.N], [this.M], [this.swap], [this.offset], ..._str2code(this.fname1), [this.tmask1], [this.outmask]);
+        var ipar = new ScilabDouble([this.fname1.length], ..._str2code(this.frmt1), [this.ievt], [this.N], [this.M], [this.swap], [this.offset], ..._str2code(this.fname1), [tmask1_ipar], [this.outmask]);
         this.x.model.dstate = new ScilabDouble([1], [1], [this.lunit], ...zeros(this.N * this.M, 1));
         this.x.model.ipar = ipar;
         var exprs = new ScilabString([this.tmask1],[this.outmask],[this.fname1],[this.frmt1],[this.M],[this.N],[this.offset],[this.swap]);
