@@ -2917,7 +2917,7 @@ function showPropertiesWindow(graph, cell, diagRoot) {
         var file_input_c = document.createElement('input');
         file_input_c.name = "file_readc_f";
         file_input_c.type = 'file';
-        file_input_c.accept = '.c,.bin,.o,.exe';
+        file_input_c.accept = '.datas,.dat,.bin';
         file_input_c.style.display = 'none';
 
         for (var [key, value] of Object.entries(defaultProperties)) {
