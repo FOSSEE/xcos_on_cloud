@@ -186,12 +186,12 @@ $(function() {
                             switch (filetype) {
                                 case 'X':
                                     dispfiletype = 'Xcos File';
-                                    actions = "<a href='/example_file?efid=" + ef[0] + "' target='_blank'>Download</a>";
-                                    actions += " | <a href='/open?efid=" + ef[0] + "' target='_blank'>Open on Cloud</a>";
+                                    actions = "<a href='/example_file?efid=" + ef[0] + "' target='_blank'>Download <i class='fa fa-download'     aria-hidden='true'></i></a>";
+                                    actions += " | <a href='/open?efid=" + ef[0] + "' target='_blank'>Open on Cloud <i class='fas fa-link'></i></a>";
                                     break;
                                 case 'S':
                                     dispfiletype = 'Prerequisite';
-                                    actions = "<a href='/prerequisite_file?efid=" + ef[0] + "' target='_blank'>Download</a>";
+                                    actions = "<a href='/prerequisite_file?efid=" + ef[0] + "' target='_blank'>Download <i class='fa fa-download'     aria-hidden='true'></i></a>";
                                     break;
                             }
                             $('#example-file-list > tbody:last-child')
@@ -257,3 +257,26 @@ function ajax_loader(key) {
         $(key).after("<span class='ajax-loader'></span>");
     }
 }
+
+var loader;
+
+function loadNow(opacity) {
+    if (opacity <= 0) {
+        displayContent();
+    } else {
+        loader.style.opacity = opacity;
+        window.setTimeout(function() {
+            loadNow(opacity - 0.05);
+        }, 50);
+    }
+}
+
+function displayContent() {
+    loader.style.display = 'none';
+    document.getElementById('content').style.display = 'block';
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    loader = document.getElementById('loader');
+    loadNow(1);
+});
