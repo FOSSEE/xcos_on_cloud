@@ -1,0 +1,27 @@
+body {
+  display:flex; 
+  flex-direction:column; 
+}
+#loader {
+    position: fixed;
+    width: 100%;
+    height: 100vh;
+    background: #21242d url('../images/server-downloader.gif') no-repeat center;
+    z-index: 999;
+}
+#footer-content{
+
+    height:auto;
+    width: 100%;
+    margin-top:auto; 
+}
+.bg-dark {
+    background-color: #132766 !important;
+}
+.navbar-dark .navbar-nav .nav-link {
+    color: #ffffff;
+}
+.site-header a:hover {
+    background-color: gray;
+    text-decoration: none;
+  }
