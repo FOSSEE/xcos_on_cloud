@@ -506,7 +506,7 @@
         {% for row in chapter %}
             options.push($('<option />', {
                 "value": {{row[0]}},
-                "text": "{{row[1]}}) {{row[2]}})"
+                "text": "{{row[1]}}) {{row[2]}}"
             }));
         {% endfor %}
         $("#chapter-list").empty().append(options);
@@ -522,7 +522,7 @@
         {% for row in example %}
             options.push($('<option />', {
                 "value": {{row[0]}},
-                "text": "{{row[1]}}) {{row[2]}})"
+                "text": "{{row[1]}}) {{row[2]}}"
             }));
         {% endfor %}
         $("#example-list").empty().append(options);
