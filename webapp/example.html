@@ -4,11 +4,15 @@
 <head>
     <title>Xcos on cloud</title>
     <meta charset="utf-8">
-    <link rel="shortcut icon" type="image/png" href="favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="bootstrap/fontawesome-free-5.13.1-web/css/all.css">
     <link rel="stylesheet" href="bootstrap/bootstrap-4.5.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="bootstrap/custom.css">
+    <script src="jquery/jquery-3.3.1.min.js"></script>
+    <script src="bootstrap/bootstrap-4.5.0/js/popper.min.js"></script>
+    <script src="bootstrap/bootstrap-4.5.0/js/bootstrap.min.js"></script>
+    <script src="{{"webapp/custom.js"|versioned}}" type="text/javascript"></script>
 
     <meta name="title" content="Scilab computational resource, Scilab high performance computing on demand">
     <meta name="description"
@@ -128,12 +132,12 @@
                     </div>
                 </div>
         </form>
-        <!-- -------------------------------------------------------------------------------------- -->
+        <!-- -->
     </div>
 </section>
 <section id="footer-content" >
 <footer>
-        <!---------- container----------------- -->
+        <!-- container -->
   <div class="container-fluid bg-dark text-light">
         <br>
         <div class="row">
@@ -186,7 +190,7 @@
     </div>
     </footer>
 </section>
-    <!-- -------------------------------- -->
+    <!-- -->
     <!-- disclaimer modal -->
     <div class="modal" id="disclaimer-text">
         <div class="modal-dialog">
@@ -215,7 +219,7 @@
             </div>
         </div>
     </div>
-    <!-- -------------disclaimer modal end------------------- -->
+    <!-- disclaimer modal ends -->
     <!-- about us -->
     <div class="modal" id="about_wrapper">
         <div class="modal-dialog">
@@ -246,7 +250,7 @@
             </div>
         </div>
     </div>
-    <!-- --------------------about us modal ends------------------ -->
+    <!-- about us modal ends -->
     <!-- contributor -->
     <div class="modal" id="contributor_wrapper">
         <div class="modal-dialog">
@@ -293,7 +297,7 @@
             </div>
         </div>
     </div>
-    <!-- --------------------contributor modal ends------------------ -->
+    <!-- contributor modal ends -->
 
     <!-- invitation -->
     <div class="modal" id="invitation_wrapper">
@@ -325,7 +329,7 @@
             </div>
         </div>
     </div>
-    <!-- --------------------contact us modal ends------------------ -->
+    <!-- contact us modal ends -->
     <!-- invitation -->
     <div class="modal" id="contact_wrapper">
         <div class="modal-dialog">
@@ -357,7 +361,7 @@
             </div>
         </div>
     </div>
-    <!-- --------------------invitation modal ends------------------ -->
+    <!-- invitation modal ends -->
     <!-- Search Modal -->
 
     <div class="modal" id="search_wrapper">
@@ -400,10 +404,10 @@
             </div>
         </div>
     </div>
-    <!-- ---------- search modal end ----------------- -->
+    <!-- search modal ends -->
     <div class="modal" id="bug_form_wrapper">
     </div>
-    <!-- -plotbox wrapper ---------------------------------- -->
+    <!-- plotbox wrapper -->
     <div class="modal" id="plotbox_wrapper">
         <div class="modal-dialog">
             <div class="modal-content" style="width: auto;">
@@ -428,7 +432,7 @@
             </div>
         </div>
     </div>
-    <!-- -- plotbox wrapper ends---------------------------------- -->
+    <!-- plotbox wrapper ends -->
     <!-- diff modal -->
     <div class="modal" id="diff_wrapper">
         <div class="modal-dialog">
@@ -456,9 +460,9 @@
                     <hr>
 
                     <div>
-                        <span class="bg-success text-white">Green text</span> -> exist in [2] but not in [1]
+                        <span class="bg-success text-white">Green text</span> -&gt; exists in [2] but not in [1]
                         <br>
-                        <span class="bg-danger text-white">Red text</span> -> exist in [1] but not in [2]
+                        <span class="bg-danger text-white">Red text</span> -&gt; exists in [1] but not in [2]
                     </div>
 
                     <hr>
@@ -502,7 +506,7 @@
         {% for row in chapter %}
             options.push($('<option />', {
                 "value": {{row[0]}},
-                "text": "{{row[1]}}) {{row[2]}})"
+                "text": "{{row[1]}}) {{row[2]}}"
             }));
         {% endfor %}
         $("#chapter-list").empty().append(options);
@@ -518,7 +522,7 @@
         {% for row in example %}
             options.push($('<option />', {
                 "value": {{row[0]}},
-                "text": "{{row[1]}}) {{row[2]}})"
+                "text": "{{row[1]}}) {{row[2]}}"
             }));
         {% endfor %}
         $("#example-list").empty().append(options);
@@ -545,24 +549,7 @@
         $('#example-file').show();
     {% endif %}
 </script>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-   <!--  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-82999923-4"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-        gtag('js', new Date());
-
-        gtag('config', 'UA-82999923-4');
-    </script> -->
     <!--  diff wrapper ends  -->
-     <script src="jquery/jquery-3.3.1.min.js"></script>
-    <script src="{{"webapp/custom.js"|versioned}}" type="text/javascript"></script>
-    <script src="bootstrap/bootstrap-4.5.0/js/jquery.min.js"></script>
-    <script src="bootstrap/bootstrap-4.5.0/js/popper.min.js"></script>
-    <script src="bootstrap/bootstrap-4.5.0/js/bootstrap.min.js"></script>
 </body>
 
 </html>
