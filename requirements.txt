@@ -8,7 +8,7 @@ Flask-Versioned==0.9.4.post20101221
 gevent==1.4.0
 greenlet==0.4.15
 itsdangerous==1.1.0
-Jinja2==2.10.1
+Jinja2==2.11.3
 MarkupSafe==1.1.1
 mccabe==0.6.1
 pycodestyle==2.5.0
