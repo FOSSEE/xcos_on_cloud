@@ -15,4 +15,4 @@ pycodestyle==2.5.0
 pyflakes==2.1.1
 setuptools==41.2.0
 Werkzeug==0.15.5
-wheel==0.33.6
+wheel==0.38.1
