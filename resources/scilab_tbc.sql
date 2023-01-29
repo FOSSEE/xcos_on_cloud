@@ -33,7 +33,7 @@ CREATE TABLE `textbook_companion_example` (
   `approval_date` int(11) NOT NULL,
   `approval_status` int(11) NOT NULL,
   `timestamp` int(11) NOT NULL,
-  `cloud_err_status` int(11) NOT NULL DEFAULT '0',
+  `cloud_err_status` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -48,27 +48,27 @@ CREATE TABLE `textbook_companion_example_files` (
   `filetype` varchar(1) NOT NULL,
   `caption` varchar(100) NOT NULL DEFAULT 'None',
   `timestamp` int(11) NOT NULL,
-  `xcos_cloud_example_file_error_status` tinyint(1) NOT NULL DEFAULT '0',
+  `xcos_cloud_example_file_error_status` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `textbook_companion_preference` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `proposal_id` int(11) NOT NULL DEFAULT '0',
-  `pref_number` int(11) NOT NULL DEFAULT '0',
+  `proposal_id` int(11) NOT NULL DEFAULT 0,
+  `pref_number` int(11) NOT NULL DEFAULT 0,
   `book` varchar(100) NOT NULL DEFAULT 'None',
   `author` varchar(100) NOT NULL DEFAULT 'None',
   `isbn` varchar(25) NOT NULL DEFAULT 'None',
   `publisher` varchar(50) NOT NULL DEFAULT 'None',
   `edition` varchar(2) NOT NULL DEFAULT 'No',
-  `year` int(11) NOT NULL DEFAULT '0',
-  `category` int(2) NOT NULL DEFAULT '0',
-  `approval_status` int(11) NOT NULL DEFAULT '0',
-  `nonaicte_book` int(11) NOT NULL DEFAULT '0',
-  `pLike` int(11) NOT NULL DEFAULT '0',
-  `pDislike` int(11) NOT NULL DEFAULT '0',
-  `cloud_pref_err_status` int(11) NOT NULL DEFAULT '0',
+  `year` int(11) NOT NULL DEFAULT 0,
+  `category` int(2) NOT NULL DEFAULT 0,
+  `approval_status` int(11) NOT NULL DEFAULT 0,
+  `nonaicte_book` int(11) NOT NULL DEFAULT 0,
+  `pLike` int(11) NOT NULL DEFAULT 0,
+  `pDislike` int(11) NOT NULL DEFAULT 0,
+  `cloud_pref_err_status` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -76,8 +76,8 @@ CREATE TABLE `textbook_companion_preference` (
 
 CREATE TABLE `textbook_companion_proposal` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `uid` int(11) NOT NULL DEFAULT '0',
-  `approver_uid` int(11) NOT NULL DEFAULT '0',
+  `uid` int(11) NOT NULL DEFAULT 0,
+  `approver_uid` int(11) NOT NULL DEFAULT 0,
   `full_name` varchar(50) NOT NULL DEFAULT 'None',
   `mobile` varchar(15) NOT NULL DEFAULT '0',
   `gender` varchar(10) NOT NULL DEFAULT 'None',
@@ -86,26 +86,26 @@ CREATE TABLE `textbook_companion_proposal` (
   `branch` varchar(50) NOT NULL DEFAULT 'None',
   `university` varchar(100) NOT NULL DEFAULT 'None',
   `city` varchar(500) NOT NULL DEFAULT 'None',
-  `pincode` int(6) NOT NULL DEFAULT '0',
+  `pincode` int(6) NOT NULL DEFAULT 0,
   `state` varchar(500) NOT NULL DEFAULT 'None',
   `country` varchar(500) NOT NULL DEFAULT 'None',
   `faculty` varchar(100) NOT NULL DEFAULT 'None',
   `reviewer` varchar(100) NOT NULL DEFAULT 'None',
   `reference` varchar(9000) NOT NULL DEFAULT 'None',
-  `completion_date` int(11) NOT NULL DEFAULT '0',
-  `creation_date` int(11) NOT NULL DEFAULT '0',
-  `approval_date` int(11) NOT NULL DEFAULT '0',
-  `proposal_status` int(11) NOT NULL DEFAULT '0',
+  `completion_date` int(11) NOT NULL DEFAULT 0,
+  `creation_date` int(11) NOT NULL DEFAULT 0,
+  `approval_date` int(11) NOT NULL DEFAULT 0,
+  `proposal_status` int(11) NOT NULL DEFAULT 0,
   `message` varchar(255) NOT NULL DEFAULT 'None',
   `scilab_version` varchar(20) NOT NULL DEFAULT 'None',
   `operating_system` varchar(50) NOT NULL DEFAULT 'None',
   `teacher_email` varchar(20) NOT NULL DEFAULT 'None',
   `reason` varchar(9000) NOT NULL DEFAULT 'None',
-  `failed_reminder` int(11) NOT NULL DEFAULT '0',
-  `book_published` int(11) NOT NULL DEFAULT '0',
-  `proposal_type` int(11) NOT NULL DEFAULT '0',
+  `failed_reminder` int(11) NOT NULL DEFAULT 0,
+  `book_published` int(11) NOT NULL DEFAULT 0,
+  `proposal_type` int(11) NOT NULL DEFAULT 0,
   `samplefilepath` varchar(500) NOT NULL DEFAULT 'None',
-  `proposed_completion_date` int(11) NOT NULL DEFAULT '0',
+  `proposed_completion_date` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
