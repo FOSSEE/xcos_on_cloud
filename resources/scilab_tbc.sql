@@ -69,8 +69,7 @@ CREATE TABLE `textbook_companion_preference` (
   `pLike` int(11) NOT NULL DEFAULT 0,
   `pDislike` int(11) NOT NULL DEFAULT 0,
   `cloud_pref_err_status` int(11) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -106,8 +105,7 @@ CREATE TABLE `textbook_companion_proposal` (
   `proposal_type` int(11) NOT NULL DEFAULT 0,
   `samplefilepath` varchar(500) NOT NULL DEFAULT 'None',
   `proposed_completion_date` int(11) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
