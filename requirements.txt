@@ -13,6 +13,6 @@ MarkupSafe==2.1.2
 mccabe==0.7.0
 pycodestyle==2.10.0
 pyflakes==3.0.1
-Werkzeug==2.2.2
+Werkzeug==2.2.3
 zope.event==4.6
 zope.interface==5.5.2
