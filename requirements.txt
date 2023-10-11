@@ -8,8 +8,8 @@ Flask==3.0.0
 Flask-Caching==2.1.0
 Flask-Session==0.5.0
 Flask-Versioned==0.9.4.post20101221
-gevent==22.10.2
-greenlet==2.0.2
+gevent==23.9.1
+greenlet==3.0.0
 idna==3.4
 itsdangerous==2.1.2
 Jinja2==3.1.2
@@ -21,5 +21,5 @@ pyflakes==3.0.1
 requests==2.31.0
 urllib3==2.0.6
 Werkzeug==3.0.0
-zope.event==4.6
-zope.interface==5.5.2
+zope.event==5.0
+zope.interface==6.1
