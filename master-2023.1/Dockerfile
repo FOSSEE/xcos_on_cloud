@@ -21,8 +21,11 @@ RUN apt-get install -y -q git libgfortran5 libmysqlclient-dev mysql-client \
 RUN apt-get build-dep -y -q scilab
 
 # Set timezone info
-RUN ln -fs /usr/share/zoneinfo/Asia/Kolkata /etc/localtime && \
-    dpkg-reconfigure -f noninteractive tzdata
+RUN ln -fs /usr/share/zoneinfo/Asia/Kolkata /etc/localtime
+RUN dpkg-reconfigure -f noninteractive tzdata
+
+# Additional packages
+RUN apt-get install -y -q curl vim wget
 
 # Build scilab
 ENV BRANCH=master-2023.1
@@ -43,8 +46,5 @@ COPY . .
 # Configure mysql
 ARG DB_PASS=scilabscilab
 RUN bash ${BRANCH}/install.sh
-
-# Additional packages
-RUN apt-get install -y -q curl vim wget
 
 CMD bash ${BRANCH}/run.sh
