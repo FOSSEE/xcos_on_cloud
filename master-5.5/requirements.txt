@@ -7,7 +7,7 @@ Flask==2.0.3
 Flask-Caching==1.10.1
 Flask-Session==0.4.1
 Flask-Versioned==0.9.4.post20101221
-gevent==22.10.2
+gevent==23.9.0
 greenlet==2.0.2
 idna==2.6
 importlib-metadata==4.2.0
