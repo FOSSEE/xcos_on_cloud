@@ -33,7 +33,7 @@ ARG SCILAB_DIR=${HOME}/scilab_for_xcos_on_cloud
 WORKDIR ${HOME}
 RUN git clone --depth=1 https://github.com/FOSSEE/scilab_for_xcos_on_cloud -b ${BRANCH}
 WORKDIR ${SCILAB_DIR}
-RUN ./configure
+RUN ./configure --without-tk
 RUN make -j 4 || make
 
 # Build XCos
@@ -45,6 +45,6 @@ COPY . .
 
 # Configure mysql
 ARG DB_PASS=scilabscilab
-RUN bash ${BRANCH}/install.sh
+RUN bash ./install.sh
 
-CMD bash ${BRANCH}/run.sh
+CMD bash ./run.sh
