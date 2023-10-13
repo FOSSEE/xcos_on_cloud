@@ -45,6 +45,6 @@ COPY . .
 
 # Configure mysql
 ARG DB_PASS=scilabscilab
-RUN bash ${BRANCH}/install.sh
+RUN bash ./install.sh
 
-CMD bash ${BRANCH}/run.sh
+CMD bash ./run.sh
