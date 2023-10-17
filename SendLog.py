@@ -2163,10 +2163,13 @@ def example_page():
 @app.route('/exam')
 @app.route('/exam<s>')
 @app.route('/exap<s>')
-def redirect_to_example_page(s):
+def redirect_to_example_page(s=''):
     set_session()
+    url = flask.url_for('example_page')
     qs = request.query_string.decode('utf-8', 'ignore')
-    return flask.redirect(flask.url_for('example_page') + '?' + qs)
+    if len(qs) > 0:
+        url += '?' + qs
+    return flask.redirect(url)
 
 
 @app.route('/get_book', methods=['GET', 'POST'])
