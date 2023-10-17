@@ -2156,12 +2156,13 @@ def example_page():
         return str(e)
 
 
+@app.route('/ex')
 @app.route('/ea<s>')
+@app.route('/exa')
 @app.route('/exm<s>')
+@app.route('/exam')
+@app.route('/exam<s>')
 @app.route('/exap<s>')
-@app.route('/examl<s>')
-@app.route('/exampe<s>')
-@app.route('/exampl<s>')
 def redirect_to_example_page(s):
     set_session()
     qs = request.query_string.decode('utf-8', 'ignore')
