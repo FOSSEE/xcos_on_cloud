@@ -15,9 +15,9 @@ RUN sed -i 's/^# *\(deb-src \)/\1/' /etc/apt/sources.list
 RUN apt-get update -y -q
 RUN apt-get install -y -q apt-utils
 RUN apt-get upgrade -y -q
-RUN apt-get install -y -q git libgfortran5 libmysqlclient-dev mysql-client \
-    mysql-server openjdk-8-jdk python3-pip python3-venv \
-    tzdata
+RUN apt-get install -y -q git iproute2 libgfortran5 libmysqlclient-dev \
+    mysql-client mysql-server openjdk-8-jdk python3-pip \
+    python3-venv tzdata
 RUN apt-get build-dep -y -q scilab
 
 # Set timezone info

@@ -19,9 +19,7 @@ pip install -U pip setuptools wheel
 pip install -r ${BRANCH}/requirements.txt
 
 sed -i \
-    -e "s/\(DB_USER = \).*/\\1'scilab'/" \
-    -e "s/\(DB_PASS = \).*/\\1'${DB_PASS}'/" \
-    -e "s/\(DB_NAME = \).*/\\1'scilab'/" \
+    -e "s/\\(DB_PASS = \\).*/\\1'${DB_PASS}'/" \
     config.py
 
 make
