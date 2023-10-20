@@ -7,7 +7,6 @@ combined.js
 /webapp/xcos/
 hs_err_*.log
 /scilab-log-*.txt
-/uploads/
 /values/
 /workspace*.dat
 __pycache__/

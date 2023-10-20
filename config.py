@@ -22,7 +22,7 @@ LOGFILE = 'xcos.log'
 LOGBACKUPCOUNT = 10
 
 # The location of the xcos files on server.
-XCOSSOURCEDIR = ''
+XCOSSOURCEDIR = 'uploads'
 
 # the http server settings
 

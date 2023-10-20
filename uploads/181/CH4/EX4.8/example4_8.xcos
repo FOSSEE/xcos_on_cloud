@@ -1,0 +1,1067 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XcosDiagram background="-1" title="example4_8">
+  <!--Xcos - 1.0 - scilab-5.5.2 - 20200302-->
+  <mxGraphModel as="model">
+    <root>
+      <mxCell id="-5fe95730:131621e6d01:-7f0d"/>
+      <mxCell id="-5fe95730:131621e6d01:-7f0e" parent="-5fe95730:131621e6d01:-7f0d"/>
+      <TextBlock id="-5fe95730:131621e6d01:-7f09" parent="-5fe95730:131621e6d01:-7f0e" simulationFunctionType="DEFAULT" style="TEXT_f;fontStyle=0;flip=false;mirror=false" value="10V">
+        <ScilabString as="exprs" height="1" width="3">
+          <data column="0" line="0" value="10V"/>
+          <data column="1" line="0" value="2"/>
+          <data column="2" line="0" value="1"/>
+        </ScilabString>
+        <ScilabString as="realParameters" height="1" width="1">
+          <data column="0" line="0" value="10V"/>
+        </ScilabString>
+        <mxGeometry as="geometry" height="40.0" width="40.0" x="330.0" y="30.0"/>
+      </TextBlock>
+      <BasicBlock angle="270" dependsOnU="1" id="-5fe95730:131621e6d01:-7f08" interfaceFunctionName="Resistor" parent="-5fe95730:131621e6d01:-7f0e" simulationFunctionName="resistor" simulationFunctionType="DEFAULT" style="Resistor;rotation=270;flip=false;mirror=false">
+        <ScilabString as="exprs" height="1" width="1">
+          <data column="0" line="0" value="0.01"/>
+        </ScilabString>
+        <ScilabDouble as="realParameters" height="1" width="1">
+          <data column="0" line="0" realPart="0.01"/>
+        </ScilabDouble>
+        <ScilabDouble as="integerParameters" height="0" width="0"/>
+        <Array as="objectsParameters" scilabClass="ScilabList"/>
+        <ScilabDouble as="nbZerosCrossing" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <ScilabDouble as="nmode" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <Array as="oDState" scilabClass="ScilabList"/>
+        <Array as="equations" scilabClass="ScilabTList">
+          <ScilabString height="1" width="5">
+            <data column="0" line="0" value="modelica"/>
+            <data column="1" line="0" value="model"/>
+            <data column="2" line="0" value="inputs"/>
+            <data column="3" line="0" value="outputs"/>
+            <data column="4" line="0" value="parameters"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="Resistor"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="p"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="n"/>
+          </ScilabString>
+          <Array scilabClass="ScilabList">
+            <ScilabString height="1" width="1">
+              <data column="0" line="0" value="R"/>
+            </ScilabString>
+            <Array scilabClass="ScilabList">
+              <ScilabDouble height="1" width="1">
+                <data column="0" line="0" realPart="0.01"/>
+              </ScilabDouble>
+            </Array>
+          </Array>
+        </Array>
+        <mxGeometry as="geometry" height="40.0" width="40.0" x="360.0" y="130.0"/>
+      </BasicBlock>
+      <ImplicitInputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-5fe95730:131621e6d01:-7f06" ordering="1" parent="-5fe95730:131621e6d01:-7f08" style="ImplicitInputPort;align=center;verticalAlign=bottom;spacing=10;rotation=270;flip=false;mirror=false">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="16.0" y="40.0"/>
+      </ImplicitInputPort>
+      <ImplicitOutputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-5fe95730:131621e6d01:-7f07" ordering="1" parent="-5fe95730:131621e6d01:-7f08" style="ImplicitOutputPort;align=center;verticalAlign=top;spacing=10;rotation=270;flip=false;mirror=false">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="16.0" y="-8.0"/>
+      </ImplicitOutputPort>
+      <BasicBlock dependsOnT="1" id="-5fe95730:131621e6d01:-7f05" interfaceFunctionName="NPN" parent="-5fe95730:131621e6d01:-7f0e" simulationFunctionName="NPN" simulationFunctionType="DEFAULT" style="NPN;flip=false;mirror=false">
+        <ScilabString as="exprs" height="17" width="1">
+          <data column="0" line="0" value="50"/>
+          <data column="0" line="1" value="0.1"/>
+          <data column="0" line="2" value="1.e-16"/>
+          <data column="0" line="3" value="0.02"/>
+          <data column="0" line="4" value="0.12e-9"/>
+          <data column="0" line="5" value="5e-9"/>
+          <data column="0" line="6" value="1e-12"/>
+          <data column="0" line="7" value="0.4e-12"/>
+          <data column="0" line="8" value="0.5e-12"/>
+          <data column="0" line="9" value="0.8"/>
+          <data column="0" line="10" value="0.4"/>
+          <data column="0" line="11" value="0.8"/>
+          <data column="0" line="12" value="0.333"/>
+          <data column="0" line="13" value="1e-15"/>
+          <data column="0" line="14" value="1e-15"/>
+          <data column="0" line="15" value="0.02585"/>
+          <data column="0" line="16" value="40"/>
+        </ScilabString>
+        <ScilabDouble as="realParameters" height="17" width="1">
+          <data column="0" line="0" realPart="50.0"/>
+          <data column="0" line="1" realPart="0.1"/>
+          <data column="0" line="2" realPart="0.0"/>
+          <data column="0" line="3" realPart="0.02"/>
+          <data column="0" line="4" realPart="1.2E-10"/>
+          <data column="0" line="5" realPart="5.0E-9"/>
+          <data column="0" line="6" realPart="1.0E-12"/>
+          <data column="0" line="7" realPart="4.0E-13"/>
+          <data column="0" line="8" realPart="5.0E-13"/>
+          <data column="0" line="9" realPart="0.8"/>
+          <data column="0" line="10" realPart="0.4"/>
+          <data column="0" line="11" realPart="0.8"/>
+          <data column="0" line="12" realPart="0.333"/>
+          <data column="0" line="13" realPart="1.0E-15"/>
+          <data column="0" line="14" realPart="1.0E-15"/>
+          <data column="0" line="15" realPart="0.02585"/>
+          <data column="0" line="16" realPart="40.0"/>
+        </ScilabDouble>
+        <ScilabDouble as="integerParameters" height="0" width="0"/>
+        <Array as="objectsParameters" scilabClass="ScilabList"/>
+        <ScilabDouble as="nbZerosCrossing" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <ScilabDouble as="nmode" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <Array as="oDState" scilabClass="ScilabList"/>
+        <Array as="equations" scilabClass="ScilabTList">
+          <ScilabString height="1" width="5">
+            <data column="0" line="0" value="modelica"/>
+            <data column="1" line="0" value="model"/>
+            <data column="2" line="0" value="inputs"/>
+            <data column="3" line="0" value="outputs"/>
+            <data column="4" line="0" value="parameters"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="NPN"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="B"/>
+          </ScilabString>
+          <ScilabString height="2" width="1">
+            <data column="0" line="0" value="C"/>
+            <data column="0" line="1" value="E"/>
+          </ScilabString>
+          <Array scilabClass="ScilabList">
+            <ScilabString height="17" width="1">
+              <data column="0" line="0" value="Bf"/>
+              <data column="0" line="1" value="Br"/>
+              <data column="0" line="2" value="Is"/>
+              <data column="0" line="3" value="Vak"/>
+              <data column="0" line="4" value="Tauf"/>
+              <data column="0" line="5" value="Taur"/>
+              <data column="0" line="6" value="Ccs"/>
+              <data column="0" line="7" value="Cje"/>
+              <data column="0" line="8" value="Cjc"/>
+              <data column="0" line="9" value="Phie"/>
+              <data column="0" line="10" value="Me"/>
+              <data column="0" line="11" value="Phic"/>
+              <data column="0" line="12" value="Mc"/>
+              <data column="0" line="13" value="Gbc"/>
+              <data column="0" line="14" value="Gbe"/>
+              <data column="0" line="15" value="Vt"/>
+              <data column="0" line="16" value="EMinMax"/>
+            </ScilabString>
+            <ScilabDouble height="17" width="1">
+              <data column="0" line="0" realPart="50.0"/>
+              <data column="0" line="1" realPart="0.1"/>
+              <data column="0" line="2" realPart="0.0"/>
+              <data column="0" line="3" realPart="0.02"/>
+              <data column="0" line="4" realPart="1.2E-10"/>
+              <data column="0" line="5" realPart="5.0E-9"/>
+              <data column="0" line="6" realPart="1.0E-12"/>
+              <data column="0" line="7" realPart="4.0E-13"/>
+              <data column="0" line="8" realPart="5.0E-13"/>
+              <data column="0" line="9" realPart="0.8"/>
+              <data column="0" line="10" realPart="0.4"/>
+              <data column="0" line="11" realPart="0.8"/>
+              <data column="0" line="12" realPart="0.333"/>
+              <data column="0" line="13" realPart="1.0E-15"/>
+              <data column="0" line="14" realPart="1.0E-15"/>
+              <data column="0" line="15" realPart="0.02585"/>
+              <data column="0" line="16" realPart="40.0"/>
+            </ScilabDouble>
+            <ScilabDouble height="17" width="1">
+              <data column="0" line="0" realPart="0.0"/>
+              <data column="0" line="1" realPart="0.0"/>
+              <data column="0" line="2" realPart="0.0"/>
+              <data column="0" line="3" realPart="0.0"/>
+              <data column="0" line="4" realPart="0.0"/>
+              <data column="0" line="5" realPart="0.0"/>
+              <data column="0" line="6" realPart="0.0"/>
+              <data column="0" line="7" realPart="0.0"/>
+              <data column="0" line="8" realPart="0.0"/>
+              <data column="0" line="9" realPart="0.0"/>
+              <data column="0" line="10" realPart="0.0"/>
+              <data column="0" line="11" realPart="0.0"/>
+              <data column="0" line="12" realPart="0.0"/>
+              <data column="0" line="13" realPart="0.0"/>
+              <data column="0" line="14" realPart="0.0"/>
+              <data column="0" line="15" realPart="0.0"/>
+              <data column="0" line="16" realPart="0.0"/>
+            </ScilabDouble>
+          </Array>
+        </Array>
+        <mxGeometry as="geometry" height="40.0" width="40.0" x="290.0" y="220.0"/>
+      </BasicBlock>
+      <ImplicitOutputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-5fe95730:131621e6d01:-7f03" ordering="2" parent="-5fe95730:131621e6d01:-7f05" style="ImplicitOutputPort;align=right;verticalAlign=middle;spacing=10;rotation=0;flip=false;mirror=false">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="40.0" y="26.0"/>
+      </ImplicitOutputPort>
+      <ImplicitInputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-5fe95730:131621e6d01:-7f02" ordering="1" parent="-5fe95730:131621e6d01:-7f05" style="ImplicitInputPort;align=left;verticalAlign=middle;spacing=10;rotation=0;flip=false;mirror=false">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="-8.0" y="16.0"/>
+      </ImplicitInputPort>
+      <ImplicitOutputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-5fe95730:131621e6d01:-7f04" ordering="1" parent="-5fe95730:131621e6d01:-7f05" style="ImplicitOutputPort;align=right;verticalAlign=middle;spacing=10;rotation=0;flip=false;mirror=false">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="40.0" y="6.0"/>
+      </ImplicitOutputPort>
+      <ImplicitLink id="-5fe95730:131621e6d01:-7f01" parent="-5fe95730:131621e6d01:-7f0e" source="-5fe95730:131621e6d01:-7f07" target="-5fe95730:131621e6d01:-7f0b">
+        <mxGeometry as="geometry" x="10.0" y="10.0">
+          <mxPoint as="sourcePoint" x="380.0" y="74.0"/>
+          <mxPoint as="targetPoint" x="380.0" y="120.0"/>
+        </mxGeometry>
+      </ImplicitLink>
+      <ImplicitLink id="-5fe95730:131621e6d01:-7f00" parent="-5fe95730:131621e6d01:-7f0e" source="-5fe95730:131621e6d01:-7f04" target="-5fe95730:131621e6d01:-7f06">
+        <mxGeometry as="geometry" x="10.0" y="10.0">
+          <mxPoint as="sourcePoint" x="334.0" y="230.0"/>
+          <mxPoint as="targetPoint" x="380.0" y="180.0"/>
+        </mxGeometry>
+      </ImplicitLink>
+      <GroundBlock dependsOnU="1" id="-5fe95730:131621e6d01:-7eff" interfaceFunctionName="Ground" parent="-5fe95730:131621e6d01:-7f0e" simulationFunctionName="Ground" simulationFunctionType="DEFAULT" style="Ground;flip=false;mirror=false">
+        <ScilabString as="exprs" height="1" width="1">
+          <data column="0" line="0" value=""/>
+        </ScilabString>
+        <ScilabDouble as="realParameters" height="0" width="0"/>
+        <ScilabDouble as="integerParameters" height="0" width="0"/>
+        <Array as="objectsParameters" scilabClass="ScilabList"/>
+        <ScilabDouble as="nbZerosCrossing" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <ScilabDouble as="nmode" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <Array as="oDState" scilabClass="ScilabList"/>
+        <Array as="equations" scilabClass="ScilabTList">
+          <ScilabString height="1" width="5">
+            <data column="0" line="0" value="modelica"/>
+            <data column="1" line="0" value="model"/>
+            <data column="2" line="0" value="inputs"/>
+            <data column="3" line="0" value="outputs"/>
+            <data column="4" line="0" value="parameters"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="Ground"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="p"/>
+          </ScilabString>
+          <ScilabDouble height="0" width="0"/>
+          <Array scilabClass="ScilabList">
+            <ScilabDouble height="0" width="0"/>
+            <Array scilabClass="ScilabList"/>
+          </Array>
+        </Array>
+        <mxGeometry as="geometry" height="40.0" width="40.0" x="40.0" y="240.0"/>
+      </GroundBlock>
+      <ImplicitInputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-5fe95730:131621e6d01:-7efe" ordering="1" parent="-5fe95730:131621e6d01:-7eff" style="ImplicitInputPort;align=center;verticalAlign=top;spacing=10;rotation=90;flip=false;mirror=false">
+        <Orientation as="orientation" value="NORTH"/>
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="16.0" y="-8.0"/>
+      </ImplicitInputPort>
+      <BasicBlock angle="270" dependsOnU="1" id="-5fe95730:131621e6d01:-7efd" interfaceFunctionName="Resistor" parent="-5fe95730:131621e6d01:-7f0e" simulationFunctionName="resistor" simulationFunctionType="DEFAULT" style="Resistor;rotation=270;flip=false;mirror=false">
+        <ScilabString as="exprs" height="1" width="1">
+          <data column="0" line="0" value="0.01"/>
+        </ScilabString>
+        <ScilabDouble as="realParameters" height="1" width="1">
+          <data column="0" line="0" realPart="0.01"/>
+        </ScilabDouble>
+        <ScilabDouble as="integerParameters" height="0" width="0"/>
+        <Array as="objectsParameters" scilabClass="ScilabList"/>
+        <ScilabDouble as="nbZerosCrossing" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <ScilabDouble as="nmode" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <Array as="oDState" scilabClass="ScilabList"/>
+        <Array as="equations" scilabClass="ScilabTList">
+          <ScilabString height="1" width="5">
+            <data column="0" line="0" value="modelica"/>
+            <data column="1" line="0" value="model"/>
+            <data column="2" line="0" value="inputs"/>
+            <data column="3" line="0" value="outputs"/>
+            <data column="4" line="0" value="parameters"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="Resistor"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="p"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="n"/>
+          </ScilabString>
+          <Array scilabClass="ScilabList">
+            <ScilabString height="1" width="1">
+              <data column="0" line="0" value="R"/>
+            </ScilabString>
+            <Array scilabClass="ScilabList">
+              <ScilabDouble height="1" width="1">
+                <data column="0" line="0" realPart="0.01"/>
+              </ScilabDouble>
+            </Array>
+          </Array>
+        </Array>
+        <mxGeometry as="geometry" height="40.0" width="40.0" x="360.0" y="350.0"/>
+      </BasicBlock>
+      <ImplicitInputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-5fe95730:131621e6d01:-7efb" ordering="1" parent="-5fe95730:131621e6d01:-7efd" style="ImplicitInputPort;align=center;verticalAlign=bottom;spacing=10;rotation=270;flip=false;mirror=false">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="16.0" y="40.0"/>
+      </ImplicitInputPort>
+      <ImplicitOutputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-5fe95730:131621e6d01:-7efc" ordering="1" parent="-5fe95730:131621e6d01:-7efd" style="ImplicitOutputPort;align=center;verticalAlign=top;spacing=10;rotation=270;flip=false;mirror=false">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="16.0" y="-8.0"/>
+      </ImplicitOutputPort>
+      <ImplicitLink id="-5fe95730:131621e6d01:-7efa" parent="-5fe95730:131621e6d01:-7f0e" source="-5fe95730:131621e6d01:-7efc" target="-5fe95730:131621e6d01:-7f03">
+        <mxGeometry as="geometry" x="10.0" y="10.0">
+          <mxPoint as="sourcePoint" x="334.0" y="250.0"/>
+          <mxPoint as="targetPoint" x="380.0" y="350.0"/>
+        </mxGeometry>
+      </ImplicitLink>
+      <BasicBlock angle="270" id="-5fe95730:131621e6d01:-7ef9" interfaceFunctionName="ConstantVoltage" parent="-5fe95730:131621e6d01:-7f0e" simulationFunctionName="ConstantVoltage" simulationFunctionType="DEFAULT" style="ConstantVoltage;rotation=270;flip=false;mirror=false">
+        <ScilabString as="exprs" height="1" width="1">
+          <data column="0" line="0" value="0.01"/>
+        </ScilabString>
+        <ScilabDouble as="realParameters" height="1" width="1">
+          <data column="0" line="0" realPart="0.01"/>
+        </ScilabDouble>
+        <ScilabDouble as="integerParameters" height="0" width="0"/>
+        <Array as="objectsParameters" scilabClass="ScilabList"/>
+        <ScilabDouble as="nbZerosCrossing" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <ScilabDouble as="nmode" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <Array as="oDState" scilabClass="ScilabList"/>
+        <Array as="equations" scilabClass="ScilabTList">
+          <ScilabString height="1" width="5">
+            <data column="0" line="0" value="modelica"/>
+            <data column="1" line="0" value="model"/>
+            <data column="2" line="0" value="inputs"/>
+            <data column="3" line="0" value="outputs"/>
+            <data column="4" line="0" value="parameters"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="ConstantVoltage"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="p"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="n"/>
+          </ScilabString>
+          <Array scilabClass="ScilabList">
+            <ScilabString height="1" width="1">
+              <data column="0" line="0" value="V"/>
+            </ScilabString>
+            <Array scilabClass="ScilabList">
+              <ScilabDouble height="1" width="1">
+                <data column="0" line="0" realPart="0.01"/>
+              </ScilabDouble>
+            </Array>
+          </Array>
+        </Array>
+        <mxGeometry as="geometry" height="40.0" width="40.0" x="360.0" y="460.0"/>
+      </BasicBlock>
+      <ImplicitInputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-5fe95730:131621e6d01:-7ef7" ordering="1" parent="-5fe95730:131621e6d01:-7ef9" style="ImplicitInputPort;align=center;verticalAlign=bottom;spacing=10;rotation=270;flip=false;mirror=false">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="16.0" y="40.0"/>
+      </ImplicitInputPort>
+      <ImplicitOutputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-5fe95730:131621e6d01:-7ef8" ordering="1" parent="-5fe95730:131621e6d01:-7ef9" style="ImplicitOutputPort;align=center;verticalAlign=top;spacing=10;rotation=270;flip=false;mirror=false">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="16.0" y="-8.0"/>
+      </ImplicitOutputPort>
+      <ImplicitLink id="-5fe95730:131621e6d01:-7ef6" parent="-5fe95730:131621e6d01:-7f0e" source="-5fe95730:131621e6d01:-7ef8" target="-5fe95730:131621e6d01:-7efb">
+        <mxGeometry as="geometry" x="10.0" y="10.0">
+          <mxPoint as="sourcePoint" x="380.0" y="394.0"/>
+          <mxPoint as="targetPoint" x="380.0" y="450.0"/>
+        </mxGeometry>
+      </ImplicitLink>
+      <TextBlock id="-5fe95730:131621e6d01:-7ef5" parent="-5fe95730:131621e6d01:-7f0e" simulationFunctionType="DEFAULT" style="TEXT_f;fontStyle=0;flip=false;mirror=false" value="10k-ohm">
+        <ScilabString as="exprs" height="1" width="3">
+          <data column="0" line="0" value="10k-ohm"/>
+          <data column="1" line="0" value="2"/>
+          <data column="2" line="0" value="1"/>
+        </ScilabString>
+        <ScilabString as="realParameters" height="1" width="1">
+          <data column="0" line="0" value="10k-ohm"/>
+        </ScilabString>
+        <mxGeometry as="geometry" height="40.0" width="40.0" x="320.0" y="130.0"/>
+      </TextBlock>
+      <TextBlock id="-5fe95730:131621e6d01:-7ef4" parent="-5fe95730:131621e6d01:-7f0e" simulationFunctionType="DEFAULT" style="TEXT_f;fontStyle=0;flip=false;mirror=false" value="-10V">
+        <ScilabString as="exprs" height="1" width="3">
+          <data column="0" line="0" value="-10V"/>
+          <data column="1" line="0" value="2"/>
+          <data column="2" line="0" value="1"/>
+        </ScilabString>
+        <ScilabString as="realParameters" height="1" width="1">
+          <data column="0" line="0" value="-10V"/>
+        </ScilabString>
+        <mxGeometry as="geometry" height="40.0" width="40.0" x="320.0" y="460.0"/>
+      </TextBlock>
+      <BasicBlock angle="90" id="-5fe95730:131621e6d01:-7ef1" interfaceFunctionName="ConstantVoltage" parent="-5fe95730:131621e6d01:-7f0e" simulationFunctionName="ConstantVoltage" simulationFunctionType="DEFAULT" style="ConstantVoltage;rotation=90;flip=false;mirror=false">
+        <ScilabString as="exprs" height="1" width="1">
+          <data column="0" line="0" value="0.01"/>
+        </ScilabString>
+        <ScilabDouble as="realParameters" height="1" width="1">
+          <data column="0" line="0" realPart="0.01"/>
+        </ScilabDouble>
+        <ScilabDouble as="integerParameters" height="0" width="0"/>
+        <Array as="objectsParameters" scilabClass="ScilabList"/>
+        <ScilabDouble as="nbZerosCrossing" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <ScilabDouble as="nmode" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <Array as="oDState" scilabClass="ScilabList"/>
+        <Array as="equations" scilabClass="ScilabTList">
+          <ScilabString height="1" width="5">
+            <data column="0" line="0" value="modelica"/>
+            <data column="1" line="0" value="model"/>
+            <data column="2" line="0" value="inputs"/>
+            <data column="3" line="0" value="outputs"/>
+            <data column="4" line="0" value="parameters"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="ConstantVoltage"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="p"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="n"/>
+          </ScilabString>
+          <Array scilabClass="ScilabList">
+            <ScilabString height="1" width="1">
+              <data column="0" line="0" value="V"/>
+            </ScilabString>
+            <Array scilabClass="ScilabList">
+              <ScilabDouble height="1" width="1">
+                <data column="0" line="0" realPart="0.01"/>
+              </ScilabDouble>
+            </Array>
+          </Array>
+        </Array>
+        <mxGeometry as="geometry" height="40.0" width="40.0" x="1170.0" y="30.0"/>
+      </BasicBlock>
+      <ImplicitInputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-5fe95730:131621e6d01:-7eef" ordering="1" parent="-5fe95730:131621e6d01:-7ef1" style="ImplicitInputPort;align=center;verticalAlign=top;spacing=10;rotation=90;flip=false;mirror=false">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="16.0" y="-8.0"/>
+      </ImplicitInputPort>
+      <ImplicitOutputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-5fe95730:131621e6d01:-7ef0" ordering="1" parent="-5fe95730:131621e6d01:-7ef1" style="ImplicitOutputPort;align=center;verticalAlign=bottom;spacing=10;rotation=90;flip=false;mirror=false">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="16.0" y="40.0"/>
+      </ImplicitOutputPort>
+      <TextBlock id="-5fe95730:131621e6d01:-7eee" parent="-5fe95730:131621e6d01:-7f0e" simulationFunctionType="DEFAULT" style="TEXT_f;fontStyle=0;flip=false;mirror=false" value="10V">
+        <ScilabString as="exprs" height="1" width="3">
+          <data column="0" line="0" value="10V"/>
+          <data column="1" line="0" value="2"/>
+          <data column="2" line="0" value="1"/>
+        </ScilabString>
+        <ScilabString as="realParameters" height="1" width="1">
+          <data column="0" line="0" value="10V"/>
+        </ScilabString>
+        <mxGeometry as="geometry" height="40.0" width="40.0" x="1140.0" y="30.0"/>
+      </TextBlock>
+      <BasicBlock angle="270" dependsOnU="1" id="-5fe95730:131621e6d01:-7eed" interfaceFunctionName="Resistor" parent="-5fe95730:131621e6d01:-7f0e" simulationFunctionName="resistor" simulationFunctionType="DEFAULT" style="Resistor;rotation=270;flip=false;mirror=false">
+        <ScilabString as="exprs" height="1" width="1">
+          <data column="0" line="0" value="0.01"/>
+        </ScilabString>
+        <ScilabDouble as="realParameters" height="1" width="1">
+          <data column="0" line="0" realPart="0.01"/>
+        </ScilabDouble>
+        <ScilabDouble as="integerParameters" height="0" width="0"/>
+        <Array as="objectsParameters" scilabClass="ScilabList"/>
+        <ScilabDouble as="nbZerosCrossing" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <ScilabDouble as="nmode" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <Array as="oDState" scilabClass="ScilabList"/>
+        <Array as="equations" scilabClass="ScilabTList">
+          <ScilabString height="1" width="5">
+            <data column="0" line="0" value="modelica"/>
+            <data column="1" line="0" value="model"/>
+            <data column="2" line="0" value="inputs"/>
+            <data column="3" line="0" value="outputs"/>
+            <data column="4" line="0" value="parameters"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="Resistor"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="p"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="n"/>
+          </ScilabString>
+          <Array scilabClass="ScilabList">
+            <ScilabString height="1" width="1">
+              <data column="0" line="0" value="R"/>
+            </ScilabString>
+            <Array scilabClass="ScilabList">
+              <ScilabDouble height="1" width="1">
+                <data column="0" line="0" realPart="0.01"/>
+              </ScilabDouble>
+            </Array>
+          </Array>
+        </Array>
+        <mxGeometry as="geometry" height="40.0" width="40.0" x="1170.0" y="130.0"/>
+      </BasicBlock>
+      <ImplicitInputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-5fe95730:131621e6d01:-7eeb" ordering="1" parent="-5fe95730:131621e6d01:-7eed" style="ImplicitInputPort;align=center;verticalAlign=bottom;spacing=10;rotation=270;flip=false;mirror=false">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="16.0" y="40.0"/>
+      </ImplicitInputPort>
+      <ImplicitOutputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-5fe95730:131621e6d01:-7eec" ordering="1" parent="-5fe95730:131621e6d01:-7eed" style="ImplicitOutputPort;align=center;verticalAlign=top;spacing=10;rotation=270;flip=false;mirror=false">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="16.0" y="-8.0"/>
+      </ImplicitOutputPort>
+      <BasicBlock dependsOnT="1" id="-5fe95730:131621e6d01:-7eea" interfaceFunctionName="NPN" parent="-5fe95730:131621e6d01:-7f0e" simulationFunctionName="NPN" simulationFunctionType="DEFAULT" style="NPN;flip=false;mirror=false">
+        <ScilabString as="exprs" height="17" width="1">
+          <data column="0" line="0" value="50"/>
+          <data column="0" line="1" value="0.1"/>
+          <data column="0" line="2" value="1.e-16"/>
+          <data column="0" line="3" value="0.02"/>
+          <data column="0" line="4" value="0.12e-9"/>
+          <data column="0" line="5" value="5e-9"/>
+          <data column="0" line="6" value="1e-12"/>
+          <data column="0" line="7" value="0.4e-12"/>
+          <data column="0" line="8" value="0.5e-12"/>
+          <data column="0" line="9" value="0.8"/>
+          <data column="0" line="10" value="0.4"/>
+          <data column="0" line="11" value="0.8"/>
+          <data column="0" line="12" value="0.333"/>
+          <data column="0" line="13" value="1e-15"/>
+          <data column="0" line="14" value="1e-15"/>
+          <data column="0" line="15" value="0.02585"/>
+          <data column="0" line="16" value="40"/>
+        </ScilabString>
+        <ScilabDouble as="realParameters" height="17" width="1">
+          <data column="0" line="0" realPart="50.0"/>
+          <data column="0" line="1" realPart="0.1"/>
+          <data column="0" line="2" realPart="0.0"/>
+          <data column="0" line="3" realPart="0.02"/>
+          <data column="0" line="4" realPart="1.2E-10"/>
+          <data column="0" line="5" realPart="5.0E-9"/>
+          <data column="0" line="6" realPart="1.0E-12"/>
+          <data column="0" line="7" realPart="4.0E-13"/>
+          <data column="0" line="8" realPart="5.0E-13"/>
+          <data column="0" line="9" realPart="0.8"/>
+          <data column="0" line="10" realPart="0.4"/>
+          <data column="0" line="11" realPart="0.8"/>
+          <data column="0" line="12" realPart="0.333"/>
+          <data column="0" line="13" realPart="1.0E-15"/>
+          <data column="0" line="14" realPart="1.0E-15"/>
+          <data column="0" line="15" realPart="0.02585"/>
+          <data column="0" line="16" realPart="40.0"/>
+        </ScilabDouble>
+        <ScilabDouble as="integerParameters" height="0" width="0"/>
+        <Array as="objectsParameters" scilabClass="ScilabList"/>
+        <ScilabDouble as="nbZerosCrossing" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <ScilabDouble as="nmode" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <Array as="oDState" scilabClass="ScilabList"/>
+        <Array as="equations" scilabClass="ScilabTList">
+          <ScilabString height="1" width="5">
+            <data column="0" line="0" value="modelica"/>
+            <data column="1" line="0" value="model"/>
+            <data column="2" line="0" value="inputs"/>
+            <data column="3" line="0" value="outputs"/>
+            <data column="4" line="0" value="parameters"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="NPN"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="B"/>
+          </ScilabString>
+          <ScilabString height="2" width="1">
+            <data column="0" line="0" value="C"/>
+            <data column="0" line="1" value="E"/>
+          </ScilabString>
+          <Array scilabClass="ScilabList">
+            <ScilabString height="17" width="1">
+              <data column="0" line="0" value="Bf"/>
+              <data column="0" line="1" value="Br"/>
+              <data column="0" line="2" value="Is"/>
+              <data column="0" line="3" value="Vak"/>
+              <data column="0" line="4" value="Tauf"/>
+              <data column="0" line="5" value="Taur"/>
+              <data column="0" line="6" value="Ccs"/>
+              <data column="0" line="7" value="Cje"/>
+              <data column="0" line="8" value="Cjc"/>
+              <data column="0" line="9" value="Phie"/>
+              <data column="0" line="10" value="Me"/>
+              <data column="0" line="11" value="Phic"/>
+              <data column="0" line="12" value="Mc"/>
+              <data column="0" line="13" value="Gbc"/>
+              <data column="0" line="14" value="Gbe"/>
+              <data column="0" line="15" value="Vt"/>
+              <data column="0" line="16" value="EMinMax"/>
+            </ScilabString>
+            <ScilabDouble height="17" width="1">
+              <data column="0" line="0" realPart="50.0"/>
+              <data column="0" line="1" realPart="0.1"/>
+              <data column="0" line="2" realPart="0.0"/>
+              <data column="0" line="3" realPart="0.02"/>
+              <data column="0" line="4" realPart="1.2E-10"/>
+              <data column="0" line="5" realPart="5.0E-9"/>
+              <data column="0" line="6" realPart="1.0E-12"/>
+              <data column="0" line="7" realPart="4.0E-13"/>
+              <data column="0" line="8" realPart="5.0E-13"/>
+              <data column="0" line="9" realPart="0.8"/>
+              <data column="0" line="10" realPart="0.4"/>
+              <data column="0" line="11" realPart="0.8"/>
+              <data column="0" line="12" realPart="0.333"/>
+              <data column="0" line="13" realPart="1.0E-15"/>
+              <data column="0" line="14" realPart="1.0E-15"/>
+              <data column="0" line="15" realPart="0.02585"/>
+              <data column="0" line="16" realPart="40.0"/>
+            </ScilabDouble>
+            <ScilabDouble height="17" width="1">
+              <data column="0" line="0" realPart="0.0"/>
+              <data column="0" line="1" realPart="0.0"/>
+              <data column="0" line="2" realPart="0.0"/>
+              <data column="0" line="3" realPart="0.0"/>
+              <data column="0" line="4" realPart="0.0"/>
+              <data column="0" line="5" realPart="0.0"/>
+              <data column="0" line="6" realPart="0.0"/>
+              <data column="0" line="7" realPart="0.0"/>
+              <data column="0" line="8" realPart="0.0"/>
+              <data column="0" line="9" realPart="0.0"/>
+              <data column="0" line="10" realPart="0.0"/>
+              <data column="0" line="11" realPart="0.0"/>
+              <data column="0" line="12" realPart="0.0"/>
+              <data column="0" line="13" realPart="0.0"/>
+              <data column="0" line="14" realPart="0.0"/>
+              <data column="0" line="15" realPart="0.0"/>
+              <data column="0" line="16" realPart="0.0"/>
+            </ScilabDouble>
+          </Array>
+        </Array>
+        <mxGeometry as="geometry" height="40.0" width="40.0" x="1100.0" y="220.0"/>
+      </BasicBlock>
+      <ImplicitOutputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-5fe95730:131621e6d01:-7ee8" ordering="2" parent="-5fe95730:131621e6d01:-7eea" style="ImplicitOutputPort;align=right;verticalAlign=middle;spacing=10;rotation=0;flip=false;mirror=false">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="40.0" y="26.0"/>
+      </ImplicitOutputPort>
+      <ImplicitInputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-5fe95730:131621e6d01:-7ee7" ordering="1" parent="-5fe95730:131621e6d01:-7eea" style="ImplicitInputPort;align=left;verticalAlign=middle;spacing=10;rotation=0;flip=false;mirror=false">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="-8.0" y="16.0"/>
+      </ImplicitInputPort>
+      <ImplicitOutputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-5fe95730:131621e6d01:-7ee9" ordering="1" parent="-5fe95730:131621e6d01:-7eea" style="ImplicitOutputPort;align=right;verticalAlign=middle;spacing=10;rotation=0;flip=false;mirror=false">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="40.0" y="6.0"/>
+      </ImplicitOutputPort>
+      <ImplicitLink id="-5fe95730:131621e6d01:-7ee6" parent="-5fe95730:131621e6d01:-7f0e" source="-5fe95730:131621e6d01:-7eec" target="-5fe95730:131621e6d01:-7ef0">
+        <mxGeometry as="geometry" x="820.0" y="10.0">
+          <mxPoint as="sourcePoint" x="1190.0" y="74.0"/>
+          <mxPoint as="targetPoint" x="1190.0" y="120.0"/>
+        </mxGeometry>
+      </ImplicitLink>
+      <ImplicitLink id="-5fe95730:131621e6d01:-7ee5" parent="-5fe95730:131621e6d01:-7f0e" source="-5fe95730:131621e6d01:-7ee9" target="-5fe95730:131621e6d01:-7eeb">
+        <mxGeometry as="geometry" x="820.0" y="10.0">
+          <mxPoint as="sourcePoint" x="1144.0" y="230.0"/>
+          <mxPoint as="targetPoint" x="1190.0" y="180.0"/>
+        </mxGeometry>
+      </ImplicitLink>
+      <GroundBlock dependsOnU="1" id="-5fe95730:131621e6d01:-7ee4" interfaceFunctionName="Ground" parent="-5fe95730:131621e6d01:-7f0e" simulationFunctionName="Ground" simulationFunctionType="DEFAULT" style="Ground;flip=false;mirror=false">
+        <ScilabString as="exprs" height="1" width="1">
+          <data column="0" line="0" value=""/>
+        </ScilabString>
+        <ScilabDouble as="realParameters" height="0" width="0"/>
+        <ScilabDouble as="integerParameters" height="0" width="0"/>
+        <Array as="objectsParameters" scilabClass="ScilabList"/>
+        <ScilabDouble as="nbZerosCrossing" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <ScilabDouble as="nmode" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <Array as="oDState" scilabClass="ScilabList"/>
+        <Array as="equations" scilabClass="ScilabTList">
+          <ScilabString height="1" width="5">
+            <data column="0" line="0" value="modelica"/>
+            <data column="1" line="0" value="model"/>
+            <data column="2" line="0" value="inputs"/>
+            <data column="3" line="0" value="outputs"/>
+            <data column="4" line="0" value="parameters"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="Ground"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="p"/>
+          </ScilabString>
+          <ScilabDouble height="0" width="0"/>
+          <Array scilabClass="ScilabList">
+            <ScilabDouble height="0" width="0"/>
+            <Array scilabClass="ScilabList"/>
+          </Array>
+        </Array>
+        <mxGeometry as="geometry" height="40.0" width="40.0" x="800.0" y="240.0"/>
+      </GroundBlock>
+      <ImplicitInputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-5fe95730:131621e6d01:-7ee3" ordering="1" parent="-5fe95730:131621e6d01:-7ee4" style="ImplicitInputPort;align=center;verticalAlign=top;spacing=10;rotation=90;flip=false;mirror=false">
+        <Orientation as="orientation" value="NORTH"/>
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="16.0" y="-8.0"/>
+      </ImplicitInputPort>
+      <BasicBlock angle="270" dependsOnU="1" id="-5fe95730:131621e6d01:-7ee2" interfaceFunctionName="Resistor" parent="-5fe95730:131621e6d01:-7f0e" simulationFunctionName="resistor" simulationFunctionType="DEFAULT" style="Resistor;rotation=270;flip=false;mirror=false">
+        <ScilabString as="exprs" height="1" width="1">
+          <data column="0" line="0" value="0.01"/>
+        </ScilabString>
+        <ScilabDouble as="realParameters" height="1" width="1">
+          <data column="0" line="0" realPart="0.01"/>
+        </ScilabDouble>
+        <ScilabDouble as="integerParameters" height="0" width="0"/>
+        <Array as="objectsParameters" scilabClass="ScilabList"/>
+        <ScilabDouble as="nbZerosCrossing" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <ScilabDouble as="nmode" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <Array as="oDState" scilabClass="ScilabList"/>
+        <Array as="equations" scilabClass="ScilabTList">
+          <ScilabString height="1" width="5">
+            <data column="0" line="0" value="modelica"/>
+            <data column="1" line="0" value="model"/>
+            <data column="2" line="0" value="inputs"/>
+            <data column="3" line="0" value="outputs"/>
+            <data column="4" line="0" value="parameters"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="Resistor"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="p"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="n"/>
+          </ScilabString>
+          <Array scilabClass="ScilabList">
+            <ScilabString height="1" width="1">
+              <data column="0" line="0" value="R"/>
+            </ScilabString>
+            <Array scilabClass="ScilabList">
+              <ScilabDouble height="1" width="1">
+                <data column="0" line="0" realPart="0.01"/>
+              </ScilabDouble>
+            </Array>
+          </Array>
+        </Array>
+        <mxGeometry as="geometry" height="40.0" width="40.0" x="1170.0" y="350.0"/>
+      </BasicBlock>
+      <ImplicitInputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-5fe95730:131621e6d01:-7ee0" ordering="1" parent="-5fe95730:131621e6d01:-7ee2" style="ImplicitInputPort;align=center;verticalAlign=bottom;spacing=10;rotation=270;flip=false;mirror=false">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="16.0" y="40.0"/>
+      </ImplicitInputPort>
+      <ImplicitOutputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-5fe95730:131621e6d01:-7ee1" ordering="1" parent="-5fe95730:131621e6d01:-7ee2" style="ImplicitOutputPort;align=center;verticalAlign=top;spacing=10;rotation=270;flip=false;mirror=false">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="16.0" y="-8.0"/>
+      </ImplicitOutputPort>
+      <ImplicitLink id="-5fe95730:131621e6d01:-7edf" parent="-5fe95730:131621e6d01:-7f0e" source="-5fe95730:131621e6d01:-7ee1" target="-5fe95730:131621e6d01:-7ee8">
+        <mxGeometry as="geometry" x="820.0" y="10.0">
+          <mxPoint as="sourcePoint" x="1144.0" y="250.0"/>
+          <mxPoint as="targetPoint" x="1190.0" y="350.0"/>
+        </mxGeometry>
+      </ImplicitLink>
+      <BasicBlock angle="270" id="-5fe95730:131621e6d01:-7ede" interfaceFunctionName="ConstantVoltage" parent="-5fe95730:131621e6d01:-7f0e" simulationFunctionName="ConstantVoltage" simulationFunctionType="DEFAULT" style="ConstantVoltage;rotation=270;flip=false;mirror=false">
+        <ScilabString as="exprs" height="1" width="1">
+          <data column="0" line="0" value="0.01"/>
+        </ScilabString>
+        <ScilabDouble as="realParameters" height="1" width="1">
+          <data column="0" line="0" realPart="0.01"/>
+        </ScilabDouble>
+        <ScilabDouble as="integerParameters" height="0" width="0"/>
+        <Array as="objectsParameters" scilabClass="ScilabList"/>
+        <ScilabDouble as="nbZerosCrossing" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <ScilabDouble as="nmode" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <Array as="oDState" scilabClass="ScilabList"/>
+        <Array as="equations" scilabClass="ScilabTList">
+          <ScilabString height="1" width="5">
+            <data column="0" line="0" value="modelica"/>
+            <data column="1" line="0" value="model"/>
+            <data column="2" line="0" value="inputs"/>
+            <data column="3" line="0" value="outputs"/>
+            <data column="4" line="0" value="parameters"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="ConstantVoltage"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="p"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="n"/>
+          </ScilabString>
+          <Array scilabClass="ScilabList">
+            <ScilabString height="1" width="1">
+              <data column="0" line="0" value="V"/>
+            </ScilabString>
+            <Array scilabClass="ScilabList">
+              <ScilabDouble height="1" width="1">
+                <data column="0" line="0" realPart="0.01"/>
+              </ScilabDouble>
+            </Array>
+          </Array>
+        </Array>
+        <mxGeometry as="geometry" height="40.0" width="40.0" x="1170.0" y="460.0"/>
+      </BasicBlock>
+      <ImplicitInputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-5fe95730:131621e6d01:-7edc" ordering="1" parent="-5fe95730:131621e6d01:-7ede" style="ImplicitInputPort;align=center;verticalAlign=bottom;spacing=10;rotation=270;flip=false;mirror=false">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="16.0" y="40.0"/>
+      </ImplicitInputPort>
+      <ImplicitOutputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-5fe95730:131621e6d01:-7edd" ordering="1" parent="-5fe95730:131621e6d01:-7ede" style="ImplicitOutputPort;align=center;verticalAlign=top;spacing=10;rotation=270;flip=false;mirror=false">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="16.0" y="-8.0"/>
+      </ImplicitOutputPort>
+      <ImplicitLink id="-5fe95730:131621e6d01:-7edb" parent="-5fe95730:131621e6d01:-7f0e" source="-5fe95730:131621e6d01:-7edd" target="-5fe95730:131621e6d01:-7ee0">
+        <mxGeometry as="geometry" x="820.0" y="10.0">
+          <mxPoint as="sourcePoint" x="1190.0" y="394.0"/>
+          <mxPoint as="targetPoint" x="1190.0" y="450.0"/>
+        </mxGeometry>
+      </ImplicitLink>
+      <TextBlock id="-5fe95730:131621e6d01:-7eda" parent="-5fe95730:131621e6d01:-7f0e" simulationFunctionType="DEFAULT" style="TEXT_f;fontStyle=0;flip=false;mirror=false" value="5k-ohm">
+        <ScilabString as="exprs" height="1" width="3">
+          <data column="0" line="0" value="5k-ohm"/>
+          <data column="1" line="0" value="2"/>
+          <data column="2" line="0" value="1"/>
+        </ScilabString>
+        <ScilabString as="realParameters" height="1" width="1">
+          <data column="0" line="0" value="5k-ohm"/>
+        </ScilabString>
+        <mxGeometry as="geometry" height="40.0" width="40.0" x="1130.0" y="130.0"/>
+      </TextBlock>
+      <TextBlock id="-5fe95730:131621e6d01:-7ed9" parent="-5fe95730:131621e6d01:-7f0e" simulationFunctionType="DEFAULT" style="TEXT_f;fontStyle=0;flip=false;mirror=false" value="-15V">
+        <ScilabString as="exprs" height="1" width="3">
+          <data column="0" line="0" value="-15V"/>
+          <data column="1" line="0" value="2"/>
+          <data column="2" line="0" value="1"/>
+        </ScilabString>
+        <ScilabString as="realParameters" height="1" width="1">
+          <data column="0" line="0" value="-15V"/>
+        </ScilabString>
+        <mxGeometry as="geometry" height="40.0" width="40.0" x="1130.0" y="460.0"/>
+      </TextBlock>
+      <TextBlock id="-5fe95730:131621e6d01:-7ed7" parent="-5fe95730:131621e6d01:-7f0e" simulationFunctionType="DEFAULT" style="TEXT_f;fontStyle=0;flip=false;mirror=false" value="5k-ohm">
+        <ScilabString as="exprs" height="1" width="3">
+          <data column="0" line="0" value="5k-ohm"/>
+          <data column="1" line="0" value="2"/>
+          <data column="2" line="0" value="1"/>
+        </ScilabString>
+        <ScilabString as="realParameters" height="1" width="1">
+          <data column="0" line="0" value="5k-ohm"/>
+        </ScilabString>
+        <mxGeometry as="geometry" height="40.0" width="40.0" x="1130.0" y="350.0"/>
+      </TextBlock>
+      <BasicBlock dependsOnU="1" id="-5fe95730:131621e6d01:-7eb8" interfaceFunctionName="Resistor" parent="-5fe95730:131621e6d01:-7f0e" simulationFunctionName="resistor" simulationFunctionType="DEFAULT" style="Resistor;flip=false;mirror=false">
+        <ScilabString as="exprs" height="1" width="1">
+          <data column="0" line="0" value="0.01"/>
+        </ScilabString>
+        <ScilabDouble as="realParameters" height="1" width="1">
+          <data column="0" line="0" realPart="0.01"/>
+        </ScilabDouble>
+        <ScilabDouble as="integerParameters" height="0" width="0"/>
+        <Array as="objectsParameters" scilabClass="ScilabList"/>
+        <ScilabDouble as="nbZerosCrossing" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <ScilabDouble as="nmode" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <Array as="oDState" scilabClass="ScilabList"/>
+        <Array as="equations" scilabClass="ScilabTList">
+          <ScilabString height="1" width="5">
+            <data column="0" line="0" value="modelica"/>
+            <data column="1" line="0" value="model"/>
+            <data column="2" line="0" value="inputs"/>
+            <data column="3" line="0" value="outputs"/>
+            <data column="4" line="0" value="parameters"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="Resistor"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="p"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="n"/>
+          </ScilabString>
+          <Array scilabClass="ScilabList">
+            <ScilabString height="1" width="1">
+              <data column="0" line="0" value="R"/>
+            </ScilabString>
+            <Array scilabClass="ScilabList">
+              <ScilabDouble height="1" width="1">
+                <data column="0" line="0" realPart="0.01"/>
+              </ScilabDouble>
+            </Array>
+          </Array>
+        </Array>
+        <mxGeometry as="geometry" height="40.0" width="40.0" x="170.0" y="220.0"/>
+      </BasicBlock>
+      <ImplicitInputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-5fe95730:131621e6d01:-7eb6" ordering="1" parent="-5fe95730:131621e6d01:-7eb8" style="ImplicitInputPort;align=left;verticalAlign=middle;spacing=10;rotation=0;flip=false;mirror=false">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="-8.0" y="16.0"/>
+      </ImplicitInputPort>
+      <ImplicitOutputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-5fe95730:131621e6d01:-7eb7" ordering="1" parent="-5fe95730:131621e6d01:-7eb8" style="ImplicitOutputPort;align=right;verticalAlign=middle;spacing=10;rotation=0;flip=false;mirror=false">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="40.0" y="16.0"/>
+      </ImplicitOutputPort>
+      <ImplicitLink id="-5fe95730:131621e6d01:-7eb2" parent="-5fe95730:131621e6d01:-7f0e" source="-5fe95730:131621e6d01:-7eb7" target="-5fe95730:131621e6d01:-7f02">
+        <mxGeometry as="geometry">
+          <mxPoint as="sourcePoint" x="214.0" y="240.0"/>
+          <mxPoint as="targetPoint" x="290.0" y="240.0"/>
+        </mxGeometry>
+      </ImplicitLink>
+      <ImplicitLink id="-5fe95730:131621e6d01:-7eaf" parent="-5fe95730:131621e6d01:-7f0e" source="-5fe95730:131621e6d01:-7efe" target="-5fe95730:131621e6d01:-7eb6">
+        <mxGeometry as="geometry">
+          <mxPoint as="sourcePoint" x="60.0" y="236.0"/>
+          <mxPoint as="targetPoint" x="160.0" y="240.0"/>
+        </mxGeometry>
+      </ImplicitLink>
+      <TextBlock id="-5fe95730:131621e6d01:-7eae" parent="-5fe95730:131621e6d01:-7f0e" simulationFunctionType="DEFAULT" style="TEXT_f;fontStyle=0;flip=false;mirror=false" value="10k-ohm">
+        <ScilabString as="exprs" height="1" width="3">
+          <data column="0" line="0" value="10k-ohm"/>
+          <data column="1" line="0" value="2"/>
+          <data column="2" line="0" value="1"/>
+        </ScilabString>
+        <ScilabString as="realParameters" height="1" width="1">
+          <data column="0" line="0" value="10k-ohm"/>
+        </ScilabString>
+        <mxGeometry as="geometry" height="40.0" width="40.0" x="170.0" y="190.0"/>
+      </TextBlock>
+      <BasicBlock dependsOnU="1" id="-5fe95730:131621e6d01:-7ea9" interfaceFunctionName="Resistor" parent="-5fe95730:131621e6d01:-7f0e" simulationFunctionName="resistor" simulationFunctionType="DEFAULT" style="Resistor;flip=false;mirror=false">
+        <ScilabString as="exprs" height="1" width="1">
+          <data column="0" line="0" value="0.01"/>
+        </ScilabString>
+        <ScilabDouble as="realParameters" height="1" width="1">
+          <data column="0" line="0" realPart="0.01"/>
+        </ScilabDouble>
+        <ScilabDouble as="integerParameters" height="0" width="0"/>
+        <Array as="objectsParameters" scilabClass="ScilabList"/>
+        <ScilabDouble as="nbZerosCrossing" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <ScilabDouble as="nmode" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <Array as="oDState" scilabClass="ScilabList"/>
+        <Array as="equations" scilabClass="ScilabTList">
+          <ScilabString height="1" width="5">
+            <data column="0" line="0" value="modelica"/>
+            <data column="1" line="0" value="model"/>
+            <data column="2" line="0" value="inputs"/>
+            <data column="3" line="0" value="outputs"/>
+            <data column="4" line="0" value="parameters"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="Resistor"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="p"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="n"/>
+          </ScilabString>
+          <Array scilabClass="ScilabList">
+            <ScilabString height="1" width="1">
+              <data column="0" line="0" value="R"/>
+            </ScilabString>
+            <Array scilabClass="ScilabList">
+              <ScilabDouble height="1" width="1">
+                <data column="0" line="0" realPart="0.01"/>
+              </ScilabDouble>
+            </Array>
+          </Array>
+        </Array>
+        <mxGeometry as="geometry" height="40.0" width="40.0" x="950.0" y="220.0"/>
+      </BasicBlock>
+      <ImplicitInputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-5fe95730:131621e6d01:-7ea7" ordering="1" parent="-5fe95730:131621e6d01:-7ea9" style="ImplicitInputPort;align=left;verticalAlign=middle;spacing=10;rotation=0;flip=false;mirror=false">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="-8.0" y="16.0"/>
+      </ImplicitInputPort>
+      <ImplicitOutputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-5fe95730:131621e6d01:-7ea8" ordering="1" parent="-5fe95730:131621e6d01:-7ea9" style="ImplicitOutputPort;align=right;verticalAlign=middle;spacing=10;rotation=0;flip=false;mirror=false">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="40.0" y="16.0"/>
+      </ImplicitOutputPort>
+      <ImplicitLink id="-5fe95730:131621e6d01:-7e9f" parent="-5fe95730:131621e6d01:-7f0e" source="-5fe95730:131621e6d01:-7ea8" target="-5fe95730:131621e6d01:-7ee7">
+        <mxGeometry as="geometry">
+          <mxPoint as="sourcePoint" x="994.0" y="240.0"/>
+          <mxPoint as="targetPoint" x="1090.0" y="240.0"/>
+        </mxGeometry>
+      </ImplicitLink>
+      <ImplicitLink id="-5fe95730:131621e6d01:-7e9c" parent="-5fe95730:131621e6d01:-7f0e" source="-5fe95730:131621e6d01:-7ee3" target="-5fe95730:131621e6d01:-7ea7">
+        <mxGeometry as="geometry">
+          <mxPoint as="sourcePoint" x="820.0" y="236.0"/>
+          <mxPoint as="targetPoint" x="940.0" y="240.0"/>
+        </mxGeometry>
+      </ImplicitLink>
+      <TextBlock id="-5fe95730:131621e6d01:-7e9b" parent="-5fe95730:131621e6d01:-7f0e" simulationFunctionType="DEFAULT" style="TEXT_f;fontStyle=0;flip=false;mirror=false" value="100k-ohm">
+        <ScilabString as="exprs" height="1" width="3">
+          <data column="0" line="0" value="100k-ohm"/>
+          <data column="1" line="0" value="2"/>
+          <data column="2" line="0" value="1"/>
+        </ScilabString>
+        <ScilabString as="realParameters" height="1" width="1">
+          <data column="0" line="0" value="100k-ohm"/>
+        </ScilabString>
+        <mxGeometry as="geometry" height="40.0" width="40.0" x="960.0" y="190.0"/>
+      </TextBlock>
+      <BasicBlock angle="90" id="-5fe95730:131621e6d01:-7f0c" interfaceFunctionName="ConstantVoltage" parent="-5fe95730:131621e6d01:-7f0e" simulationFunctionName="ConstantVoltage" simulationFunctionType="DEFAULT" style="ConstantVoltage;rotation=90;flip=false;mirror=false">
+        <ScilabString as="exprs" height="1" width="1">
+          <data column="0" line="0" value="0.01"/>
+        </ScilabString>
+        <ScilabDouble as="realParameters" height="1" width="1">
+          <data column="0" line="0" realPart="0.01"/>
+        </ScilabDouble>
+        <ScilabDouble as="integerParameters" height="0" width="0"/>
+        <Array as="objectsParameters" scilabClass="ScilabList"/>
+        <ScilabDouble as="nbZerosCrossing" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <ScilabDouble as="nmode" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <Array as="oDState" scilabClass="ScilabList"/>
+        <Array as="equations" scilabClass="ScilabTList">
+          <ScilabString height="1" width="5">
+            <data column="0" line="0" value="modelica"/>
+            <data column="1" line="0" value="model"/>
+            <data column="2" line="0" value="inputs"/>
+            <data column="3" line="0" value="outputs"/>
+            <data column="4" line="0" value="parameters"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="ConstantVoltage"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="p"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="n"/>
+          </ScilabString>
+          <Array scilabClass="ScilabList">
+            <ScilabString height="1" width="1">
+              <data column="0" line="0" value="V"/>
+            </ScilabString>
+            <Array scilabClass="ScilabList">
+              <ScilabDouble height="1" width="1">
+                <data column="0" line="0" realPart="0.01"/>
+              </ScilabDouble>
+            </Array>
+          </Array>
+        </Array>
+        <mxGeometry as="geometry" height="40.0" width="40.0" x="360.0" y="30.0"/>
+      </BasicBlock>
+      <ImplicitInputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-5fe95730:131621e6d01:-7f0a" ordering="1" parent="-5fe95730:131621e6d01:-7f0c" style="ImplicitInputPort;align=center;verticalAlign=top;spacing=10;rotation=90;flip=false;mirror=false">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="16.0" y="-8.0"/>
+      </ImplicitInputPort>
+      <ImplicitOutputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-5fe95730:131621e6d01:-7f0b" ordering="1" parent="-5fe95730:131621e6d01:-7f0c" style="ImplicitOutputPort;align=center;verticalAlign=bottom;spacing=10;rotation=90;flip=false;mirror=false">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="16.0" y="40.0"/>
+      </ImplicitOutputPort>
+      <TextBlock id="-7d26aabc:1318f3f768d:-7f9a" parent="-5fe95730:131621e6d01:-7f0e" simulationFunctionType="DEFAULT" style="TEXT_f;flip=false;mirror=false" value="Calculate labeled Voltages">
+        <ScilabString as="exprs" height="1" width="3">
+          <data column="0" line="0" value="Calculate labeled Voltages"/>
+          <data column="1" line="0" value="2"/>
+          <data column="2" line="0" value="1"/>
+        </ScilabString>
+        <ScilabString as="realParameters" height="1" width="1">
+          <data column="0" line="0" value="Calculate labeled Voltages"/>
+        </ScilabString>
+        <mxGeometry as="geometry" height="40.0" width="380.0" x="560.0" y="560.0"/>
+      </TextBlock>
+    </root>
+  </mxGraphModel>
+  <mxCell as="defaultParent" id="-5fe95730:131621e6d01:-7f0e" parent="-5fe95730:131621e6d01:-7f0d"/>
+</XcosDiagram>
