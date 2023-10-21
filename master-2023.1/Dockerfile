@@ -12,20 +12,22 @@ EXPOSE 8001
 
 # Add sources and Install pre-requisites
 RUN sed -i 's/^# *\(deb-src \)/\1/' /etc/apt/sources.list
-RUN apt-get update -y -q
-RUN apt-get install -y -q apt-utils
-RUN apt-get upgrade -y -q
-RUN apt-get install -y -q git iproute2 libgfortran5 libmysqlclient-dev \
-    mysql-client mysql-server openjdk-8-jdk python3-pip \
-    python3-venv tzdata
-RUN apt-get build-dep -y -q scilab
+RUN apt-get update -qq
+RUN apt-get upgrade -qq
+RUN apt-get install -qq apt-utils devscripts equivs
+RUN apt-get install -qq git iproute2 \
+  libgfortran5 \
+  libmysqlclient-dev mysql-client mysql-server openjdk-8-jdk \
+  python3-pip python3-venv tzdata
+RUN mk-build-deps scilab
+RUN apt-get install -qq ./scilab-build-deps_*.deb
 
 # Set timezone info
 RUN ln -fs /usr/share/zoneinfo/Asia/Kolkata /etc/localtime
 RUN dpkg-reconfigure -f noninteractive tzdata
 
 # Additional packages
-RUN apt-get install -y -q curl vim wget
+RUN apt-get install -qq curl vim wget
 
 # Build scilab
 ENV BRANCH=master-2023.1
@@ -33,8 +35,9 @@ ARG SCILAB_DIR=${HOME}/scilab_for_xcos_on_cloud
 WORKDIR ${HOME}
 RUN git clone --depth=1 https://github.com/FOSSEE/scilab_for_xcos_on_cloud -b ${BRANCH}
 WORKDIR ${SCILAB_DIR}
+RUN rm -rf .git
 RUN ./configure --without-tk
-RUN make -j 4 || make
+RUN make -j4 -s || make
 
 # Build XCos
 ARG XCOS_DIR=${HOME}/xcos_on_cloud
@@ -42,6 +45,7 @@ WORKDIR ${HOME}
 RUN mkdir ${XCOS_DIR}
 WORKDIR ${XCOS_DIR}
 COPY . .
+RUN rm -rf .git
 
 # Configure mysql
 ARG DB_PASS=scilabscilab
