@@ -12,14 +12,9 @@ mysql -B scilab < resources/scilab_tbc.sql
 sleep 2
 service mysql stop
 
-rm -rf env webapp/combined.js
-python3 -m venv env
-. env/bin/activate
-pip install -U pip setuptools wheel
-pip install -r ${BRANCH}/requirements.txt
-
 sed -i \
     -e "s/\\(DB_PASS = \\).*/\\1'${DB_PASS}'/" \
     config.py
 
+rm -f webapp/combined.js
 make

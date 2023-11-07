@@ -47,6 +47,9 @@ WORKDIR ${XCOS_DIR}
 COPY . .
 RUN rm -rf .git
 
+# Configure venv
+RUN bash ./installenv.sh
+
 # Configure mysql
 ARG DB_PASS=scilabscilab
 RUN bash ./install.sh
