@@ -31,11 +31,7 @@ HTTP_SERVER_PORT = 8001
 
 # the database server settings
 
-DB_HOST = '127.0.0.1'
-DB_USER = 'scilab'
-DB_PASS = ''
-DB_NAME = 'scilab'
-DB_PORT = 3306
+DB_NAME = 'scilab.sqlite3'
 
 # the instances
 
@@ -85,7 +81,7 @@ QUERY_ID_EXAMPLE_FILE = (
     "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND "
     "tcef.xcos_cloud_example_file_error_status = 0 AND "
     "pe.approval_status = 1 AND "
-    "tcef.id = %s "
+    "tcef.id = ? "
     "LIMIT 1")
 
 QUERY_ID_EXAMPLE = (
@@ -100,7 +96,7 @@ QUERY_ID_EXAMPLE = (
     "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND "
     "tcef.xcos_cloud_example_file_error_status = 0 AND "
     "pe.approval_status = 1 AND "
-    "tce.id = %s "
+    "tce.id = ? "
     "LIMIT 1")
 
 QUERY_ID_CHAPTER = (
@@ -115,7 +111,7 @@ QUERY_ID_CHAPTER = (
     "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND "
     "tcef.xcos_cloud_example_file_error_status = 0 AND "
     "pe.approval_status = 1 AND "
-    "tcc.id = %s "
+    "tcc.id = ? "
     "LIMIT 1")
 
 QUERY_ID_BOOK = (
@@ -130,7 +126,7 @@ QUERY_ID_BOOK = (
     "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND "
     "tcef.xcos_cloud_example_file_error_status = 0 AND "
     "pe.approval_status = 1 AND "
-    "pe.id = %s "
+    "pe.id = ? "
     "LIMIT 1")
 
 QUERY_COUNT = (
@@ -173,7 +169,7 @@ QUERY_BOOK = (
     "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND "
     "tcef.xcos_cloud_example_file_error_status = 0 AND "
     "pe.approval_status = 1 AND "
-    "pe.category = %s "
+    "pe.category = ? "
     "GROUP BY 1 "
     "ORDER BY 2 ASC")
 
@@ -189,7 +185,7 @@ QUERY_CHAPTER = (
     "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND "
     "tcef.xcos_cloud_example_file_error_status = 0 AND "
     "pe.approval_status = 1 AND "
-    "tcc.preference_id = %s "
+    "tcc.preference_id = ? "
     "ORDER BY tcc.number ASC")
 
 QUERY_EXAMPLE = (
@@ -204,32 +200,32 @@ QUERY_EXAMPLE = (
     "WHERE tcef.filetype = 'X' AND po.proposal_status = 3 AND "
     "tcef.xcos_cloud_example_file_error_status = 0 AND "
     "pe.approval_status = 1 AND "
-    "tce.chapter_id = %s "
+    "tce.chapter_id = ? "
     "ORDER BY tce.number ASC")
 
 QUERY_EXAMPLE_FILE = (
     "SELECT id as example_file_id, filename, filetype "
     "FROM textbook_companion_example_files "
     "WHERE filetype IN ('X', 'S') AND "
-    "xcos_cloud_example_file_error_status = 0 AND example_id = %s "
+    "xcos_cloud_example_file_error_status = 0 AND example_id = ? "
     "ORDER BY filetype DESC")
 
 QUERY_EXAMPLE_FILE_BY_ID = (
     "SELECT filename, filepath, example_id "
     "FROM textbook_companion_example_files "
-    "WHERE filetype = 'X' AND id = %s"
+    "WHERE filetype = 'X' AND id = ?"
 )
 
 QUERY_PREREQUISITE_FILE_BY_ID = (
     "SELECT filename, filepath "
     "FROM textbook_companion_example_files "
-    "WHERE filetype = 'S' AND id = %s"
+    "WHERE filetype = 'S' AND id = ?"
 )
 
 QUERY_PREREQUISITE_FILE_BY_EXAMPLE_ID = (
     "SELECT filename, filepath, id as prerequisite_file_id "
     "FROM textbook_companion_example_files "
-    "WHERE filetype = 'S' AND example_id = %s"
+    "WHERE filetype = 'S' AND example_id = ?"
 )
 
 QUERY_CONTRIBUTOR_DETAILS = (
@@ -238,7 +234,7 @@ QUERY_CONTRIBUTOR_DETAILS = (
     "po.university as proposal_university "
     "FROM textbook_companion_proposal po "
     "LEFT JOIN textbook_companion_preference pe ON po.id = pe.proposal_id "
-    "WHERE pe.id = %s")
+    "WHERE pe.id = ?")
 
 # Following are system command which are not permitted in sci files
 # (Reference scilab-on-cloud project)

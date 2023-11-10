@@ -14,7 +14,6 @@ importlib-metadata==4.2.0
 itsdangerous==2.0.1
 Jinja2==3.0.3
 MarkupSafe==2.0.1
-mysqlclient==1.4.6
 requests
 typing_extensions==4.1.1
 urllib3==1.26.18
