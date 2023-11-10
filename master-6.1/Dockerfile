@@ -14,11 +14,13 @@ EXPOSE 8001
 RUN sed -i 's/^# *\(deb-src \)/\1/' /etc/apt/sources.list
 RUN apt-get update -qq
 RUN apt-get upgrade -qq
-RUN apt-get install -qq apt-utils devscripts equivs
-RUN apt-get install -qq git iproute2 \
-  libgfortran5 \
-  libmysqlclient-dev mysql-client mysql-server openjdk-8-jdk \
-  python3-pip python3-venv tzdata
+RUN apt-get install -qq apt-utils
+RUN apt-get install -qq iproute2 libgfortran5 libmysqlclient-dev \
+  mysql-client mysql-server openjdk-8-jre python3-pip \
+  python3-venv tzdata
+# packages to be removed later
+RUN apt-get install -qq devscripts equivs git openjdk-8-jdk
+WORKDIR ${HOME}
 RUN mk-build-deps scilab
 RUN apt-get install -qq ./scilab-build-deps_*.deb
 
@@ -26,26 +28,30 @@ RUN apt-get install -qq ./scilab-build-deps_*.deb
 RUN ln -fs /usr/share/zoneinfo/Asia/Kolkata /etc/localtime
 RUN dpkg-reconfigure -f noninteractive tzdata
 
-# Additional packages
-RUN apt-get install -qq curl vim wget
-
 # Build scilab
 ENV BRANCH=master-6.1
 ARG SCILAB_DIR=${HOME}/scilab_for_xcos_on_cloud
 WORKDIR ${HOME}
-RUN git clone --depth=1 https://github.com/FOSSEE/scilab_for_xcos_on_cloud -b ${BRANCH}
+RUN git clone -q -b ${BRANCH} --depth 1 https://github.com/FOSSEE/scilab_for_xcos_on_cloud
 WORKDIR ${SCILAB_DIR}
-RUN rm -rf .git
 RUN ./configure --without-tk
 RUN make -j4 -s || make
+RUN make -s install-strip
+
+# Cleanup
+WORKDIR ${HOME}
+RUN apt-get autoremove -qq --purge bsdmainutils devscripts equivs openjdk-8-jdk \
+  openjdk-11-jre-headless scilab-build-deps
+RUN rm -f ./scilab-build-deps_*.deb
 
 # Build XCos
 ARG XCOS_DIR=${HOME}/xcos_on_cloud
-WORKDIR ${HOME}
-RUN mkdir ${XCOS_DIR}
 WORKDIR ${XCOS_DIR}
 COPY . .
-RUN rm -rf .git
+RUN rm -rf .git*
+
+# Copy missing libs
+RUN bash ./installlibs.sh
 
 # Configure venv
 RUN bash ./installenv.sh
@@ -53,5 +59,11 @@ RUN bash ./installenv.sh
 # Configure mysql
 ARG DB_PASS=scilabscilab
 RUN bash ./install.sh
+
+# Cleanup
+RUN apt-get autoremove -qq --purge git manpages-dev make python3-dev
+RUN find /usr/local -depth -type d -name tests -print0 | xargs -0 rm -rf
+RUN find /var/lib/apt/lists /var/lib/dpkg/info -type f -print0 | xargs -0 rm -f
+RUN rm -rf ${HOME}/.cache
 
 CMD bash ./run.sh

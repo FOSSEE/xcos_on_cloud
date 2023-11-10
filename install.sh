@@ -13,6 +13,7 @@ sleep 2
 service mysql stop
 
 sed -i \
+    -e "s/\\(SCILAB_DIR = \\).*/\\1'\/usr\/local'/" \
     -e "s/\\(DB_PASS = \\).*/\\1'${DB_PASS}'/" \
     config.py
 
