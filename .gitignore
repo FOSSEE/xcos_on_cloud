@@ -1,5 +1,6 @@
 *.orig
 *.rej
+*.sqlite3
 combined.js
 /webapp/data_structures_correct/
 /webapp/history/

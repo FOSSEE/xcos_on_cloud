@@ -20,7 +20,7 @@ from importlib import reload
 import json
 import logging
 from logging.handlers import TimedRotatingFileHandler
-import MySQLdb
+import sqlite3
 import os
 from os.path import abspath, dirname, exists, isfile, join, splitext
 import re
@@ -104,6 +104,7 @@ READCONTENTFILE = abspath("resources/Read_Content.txt")
 BASEDIR = abspath('webapp')
 IMAGEDIR = join(BASEDIR, config.IMAGEDIR)
 IMAGEURLDIR = '/' + config.IMAGEDIR + '/'
+DB_NAME = abspath(config.DB_NAME)
 XCOSSOURCEDIR = abspath(config.XCOSSOURCEDIR)
 SESSIONDIR = abspath(config.SESSIONDIR)
 FLASKSESSIONDIR = abspath(config.FLASKSESSIONDIR)
@@ -2067,19 +2068,22 @@ def internal_fun(internal_key):
 # example page start ###################
 
 def connection():
-    conn = MySQLdb.connect(host=config.DB_HOST,
-                           user=config.DB_USER,
-                           passwd=config.DB_PASS,
-                           db=config.DB_NAME,
-                           port=config.DB_PORT)
+    conn = sqlite3.connect(DB_NAME)
     return conn.cursor()
 
 
 @cache.memoize()
 def db_query(query, parameters=None):
     cur = connection()
-    cur.execute(query, parameters)
-    return cur.fetchall()
+    try:
+        if parameters is not None:
+            cur.execute(query, parameters)
+        else:
+            cur.execute(query)
+        return cur.fetchall()
+    except Exception as e:
+        logger.error('error in db_query: %s %s', query, str(e))
+        return None
 
 
 @app.route('/example')
