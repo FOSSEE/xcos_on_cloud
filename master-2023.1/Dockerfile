@@ -1,6 +1,4 @@
-FROM ubuntu:22.04
-
-EXPOSE 8001
+FROM ubuntu:22.04 AS build
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV UBUNTU_FRONTEND=noninteractive
@@ -63,5 +61,45 @@ RUN apt-get autoremove -qq --purge git manpages-dev make python3-dev
 RUN find /usr/local -depth -type d -name tests -print0 | xargs -0 rm -rf
 RUN find /var/lib/apt/lists /var/lib/dpkg/info -type f -print0 | xargs -0 rm -f
 RUN rm -rf ${HOME}/.cache
+
+FROM ubuntu:22.04 AS main
+
+EXPOSE 8001
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV UBUNTU_FRONTEND=noninteractive
+
+ARG HOME=/root
+
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+ENV JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF8
+
+# Add sources and Install pre-requisites
+RUN sed -i 's/^# *\(deb-src \)/\1/' /etc/apt/sources.list
+RUN apt-get update -qq
+RUN apt-get upgrade -qq
+RUN apt-get install -qq apt-utils
+RUN apt-get install -qq iproute2 libgfortran5 openjdk-8-jre \
+  python3-pip python3-venv sqlite3 tzdata
+RUN apt-get autoremove -qq --purge manpages-dev make python3-dev
+
+# Set timezone info
+RUN ln -fs /usr/share/zoneinfo/Asia/Kolkata /etc/localtime
+RUN dpkg-reconfigure -f noninteractive tzdata
+
+# Install scilab
+ARG SCILAB_DIR=${HOME}/scilab_for_xcos_on_cloud
+COPY --from=build /usr/local /usr/local
+COPY --from=build ${SCILAB_DIR} ${SCILAB_DIR}
+
+# Install XCos
+ARG XCOS_DIR=${HOME}/xcos_on_cloud
+COPY --from=build ${XCOS_DIR} ${XCOS_DIR}
+
+# Copy missing libs
+COPY --from=build /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu
+COPY --from=build /usr/lib/jni /usr/lib/jni
+
+WORKDIR ${XCOS_DIR}
 
 CMD bash ./run.sh
