@@ -18,21 +18,19 @@
 // Uses syslin
 
 function trfu = tf(num,den,a)
-  if argn(2) == 2
-  d = 'c';
-  elseif a == -1
-  d = 'd';
-  else
-  d = a
-  end;
-num = clean(num);
-den = clean(den);
-num1 = poly(num(length(num):-1:1),'x','coeff');
-den1 = poly(den(length(den):-1:1),'x','coeff');
-trfu = syslin(d,num1,den1);
+    if argn(2) == 2
+        d = 'c';
+    elseif a == -1
+        d = 'd';
+    else
+        d = a
+    end;
+    num = clean(num);
+    den = clean(den);
+    num1 = poly(num(length(num):-1:1),'x','coeff');
+    den1 = poly(den(length(den):-1:1),'x','coeff');
+    trfu = syslin(d,num1,den1);
 endfunction;
-
-
 
 // Discretization of continuous transfer function. The result is numerator and denominator in powers of z^{-1} and the delay term k.
 // 9.2
@@ -43,24 +41,25 @@ endfunction;
 // Ts is the sampling time, all in consistent time units
 
 function [B,A,k] = myc2d(G,Ts)
-H = ss2tf(dscr(G,Ts));
-num1 = coeff(H('num'));
-den1 = coeff(H('den'));//-------------
-A = den1(length(den1):-1:1);
-num2 = num1(length(num1):-1:1);  //flip
-nonzero = find(num1);
-first_nz = nonzero(1);
-B = num2(first_nz:length(num2)); //-------------
-k = length(den1) - length(num1);
+    H = ss2tf(dscr(G,Ts));
+    num1 = coeff(H('num'));
+    den1 = coeff(H('den'));//-------------
+    A = den1(length(den1):-1:1);
+    num2 = num1(length(num1):-1:1);  //flip
+    nonzero = find(num1);
+    first_nz = nonzero(1);
+    B = num2(first_nz:length(num2)); //-------------
+    k = length(den1) - length(num1);
 endfunction
 
 // Evaluates z^-k.
 // 9.6
 
 function [zk,dzk] = zpowk(k)
-zk = zeros(1,k+1); zk(1,k+1) = 1;
-dzk = k;
+    zk = zeros(1,k+1); zk(1,k+1) = 1;
+    dzk = k;
 endfunction
+
 // Input arguments are co efficients of numerator and denominator
 // polynomials in ascending powers of z^-1
 
@@ -68,10 +67,10 @@ endfunction
 // with positive powers of z
 
 function [nume,deno] = cosfil_ip(num,den)
-[Nn,Nd] = polyno(num,'z');
-[Dn,Dd] = polyno(den,'z');
-nume = Nn*Dd;
-deno = Nd*Dn;
+    [Nn,Nd] = polyno(num,'z');
+    [Dn,Dd] = polyno(den,'z');
+    nume = Nn*Dd;
+    deno = Nd*Dn;
 
 endfunction;
 
@@ -87,24 +86,25 @@ endfunction;
 // be flipped only
 
 function [polynu,polyde] = polyno(zc,a)
-zc = clean(zc);
-polynu = poly(zc(length(zc):-1:1),a,'coeff');
-  if a == 'z'
-  polyde = %z^(length(zc) - 1);
-  else
-  polyde = 1;
-  end
+    zc = clean(zc);
+    polynu = poly(zc(length(zc):-1:1),a,'coeff');
+    if a == 'z'
+        polyde = %z^(length(zc) - 1);
+    else
+        polyde = 1;
+    end
 
 // Scicos(4.1) Filter block shouldn't have constant/constant
-  if type(polynu)==1 & type(polyde)==1
-    if a == 'z'
-      polynu = %z; polyde = %z;
-    else
-      polynu = %s; polyde = %s;
+    if type(polynu)==1 & type(polyde)==1
+        if a == 'z'
+            polynu = %z; polyde = %z;
+        else
+            polynu = %s; polyde = %s;
+        end;
     end;
-  end;
 
 endfunction
+
 num = 200;
 den = convol([0.05 1],[0.05 1]);
 den = convol([10 1],den);
@@ -131,12 +131,12 @@ Sf = convol(Sf,zkf);
 // Margins
 simp_mode(%f);
 L = G*Gb;
-Gm = g_margin(L); // ------
+// Gm = g_margin(L); // ------
 Pm = p_margin(L); // ------
 Lnum = convol(Sb,convol(zk,B));
 Lden = convol(Rb,A);
 L = tf(Lnum,Lden,Ts);
-DGm = g_margin(L); // ------
+// DGm = g_margin(L); // ------
 DPm = p_margin(L); // ------
 
 // Noise

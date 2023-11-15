@@ -1639,6 +1639,9 @@ function main(container, outline, toolbar, sidebar, status) {
                 var pointsArray = [];
                 var newSourceObj = nodeDataObject[currentNode.getAttribute('source')];
                 var newTargetObj = nodeDataObject[currentNode.getAttribute('target')];
+                if (newSourceObj == null || newTargetObj == null) {
+                    continue;
+                }
 
                 var newSourceCell = graph.getModel().getCell(newSourceObj.newId);
                 var newTargetCell = graph.getModel().getCell(newTargetObj.newId);
