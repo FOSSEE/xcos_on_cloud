@@ -5,8 +5,6 @@
 // Dorling Kindersley Pvt. Ltd. India
 // Example 5-5 in page 239
 
-clear; clc; close;
-
 // Given data
 Vcc=20; // Supply DC Voltage in V
 Rc=1.5*10^3; // Collector Resistance in ohm

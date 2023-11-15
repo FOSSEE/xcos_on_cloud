@@ -5,8 +5,6 @@
 // Dorling Kindersley Pvt. Ltd. India
 // Example 4-10 in page 211
 
-clear; clc; close;
-
 // Given Data
 Vb=-5; // Base Voltage of BJT in V
 Rc=1*10^3; // Collector Resistance in K-ohms

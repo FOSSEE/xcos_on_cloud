@@ -5,4 +5,4 @@
 // for step response, set sw to 2
 // for ramp response, set sw to 0
 
-sw = 2
+sw=2

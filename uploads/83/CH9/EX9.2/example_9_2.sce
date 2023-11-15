@@ -2,7 +2,6 @@
 //Example 9.2
 //page 337
 //To calculate subtransient and momentary current
-clear;clc;
 mvab=25;
 Gmva=25;
 T1mva=25; T2mva=25;

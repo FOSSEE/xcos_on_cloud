@@ -82,47 +82,8 @@ Dc=poly(zr,'s','roots')/poly(pl,'s','roots')
 //symmetric root locus
 G_s=horner(Gs,-s);
 evans(Gs*G_s)
-zoom_rect([-10 -5 10 5])
-f=gca();
-f.x_location = "origin"
-f.y_location = "origin"
-xset("color",2);
-h=legend('');
-h.visible = "off"
-//Title, labels and grid to the figure
-//------------------------------------------------------------------
-//figure handel settings
-f=get("current_figure"); //Current figure handle
-f.background=8; //make the figure window background white
-l=f.children(1);
-l.background=8 ;//make the text background white
-id=color('grey');
-xgrid(id);
-//------------------------------------------------------------------
-title('Symmetric root locus','fontsize',3);
-//------------------------------------------------------------------
 //root locus
-figure,
 evans(Gs*Dc) //Correct root locus
-zoom_rect([-11 -6 1 6])
-f=gca();
-f.x_location = "origin"
-f.y_location = "origin"
-xset("color",2);
-h=legend('');
-h.visible = "off"
-//Title, labels and grid to the figure
-//------------------------------------------------------------------
-//figure handel settings
-f=get("current_figure"); //Current figure handle
-f.background=8; //make the figure window background white
-l=f.children(1);
-l.background=8 ;//make the text background white
-id=color('grey');
-xgrid(id);
-//------------------------------------------------------------------
-title('Root locus for pole assignment from the SRL','fontsize',3);
-//------------------------------------------------------------------
 //Discrete-time controller
 nc=94.5*conv([7.98 1],[2.52 1])
 dc=conv([59.5348 8.56 1],[10.6 1])
@@ -134,46 +95,3 @@ Gdz=ss2tf(sysDd);
 
 disp(sysDc,"Continuous-time compensator")
 disp(Gdz,"Discrete-time compensator")
-//------------------------------------------------------------------
-//step responses
-importXcosDiagram(".\Ex7_32_model.xcos")
-
-xcos_simulate(scs_m,4);
-scs_m.props.context
-figure,
-plot(yt.time,yt.values(:,1),2)
-plot(yt.time,yt.values(:,2),'r--')
-xlabel('Time (sec)');
-ylabel('y');
-title("Comaprison of step responses for continuous and discrete...
- controllers",'fontsize',3)
-//------------------------------------------------------------------
-//figure handel settings
-f=get("current_figure"); //Current figure handle
-f.background=8; //make the figure window background white
-l=f.children(1);
-l.background=8 ;//make the text background white
-id=color('grey');
-xgrid(id);
-//------------------------------------------------------------------
-legend("continuous controller","digital controller",4)
-
-//Control inputs
-figure,
-plot(ut.time,ut.values(:,1),2)
-plot(ut.time,ut.values(:,2),'r--')
-xlabel('Time (sec)');
-ylabel('u');
-title("Comaprison of control signals for continuous and discrete...
- controllers",'fontsize',3)
-//------------------------------------------------------------------
-//figure handel settings
-f=get("current_figure"); //Current figure handle
-f.background=8; //make the figure window background white
-l=f.children(1);
-l.background=8 ;//make the text background white
-id=color('grey');
-xgrid(id);
-//------------------------------------------------------------------
-legend("continuous controller","digital controller")
-//------------------------------------------------------------------

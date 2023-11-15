@@ -5,8 +5,6 @@
 // Dorling Kindersley Pvt. Ltd. India
 // Example 3-2 in page 144
 
-clear; clc; close;
-
 // Given data
 R=10*10^3; // Resistance in K-ohms
 

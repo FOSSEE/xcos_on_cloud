@@ -2,7 +2,6 @@
 //Example 9.1
 //page 335
 //To calculate fault current
-clear;clc;
 //selecting base KVA and MVA
 mvab=100;
 Gmva=10;

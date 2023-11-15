@@ -5,8 +5,6 @@
 // Dorling Kindersley Pvt. Ltd. India
 // Example 3-8 in page 157
 
-clear; clc; close;
-
 // Given data
 Vm=280; // Supply voltage in V
 Rl=2000; // Load resistance in ohms

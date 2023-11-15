@@ -2,7 +2,6 @@
 //Example 11.4
 //page 412
 //To find L-L fault current and voltage of healthy phase
-clc;clear;
 X1eq=0.09*%i;
 X2eq=0.075*%i;
 Z0=0.99+(%i*0.1);

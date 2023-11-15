@@ -2,7 +2,6 @@
 //Example 9.7
 //page 355
 //To evaluate Zbus using Current Injection method
-clear;clc;
 
 disp("We can approach this problem using XCOS simulation")
 disp("In this simulation");

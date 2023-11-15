@@ -5,8 +5,6 @@
 // Dorling Kindersley Pvt. Ltd. India
 // Example 4-8 in page 211
 
-clear; clc; close;
-
 // Given Data
 Vbe=0.7; // Base-Emitter voltage of BJT in V
 Vcc2=10; // DC voltage across Collector in V

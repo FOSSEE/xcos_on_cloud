@@ -2,7 +2,6 @@
 //Example 11.5
 //page 413
 //To find Double line to ground fault current and voltage of healthy phase
-clc;clear;
 
 Z1eq=0.09*%i;
 Z2eq=0.075*%i;

@@ -2,7 +2,6 @@
 //Example 11.3
 //page 409
 //To find fault current and subtransient current in all parts of the system
-clear;clc;
 
 a=-0.5+(sqrt(3)/2)*%i;
 

@@ -5,8 +5,6 @@
 // Dorling Kindersley Pvt. Ltd. India
 // Example 5-9 in page 252
 
-clear; clc; close;
-
 // Given data
 Ri=500*10^3; // Input Resistance in ohm
 Ro=20; // Output Resistance in ohm

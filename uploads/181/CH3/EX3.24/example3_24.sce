@@ -5,8 +5,6 @@
 // Dorling Kindersley Pvt. Ltd. India
 // Example 3-24 in page 169
 
-clear; clc; close;
-
 // Given data
 // Data is provided in the diagrams
 

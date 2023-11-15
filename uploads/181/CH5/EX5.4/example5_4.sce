@@ -5,8 +5,6 @@
 // Dorling Kindersley Pvt. Ltd. India
 // Example 5-4 in page 238
 
-clear; clc; close;
-
 // Given Data
 beta_bjt=50; // Beta Gain of the BJT circuit
 Vbe=0.7; // Base-Emitter voltage of BJT in V
