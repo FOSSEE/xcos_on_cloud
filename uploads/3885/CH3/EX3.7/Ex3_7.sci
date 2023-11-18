@@ -5,8 +5,6 @@
 //operating systems windows 10
 // Example 3.7
 
-clc;
-clear;
 s=%s
 p=poly([1 0.4 0 ],'s','coeff')
 q=poly([0 0.6 1],'s','coeff')

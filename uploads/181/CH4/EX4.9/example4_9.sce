@@ -5,8 +5,6 @@
 // Dorling Kindersley Pvt. Ltd. India
 // Example 4-9 in page 211
 
-clear; clc; close;
-
 // Given Data
 Ve=1; // Emitter Voltage of BJT in V
 Vbe=0.7; // Base-Emitter Voltage of BJT in V

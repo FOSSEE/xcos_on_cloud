@@ -2,7 +2,6 @@
 //Example 9.4
 //page 345
 //To calculate maximum MVA
-clear;clc;
 mvab=50;
 kvb=6.6;
 mvaA=40;

@@ -2,7 +2,6 @@
 //Example 11.1
 //page 406
 //To draw sequence networks of generator and to compare LG fault current will be greater than three-phase fault current when neutral is solidly grounded
-clear;clc;
 
 disp("Sequence networks of synchronous generator grounded through neutral impedance has been drawn using XCOS ");
 

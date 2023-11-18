@@ -5,6 +5,4 @@
 // Dorling Kindersley Pvt. Ltd. India
 // Example 3-25 in page 169
 
-clear; clc; close;
-
 // The xcos diagram shows the devised circuit

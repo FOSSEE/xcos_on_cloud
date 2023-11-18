@@ -2,7 +2,6 @@
 //Example 9.3
 //page 340
 //To calculate subtransient current in Generator,Motor and fault
-clear;clc;
 mvab=25;
 kvb=11;
 Vo=10.6/kvb; //PU Prefault voltage

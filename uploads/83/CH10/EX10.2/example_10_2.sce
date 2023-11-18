@@ -2,7 +2,6 @@
 //Example 10.2
 //page no 390
 //To draw sequence networks of the system
-clear;clc;
 
 //selecting generator rating as base in generator circuit
 

@@ -5,8 +5,6 @@
 //operating systems windows 10
 // Example 7.12
 
-clc;
-clear;
 s=%s
 h=syslin('c',(2*(s+5))/((s+2)*(s+3)*(s+4)))
 disp(h,'thr transfer function is')

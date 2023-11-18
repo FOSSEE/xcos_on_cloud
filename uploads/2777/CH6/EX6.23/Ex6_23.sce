@@ -7,9 +7,6 @@
 
 // EXAMPLE : 6.23
 
-clear ; clc ; close ; // Clear the work space and console
-
-
 // GIVEN DATA
 
 p = 4;                          // Number of the poles in the Alternator

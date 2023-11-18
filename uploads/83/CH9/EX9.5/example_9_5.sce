@@ -2,7 +2,6 @@
 //Example 9.5
 //page 347
 //To calculate short circuit solution
-clear;clc;
 //referring to figures 9.19 in the text book,we get directly the fault current
 V4o=1.0;
 Zf=%i*0.13560;

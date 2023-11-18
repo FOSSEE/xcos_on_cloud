@@ -5,8 +5,6 @@
 // Dorling Kindersley Pvt. Ltd. India
 // Example 4-11 in page 212
 
-clear; clc; close;
-
 // Given Data
 Vbe=0.7; // Base-Emitter Voltage in V
 beta_bjt=100; // beta gain of BJ

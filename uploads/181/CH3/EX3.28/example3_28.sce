@@ -5,8 +5,6 @@
 // Dorling Kindersley Pvt. Ltd. India
 // Example 3-28 in page 180
 
-clear; clc; close;
-
 // Given data
 I=0.1075; // Cirremt across diode in A
 Rd=1; // Internal resistance of diode in ohm

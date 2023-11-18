@@ -2245,7 +2245,8 @@ def get_example_file(example_file_id):
     if XCOSSOURCEDIR != '' and filepath != '':
         try:
             logger.info('reading %s from %s', filename, filepath)
-            with open(join(XCOSSOURCEDIR, filepath), 'r') as f:
+            with open(join(XCOSSOURCEDIR, filepath), 'r',
+                      encoding='utf-8') as f:
                 text = clean_text(f.read())
                 return (text, filename, example_id)
         except Exception as e:
@@ -2302,7 +2303,8 @@ def return_prerequisite_file(filename, filepath, file_id, forindex):
     if XCOSSOURCEDIR != '' and filepath != '':
         try:
             logger.info('reading %s from %s', filename, filepath)
-            with open(join(XCOSSOURCEDIR, filepath), 'r') as f:
+            with open(join(XCOSSOURCEDIR, filepath), 'r',
+                      encoding='utf-8') as f:
                 text = clean_text_2(f.read(), forindex)
                 return (text, filename)
         except Exception as e:

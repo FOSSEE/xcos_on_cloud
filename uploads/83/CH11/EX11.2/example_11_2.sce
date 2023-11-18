@@ -2,7 +2,6 @@
 //Example 11.2
 //page 408
 //To find fault current and voltage across the grounding resistor
-clear;clc;
 
 X1eq=(%i*0.18)/2;
 X2eq=(%i*0.15)/2;

@@ -5,8 +5,6 @@
 // Dorling Kindersley Pvt. Ltd. India
 // Example 7-34 in page 338
 
-clear; clc; close;
-
 // Given data
 gm=1; // Transconductance in m-mho
 rd=50*10^3; // Dynamic resistance in K-ohms

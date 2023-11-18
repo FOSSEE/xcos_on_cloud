@@ -5,8 +5,6 @@
 // Dorling Kindersley Pvt. Ltd. India
 // Example 5-1 in page 235
 
-clear; clc; close;
-
 // Part 1
 // Given Data
 beta_bjt=100; // Beta Gain of BJT

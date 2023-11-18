@@ -5,8 +5,6 @@
 // Dorling Kindersley Pvt. Ltd. India
 // Example 3-27 in page 179
 
-clear; clc; close;
-
 // Given data
 //Diode acts as short circuited.Both diodes are forward biased
 V1=0; // Voltage at junction 1 in V

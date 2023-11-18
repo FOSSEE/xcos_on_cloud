@@ -5,8 +5,6 @@
 //operating systems windows 10
 // Example 3.6
 
-clc;
-clear;
 s=poly(0,'s')
 // the input is unit step signal
 h=syslin('c',16/(s^2+4*s+16))//the value of k is 0.2

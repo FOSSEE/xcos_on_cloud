@@ -5,8 +5,6 @@
 // Dorling Kindersley Pvt. Ltd. India
 // Example 3-23 in page 168
 
-clear; clc; close;
-
 // Given data
 Rf=0; // Forward resistance of diode
 Rr=2*10^6; // Reverse resistance of diode

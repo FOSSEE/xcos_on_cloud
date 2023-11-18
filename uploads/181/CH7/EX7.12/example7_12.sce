@@ -5,8 +5,6 @@
 // Dorling Kindersley Pvt. Ltd. India
 // Example 7-12 in page 321
 
-clear; clc; close;
-
 // Given data
 Rd=30*10^3; // Drain resistance in K-ohm
 Rs=2*10^3; // Source resistance in K-ohm
