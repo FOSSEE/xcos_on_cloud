@@ -1,0 +1,5 @@
+.dockerignore
+.git
+env*
+*.sqlite3
+webapp/combined.js
