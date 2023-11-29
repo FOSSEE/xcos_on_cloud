@@ -402,7 +402,7 @@ def stop_instance(instance, createlogfile=False, removeinstance=True):
         if createlogfile:
             logger.warning('empty diagram')
     else:
-        remove(instance.log_name)
+        # remove(instance.log_name)
         instance.log_name = None
 
     instance.base = None
@@ -1232,7 +1232,7 @@ def list_variables(filename):
     command += "__V7='load(''%s'','+__V6+');';" % filename
     command += "execstr(__V7);"
     command += "__V9='[';"
-    command += "for __V8=1:size(__V5,2) do;"
+    command += "for __V8=1:size(__V5,2);"
     command += "__V18=__V1(__V8);"
     command += "__V28=__V2(__V8);"
     command += "__V38=__V3(__V8);"
@@ -1246,7 +1246,7 @@ def list_variables(filename):
     command += "__V10=__V38;"
     command += "end;"
     command += "if __V10<=100 then;"
-    command += "__V9=__V9+sci2exp(eval(__V18));"
+    command += "__V9=__V9+sci2exp(evstr(__V18));"
     command += "end;"
     command += "__V9=__V9+'\"\"}';"
     command += "if __V8<size(__V5,2) then;"
