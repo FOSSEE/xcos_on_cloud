@@ -13,7 +13,7 @@ RUN sed -i 's/^# *\(deb-src .*\.ubuntu\.com\)/\1/' /etc/apt/sources.list
 RUN apt-get update -qq && \
   apt-get upgrade -qq && \
   apt-get install -qq apt-utils && \
-  apt-get install -qq build-essential iproute2 libgfortran5 openjdk-8-jre python3 sqlite3 tzdata
+  apt-get install -qq build-essential iproute2 libfreehep-util-java libgfortran5 openjdk-8-jre python3 sqlite3 tzdata
 
 # Set timezone info
 RUN ln -fs /usr/share/zoneinfo/Asia/Kolkata /etc/localtime
@@ -51,6 +51,15 @@ RUN find lib/thirdparty/ usr/lib/ -name \*.so -o -name \*.so.\* | \
   while read f; do \
     g=${f##*/}; \
     test -e ${LIBDIR}/$g || cp -a $f ${LIBDIR}/$g; \
+  done
+
+ARG SCILABLIBDIR=/usr/local/lib/scilab
+ARG MODULELIBDIR=/usr/local/share/scilab
+RUN find modules -name .libs | \
+  sort | \
+  while read f; do \
+    g=${f%/.libs}; \
+    test ! -e ${MODULELIBDIR}/$g || ln -snf ${SCILABLIBDIR} ${MODULELIBDIR}/$g/.libs; \
   done
 
 ARG JNILIBDIR=/usr/lib/jni
