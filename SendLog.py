@@ -173,7 +173,7 @@ NOLINE = -1
 DISPLAY_LIMIT = 10
 # handle scilab startup
 SCILAB_START = (
-    "funcprot(0);errcatch(-1,'stop');lines(0,120);"
+    "funcprot(0);lines(0,120);"
     "clearfun('messagebox');"
     "function messagebox(msg,title,icon,buttons,modal),disp(msg),endfunction;"
     "function xinfo(msg),disp(msg),endfunction;"
@@ -1312,7 +1312,7 @@ def start_scilab():
 
     if loadfile:
         # ignore import errors
-        command += "errcatch(-1,'continue');"
+        command += "try;"
 
         if workspace_filename is not None:
             command += load_variables(workspace_filename)
@@ -1324,7 +1324,7 @@ def start_scilab():
             # For FROMWSB block and also workspace dat file exist
             command += load_variables(workspace)
 
-        command += "errcatch(-1,'stop');"
+        command += "catch;disp('Error: ' + lasterror());end;"
 
     # Scilab Commands for running of scilab based on existence of different
     # blocks in same diagram from workspace_counter's value
