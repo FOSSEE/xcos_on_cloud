@@ -1984,6 +1984,7 @@ def page():
     set_session()
     version_check()
     return render_template('index.html',
+                           branch=config.BRANCH,
                            example_content='',
                            example_filename='',
                            prerequisite_content='',
@@ -2145,6 +2146,7 @@ def example_page():
         count = db_query(config.QUERY_COUNT)[0][0]
         category = db_query(config.QUERY_CATEGORY)
         return render_template('example.html',
+                               branch=config.BRANCH,
                                count=count,
                                category=category,
                                category_id=category_id,
@@ -2353,6 +2355,7 @@ def open_example_file():
     (prerequisite_content, prerequisite_filename) = \
         get_prerequisite_file_by_example_id(str(example_id))
     return render_template('index.html',
+                           branch=config.BRANCH,
                            example_content=example_content,
                            example_filename=example_filename,
                            prerequisite_content=prerequisite_content,

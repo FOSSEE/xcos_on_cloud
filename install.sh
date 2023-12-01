@@ -11,6 +11,7 @@ sqlite3 scilab.sqlite3 < resources/scilab_tbc.sql
 
 sed -i \
     -e "s/\\(SCILAB_DIR = \\).*/\\1'\/usr\/local'/" \
+    -e "s/\\(BRANCH = \\).*/\\1'${BRANCH}'/" \
     config.py
 
 make

@@ -5,6 +5,9 @@ SCILAB_DIR = '../scilab_for_xcos_on_cloud'
 # The location to keep the flask session data on server.
 FLASKSESSIONDIR = '/tmp/flask-sessiondir'
 
+# The scilab branch
+BRANCH = 'master'
+
 # The location to keep the session data on server.
 SESSIONDIR = '/tmp/sessiondir'
 SESSIONTIMEOUT = 21600

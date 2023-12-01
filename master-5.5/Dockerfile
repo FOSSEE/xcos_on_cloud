@@ -33,6 +33,7 @@ RUN apt-get update -qq && \
 ARG BRANCH=master-5.5
 ARG SCILAB_DIR=${HOME}/scilab_for_xcos_on_cloud
 WORKDIR ${HOME}
+ADD https://api.github.com/repos/FOSSEE/scilab_for_xcos_on_cloud/git/ref/heads/${BRANCH} scilab_for_xcos_on_cloud.json
 RUN git clone -q -b ${BRANCH} --depth 1 https://github.com/FOSSEE/scilab_for_xcos_on_cloud
 WORKDIR ${SCILAB_DIR}
 RUN ./configure --disable-static-system-lib --without-tk
@@ -116,6 +117,7 @@ COPY --from=build-scilab /usr/local /usr/local
 COPY --from=build-scilab /usr/lib/jni /usr/lib/jni
 COPY --from=build-scilab /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu
 COPY --from=build-scilab ${SCILAB_DIR} ${SCILAB_DIR}
+COPY --from=build-scilab ${SCILAB_DIR}.json ${SCILAB_DIR}.json
 
 # Install XCos
 ARG XCOS_DIR=${HOME}/xcos_on_cloud
