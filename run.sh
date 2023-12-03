@@ -8,4 +8,4 @@ sed -i \
     config.py
 
 . env/bin/activate
-python ./SendLog.py
+python3 ./SendLog.py
