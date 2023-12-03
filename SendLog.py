@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 import gevent
 from gevent.event import Event
@@ -1219,7 +1219,7 @@ def list_variables(filename):
     '''
 
     command = "[__V1,__V2,__V3]=listvarinfile('%s');" % filename
-    command += "__V5=grep(string(__V2),'/^([124568]|1[7])$/','r');"
+    command += "__V5=grep(string(__V2),'/^[124568]$/','r');"
     command += "__V1=__V1(__V5);"
     command += "__V2=__V2(__V5);"
     command += "__V3=list(__V3(__V5));"
