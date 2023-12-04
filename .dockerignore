@@ -1,6 +1,12 @@
 .dockerignore
 */Dockerfile
-.git
+.flake8
+.git*
+.travis.yml
 env*
+*.md
+*.pdf
+*.pyc
 *.sqlite3
 webapp/combined.js
+__pycache__

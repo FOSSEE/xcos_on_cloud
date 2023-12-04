@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 import gevent
 from gevent.event import Event
@@ -173,7 +173,7 @@ NOLINE = -1
 DISPLAY_LIMIT = 10
 # handle scilab startup
 SCILAB_START = (
-    "funcprot(0);errcatch(-1,'stop');lines(0,120);"
+    "funcprot(0);lines(0,120);"
     "clearfun('messagebox');"
     "function messagebox(msg,title,icon,buttons,modal),disp(msg),endfunction;"
     "function xinfo(msg),disp(msg),endfunction;"
@@ -1219,7 +1219,7 @@ def list_variables(filename):
     '''
 
     command = "[__V1,__V2,__V3]=listvarinfile('%s');" % filename
-    command += "__V5=grep(string(__V2),'/^([124568]|1[7])$/','r');"
+    command += "__V5=grep(string(__V2),'/^[124568]$/','r');"
     command += "__V1=__V1(__V5);"
     command += "__V2=__V2(__V5);"
     command += "__V3=list(__V3(__V5));"
@@ -1312,7 +1312,7 @@ def start_scilab():
 
     if loadfile:
         # ignore import errors
-        command += "errcatch(-1,'continue');"
+        command += "try;"
 
         if workspace_filename is not None:
             command += load_variables(workspace_filename)
@@ -1324,7 +1324,7 @@ def start_scilab():
             # For FROMWSB block and also workspace dat file exist
             command += load_variables(workspace)
 
-        command += "errcatch(-1,'stop');"
+        command += "catch;disp('Error: ' + lasterror());end;"
 
     # Scilab Commands for running of scilab based on existence of different
     # blocks in same diagram from workspace_counter's value
@@ -1984,6 +1984,7 @@ def page():
     set_session()
     version_check()
     return render_template('index.html',
+                           branch=config.BRANCH,
                            example_content='',
                            example_filename='',
                            prerequisite_content='',
@@ -2145,6 +2146,7 @@ def example_page():
         count = db_query(config.QUERY_COUNT)[0][0]
         category = db_query(config.QUERY_CATEGORY)
         return render_template('example.html',
+                               branch=config.BRANCH,
                                count=count,
                                category=category,
                                category_id=category_id,
@@ -2353,6 +2355,7 @@ def open_example_file():
     (prerequisite_content, prerequisite_filename) = \
         get_prerequisite_file_by_example_id(str(example_id))
     return render_template('index.html',
+                           branch=config.BRANCH,
                            example_content=example_content,
                            example_filename=example_filename,
                            prerequisite_content=prerequisite_content,

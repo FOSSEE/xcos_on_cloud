@@ -1,3 +1,4 @@
+var titlePattern = /Xcos on cloud \([^()]*\)/;
 var graph_sigbuilder = ""; //For storing graph for sigbuilder block
 var cell_sigbuilder = ""; //For storing cell for sigbuilder block
 var get_parameters_wind_sigbuilder = ""; //for getting parameter window for closing
@@ -6,6 +7,7 @@ var graph_scifunc_block_m = ""; //For storing graph for scifunc_block_m block
 var cell_scifunc_block_m = ""; //For storing cell for scifunc_block_m block
 var name_values_colormap = new Map(); //for storing colormap values of cmatview and cmat3d block
 var readAU_or_C_fd = new FormData(); //Formdata for sending audio/data file
+
 // function which makes the Ajax 'post' request with data sent in arguments
 function myAjaxreq(k,functionName) {
     var mbl = new Blob([k], { type: 'text/plain' });  // store the data in blob
@@ -1699,7 +1701,7 @@ function main(container, outline, toolbar, sidebar, status) {
         }
         if (/<XcosDiagram .*>.*<\/XcosDiagram>/.test(xmlDocument)) {
             xcosToDiagram(xmlDocument);
-            document.title = 'Xcos Example ' + filename;
+            document.title = document.title.match(titlePattern) + ' - Example ' + filename;
         }
     }
 
@@ -2384,7 +2386,7 @@ function main(container, outline, toolbar, sidebar, status) {
             if (this.responseText.search(/^[0-9]+$/) == 0) {
                 // If no error in uploading, initialize chart
                 clientID = this.responseText;
-                document.title = 'Xcos-' + clientID;
+                document.title = document.title.match(titlePattern) + ' - ' + clientID;
 
                 if (row<=10 && row>=1) {
                     myAjaxreq("Start", "/UpdateTKfile?id="+clientID);
@@ -2411,7 +2413,7 @@ function main(container, outline, toolbar, sidebar, status) {
 
                 });
             } else {
-                document.title = 'Xcos';
+                document.title = document.title.match(titlePattern);
                 setSimulationFlags(false);
                 stopSimulationWindows();
                 alert("Error");
