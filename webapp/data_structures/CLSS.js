@@ -14,7 +14,6 @@ function CLSS () {
         model.out = new ScilabDouble([this.out]);
         model.state = new ScilabDouble([this.x0]);
         model.rpar = new ScilabDouble([this.A], [this.B], [this.C], [this.D]);
-        model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([false, true]);
 
         var exprs = new ScilabString([this.A], [this.B], [this.C], [this.D], [this.x0]);

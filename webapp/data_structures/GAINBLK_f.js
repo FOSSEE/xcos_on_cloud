@@ -10,7 +10,6 @@ function GAINBLK_f() {
 		model.in = new ScilabDouble([this.in1]);
 		model.out = new ScilabDouble([this.out]);
 		model.rpar = new ScilabDouble([this.gain]);
-		model.blocktype = new ScilabString(["c"]);
 		model.dep_ut = new ScilabBoolean([true, false]);
 
 		var exprs = new ScilabString([sci2exp(this.gain)]);

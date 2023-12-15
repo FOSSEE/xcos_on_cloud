@@ -17,7 +17,6 @@ function CSCOPE() {
         model.evtin = new ScilabDouble([1]);
         model.rpar = new ScilabDouble([0], [this.ymin], [this.ymax], [this.per]);
         model.ipar = new ScilabDouble([this.win], [1], [this.N], ...this.clrs, ...this.wpos, ...this.wdim);
-        model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
         var exprs = new ScilabString([this.clrs.toString().replace(/,/g, " ")], [this.win], [sci2exp([])], [sci2exp(this.wdim)], [this.ymin], [this.ymax], [this.per], [this.N], [0], [""]);

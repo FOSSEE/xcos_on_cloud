@@ -24,7 +24,6 @@ function CMSCOPE() {
         model.rpar = new ScilabDouble([0], ...colon_operator(this.period), ...colon_operator(this.yy));
         model.ipar = new ScilabDouble([this.win], [this.in.length], [this.N], ...this.wpos, ...this.wdim, ...this.in, this.clrs[0], this.clrs[1]);
 
-        model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
         var exprs = new ScilabString([this.in.toString().replace(/,/g, " ")], [this.clrs.toString().replace(/,/g, " ")], [this.win], [sci2exp([])], [sci2exp([])], [this.ymin.toString().replace(/,/g, " ")], [this.ymax.toString().replace(/,/g, " ")], [this.per.toString().replace(/,/g, " ")], [this.N], [0], [""]);
         var gr_i = list(new ScilabString(["xstringb(orig(1),orig(2),\"CMSCOPE\",sz(1),sz(2));"]), new ScilabDouble([8]));

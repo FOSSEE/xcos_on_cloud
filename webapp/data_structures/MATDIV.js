@@ -19,7 +19,6 @@ function MATDIV() {
         model.dstate = new ScilabDouble();
         model.rpar = new ScilabDouble();
         model.ipar = new ScilabDouble();
-        model.blocktype = new ScilabString(["c"]);
         model.firing = new ScilabDouble();
         model.dep_ut = new ScilabBoolean([true, false]);
 

@@ -8,7 +8,6 @@ function INTEGRAL_f() {
         model.in = new ScilabDouble([1]);
         model.out = new ScilabDouble([1]);
         model.state = new ScilabDouble([this.x0]);
-        model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([false, true]);
 
         var exprs = new ScilabString([sci2exp(this.x0)]);

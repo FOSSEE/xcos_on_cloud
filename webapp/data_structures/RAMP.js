@@ -11,7 +11,6 @@ function RAMP() {
         model.in = new ScilabDouble();
         model.out = new ScilabDouble([1]);
         model.rpar = new ScilabDouble(...this.rpar);
-        model.blocktype = new ScilabString(["c"]);
         model.nmode = new ScilabDouble([1]);
         model.nzcross = new ScilabDouble([1]);
         model.dep_ut = new ScilabBoolean([false, true]);

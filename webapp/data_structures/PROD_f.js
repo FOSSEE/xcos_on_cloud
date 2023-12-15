@@ -10,7 +10,6 @@ PROD_f.prototype.set = function PROD_f() {
         model.sim = list(new ScilabString(["prod"]), new ScilabDouble([2]));
         model.in = new ScilabDouble([-1], [-1]);
         model.out = new ScilabDouble([-1]);
-        model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
         this.x = new standard_define(new ScilabDouble([1, 1]), model, new ScilabDouble(), new ScilabString());
@@ -23,7 +22,6 @@ PROD_f.prototype.set = function PROD_f() {
         model.sim = list(new ScilabString(["prod"]), new ScilabDouble([2]));
         model.in = new ScilabDouble([-1], [-1]);
         model.out = new ScilabDouble([-1]);
-        model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
         this.x = new standard_define(new ScilabDouble([1, 1]), model, new ScilabDouble(), new ScilabString());

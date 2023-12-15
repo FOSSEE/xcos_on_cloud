@@ -14,7 +14,6 @@ function INTEGRAL_m() {
         model.in2 = new ScilabDouble([1]);
         model.out2 = new ScilabDouble([1]);
         model.rpar = new ScilabDouble();
-        model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([false, true]);
 
         var exprs = new ScilabString([0], [0], [0], [this.maxp], [minp]);

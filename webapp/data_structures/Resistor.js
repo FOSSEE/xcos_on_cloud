@@ -6,7 +6,6 @@ function Resistor() {
         var model = scicos_model();
         model.rpar = new ScilabDouble([this.R]);
         model.sim = new ScilabString(["resistor"]);
-        model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
         var mo = new modelica_function();

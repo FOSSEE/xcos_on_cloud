@@ -9,7 +9,6 @@ function CLINDUMMY_f() {
         var model = scicos_model();
         model.sim = list(new ScilabString(["cdummy"]), new ScilabDouble([4]));
         model.state = new ScilabDouble([this.x0]);
-        model.blocktype = new ScilabString(["c"]);
         model.firing = new ScilabDouble();
         model.dep_ut = new ScilabBoolean([false, true]);
 

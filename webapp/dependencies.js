@@ -577,8 +577,8 @@ function TextBlock() {
         this.objectsParameters = options["model"].opar;
         this.nbZerosCrossing = options["model"].nzcross;
         this.nmode = options["model"].nmode;
-        this.oDState = list();
-        this.equations = list(); // Not Known
+        this.oDState = null;
+        this.equations = null;
         this.blockName = "TextBlock";
         this.blockElementName = arguments.callee.caller.name;
     }

@@ -43,7 +43,6 @@ function CCS() {
         mo.parameters = list(this.ParametersName, this.PrametersValue, new ScilabDouble(...zeros(getData(this.ParametersName))));
         var exprs = new ScilabDouble();
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"CCS\",sz(1),sz(2));"]);
-        model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([false, true]);
         mo.model = new ScilabString([this.ModelName]);
         model.equations = mo;

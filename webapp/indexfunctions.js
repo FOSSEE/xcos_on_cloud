@@ -1395,7 +1395,7 @@ function main(container, outline, toolbar, sidebar, status) {
              * Extracting 'Setup Window' values from Xcos diagram and
              * setting the same on the new diagram.
              */
-            var defaultProperties = setup("get");
+            var defaultProperties = setup("get", "all");
             var propertiesObject = {};
 
             for (var key in defaultProperties) {
@@ -3137,12 +3137,12 @@ function createEdgeObject(graph, source, target, points, sourcePoint, targetPoin
         // Get geometry of the edge
         var geometry = edge.getGeometry();
         // Set the changed geometry for the edge
-        if (source == null && sourcePoint != null)
+        if (sourcePoint != null)
             geometry.setTerminalPoint(sourcePoint, true);
-        if (points != null && points.length > 0)
-            geometry.points = points;
-        if (target == null && targetPoint != null)
+        if (targetPoint != null)
             geometry.setTerminalPoint(targetPoint, false);
+        if (sourcePoint == null || targetPoint == null || (points != null && points.length > 0))
+            geometry.points = points;
 
         // Refresh to reflect changes made
         graph.refresh();

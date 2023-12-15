@@ -8,6 +8,11 @@ function TEXT_f() {
         model.sim = new ScilabString(["Text"]);
         model.rpar = new ScilabString(["Text"]);
         model.ipar = new ScilabDouble([this.font], [this.siz]);
+        model.opar = null;
+        model.nzcross = null;
+        model.nmode = null;
+        model.odstate = null;
+        model.equations = null;
         var exprs = new ScilabString(["Text"], [this.font], [this.siz]);
         this.displayParameter=[this.txt];
         var graphics = scicos_graphics();

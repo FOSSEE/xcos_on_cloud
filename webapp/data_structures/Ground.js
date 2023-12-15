@@ -9,7 +9,6 @@ function Ground() {
         model.in = new ScilabDouble([1]);
         model.out = new ScilabDouble();
         model.sim = new ScilabString(["Ground"]);
-        model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
         var mo = new modelica_function();

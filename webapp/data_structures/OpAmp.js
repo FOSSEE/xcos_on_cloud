@@ -6,7 +6,6 @@ function OpAmp() {
 
         var model = scicos_model();
         model.sim = new ScilabString(["OpAmp"]);
-        model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
         var mo = new modelica_function();

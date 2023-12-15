@@ -6,7 +6,29 @@ var realTimeScaling = 0.0E00;
 var toleranceOnTime = 1.0E-10;
 var maxIntegrationTimeInterval = 1.00001E05;
 var solver = 0.0;
-var defaultProperties = null;
+var defaultProperties = {
+    i_time: ["Final Integration Time", "finalIntegrationTime", finalIntegrationTime],
+    ab_tolerance: ["Integrator Absolute Tolerance", "integratorAbsoluteTolerance", integratorAbsoluteTolerance],
+    rl_tolerance: ["Integrator Relative Tolerance", "integratorRelativeTolerance", integratorRelativeTolerance],
+    max_step_sze: ["Maximum step size(0 means no limit)", "maximumStepSize", maximumStepSize],
+    rt_scale: ["Real Time Scaling", "realTimeScaling", realTimeScaling],
+    tm_tolerance: ["Tolerance on Time", "toleranceOnTime", toleranceOnTime],
+    max_integ_time_interval: ["Maximum Integration Time Interval", "maxIntegrationTimeInterval", maxIntegrationTimeInterval],
+    solv_kind: ["Solver Kind", "solver", solver]
+};
+var allProperties = {
+    background: ["Background", "background", null],
+    cellsLocked: ["Cells Locked", "cellsLocked", null],
+    i_time: ["Final Integration Time", "finalIntegrationTime", null],
+    ab_tolerance: ["Integrator Absolute Tolerance", "integratorAbsoluteTolerance", null],
+    rl_tolerance: ["Integrator Relative Tolerance", "integratorRelativeTolerance", null],
+    max_integ_time_interval: ["Maximum Integration Time Interval", "maxIntegrationTimeInterval", null],
+    max_step_sze: ["Maximum step size(0 means no limit)", "maximumStepSize", null],
+    rt_scale: ["Real Time Scaling", "realTimeScaling", null],
+    solv_kind: ["Solver Kind", "solver", null],
+    title: ["Title", "title", null],
+    tm_tolerance: ["Tolerance on Time", "toleranceOnTime", null]
+};
 
 var expressionArray = [];
 
@@ -26,16 +48,9 @@ var solver_kind_array = ["LSodar", "Sundials/CVODE - BDF - NEWTON",
 function setup() {
     var method = arguments[0];
     if (method == "get") {
-        defaultProperties = {
-            i_time: ["Final Integration Time", "finalIntegrationTime", finalIntegrationTime],
-            ab_tolerance: ["Integrator Absolute Tolerance", "integratorAbsoluteTolerance", integratorAbsoluteTolerance],
-            rl_tolerance: ["Integrator Relative Tolerance", "integratorRelativeTolerance", integratorRelativeTolerance],
-            max_step_sze: ["Maximum step size(0 means no limit)", "maximumStepSize", maximumStepSize],
-            rt_scale: ["Real Time Scaling", "realTimeScaling", realTimeScaling],
-            tm_tolerance: ["Tolerance on Time", "toleranceOnTime", toleranceOnTime],
-            max_integ_time_interval: ["Maximum Integration Time Interval", "maxIntegrationTimeInterval", maxIntegrationTimeInterval],
-            solv_kind: ["Solver Kind", "solver", solver]
-        };
+        if (arguments[1] == "all") {
+            return allProperties;
+        }
         return defaultProperties;
     } else if (method == "set") {
         var setup_values = arguments[1];
