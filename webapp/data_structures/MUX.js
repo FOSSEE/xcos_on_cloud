@@ -10,7 +10,6 @@ function MUX() {
         model.in = new ScilabDouble(...math.transpose(arr));
         model.out = new ScilabDouble([0]);
         model.ipar = new ScilabDouble([this.in]);
-        model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
         var exprs = new ScilabString([this.in]);

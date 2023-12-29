@@ -15,7 +15,6 @@ function CLR() {
         model.out = new ScilabDouble([1]);
         model.state = new ScilabDouble([this.x0]);
         model.rpar = new ScilabDouble([this.A], [this.B], [this.C], [this.D]);
-        model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([false, true]);
 
         var exprs = new ScilabString(["1"], ["1+s"]);
@@ -42,7 +41,6 @@ function CLR() {
         model.out = new ScilabDouble([1]);
         model.state = new ScilabDouble([this.x0]);
         model.rpar = new ScilabDouble(...this.value);
-        model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([false, true]);
         var exprs = new ScilabString([this.num.toString()], [this.den.toString()]);
         this.displayParameter = [[this.num], [this.den]];

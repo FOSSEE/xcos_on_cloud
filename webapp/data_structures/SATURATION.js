@@ -15,7 +15,6 @@ function SATURATION() {
 		model.nmode = new ScilabDouble([1]);
 		model.out = new ScilabDouble([1]);
 		model.rpar = new ScilabDouble(...this.rpar);
-		model.blocktype = new ScilabString(["c"]);
 		model.dep_ut = new ScilabBoolean([true, false]);
 		this.zeroc = parseFloat(getData(model.nmode)[0])
 		var exprs = new ScilabString([this.maxp], [this.minp], [parseFloat(getData(model.nmode)[0])]);

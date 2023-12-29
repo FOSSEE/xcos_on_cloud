@@ -9,7 +9,6 @@ function SUM_f() {
         model.sim = list(new ScilabString(["plusblk"]), new ScilabDouble([2]));
         model.in = new ScilabDouble([-1], [-1], [-1]);
         model.out = new ScilabDouble([-1]);
-        model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"SUM_f\",sz(1),sz(2));"]);
@@ -26,7 +25,6 @@ SUM_f.prototype.set = function SUM_f() {
         model.sim = list(new ScilabString(["plusblk"]), new ScilabDouble([2]));
         model.in = new ScilabDouble([-1], [-1], [-1]);
         model.out = new ScilabDouble([-1]);
-        model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"SUM_f\",sz(1),sz(2));"]);

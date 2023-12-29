@@ -14,7 +14,6 @@ function GAINBLK() {
         model.in2 = new ScilabDouble([this.in2]);
         model.out2 = new ScilabDouble([this.out2]);
         model.rpar = new ScilabDouble([this.gain]);
-        model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
         var exprs = new ScilabString([sci2exp(this.gain)]);

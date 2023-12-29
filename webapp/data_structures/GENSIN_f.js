@@ -10,7 +10,6 @@ function GENSIN_f() {
         model.out2 = new ScilabDouble       ([1]);
         model.outtyp = new ScilabDouble([1]);
         model.rpar = new ScilabDouble([1], [1], [0]);
-        model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([false, true]);
 
         var exprs = new ScilabString(this.rpar[0], this.rpar[1], this.rpar[2]);

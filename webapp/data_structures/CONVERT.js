@@ -12,7 +12,6 @@ function CONVERT() {
         model.outtyp = new ScilabDouble([3]);
         model.rpar = new ScilabDouble();
         model.ipar = new ScilabDouble([this.sgn]);
-        model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
         var exprs = new ScilabString([sci2exp(1)], [sci2exp(3)], [sci2exp(0)]);

@@ -41,7 +41,6 @@ function IdealTransformer() {
         mo.parameters = list(new ScilabString(this.ParametersName), new ScilabDouble(this.PrametersValue), new ScilabDouble(zeros(getData(this.ParametersName))));
         var exprs = new ScilabString(["1"]);
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"IdealTransformer\",sz(1),sz(2));"]);
-        model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([false, true]);
         mo.model = new ScilabString([this.ModelName]);
         model.equations = mo;

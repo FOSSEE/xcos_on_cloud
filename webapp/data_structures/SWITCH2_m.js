@@ -22,7 +22,6 @@ function SWITCH2_m() {
         model.rpar = new ScilabDouble([this.rpar]);
         model.nzcross = new ScilabDouble([this.nzz]);
         model.nmode = new ScilabDouble([1]);
-        model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
         var exprs = new ScilabString([sci2exp(this.trial)], [sci2exp(this.ipar)], [sci2exp(this.rpar)], [sci2exp(this.nzz)]);

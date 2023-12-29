@@ -122,7 +122,7 @@ function scicos_model() {
     this.ipar = options.ipar || new ScilabDouble();
     this.rpar = options.rpar || new ScilabDouble();
     this.opar = options.opar || list(); // new ScilabDouble();
-    this.blocktype = options.blocktype || new ScilabString(["c"]);
+    this.blocktype = options.blocktype || null;
     this.firing = options.firing || new ScilabDouble();
     this.dep_ut = options.dep_ut || new ScilabBoolean([false, false]);
     // If label not available, use image

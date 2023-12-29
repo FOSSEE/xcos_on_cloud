@@ -11,7 +11,6 @@ function SUMMATION() {
         model.in2 = new ScilabDouble([-2], [-2]);
         model.out2 = new ScilabDouble([-2]);
         model.ipar = new ScilabDouble(...this.sgn);
-        model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
         var exprs = new ScilabString([sci2exp(this.sgn)]);

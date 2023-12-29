@@ -13,7 +13,6 @@ function LOGIC() {
         model.intyp = new ScilabDouble([5, 5]);
         model.outtyp = new ScilabDouble([5]);
         model.opar = list(int8(...this.mat));
-        model.blocktype = new ScilabString(["c"]);
         model.firing = new ScilabBoolean([false]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
@@ -102,7 +101,6 @@ function LOGIC() {
         model.intyp = new ScilabDouble([5, 5]);
         model.outtyp = new ScilabDouble([5]);
         model.opar = list(int8(...mat_1));
-        model.blocktype = new ScilabString(["c"]);
         model.firing = new ScilabBoolean([false]);
         model.dep_ut = new ScilabBoolean([true, false]);
         this.x.model.outtyp = new ScilabDouble(...this.ot);

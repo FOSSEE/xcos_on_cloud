@@ -17,7 +17,6 @@ function HYSTHERESIS() {
         model.rpar = new ScilabDouble(...this.rpar);
         model.nzcross = new ScilabDouble([this.nzz]);
         model.nmode = new ScilabDouble([1]);
-        model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
         var exprs = new ScilabString(...this.rpar, [Math.sign(this.nzz)]);

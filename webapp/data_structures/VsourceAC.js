@@ -10,7 +10,6 @@ function VsourceAC() {
         this.FR = 50;
         model.rpar = new ScilabDouble([this.VA], [this.FR]);
         model.sim = new ScilabString(["VsourceAC"]);
-        model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
         var mo = modelica_function();

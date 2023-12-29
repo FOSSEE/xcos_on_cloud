@@ -14,7 +14,6 @@ function Switch() {
         this.Z = math.eval('[ Ron ; Roff ]', scope)._data;
 
         model.sim = new ScilabString(["Switch"]);
-        model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
         var mo = new modelica_function();

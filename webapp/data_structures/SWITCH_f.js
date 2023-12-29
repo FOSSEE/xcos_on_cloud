@@ -10,7 +10,6 @@ function SWITCH_f() {
         model.in = new ScilabDouble(...this.in1);
         model.out = new ScilabDouble([-1]);
         model.ipar = new ScilabDouble([this.i0]);
-        model.blocktype = new ScilabString(["c"]);
         model.firing = new ScilabDouble();
         model.dep_ut = new ScilabBoolean([true, true]);
 
@@ -31,7 +30,6 @@ function SWITCH_f() {
         model.in=new ScilabDouble(...this.in1);
         model.out = new ScilabDouble([-1]);
         model.ipar=new ScilabDouble([this.i0]);
-        model.blocktype = new ScilabString(["c"]);
         model.firing = new ScilabDouble();
         model.dep_ut = new ScilabBoolean([true,true]);
 
