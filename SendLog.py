@@ -2020,6 +2020,12 @@ def internal_fun(internal_key):
             logger.warning(msg)
             return jsonify({'msg': msg})
         value = request.form[parameter]
+        try:
+            value.encode('ascii')
+        except UnicodeEncodeError:
+            msg = parameter + ' parameter has non-ascii value'
+            logger.warning(msg)
+            return jsonify({'msg': msg})
         if re.search(SYSTEM_COMMANDS, value):
             msg = parameter + ' parameter has unsafe value'
             logger.warning(msg)
