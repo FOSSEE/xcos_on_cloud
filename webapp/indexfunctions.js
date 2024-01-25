@@ -1450,7 +1450,8 @@ function main(container, outline, toolbar, sidebar, status) {
             var scriptwarn = false;
             var audiofilewarn = false;
             var c_filewarn = false;
-
+            let Portcounter = {};
+            let geometryCells = {};
             for (var currentNode = rootNode.firstChild;
                 currentNode != null;
                 currentNode = currentNode.nextSibling) {
@@ -1493,6 +1494,12 @@ function main(container, outline, toolbar, sidebar, status) {
                  * handled with the respective constructor calls.
                  */
                 if (!(curNodeName.endsWith('Link') || curNodeName.endsWith('Port'))) {
+                    Portcounter[curId] = {
+                        inputPort:0,outputPort:0,commandPort:0,
+                        controlPort:0,inputindex:0,outputindex:0,
+                        commandindex:0,controlindex:0
+                    };
+                    geometryCells[curId] = geometryCell;
                     var ifaceFuncName = null;
                     /*
                      * Maverick
@@ -1574,26 +1581,104 @@ function main(container, outline, toolbar, sidebar, status) {
                     }
                 } else if (curNodeName.endsWith('Port')) {
                     var oldParentId = currentNode.getAttribute('parent');
-                    var ordering = currentNode.getAttribute('ordering');
-                    var dataLines = currentNode.getAttribute('dataLines');
-                    var dataColumns = currentNode.getAttribute('dataColumns');
-                    var dataType = currentNode.getAttribute('dataType');
-                    var style = currentNode.getAttribute('style');
-                    var newParentObj = nodeDataObject[oldParentId];
-
-                    var curNodeData = {
-                        nodename: curNodeName,
-                        ordering: ordering,
-                        dataLines: dataLines,
-                        dataColumns: dataColumns,
-                        dataType: dataType,
-                        style: style,
-                        id: curId,
-                        geometryCell: geometryCell,
-                    };
-                    newParentObj.inputDataArray.push(curNodeData);
+                    
+                    if(curNodeName=='ImplicitInputPort' || curNodeName=='ExplicitInputPort'){
+                        Portcounter[oldParentId].inputPort++;
+                    }else if(curNodeName=='ImplicitOutputPort' || curNodeName=='ExplicitOutputPort'){
+                        Portcounter[oldParentId].outputPort++;
+                    }else if(curNodeName=='CommandPort'){
+                        Portcounter[oldParentId].commandPort++;
+                    }else if(curNodeName=='ControlPort'){
+                        Portcounter[oldParentId].controlPort++;
+                    }
+                
                 }
             }
+
+for (var currentNode = rootNode.firstChild;
+    currentNode != null;
+    currentNode = currentNode.nextSibling) {
+    var curNodeName = currentNode.nodeName;
+
+    if (curNodeName == 'mxCell') {
+        /* mxCell nodes are not parsed */
+        continue;
+    }
+
+    if (curNodeName.endsWith('Link')) {
+        /* Link nodes are parsed later */
+        continue;
+    }
+
+    /* parse only Block and Port nodes now */
+
+    var cell = codec.decode(currentNode);
+
+    var curId = currentNode.getAttribute('id');
+
+    /*wSourceObj);
+                console.log(newTargetObj.newId);
+    
+    /*
+     * Maverick
+     * Adding the blocks.
+     * Finding out the constructor names for all the blocks which
+     * are not a port or a link. Ports will be automatically
+     * handled with the respective constructor calls.
+     */
+    if (curNodeName.endsWith('Port')) {
+        var oldParentId = currentNode.getAttribute('parent');
+        var ordering = currentNode.getAttribute('ordering');
+        var dataLines = currentNode.getAttribute('dataLines');
+        var dataColumns = currentNode.getAttribute('dataColumns');
+        var dataType = currentNode.getAttribute('dataType');
+        var style = currentNode.getAttribute('style');
+        var newParentObj = nodeDataObject[oldParentId];
+        var parentgeometryCell = geometryCells[oldParentId];
+        
+    let block_height = parentgeometryCell.height;
+    let block_width = parentgeometryCell.width;
+    let x;
+    let y;
+    let portcount = Portcounter[oldParentId];
+    if(curNodeName=='ImplicitInputPort' || curNodeName=='ExplicitInputPort'){
+        x = -8; 
+         y = (block_height / (2 * portcount.inputPort)) * (2 * portcount.inputindex + 1) - 4;
+        
+        portcount.inputindex++;
+    }else if(curNodeName=='ImplicitOutputPort' || curNodeName=='ExplicitOutputPort'){
+        x = block_width; 
+        y = (block_height / (2 * portcount.outputPort)) * (2 * portcount.outputindex + 1) - 4;
+        
+        portcount.outputindex++;
+    }else if(curNodeName=='CommandPort'){
+        x = (block_width / (2 * portcount.commandPort)) * (2 * portcount.commandindex + 1) - 4; // for commandPort
+        y = block_height;
+        
+        portcount.commandindex++;
+    }else if(curNodeName=='ControlPort'){
+        x = (block_width / (2 * portcount.controlPort)) * (2 * portcount.controlindex + 1) - 4; // for controlPort
+        y = -8;
+        
+        portcount.controlindex++;
+    }
+    
+    let geometryCell = new mxGeometry(x, y, 8, 8);
+    
+    
+        let curNodeData = {
+            nodename: curNodeName,
+            ordering: ordering,
+            dataLines: dataLines,
+            dataColumns: dataColumns,
+            dataType: dataType,
+            style: style,
+            id: curId,
+            geometryCell: geometryCell,
+        };
+        newParentObj.inputDataArray.push(curNodeData);
+    }
+}
 
             if (scriptwarn) {
                 alert("Upload a script to define functions used by the scifunc_block_m");
@@ -1655,7 +1740,7 @@ function main(container, outline, toolbar, sidebar, status) {
 
                 var newSourceCell = graph.getModel().getCell(newSourceObj.newId);
                 var newTargetCell = graph.getModel().getCell(newTargetObj.newId);
-
+                
                 var childNode = currentNode.firstChild;
                 if (childNode != null && childNode.nodeName == 'mxGeometry') {
                     for (var tempNode = childNode.firstChild;
