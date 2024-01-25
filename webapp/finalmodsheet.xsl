@@ -2068,5 +2068,7 @@ Look for TAG:Break1!!!
         </xsl:element>
     </xsl:template>
      <!-- To remove the instance variable in generated Xcos-->
-    <xsl:template match="mxCell/instance"/>
+    <xsl:template match="mxCell/instance" />
+     <!-- To remove the mxCell id="...#identifier" tag from Xcos -->
+    <xsl:template match="mxCell[contains(@id, '#identifier')]" />
 </xsl:stylesheet>

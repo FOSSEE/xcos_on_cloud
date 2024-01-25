@@ -58,6 +58,13 @@ function loadXMLDoc(filename) {
     return xhttp.responseXML;
 }
 
+function getInitialXsltProcessor() {
+    var xsl = loadXMLDoc(initialmodsheet);
+    var xsltProcessor = new XSLTProcessor();
+    xsltProcessor.importStylesheet(xsl);
+    return xsltProcessor;
+}
+
 function getXsltProcessor() {
     var xsl = loadXMLDoc(finalmodsheet);
     var xsltProcessor = new XSLTProcessor();
@@ -1387,6 +1394,7 @@ function main(container, outline, toolbar, sidebar, status) {
         try {
             var parent = graph.getDefaultParent();
             var doc = mxUtils.parseXml(xmlDocument);
+            doc = getInitialXsltProcessor().transformToDocument(doc);
 
             var codec = new mxCodec(doc);
             var rootNode = doc.documentElement;

@@ -65,5 +65,3 @@ function WRITEAU_f() {
         return dimension
     }
 }
-
-//updated on 8/6/17 --ritveeka

@@ -64,4 +64,3 @@ VVsourceAC.prototype.set = function VVsourceAC() {
         return dimension
     }
 }
-//updated on 8/6/17 --ritveeka
