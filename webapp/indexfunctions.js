@@ -1581,104 +1581,174 @@ function main(container, outline, toolbar, sidebar, status) {
                     }
                 } else if (curNodeName.endsWith('Port')) {
                     var oldParentId = currentNode.getAttribute('parent');
-                    
-                    if(curNodeName=='ImplicitInputPort' || curNodeName=='ExplicitInputPort'){
-                        Portcounter[oldParentId].inputPort++;
-                    }else if(curNodeName=='ImplicitOutputPort' || curNodeName=='ExplicitOutputPort'){
-                        Portcounter[oldParentId].outputPort++;
-                    }else if(curNodeName=='CommandPort'){
-                        Portcounter[oldParentId].commandPort++;
-                    }else if(curNodeName=='ControlPort'){
-                        Portcounter[oldParentId].controlPort++;
+                    let style = currentNode.getAttribute('style');
+                    let rotation = null;
+                    if (style != null) {
+                        let styleObject = styleToObject(style);
+                        rotation = styleObject.rotation;
                     }
-                
+                    let isInputPort = false;
+                    let isControlPort = false;
+                    let isOutputPort = false;
+                    let isCommandPort = false;
+                    if (rotation !== null) {
+                        if (curNodeName == 'ExplicitInputPort' || curNodeName == 'ImplicitInputPort' || curNodeName == 'ControlPort') {
+                            if (rotation == 270) {
+                                isCommandPort = true;
+                            } else if (rotation == 180) {
+                                isOutputPort = true;
+                            } else if (rotation == 90) {
+                                isControlPort = true;
+                            } else {
+                                isInputPort = true;
+                            }
+                        } else if (curNodeName == 'ExplicitOutputPort' || curNodeName == 'ImplicitOutputPort' || curNodeName == 'CommandPort') {
+                            if (rotation == 270) {
+                                isControlPort = true;
+                            } else if (rotation == 180) {
+                                isInputPort = true;
+                            } else if (rotation == 90) {
+                                isCommandPort = true;
+                            } else {
+                                isOutputPort = true;
+                            }
+                        }
+                    } else {
+                        if (curNodeName == 'ExplicitInputPort' || curNodeName == 'ImplicitInputPort') {
+                            isInputPort = true;
+                        } else if (curNodeName == 'ControlPort') {
+                            isControlPort = true;
+                        } else if (curNodeName == 'ExplicitOutputPort' || curNodeName == 'ImplicitOutputPort') {
+                            isOutputPort = true;
+                        } else if (curNodeName == 'CommandPort') {
+                            isCommandPort = true;
+                        }
+                    }
+                    let portcount = Portcounter[oldParentId];
+                    if (isInputPort) {
+                        portcount.inputPort++;
+                    } else if (isOutputPort) {
+                        portcount.outputPort++;
+                    } else if (isCommandPort) {
+                        portcount.commandPort++;
+                    } else if (isControlPort) {
+                        portcount.controlPort++;
+                    }
+
                 }
             }
 
-for (var currentNode = rootNode.firstChild;
-    currentNode != null;
-    currentNode = currentNode.nextSibling) {
-    var curNodeName = currentNode.nodeName;
+            for (var currentNode = rootNode.firstChild;
+                currentNode != null;
+                currentNode = currentNode.nextSibling) {
+                var curNodeName = currentNode.nodeName;
 
-    if (curNodeName == 'mxCell') {
-        /* mxCell nodes are not parsed */
-        continue;
-    }
+                if (curNodeName == 'mxCell') {
+                    /* mxCell nodes are not parsed */
+                    continue;
+                }
 
-    if (curNodeName.endsWith('Link')) {
-        /* Link nodes are parsed later */
-        continue;
-    }
+                if (!curNodeName.endsWith('Port')) {
+                    /* Link nodes are parsed later */
+                    continue;
+                }
 
-    /* parse only Block and Port nodes now */
+                /* parse only Port nodes now */
 
-    var cell = codec.decode(currentNode);
+                var cell = codec.decode(currentNode);
 
-    var curId = currentNode.getAttribute('id');
+                var curId = currentNode.getAttribute('id');
 
-    /*wSourceObj);
-                console.log(newTargetObj.newId);
-    
-    /*
-     * Maverick
-     * Adding the blocks.
-     * Finding out the constructor names for all the blocks which
-     * are not a port or a link. Ports will be automatically
-     * handled with the respective constructor calls.
-     */
-    if (curNodeName.endsWith('Port')) {
-        var oldParentId = currentNode.getAttribute('parent');
-        var ordering = currentNode.getAttribute('ordering');
-        var dataLines = currentNode.getAttribute('dataLines');
-        var dataColumns = currentNode.getAttribute('dataColumns');
-        var dataType = currentNode.getAttribute('dataType');
-        var style = currentNode.getAttribute('style');
-        var newParentObj = nodeDataObject[oldParentId];
-        var parentgeometryCell = geometryCells[oldParentId];
-        
-    let block_height = parentgeometryCell.height;
-    let block_width = parentgeometryCell.width;
-    let x;
-    let y;
-    let portcount = Portcounter[oldParentId];
-    if(curNodeName=='ImplicitInputPort' || curNodeName=='ExplicitInputPort'){
-        x = -8; 
-         y = (block_height / (2 * portcount.inputPort)) * (2 * portcount.inputindex + 1) - 4;
-        
-        portcount.inputindex++;
-    }else if(curNodeName=='ImplicitOutputPort' || curNodeName=='ExplicitOutputPort'){
-        x = block_width; 
-        y = (block_height / (2 * portcount.outputPort)) * (2 * portcount.outputindex + 1) - 4;
-        
-        portcount.outputindex++;
-    }else if(curNodeName=='CommandPort'){
-        x = (block_width / (2 * portcount.commandPort)) * (2 * portcount.commandindex + 1) - 4; // for commandPort
-        y = block_height;
-        
-        portcount.commandindex++;
-    }else if(curNodeName=='ControlPort'){
-        x = (block_width / (2 * portcount.controlPort)) * (2 * portcount.controlindex + 1) - 4; // for controlPort
-        y = -8;
-        
-        portcount.controlindex++;
-    }
-    
-    let geometryCell = new mxGeometry(x, y, 8, 8);
-    
-    
-        let curNodeData = {
-            nodename: curNodeName,
-            ordering: ordering,
-            dataLines: dataLines,
-            dataColumns: dataColumns,
-            dataType: dataType,
-            style: style,
-            id: curId,
-            geometryCell: geometryCell,
-        };
-        newParentObj.inputDataArray.push(curNodeData);
-    }
-}
+                var oldParentId = currentNode.getAttribute('parent');
+                var ordering = currentNode.getAttribute('ordering');
+                var dataLines = currentNode.getAttribute('dataLines');
+                var dataColumns = currentNode.getAttribute('dataColumns');
+                var dataType = currentNode.getAttribute('dataType');
+                var style = currentNode.getAttribute('style');
+                var newParentObj = nodeDataObject[oldParentId];
+                var parentgeometryCell = geometryCells[oldParentId];
+
+                let rotation = null;
+                if (style != null) {
+                    const styleObject = styleToObject(style);
+                    rotation = styleObject.rotation;
+                }
+                let isInputPort = false;
+                let isControlPort = false;
+                let isOutputPort = false;
+                let isCommandPort = false;
+                if (rotation !== null) {
+                    if (curNodeName == 'ExplicitInputPort' || curNodeName == 'ImplicitInputPort' || curNodeName == 'ControlPort') {
+                        if (rotation == 270) {
+                            isCommandPort = true;
+                        } else if (rotation == 180) {
+                            isOutputPort = true;
+                        } else if (rotation == 90) {
+                            isControlPort = true;
+                        } else {
+                            isInputPort = true;
+                        }
+                    } else if (curNodeName == 'ExplicitOutputPort' || curNodeName == 'ImplicitOutputPort' || curNodeName == 'CommandPort') {
+                        if (rotation == 270) {
+                            isControlPort = true;
+                        } else if (rotation == 180) {
+                            isInputPort = true;
+                        } else if (rotation == 90) {
+                            isCommandPort = true;
+                        } else {
+                            isOutputPort = true;
+                        }
+                    }
+                } else {
+                    if (curNodeName == 'ExplicitInputPort' || curNodeName == 'ImplicitInputPort') {
+                        isInputPort = true;
+                    } else if (curNodeName == 'ControlPort') {
+                        isControlPort = true;
+                    } else if (curNodeName == 'ExplicitOutputPort' || curNodeName == 'ImplicitOutputPort') {
+                        isOutputPort = true;
+                    } else if (curNodeName == 'CommandPort') {
+                        isCommandPort = true;
+                    }
+                }
+                let block_height = parentgeometryCell.height;
+                let block_width = parentgeometryCell.width;
+                let x;
+                let y;
+                let portcount = Portcounter[oldParentId];
+                if (isInputPort) {
+                    x = -8;
+                    y = (block_height / (2 * portcount.inputPort)) * (2 * portcount.inputindex + 1) - 4;
+                    portcount.inputindex++;
+                } else if (isControlPort) {
+                    x = (block_width / (2 * portcount.controlPort)) * (2 * portcount.controlindex + 1) - 4;
+                    y = -8;
+                    portcount.controlindex++;
+                } else if (isOutputPort) {
+                    x = block_width;
+                    y = (block_height / (2 * portcount.outputPort)) * (2 * portcount.outputindex + 1) - 4;
+                    portcount.outputindex++;
+                } else if (isCommandPort) {
+                    x = (block_width / (2 * portcount.commandPort)) * (2 * portcount.commandindex + 1) - 4;
+                    y = block_height;
+                    portcount.commandindex++;
+                }
+
+                let geometryCell = new mxGeometry(x, y, 8, 8);
+
+
+                let curNodeData = {
+                    nodename: curNodeName,
+                    ordering: ordering,
+                    dataLines: dataLines,
+                    dataColumns: dataColumns,
+                    dataType: dataType,
+                    style: style,
+                    id: curId,
+                    geometryCell: geometryCell,
+                };
+
+                newParentObj.inputDataArray.push(curNodeData);
+            }
 
             if (scriptwarn) {
                 alert("Upload a script to define functions used by the scifunc_block_m");
@@ -1740,7 +1810,7 @@ for (var currentNode = rootNode.firstChild;
 
                 var newSourceCell = graph.getModel().getCell(newSourceObj.newId);
                 var newTargetCell = graph.getModel().getCell(newTargetObj.newId);
-                
+
                 var childNode = currentNode.firstChild;
                 if (childNode != null && childNode.nodeName == 'mxGeometry') {
                     for (var tempNode = childNode.firstChild;
