@@ -1508,6 +1508,7 @@ function main(container, outline, toolbar, sidebar, status) {
                      * subsequent mapping.
                      */
                     var temporaryMapObject = new Object();
+                    temporaryMapObject.nodeName = curNodeName;
                     temporaryMapObject.inputDataArray = [];
 
                     switch (curNodeName) {
@@ -1667,6 +1668,7 @@ function main(container, outline, toolbar, sidebar, status) {
                 var style = currentNode.getAttribute('style');
                 var newParentObj = nodeDataObject[oldParentId];
                 var parentgeometryCell = geometryCells[oldParentId];
+                const parentNodeName = newParentObj.nodeName;
 
                 let rotation = null;
                 if (style != null) {
@@ -1710,31 +1712,50 @@ function main(container, outline, toolbar, sidebar, status) {
                         isCommandPort = true;
                     }
                 }
-                let block_height = parentgeometryCell.height;
-                let block_width = parentgeometryCell.width;
+                const block_x = parentgeometryCell.x;
+                const block_y = parentgeometryCell.y;
+                const block_height = parentgeometryCell.height;
+                const block_width = parentgeometryCell.width;
                 let x;
                 let y;
+                let linkx = block_x + Math.trunc(block_width / 2);
+                let linky = block_y + Math.trunc(block_height / 2);
                 let portcount = Portcounter[oldParentId];
                 if (isInputPort) {
                     x = -8;
-                    y = (block_height / (2 * portcount.inputPort)) * (2 * portcount.inputindex + 1) - 4;
+                    y = block_height * (2 * portcount.inputindex + 1) / (2 * portcount.inputPort) - 4;
+                    if (parentNodeName != 'SplitBlock') {
+                        linkx = block_x + x;
+                        linky = block_y + y + 4;
+                    }
                     portcount.inputindex++;
                 } else if (isControlPort) {
-                    x = (block_width / (2 * portcount.controlPort)) * (2 * portcount.controlindex + 1) - 4;
+                    x = block_width * (2 * portcount.controlindex + 1) / (2 * portcount.controlPort) - 4;
                     y = -8;
+                    if (parentNodeName != 'SplitBlock') {
+                        linkx = block_x + x + 4;
+                        linky = block_y + y;
+                    }
                     portcount.controlindex++;
                 } else if (isOutputPort) {
                     x = block_width;
-                    y = (block_height / (2 * portcount.outputPort)) * (2 * portcount.outputindex + 1) - 4;
+                    y = block_height * (2 * portcount.outputindex + 1) / (2 * portcount.outputPort) - 4;
+                    if (parentNodeName != 'SplitBlock') {
+                        linkx = block_x + x + 8;
+                        linky = block_y + y + 4;
+                    }
                     portcount.outputindex++;
                 } else if (isCommandPort) {
-                    x = (block_width / (2 * portcount.commandPort)) * (2 * portcount.commandindex + 1) - 4;
+                    x = block_width * (2 * portcount.commandindex + 1) / (2 * portcount.commandPort) - 4;
                     y = block_height;
+                    if (parentNodeName != 'SplitBlock') {
+                        linkx = block_x + x + 4;
+                        linky = block_y + y + 8;
+                    }
                     portcount.commandindex++;
                 }
 
-                let geometryCell = new mxGeometry(x, y, 8, 8);
-
+                const geometryCell = new mxGeometry(x, y, 8, 8);
 
                 let curNodeData = {
                     nodename: curNodeName,
@@ -1748,6 +1769,8 @@ function main(container, outline, toolbar, sidebar, status) {
                 };
 
                 newParentObj.inputDataArray.push(curNodeData);
+
+                geometryCells[curId] = new mxPoint(linkx, linky);
             }
 
             if (scriptwarn) {
@@ -1799,11 +1822,13 @@ function main(container, outline, toolbar, sidebar, status) {
                     continue;
                 }
 
-                var sourcePoint = null;
-                var targetPoint = null;
+                const sourceId = currentNode.getAttribute('source');
+                const targetId = currentNode.getAttribute('target');
+                const sourcePoint = geometryCells[sourceId];
+                const targetPoint = geometryCells[targetId];
                 var pointsArray = [];
-                var newSourceObj = nodeDataObject[currentNode.getAttribute('source')];
-                var newTargetObj = nodeDataObject[currentNode.getAttribute('target')];
+                const newSourceObj = nodeDataObject[sourceId];
+                const newTargetObj = nodeDataObject[targetId];
                 if (newSourceObj == null || newTargetObj == null) {
                     continue;
                 }
@@ -1816,15 +1841,6 @@ function main(container, outline, toolbar, sidebar, status) {
                     for (var tempNode = childNode.firstChild;
                         tempNode != null;
                         tempNode = tempNode.nextSibling) {
-                        if (tempNode.nodeName == 'mxPoint') {
-                            var attributeAs = tempNode.getAttribute('as');
-                            var point = new mxPoint(tempNode.getAttribute('x'), tempNode.getAttribute('y'));
-                            if (attributeAs == 'sourcePoint')
-                                sourcePoint = point;
-                            else if (attributeAs == 'targetPoint')
-                                targetPoint = point;
-                            continue;
-                        }
                         if (tempNode.nodeName != 'Array' || tempNode.getAttribute('as') != 'points')
                             continue;
                         for (var mxPointNode = tempNode.firstChild;
