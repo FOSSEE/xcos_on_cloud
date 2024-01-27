@@ -1716,8 +1716,8 @@ function main(container, outline, toolbar, sidebar, status) {
                 const block_y = parentgeometryCell.y;
                 const block_height = parentgeometryCell.height;
                 const block_width = parentgeometryCell.width;
-                let x;
-                let y;
+                let x = block_x + Math.trunc(block_width / 2);
+                let y = block_y + Math.trunc(block_height / 2);
                 let linkx = block_x + Math.trunc(block_width / 2);
                 let linky = block_y + Math.trunc(block_height / 2);
                 let portcount = Portcounter[oldParentId];
