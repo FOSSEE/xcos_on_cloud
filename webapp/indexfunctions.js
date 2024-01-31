@@ -1452,6 +1452,7 @@ function main(container, outline, toolbar, sidebar, status) {
             var c_filewarn = false;
             let Portcounter = {};
             let geometryCells = {};
+            let angles = {};
             for (var currentNode = rootNode.firstChild;
                 currentNode != null;
                 currentNode = currentNode.nextSibling) {
@@ -1500,6 +1501,10 @@ function main(container, outline, toolbar, sidebar, status) {
                         commandindex:0,controlindex:0
                     };
                     geometryCells[curId] = geometryCell;
+                    let angle = currentNode.getAttribute('angle');
+                    if (angle != null && angle != 0) {
+                        angles[curId] = angle;
+                    }
                     var ifaceFuncName = null;
                     /*
                      * Maverick
@@ -1508,7 +1513,6 @@ function main(container, outline, toolbar, sidebar, status) {
                      * subsequent mapping.
                      */
                     var temporaryMapObject = new Object();
-                    temporaryMapObject.nodeName = curNodeName;
                     temporaryMapObject.inputDataArray = [];
 
                     switch (curNodeName) {
@@ -1584,9 +1588,12 @@ function main(container, outline, toolbar, sidebar, status) {
                     var oldParentId = currentNode.getAttribute('parent');
                     let style = currentNode.getAttribute('style');
                     let rotation = null;
+                    let parentAngle = angles[oldParentId];
                     if (style != null) {
                         let styleObject = styleToObject(style);
                         rotation = styleObject.rotation;
+                        if (parentAngle != null)
+                            rotation -= parentAngle;
                     }
                     let isInputPort = false;
                     let isControlPort = false;
@@ -1668,12 +1675,14 @@ function main(container, outline, toolbar, sidebar, status) {
                 var style = currentNode.getAttribute('style');
                 var newParentObj = nodeDataObject[oldParentId];
                 var parentgeometryCell = geometryCells[oldParentId];
-                const parentNodeName = newParentObj.nodeName;
 
                 let rotation = null;
+                let parentAngle = angles[oldParentId];
                 if (style != null) {
                     const styleObject = styleToObject(style);
                     rotation = styleObject.rotation;
+                    if (parentAngle != null)
+                        rotation -= parentAngle;
                 }
                 let isInputPort = false;
                 let isControlPort = false;
@@ -1712,46 +1721,26 @@ function main(container, outline, toolbar, sidebar, status) {
                         isCommandPort = true;
                     }
                 }
-                const block_x = parentgeometryCell.x;
-                const block_y = parentgeometryCell.y;
                 const block_height = parentgeometryCell.height;
                 const block_width = parentgeometryCell.width;
-                let x = block_x + Math.trunc(block_width / 2);
-                let y = block_y + Math.trunc(block_height / 2);
-                let linkx = block_x + Math.trunc(block_width / 2);
-                let linky = block_y + Math.trunc(block_height / 2);
+                let x = Math.trunc(block_width / 2) - 4;
+                let y = Math.trunc(block_height / 2) - 4;
                 let portcount = Portcounter[oldParentId];
                 if (isInputPort) {
                     x = -8;
                     y = block_height * (2 * portcount.inputindex + 1) / (2 * portcount.inputPort) - 4;
-                    if (parentNodeName != 'SplitBlock') {
-                        linkx = block_x + x;
-                        linky = block_y + y + 4;
-                    }
                     portcount.inputindex++;
                 } else if (isControlPort) {
                     x = block_width * (2 * portcount.controlindex + 1) / (2 * portcount.controlPort) - 4;
                     y = -8;
-                    if (parentNodeName != 'SplitBlock') {
-                        linkx = block_x + x + 4;
-                        linky = block_y + y;
-                    }
                     portcount.controlindex++;
                 } else if (isOutputPort) {
                     x = block_width;
                     y = block_height * (2 * portcount.outputindex + 1) / (2 * portcount.outputPort) - 4;
-                    if (parentNodeName != 'SplitBlock') {
-                        linkx = block_x + x + 8;
-                        linky = block_y + y + 4;
-                    }
                     portcount.outputindex++;
                 } else if (isCommandPort) {
                     x = block_width * (2 * portcount.commandindex + 1) / (2 * portcount.commandPort) - 4;
                     y = block_height;
-                    if (parentNodeName != 'SplitBlock') {
-                        linkx = block_x + x + 4;
-                        linky = block_y + y + 8;
-                    }
                     portcount.commandindex++;
                 }
 
@@ -1769,8 +1758,6 @@ function main(container, outline, toolbar, sidebar, status) {
                 };
 
                 newParentObj.inputDataArray.push(curNodeData);
-
-                geometryCells[curId] = new mxPoint(linkx, linky);
             }
 
             if (scriptwarn) {
@@ -1824,8 +1811,6 @@ function main(container, outline, toolbar, sidebar, status) {
 
                 const sourceId = currentNode.getAttribute('source');
                 const targetId = currentNode.getAttribute('target');
-                const sourcePoint = geometryCells[sourceId];
-                const targetPoint = geometryCells[targetId];
                 var pointsArray = [];
                 const newSourceObj = nodeDataObject[sourceId];
                 const newTargetObj = nodeDataObject[targetId];
@@ -1854,7 +1839,7 @@ function main(container, outline, toolbar, sidebar, status) {
                     }
                 }
 
-                createEdgeObject(graph, newSourceCell, newTargetCell, pointsArray, sourcePoint, targetPoint);
+                createEdgeObject(graph, newSourceCell, newTargetCell, pointsArray);
             }
         } finally {
             graph.model.endUpdate();
