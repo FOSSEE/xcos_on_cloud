@@ -8,4 +8,6 @@
     </xsl:template>
      <!-- To remove the mxCell id="...#identifier" tag from Xcos -->
     <xsl:template match="mxCell[contains(@id, '#identifier')]" />
+     <!-- To remove the mxCell as="defaultParent" tag from Xcos -->
+    <xsl:template match="mxCell[@as = 'defaultParent']" />
 </xsl:stylesheet>
