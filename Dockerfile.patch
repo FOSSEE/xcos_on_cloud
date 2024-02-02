@@ -1,0 +1,12 @@
+--- master-5.5/Dockerfile	2023-12-08 17:39:33.951331007 +0530
++++ master-5.5/Dockerfile.1	2024-01-15 10:32:17.735767554 +0530
+@@ -114,6 +114,9 @@
+ # Configure venv and sqlite3
+ RUN ./install.sh
+ 
++# For prod
++RUN chmod +x config.d/prod.sh
++
+ # Cleanup
+ RUN apt-get autoremove -qq --purge python3-pip python3-venv
+ RUN apt-get clean -qq

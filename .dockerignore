@@ -1,5 +1,5 @@
 .dockerignore
-*/Dockerfile
+Dockerfile*
 .flake8
 .git*
 .travis.yml
