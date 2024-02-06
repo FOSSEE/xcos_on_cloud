@@ -95,7 +95,8 @@ $(function() {
                                 $('<option />', {
                                     "value": chapter[a][0],
                                     "text": chapter[a][1] + ") " +
-                                        chapter[a][2]
+                                        chapter[a][2] +
+                                        " (" + chapter[a][3] + " " + (chapter[a][3] != 1 ? "examples" : "example") + ")"
                                 }));
                         }
                         $('#chapter').show();

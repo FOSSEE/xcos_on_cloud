@@ -133,7 +133,7 @@ QUERY_ID_BOOK = (
     "LIMIT 1")
 
 QUERY_COUNT = (
-    "SELECT COUNT(*) "
+    "SELECT COUNT(*), COUNT(DISTINCT(pe.id)) "
     "FROM textbook_companion_preference pe "
     "JOIN textbook_companion_proposal po ON pe.proposal_id = po.id "
     "JOIN list_of_category loc ON pe.category = loc.id "
@@ -146,7 +146,7 @@ QUERY_COUNT = (
     "pe.approval_status = 1")
 
 QUERY_CATEGORY = (
-    "SELECT loc.id, loc.category_name, COUNT(*) "
+    "SELECT loc.id, loc.category_name, COUNT(*), COUNT(DISTINCT(pe.id)) "
     "FROM textbook_companion_preference pe "
     "JOIN textbook_companion_proposal po ON pe.proposal_id = po.id "
     "JOIN list_of_category loc ON pe.category = loc.id "
@@ -177,7 +177,7 @@ QUERY_BOOK = (
     "ORDER BY 2 ASC")
 
 QUERY_CHAPTER = (
-    "SELECT DISTINCT(tcc.id), tcc.number, tcc.name "
+    "SELECT tcc.id, tcc.number, tcc.name, COUNT(*) "
     "FROM textbook_companion_preference pe "
     "JOIN textbook_companion_proposal po ON pe.proposal_id = po.id "
     "JOIN list_of_category loc ON pe.category = loc.id "
@@ -189,7 +189,8 @@ QUERY_CHAPTER = (
     "tcef.xcos_cloud_example_file_error_status = 0 AND "
     "pe.approval_status = 1 AND "
     "tcc.preference_id = ? "
-    "ORDER BY tcc.number ASC")
+    "GROUP BY 1 "
+    "ORDER BY 2 ASC")
 
 QUERY_EXAMPLE = (
     "SELECT DISTINCT(tce.id), tce.number, tce.caption "

@@ -19,99 +19,89 @@
         content="Xcos on Cloud facilitates execution of the codes for particular example(s) online. The results can then be verified with the solved example(s) from the textbook. It is also possible to change the values of the variables and in fact, the code itself, and execute it. In addition to the given examples, one can also copy and paste (or) write a new code in the input box provided and execute the same.">
     <meta name="keywords"
         content="Xcos on Cloud, Xcos, scilab on cloud, scilab online execute, scilab online compiler, scilab computation, calcul scientifique,numerical computation, scilab computing online, scilab calculator">
-        <style>
+    <style>
         html, body{
             height:100%;
             margin:0;
             }
-        </style>
+    </style>
 </head>
 
 <body>
     <div id="loader"></div>
     <div id="content"></div>
     <section id="navbar">
-    <nav class="navbar navbar-expand-md  site-header bg-dark navbar-dark">
-        <img class="navbar-brand" src="images/home-logo.png" alt="logo"
-            style="height:40px;width:30px">
-        <a class="navbar-brand" href="/example">Xcos on cloud</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="collapsibleNavbar">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="https://xcos.fossee.in" target="_blank"><i class="fas fa-cubes"></i> Xcos Editor</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="https://cloud.scilab.in" target="_blank"><i
-                            class="fas fa-chart-line"></i> Scilab on Cloud</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="" id="about-us" data-toggle="modal" data-target="#about_wrapper">About</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="" id="invitation" data-toggle="modal"
-                        data-target="#invitation_wrapper">Invitation</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="" id="contact" data-toggle="modal" data-target="#contact_wrapper">Contact
-                        Us</a>
-                </li>
-                <li class="nav-item">
-                   <a href="https://scilab.in" target="_blank">
-                        <img class="fluid" src="images/scilab-logo.png" alt="logo"
-                            style="width:100px">
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </nav>
-    <br>
+        <nav class="navbar navbar-expand-md  site-header bg-dark navbar-dark">
+            <img class="navbar-brand" src="images/home-logo.png" alt="logo" style="height:40px;width:30px">
+            <a class="navbar-brand" href="/example">Xcos on cloud</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="collapsibleNavbar">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://xcos.fossee.in" target="_blank"><i class="fas fa-cubes"></i>Xcos Editor</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://cloud.scilab.in" target="_blank"><i class="fas fa-chart-line"></i>Scilab on Cloud</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="" id="about-us" data-toggle="modal" data-target="#about_wrapper">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="" id="invitation" data-toggle="modal" data-target="#invitation_wrapper">Invitation</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="" id="contact" data-toggle="modal" data-target="#contact_wrapper">Contact Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="https://scilab.in" target="_blank">
+                            <img class="fluid" src="images/scilab-logo.png" alt="logo" style="width:100px">
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <br>
     </section>
-<section id="data-content">
-    <div class="container small">
-        <form class="col-12">
-        <h3 class="display-6"> <i class="fas fa-cubes"></i> Xcos examples ({{count}} examples)</h3><hr><br>
-            <div id="main-category-wrapper" class="form-row form-group">
-                <label class="col-sm-2 col-form-label font-weight-bold"><i class="fa fa-list-ul" aria-hidden="true"></i>
-                    Main Category :</label>
-                <select id="category-list" class="form-control-sm col-sm-10">
-                    <option value="0">Select Main Category</option>
-                            {% for item in category %}
-                            <option value="{{item[0]}}"{{ " selected" if category_id == item[0] }}>{{item[1]}} ({{item[2]}} examples)</option>
-                            {% endfor %}
-                </select>
-            </div>
-            <div id="book" class="form-row form-group">
-                <label for="disabledInput" class="col-sm-2 col-form-label font-weight-bold"><i class="fa fa-book"
-                        aria-hidden="true"></i> Book :</label>
-                <select id="book-list" class="form-control-sm col-sm-8">
-                    <option value="0">Select Book </option>
-                </select>
-                                <a href="#" class="extra-link col-sm-2" id="contributor">+Contributor <i class="fa fa-users"
-                        aria-hidden="true"></i> </a>
-            </div>
-            <div id="chapter" class="form-row form-group">
-                <label for="disabledInput" class="col-sm-2 col-form-label font-weight-bold"><i class="fa fa-file"
-                        aria-hidden="true"></i> Chapter :</label>
-                <select id="chapter-list" class="form-control-sm col-sm-8">
-                    <option value="0">Select Chapter</option>
-                </select>
-                <a href="#" class="extra-link col-sm-2" id="download-chapter">Download Chapter <i class="fa fa-download"
-                        aria-hidden="true"></i></a>
-            </div>
-            <div id="example" class="form-row form-group">
+    <section id="data-content">
+        <div class="container small">
+            <form class="col-12">
+                <h3 class="display-6"> <i class="fas fa-cubes"></i> Xcos examples ({{book_count}} books, {{count}} examples)</h3>
+                <hr><br>
+                <div id="main-category-wrapper" class="form-row form-group">
+                    <label class="col-sm-2 col-form-label font-weight-bold"><i class="fa fa-list-ul" aria-hidden="true"></i>Main Category :</label>
+                    <select id="category-list" class="form-control-sm col-sm-10">
+                        <option value="0">Select Main Category</option>
+                        {% for item in category %}
+                        {% set tag = 'books' if item[3] != 1 else 'book' %}
+                        <option value="{{item[0]}}"{{ " selected" if category_id == item[0] }}>{{item[1]}} ({{item[3]}} {{tag}}, {{item[2]}} examples)</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div id="book" class="form-row form-group">
+                    <label for="disabledInput" class="col-sm-2 col-form-label font-weight-bold"><i class="fa fa-book" aria-hidden="true"></i> Book :</label>
+                    <select id="book-list" class="form-control-sm col-sm-8">
+                        <option value="0">Select Book </option>
+                    </select>
+                    <a href="#" class="extra-link col-sm-2" id="contributor">+Contributor<i class="fa fa-users" aria-hidden="true"></i></a>
+                </div>
+                <div id="chapter" class="form-row form-group">
+                    <label for="disabledInput" class="col-sm-2 col-form-label font-weight-bold"><i class="fa fa-file" aria-hidden="true"></i>Chapter :</label>
+                    <select id="chapter-list" class="form-control-sm col-sm-8">
+                        <option value="0">Select Chapter</option>
+                    </select>
+                    <a href="#" class="extra-link col-sm-2" id="download-chapter">Download Chapter<i class="fa fa-download" aria-hidden="true"></i></a>
+                </div>
+                <div id="example" class="form-row form-group">
 
-                <label for="disabledInput" class="col-sm-2 col-form-label font-weight-bold"><i class="fa fa-bars"
-                        aria-hidden="true"></i> Example :</label>
-                <select id="example-list" class="form-control-sm col-sm-8">
-                    <option value="0">Select Example</option>
-                </select>
-                <a href="#" class="extra-link col-sm-2" id="download-example">Download Example <i class="fa fa-download"
-                        aria-hidden="true"></i></a>
-            </div>
-            <div id="example-file" class="row">
+                    <label for="disabledInput" class="col-sm-2 col-form-label font-weight-bold"><i class="fa fa-bars" aria-hidden="true"></i> Example :</label>
+                    <select id="example-list" class="form-control-sm col-sm-8">
+                        <option value="0">Select Example</option>
+                    </select>
+                    <a href="#" class="extra-link col-sm-2" id="download-example">Download Example <i class="fa fa-download" aria-hidden="true"></i></a>
+                </div>
+                <div id="example-file" class="row">
                     <div class="col-sm-2 col-form-label font-weight-bold">
                         <i class="fas fa-list-alt"></i> Available Xcos file(s):
                     </div>
@@ -131,65 +121,62 @@
                         </table>
                     </div>
                 </div>
-        </form>
-        <!-- -->
-    </div>
-</section>
-<section id="footer-content" >
-<footer>
-        <!-- container -->
-  <div class="container-fluid bg-dark text-light">
-        <br>
-        <div class="row">
-
-            <div class="col-4">
-                <a href="https://fossee.in" target="_blank"><img class="bg-white img-responsive"
-                        src="images/fossee-logo.png" alt="logo"
-                        style="width:100px;height: 45px;"></a>
-            </div>
-
-            <div class="col-4">
-                <center>
-                    <a rel="funded_by" href="http://www.sakshat.ac.in/" target="_blank">
-                    <img class="img-responsive" alt="
-                            NMEICT" style="border-width:0;width:auto;height:45px;background:#ffffff;"
-                            src="images/NMEICT.png" />
-                            </span></a>
-                </center>
-            </div>
-            <div class="col-4">
-                <a href="https://iitb.ac.in" target="_blank" class="float-right"><img class="bg-white img-responsive"
-                        src="images/iitb-logo.png" alt="logo"
-                        style="width:50px;height: 45px;"></a>
-            </div>
-
+            </form>
+            <!-- -->
         </div>
-        <div class="row">
-            <div class="col-2">
-                <p class="float-left"><a href="#" id="disclaimer" data-toggle="modal"
-                        data-target="#disclaimer-text"><i class="fas fa-exclamation-triangle"></i> Disclaimer</a></p>
-            </div>
-            <div class="col-8">
-            <p></p>
-                <center>
-                    <p>
-                        <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank"><img
-                                alt="Creative Commons License" style="border-width:0"
-                                src="images/88x31.png" /></a>
-                       This work is licensed under a <a id="cc" rel="license" class="text-white bg-dark"
-                            href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative Commons
-                            Attribution-ShareAlike 4.0 International License</a>.
+    </section>
+    <section id="footer-content" >
+        <footer>
+            <!-- container -->
+            <div class="container-fluid bg-dark text-light">
+                <br>
+                <div class="row">
+
+                    <div class="col-4">
+                        <a href="https://fossee.in" target="_blank">
+                            <img class="bg-white img-responsive" src="images/fossee-logo.png" alt="logo" style="width:100px;height: 45px;">
+                        </a>
+                    </div>
+
+                    <div class="col-4">
+                        <center>
+                            <a rel="funded_by" href="http://www.sakshat.ac.in/" target="_blank">
+                                <img class="img-responsive" alt="NMEICT" style="border-width:0;width:auto;height:45px;background:#ffffff;" src="images/NMEICT.png" />
+                            </a>
+                        </center>
+                    </div>
+                    <div class="col-4">
+                        <a href="https://iitb.ac.in" target="_blank" class="float-right">
+                            <img class="bg-white img-responsive" src="images/iitb-logo.png" alt="logo" style="width:50px;height: 45px;">
+                        </a>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-2">
+                        <p class="float-left">
+                            <a href="#" id="disclaimer" data-toggle="modal" data-target="#disclaimer-text"><i class="fas fa-exclamation-triangle"></i>Disclaimer</a>
+                        </p>
+                    </div>
+                    <div class="col-8">
+                        <p></p>
+                        <center>
+                            <p>
+                                <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">
+                                    <img alt="Creative Commons License" style="border-width:0" src="images/88x31.png" />
+                                </a>
+                                This work is licensed under a
+                                <a id="cc" rel="license" class="text-white bg-dark" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
                             </p>
-                </center>
+                        </center>
+                    </div>
+                    <div class="col-2">
+                        <a href="https://xcos.fossee.in/cgi-bin/awstats.pl?config=cloud.scilab.in" class="float-right" target="_blank"><i class="fas fa-chart-line"></i>View Stats</a>
+                    </div>
+                </div>
             </div>
-            <div class="col-2">
-                <a href="https://xcos.fossee.in/cgi-bin/awstats.pl?config=cloud.scilab.in" class="float-right"
-                    target="_blank"><i class="fas fa-chart-line"></i> View Stats</a>
-            </div>
-        </div>
-    </div>
-    </footer>
-</section>
+        </footer>
+    </section>
     <!-- -->
     <!-- disclaimer modal -->
     <div class="modal" id="disclaimer-text">
