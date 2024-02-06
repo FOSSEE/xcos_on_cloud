@@ -2149,11 +2149,12 @@ def example_page():
         example_file = db_query(config.QUERY_EXAMPLE_FILE, [example_id]) \
             if example_id is not None else None
 
-        count = db_query(config.QUERY_COUNT)[0][0]
+        (count, book_count) = db_query(config.QUERY_COUNT)[0]
         category = db_query(config.QUERY_CATEGORY)
         return render_template('example.html',
                                branch=config.BRANCH,
                                count=count,
+                               book_count=book_count,
                                category=category,
                                category_id=category_id,
                                book=book,
