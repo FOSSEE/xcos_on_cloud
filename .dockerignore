@@ -1,6 +1,5 @@
 .dockerignore
 Dockerfile*
-.flake8
 .git*
 .travis.yml
 env*
@@ -8,5 +7,11 @@ env*
 *.pdf
 *.pyc
 *.sqlite3
+*.swp
+migrations
+.DS_Store
+.env.*
+tags
 webapp/combined.js
+scilab-log-*.txt
 __pycache__
