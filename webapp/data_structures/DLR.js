@@ -35,8 +35,8 @@ function DLR() {
         return options
     }
     DLR.prototype.set=function DLR(){
-        this.num=arguments[0]["num"]
-        this.den=arguments[0]["den"]
+        this.num = inversepolynomial(arguments[0]["num"])
+        this.den = inversepolynomial(arguments[0]["den"])
         var a=[];
         var b=[];
         var j=0;

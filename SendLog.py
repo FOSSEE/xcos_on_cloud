@@ -1219,11 +1219,11 @@ def list_variables(filename):
     '''
 
     command = "[__V1,__V2,__V3]=listvarinfile('%s');" % filename
-    command += "__V5=grep(string(__V2),'/^[124568]$/','r');"
+    command += "__V5=grep(string(__V2),'/^([124568]|1[0])$/','r');"
     command += "__V1=__V1(__V5);"
     command += "__V2=__V2(__V5);"
     command += "__V3=list(__V3(__V5));"
-    command += "__V5=grep(__V1,'/^[^%]+$/','r');"
+    command += "__V5=setdiff(grep(__V1,'/^[^%]+$/','r'),grep(__V1,'/^PWD$/','r'));"
     command += "if ~isempty(__V5) then;"
     command += "__V1=__V1(__V5);"
     command += "__V2=__V2(__V5);"
@@ -1239,16 +1239,20 @@ def list_variables(filename):
     command += "__V9=__V9+'{\"\"name\"\":\"\"'+__V18+'\"\",'+"
     command += "'\"\"type\"\":\"\"'+string(__V28)+'\"\",'+"
     command += "'\"\"size\"\":\"\"'+sci2exp(__V38)+'\"\",'+"
-    command += "'\"\"value\"\":\"\"';"
+    command += "'\"\"value\"\":';"
     command += "if size(__V38,2)>1 then;"
     command += "__V10=__V38(1)*__V38(2);"
     command += "else;"
     command += "__V10=__V38;"
     command += "end;"
     command += "if __V10<=100 then;"
+    command += "if __V28<>10 then;"
+    command += "__V9=__V9+'\"\"'+sci2exp(evstr(__V18))+'\"\"';"
+    command += "else;"
     command += "__V9=__V9+sci2exp(evstr(__V18));"
     command += "end;"
-    command += "__V9=__V9+'\"\"}';"
+    command += "end;"
+    command += "__V9=__V9+'}';"
     command += "if __V8<size(__V5,2) then;"
     command += "__V9=__V9+',';"
     command += "end;"
@@ -1265,7 +1269,7 @@ def load_variables(filename):
     '''
 
     command = "[__V1,__V2]=listvarinfile('%s');" % filename
-    command += "__V5=grep(string(__V2),'/^([124568]|1[7])$/','r');"
+    command += "__V5=grep(string(__V2),'/^([124568]|1[07])$/','r');"
     command += "__V1=__V1(__V5);"
     command += "__V2=__V2(__V5);"
     command += "__V5=grep(__V1,'/^[^%]+$/','r');"

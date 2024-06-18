@@ -121,8 +121,8 @@ function STEP_FUNCTION() {
         }
 
         var initial1 = inverse(temp_initial);
-	    var final1 = inverse(temp_final);
-	    this.step = temp_step;
+        var final1 = inverse(temp_final);
+        this.step = inverse(temp_step);
         this.initial = temp_initial;
         this.final = temp_final;
 	    var temp_initial_1 = colon_operator(initial1);

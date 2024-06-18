@@ -32,8 +32,8 @@ function CLR() {
         return options
     }
     CLR.prototype.set = function CLR() {
-        this.num = arguments[0]["num"]
-        this.den = arguments[0]["den"]
+        this.num = inversepolynomial(arguments[0]["num"])
+        this.den = inversepolynomial(arguments[0]["den"])
 	this.value = cont_frm(this.num,this.den);
 	var model = scicos_model();
         model.sim = list(new ScilabString(["csslti4"]), new ScilabDouble([4]));

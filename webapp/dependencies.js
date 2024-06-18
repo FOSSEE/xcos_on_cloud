@@ -1449,6 +1449,26 @@ function inverse(arg) {
     }
 }
 
+function inversepolynomial(arg) {
+    var regex_special = /^[sz]$/;
+    var regex_char = /^[a-zA-Z_][a-zA-Z_0-9]*$/;
+    arg = arg.trim();
+    if (!regex_special.test(arg) && regex_char.test(arg)) {
+        // Check context variable exist or not
+        var return_str = get_value_for_variable_from_context(arg);
+        if (return_str != null) {
+            arg = return_str;
+        } else {
+            // get variable value from workspace variable map.
+            var return_map = get_value_for_variable_from_workspace(arg);
+            if (return_map != null) {
+                arg = return_map.value;
+            }
+        }
+    }
+    return arg;
+}
+
 // replaces ',' by " " and ];[ by ;
 // e.g.
 // [[-1,-1];[-2,-2]] => '-1 -1;-1 -1'
