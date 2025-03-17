@@ -2170,7 +2170,8 @@ def example_page():
                                example_file=example_file,
                                example_file_id=example_file_id)
     except Exception as e:
-        return str(e)
+        logger.error('Error in example_page: %s', str(e))
+        return "An internal error has occurred!"
 
 
 @app.route('/ex')
@@ -2197,7 +2198,8 @@ def ajax_get_book():
         book = db_query(config.QUERY_BOOK, [category_id])
         return jsonify(book)
     except Exception as e:
-        return str(e)
+        logger.error('Error in ajax_get_book: %s', str(e))
+        return "An internal error has occurred!"
 
 
 @app.route('/get_chapter', methods=['GET', 'POST'])
@@ -2208,7 +2210,8 @@ def ajax_get_chapter():
         chapter = db_query(config.QUERY_CHAPTER, [book_id])
         return jsonify(chapter)
     except Exception as e:
-        return str(e)
+        logger.error('Error in ajax_get_chapter: %s', str(e))
+        return "An internal error has occurred!"
 
 
 @app.route('/get_example', methods=['GET', 'POST'])
@@ -2219,7 +2222,8 @@ def ajax_get_example():
         example = db_query(config.QUERY_EXAMPLE, [chapter_id])
         return jsonify(example)
     except Exception as e:
-        return str(e)
+        logger.error('Error in ajax_get_example: %s', str(e))
+        return "An internal error has occurred!"
 
 
 @app.route('/get_example_file', methods=['GET', 'POST'])
@@ -2230,7 +2234,8 @@ def ajax_get_example_file():
         example_file = db_query(config.QUERY_EXAMPLE_FILE, [example_id])
         return jsonify(example_file)
     except Exception as e:
-        return str(e)
+        logger.error('Error in ajax_get_example_file: %s', str(e))
+        return "An internal error has occurred!"
 
 
 @app.route('/get_contributor_details', methods=['GET', 'POST'])
@@ -2241,7 +2246,8 @@ def ajax_get_contributor_details():
         details = db_query(config.QUERY_CONTRIBUTOR_DETAILS, [book_id])
         return jsonify(details)
     except Exception as e:
-        return str(e)
+        logger.error('Error in ajax_get_contributor_details: %s', str(e))
+        return "An internal error has occurred!"
 
 
 def clean_text(s):
