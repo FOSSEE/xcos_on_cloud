@@ -2170,7 +2170,8 @@ def example_page():
                                example_file=example_file,
                                example_file_id=example_file_id)
     except Exception as e:
-        return str(e)
+        logger.error('Error in example_page: %s', str(e))
+        return "An internal error has occurred!"
 
 
 @app.route('/ex')
@@ -2197,7 +2198,8 @@ def ajax_get_book():
         book = db_query(config.QUERY_BOOK, [category_id])
         return jsonify(book)
     except Exception as e:
-        return str(e)
+        logger.error('Error in ajax_get_book: %s', str(e))
+        return "An internal error has occurred!"
 
 
 @app.route('/get_chapter', methods=['GET', 'POST'])
