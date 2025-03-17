@@ -9,7 +9,7 @@ Flask-Session
 Flask-Versioned==0.9.4.post20101221
 gevent
 greenlet
-idna==3.4
+idna
 importlib-metadata==4.2.0
 itsdangerous
 Jinja2
@@ -18,6 +18,6 @@ requests
 typing_extensions==4.1.1
 urllib3
 Werkzeug
-zipp==3.6.0
+zipp
 zope.event
 zope.interface
